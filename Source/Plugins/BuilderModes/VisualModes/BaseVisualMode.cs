@@ -3139,7 +3139,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			PreAction(UndoGroup.None);
 			List<IVisualEventReceiver> objs = GetSelectedObjects(true, true, true, true);
-			foreach(IVisualEventReceiver i in objs) i.OnDelete();
+            foreach (IVisualEventReceiver i in objs)
+            {
+                if (i is BaseVisualThing)
+                    visiblethings.Remove(((BaseVisualThing)i).Thing); // [ZZ] if any
+                i.OnDelete();
+            }
             PostAction();
 
 			ClearSelection();
@@ -3178,7 +3183,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			foreach(IVisualEventReceiver i in objs) 
 			{
 				BaseVisualThing thing = (BaseVisualThing)i;
-				thing.Thing.Fields.BeforeFieldsChange();
+                visiblethings.Remove(thing.Thing); // [ZZ] if any
+                thing.Thing.Fields.BeforeFieldsChange();
 				thing.Thing.Dispose();
 				thing.Dispose();
 			}
