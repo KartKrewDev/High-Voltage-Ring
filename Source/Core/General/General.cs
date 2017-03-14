@@ -42,6 +42,8 @@ using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.Windows;
 using Microsoft.Win32;
 using SlimDX.Direct3D9;
+using System.Security;
+using System.Security.Permissions;
 
 #endregion
 
@@ -2135,31 +2137,21 @@ namespace CodeImp.DoomBuilder
 		//mxd
 		public static bool CheckWritePremissions(string path)
 		{
-			try
-			{
-				DirectoryInfo di = new DirectoryInfo(path);
-				DirectorySecurity ds = di.GetAccessControl();
-				AuthorizationRuleCollection rules = ds.GetAccessRules(true, true, typeof(NTAccount));
-				WindowsIdentity currentuser = WindowsIdentity.GetCurrent();
-
-				if(currentuser != null)
-				{
-					WindowsPrincipal principal = new WindowsPrincipal(currentuser);
-					foreach(AuthorizationRule rule in rules)
-					{
-						FileSystemAccessRule fsar = rule as FileSystemAccessRule;
-						if(fsar != null && (fsar.FileSystemRights & FileSystemRights.WriteData) > 0)
-						{
-							NTAccount account = rule.IdentityReference as NTAccount;
-							if(account != null && principal.IsInRole(account.Value)) return true;
-						}
-					}
-				}
-			}
-			catch(UnauthorizedAccessException) { }
-
-			return false;
-		}
+            try
+            {
+                string testFile = path + "/GZDBWriteTest.tmp";
+                if (File.Exists(testFile))
+                    File.Delete(testFile);
+                FileStream fs = File.OpenWrite(testFile);
+                fs.Close();
+                File.Delete(testFile);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
 		
 		#endregion
 
