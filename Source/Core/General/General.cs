@@ -40,10 +40,7 @@ using CodeImp.DoomBuilder.Plugins;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.Windows;
-using Microsoft.Win32;
 using SlimDX.Direct3D9;
-using System.Security;
-using System.Security.Permissions;
 
 #endregion
 
@@ -2147,7 +2144,7 @@ namespace CodeImp.DoomBuilder
                 File.Delete(testFile);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
