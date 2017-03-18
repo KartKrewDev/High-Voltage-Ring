@@ -12,8 +12,7 @@
 - [Unofficial thread at iddqd.ru](http://i.iddqd.ru/viewtopic.php?t=522) (in russian)
 
 **This fork:**
-- This fork was created for maintenance of seemingly discontinued official branch:
-- [Official thread link](https://forum.zdoom.org/viewtopic.php?f=44&t=54957).
+- [Official thread link](https://forum.zdoom.org/viewtopic.php?f=44&t=54957)
 - [Git builds at DRDTeam.org](http://devbuilds.drdteam.org/gzdbbf/) 
 
 More detailed info can be found in the **editor documentation** (Refmanual.chm)
