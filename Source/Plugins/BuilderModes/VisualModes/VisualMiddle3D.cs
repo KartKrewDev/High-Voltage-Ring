@@ -285,9 +285,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					List<WorldVertex> verts = CreatePolygonVertices(polygons, tp, sd, lightvalue, lightabsolute);
 					if(verts.Count > 2)
 					{
-						if(extrafloor.Sloped3dFloor) this.RenderPass = RenderPass.Mask; //mxd
-						else if(extrafloor.RenderAdditive) this.RenderPass = RenderPass.Additive; //mxd
-						else if(extrafloor.Alpha < 255) this.RenderPass = RenderPass.Alpha;
+						if (extrafloor.Sloped3dFloor) this.RenderPass = RenderPass.Mask; //mxd
+						else if (extrafloor.RenderAdditive) this.RenderPass = RenderPass.Additive; //mxd
+						else if ((extrafloor.Alpha < 255) || Texture.IsTranslucent) this.RenderPass = RenderPass.Alpha; // [ZZ] translucent texture should trigger Alpha pass
 						else this.RenderPass = RenderPass.Mask;
 
 						if(extrafloor.Alpha < 255)
