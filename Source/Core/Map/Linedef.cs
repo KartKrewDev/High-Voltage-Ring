@@ -983,8 +983,15 @@ namespace CodeImp.DoomBuilder.Map
 			// Calculate intersection offset
 			float u = ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) * lengthsqinv;
 
-			// Limit intersection offset to the line
-			if(bounded) if(u < lengthinv) u = lengthinv; else if(u > (1f - lengthinv)) u = 1f - lengthinv;
+            // Limit intersection offset to the line
+            if (bounded)
+            {
+                /*if (u < lengthinv)
+                    u = lengthinv;
+                else if (u > (1f - lengthinv))
+                    u = 1f - lengthinv;*/
+                u = Math.Max(0f, Math.Min(1f, u)); // [ZZ] todo: understand why this worked
+            }
 
             /*
             // Calculate intersection point
