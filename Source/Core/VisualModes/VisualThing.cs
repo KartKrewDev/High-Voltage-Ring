@@ -95,6 +95,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private Vector3 lightOffset;
 		private int lightInterval;
 		private bool isGldefsLight;
+
+        // [ZZ]
+        protected PixelColor stencilColor;
 		
 		#endregion
 		
@@ -131,6 +134,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public float LightRadius { get { return lightRadius; } }
 		public DynamicLightRenderStyle LightRenderStyle { get { return lightRenderStyle; } }
 		public Color4 LightColor { get { return lightColor; } }
+
+        // [ZZ]
+        public PixelColor StencilColor { get { return stencilColor; } }
 
 		/// <summary>
 		/// Returns the Thing that this VisualThing is created for.

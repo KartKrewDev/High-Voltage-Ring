@@ -935,8 +935,11 @@ namespace CodeImp.DoomBuilder.Rendering
 							graphics.Shaders.World3D.VertexColor = vertexcolor;
 							graphics.Shaders.World3D.HighlightColor = CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection));
 
-							// Apply changes
-							ApplyMatrices3D();
+                            // [ZZ] check if we want stencil
+                            graphics.Shaders.World3D.StencilColor = t.StencilColor.ToColorValue();
+
+                            // Apply changes
+                            ApplyMatrices3D();
 							graphics.Shaders.World3D.ApplySettings();
 
 							// Apply buffer
@@ -944,12 +947,15 @@ namespace CodeImp.DoomBuilder.Rendering
 
 							// Render!
 							graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, t.Triangles);
-						}
+                        }
 					}
-				}
 
-				// Texture addressing
-				graphics.Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
+                    // [ZZ]
+                    graphics.Shaders.World3D.StencilColor = new Color4(0f, 1f, 1f, 1f);
+                }
+
+                // Texture addressing
+                graphics.Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
 				graphics.Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
 				graphics.Device.SetSamplerState(0, SamplerState.AddressW, TextureAddress.Wrap);
 				graphics.Device.SetRenderState(RenderState.CullMode, Cull.Counterclockwise); //mxd
@@ -1249,8 +1255,11 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.Shaders.World3D.VertexColor = vertexcolor;
 						graphics.Shaders.World3D.HighlightColor = CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection));
 
-						// Apply changes
-						ApplyMatrices3D();
+                        // [ZZ] check if we want stencil
+                        graphics.Shaders.World3D.StencilColor = t.StencilColor.ToColorValue();
+
+                        // Apply changes
+                        ApplyMatrices3D();
 						graphics.Shaders.World3D.ApplySettings();
 
 						// Apply buffer
@@ -1261,8 +1270,11 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 				}
 
-				// Texture addressing
-				graphics.Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
+                // [ZZ] check if we want stencil
+                graphics.Shaders.World3D.StencilColor = new Color4(0f, 1f, 1f, 1f);
+
+                // Texture addressing
+                graphics.Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
 				graphics.Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
 				graphics.Device.SetSamplerState(0, SamplerState.AddressW, TextureAddress.Wrap);
 				graphics.Device.SetRenderState(RenderState.CullMode, Cull.Counterclockwise); //mxd
