@@ -589,6 +589,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             ZScriptToken tok_scope = null;
             ZScriptToken tok_version = null;
             string[] class_scope_modifiers = new string[] { "clearscope", "ui", "play" };
+            string[] other_modifiers = new string[] { "abstract" };
             while (true)
             {
                 tokenizer.SkipWhitespace();
@@ -643,6 +644,10 @@ namespace CodeImp.DoomBuilder.ZDoom
                         }
 
                         tok_scope = token;
+                    }
+                    else if (!isstruct && Array.IndexOf(other_modifiers, token.Value.ToLowerInvariant()) >= 0)
+                    {
+                        // don't save these. whatever.
                     }
                     else if (token.Value.ToLowerInvariant() == "version")
                     {
