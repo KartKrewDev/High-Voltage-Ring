@@ -331,7 +331,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if((img != null) && img.IsImageLoaded)
 			{
 				//mxd. Merged from GZDoomEditing plugin
-				if(false) 
+				if(General.Map.UDMF) 
 				{
 					// Fetch ZDoom fields
 					Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningfloor", 0.0f),
