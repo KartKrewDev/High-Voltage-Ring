@@ -4218,7 +4218,6 @@ namespace CodeImp.DoomBuilder.Windows
 					// Update floor buffer if needed
 					if(s.LongFloorTexture == img.LongName || s.LongFloorTexture == imgshorthash)
 					{
-                        General.ErrorLogger.Add(ErrorType.Warning, string.Format("updating floor of sector {0} for texture {1}", s.Index, img.Name));
 						s.UpdateFloorSurface();
 						updated = true;
 					}
@@ -4226,7 +4225,6 @@ namespace CodeImp.DoomBuilder.Windows
 					// Update ceiling buffer if needed
 					if(s.LongCeilTexture == img.LongName || s.LongCeilTexture == imgshorthash)
 					{
-                        General.ErrorLogger.Add(ErrorType.Warning, string.Format("updating ceiling of sector {0} for texture {1}", s.Index, img.Name));
                         s.UpdateCeilingSurface();
 						updated = true;
 					}
