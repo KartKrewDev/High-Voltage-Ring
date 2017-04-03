@@ -181,6 +181,7 @@ namespace CodeImp.DoomBuilder.Data
 		public bool IsDisposed { get { return isdisposed; } }
 		public ImageData MissingTexture3D { get { return missingtexture3d; } }
 		public ImageData UnknownTexture3D { get { return unknowntexture3d; } }
+        public ImageData UnknownImage {  get { return unknownimage; } }
 		public ImageData Hourglass3D { get { return hourglass3d; } }
 		public ImageData Crosshair3D { get { return crosshair; } }
 		public ImageData CrosshairBusy3D { get { return crosshairbusy; } }
@@ -1338,11 +1339,21 @@ namespace CodeImp.DoomBuilder.Data
 			return GetFlatExists(Lump.MakeLongName(name)); //mxd
 		}
 
-		// This checks if a flat is known
-		public bool GetFlatExists(long longname)
-		{
-			return flats.ContainsKey(longname) || flatnamesshorttofull.ContainsKey(longname);
-		}
+        // This checks if a flat is known
+        public bool GetFlatExists(long longname)
+        {
+            // [ZZ] return nonexistent name for bad flats.
+            if (flats.ContainsKey(longname))
+            {
+                // [ZZ] long name is long. a doom flat with a long name is invalid.
+                ImageData id = flats[longname];
+                if (id is PK3FileImage && ((PK3FileImage)id).IsBadForLongTextureNames)
+                    return false;
+                return true;
+            }
+
+            return flatnamesshorttofull.ContainsKey(longname);
+        }
 		
 		// This returns an image by string
 		public ImageData GetFlatImage(string name)
@@ -1358,8 +1369,17 @@ namespace CodeImp.DoomBuilder.Data
 			// Does this flat exist?
 			if(flats.ContainsKey(longname) && (flats[longname] is TEXTURESImage || flats[longname] is HiResImage))
 				return flats[longname]; //TEXTURES and HiRes flats should still override regular ones...
-			if(flatnamesshorttofull.ContainsKey(longname)) return flats[flatnamesshorttofull[longname]]; //mxd
-			if(flats.ContainsKey(longname)) return flats[longname];
+			if(flatnamesshorttofull.ContainsKey(longname))
+                return flats[flatnamesshorttofull[longname]]; //mxd
+            if (flats.ContainsKey(longname))
+            {
+                // [ZZ] long name is long. a doom flat with a long name is invalid.
+                ImageData id = flats[longname];
+                if (id is PK3FileImage && ((PK3FileImage)id).IsBadForLongTextureNames)
+                    return unknownimage;
+
+                return id;
+            }
 			
 			// Return null image
 			return unknownimage; //mxd

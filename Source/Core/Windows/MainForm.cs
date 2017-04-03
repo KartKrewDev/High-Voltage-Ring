@@ -4104,7 +4104,7 @@ namespace CodeImp.DoomBuilder.Windows
 					if((General.Map != null) && (General.Map.Data != null))
 					{
 						ImageData img = General.Map.Data.GetFlatImage(imagename);
-						ImageDataLoaded(img);
+                        ImageDataLoaded(img);
 					}
 					break;
 
@@ -4206,11 +4206,11 @@ namespace CodeImp.DoomBuilder.Windows
 		// but only when first loaded or when dimensions were changed
 		internal void ImageDataLoaded(ImageData img)
 		{
-			// Image is used in the map?
-			if((img != null) && img.UsedInMap && !img.IsDisposed)
+            // Image is used in the map?
+            if ((img != null) && img.UsedInMap && !img.IsDisposed)
 			{
-				// Go for all setors
-				bool updated = false;
+                // Go for all setors
+                bool updated = false;
 				long imgshorthash = General.Map.Data.GetShortLongFlatName(img.LongName); //mxd. Part of long name support shennanigans
 
 				foreach(Sector s in General.Map.Map.Sectors)
@@ -4218,6 +4218,7 @@ namespace CodeImp.DoomBuilder.Windows
 					// Update floor buffer if needed
 					if(s.LongFloorTexture == img.LongName || s.LongFloorTexture == imgshorthash)
 					{
+                        General.ErrorLogger.Add(ErrorType.Warning, string.Format("updating floor of sector {0} for texture {1}", s.Index, img.Name));
 						s.UpdateFloorSurface();
 						updated = true;
 					}
@@ -4225,7 +4226,8 @@ namespace CodeImp.DoomBuilder.Windows
 					// Update ceiling buffer if needed
 					if(s.LongCeilTexture == img.LongName || s.LongCeilTexture == imgshorthash)
 					{
-						s.UpdateCeilingSurface();
+                        General.ErrorLogger.Add(ErrorType.Warning, string.Format("updating ceiling of sector {0} for texture {1}", s.Index, img.Name));
+                        s.UpdateCeilingSurface();
 						updated = true;
 					}
 				}
@@ -4233,7 +4235,7 @@ namespace CodeImp.DoomBuilder.Windows
 				// If we made updates, redraw the screen
 				if(updated) DelayedRedraw();
 			}
-		}
+        }
 
 		public void EnableProcessing()
 		{

@@ -331,7 +331,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if((img != null) && img.IsImageLoaded)
 			{
 				//mxd. Merged from GZDoomEditing plugin
-				if(General.Map.UDMF) 
+				if(false) 
 				{
 					// Fetch ZDoom fields
 					Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningfloor", 0.0f),
@@ -374,6 +374,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 				}
 			}
+            else // [ZZ] proper fallback please.
+            {
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i].u = vertices[i].u / 64;
+                    vertices[i].v = -vertices[i].v / 64;
+                }
+            }
 		}
 
 		// When ceiling surface geometry is created for classic modes
@@ -426,7 +434,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 				}
 			}
-		}
+            else // [ZZ] proper fallback please.
+            {
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i].u = vertices[i].u / 64;
+                    vertices[i].v = -vertices[i].v / 64;
+                }
+            }
+        }
 
 		// When the editing mode changes
 		public override bool OnModeChange(EditMode oldmode, EditMode newmode)
