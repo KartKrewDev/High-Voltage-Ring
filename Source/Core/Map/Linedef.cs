@@ -986,11 +986,14 @@ namespace CodeImp.DoomBuilder.Map
             // Limit intersection offset to the line
             if (bounded)
             {
-                /*if (u < lengthinv)
-                    u = lengthinv;
-                else if (u > (1f - lengthinv))
-                    u = 1f - lengthinv;*/
-                u = Math.Max(0f, Math.Min(1f, u)); // [ZZ] todo: understand why this worked
+                if (lengthinv > 1)
+                {
+                    u = Math.Max(0f, Math.Min(1f, u)); // [ZZ] todo: understand why this worked
+                }
+                else
+                {
+                    u = Math.Max(lengthinv, Math.Min(1f - lengthinv, u));
+                }
             }
 
             /*
