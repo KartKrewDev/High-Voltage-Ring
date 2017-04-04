@@ -986,11 +986,11 @@ namespace CodeImp.DoomBuilder.Map
             // Limit intersection offset to the line
             if (bounded)
             {
-                if (lengthinv > 1)
+                if (General.Map.UDMF)
                 {
-                    u = Math.Max(0f, Math.Min(1f, u)); // [ZZ] todo: understand why this worked
+                    u = Math.Max(0f, Math.Min(1f, u));
                 }
-                else
+                else // restore old way for visplane explorer (which doesn't work for UDMF anyway)
                 {
                     u = Math.Max(lengthinv, Math.Min(1f - lengthinv, u));
                 }
