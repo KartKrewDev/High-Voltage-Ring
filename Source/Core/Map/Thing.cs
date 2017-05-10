@@ -452,7 +452,7 @@ namespace CodeImp.DoomBuilder.Map
 				case ThingRenderMode.MODEL:
 					ModelData md = General.Map.Data.ModeldefEntries[type];
 					if(md.InheritActorPitch || md.UseActorPitch)
-						pitchrad = Angle2D.DegToRad(md.InheritActorPitch ? -pitch : pitch);
+						pitchrad = Angle2D.DegToRad((md.InheritActorPitch||!General.Map.Config.BuggyModelDefPitch) ? -pitch : pitch);
 					else
 						pitchrad = 0;
 					break;
