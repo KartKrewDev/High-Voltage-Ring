@@ -583,7 +583,7 @@ namespace CodeImp.DoomBuilder.Map
 				case ThingRenderMode.MODEL:
 					ModelData md = General.Map.Data.ModeldefEntries[type];
 					rollrad = (md.UseActorRoll ? Angle2D.DegToRad(roll) : 0);
-					pitchrad = ((md.InheritActorPitch || md.UseActorPitch) ? Angle2D.DegToRad(md.InheritActorPitch ? -pitch : pitch) : 0);
+					pitchrad = ((md.InheritActorPitch || md.UseActorPitch) ? Angle2D.DegToRad((md.InheritActorPitch || !General.Map.Config.BuggyModelDefPitch) ? -pitch : pitch) : 0);
 					break;
 
 				case ThingRenderMode.FLATSPRITE:
