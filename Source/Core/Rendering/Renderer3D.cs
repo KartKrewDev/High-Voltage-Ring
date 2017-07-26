@@ -495,7 +495,7 @@ namespace CodeImp.DoomBuilder.Rendering
             {
                 graphics.Device.SetRenderState(RenderState.AlphaTestEnable, true);
                 graphics.Shaders.World3D.IgnoreNormals = true;
-                RenderModels(true, false);
+                RenderModels(true, true);
                 graphics.Shaders.World3D.IgnoreNormals = false;
             }
 
@@ -1872,23 +1872,22 @@ namespace CodeImp.DoomBuilder.Rendering
 				 General.Settings.GZDrawModelsMode == ModelRenderMode.ACTIVE_THINGS_FILTER ||
 				(General.Settings.GZDrawModelsMode == ModelRenderMode.SELECTION && t.Selected))) 
 			{
-				switch(t.RenderPass)
-				{
-					case RenderPass.Mask:
-					case RenderPass.Solid:
-						ModelData mde = General.Map.Data.ModeldefEntries[t.Thing.Type];
-						if(!maskedmodelthings.ContainsKey(mde)) maskedmodelthings.Add(mde, new List<VisualThing>());
-						maskedmodelthings[mde].Add(t);
-						break;
-
-					case RenderPass.Additive:
-					case RenderPass.Alpha:
-						translucentmodelthings.Add(t);
-						break;
-
-					default:
-						throw new NotImplementedException("Thing model rendering of " + t.RenderPass + " render pass is not implemented!");
-				}
+                if (t.RenderPass == RenderPass.Mask ||
+                    t.RenderPass == RenderPass.Solid ||
+                    (t.RenderPass == RenderPass.Alpha && (t.VertexColor & 0xFF000000) == 0xFF000000))
+                {
+                    ModelData mde = General.Map.Data.ModeldefEntries[t.Thing.Type];
+                    if (!maskedmodelthings.ContainsKey(mde)) maskedmodelthings.Add(mde, new List<VisualThing>());
+                    maskedmodelthings[mde].Add(t);
+                }
+                else if (t.RenderPass == RenderPass.Alpha || t.RenderPass == RenderPass.Additive)
+                {
+                    translucentmodelthings.Add(t);
+                }
+                else
+                {
+                    throw new NotImplementedException("Thing model rendering of " + t.RenderPass + " render pass is not implemented!");
+                }
 			}
 			// Gather regular things
 			else 
