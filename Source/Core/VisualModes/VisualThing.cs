@@ -120,7 +120,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{ 
 			get
 			{
-				if(isGldefsLight) return position_v3 + lightOffset;
+                if (isGldefsLight) return position_v3 + lightOffset;
+                else if (GZBuilder.GZGeneral.GetGZLightTypeByThing(Thing) >= 0) return position_v3; // fixes GZDoomBuilder-Bugfix#137
 				return new Vector3(position_v3.X, position_v3.Y, position_v3.Z + thingheight / 2f); 
 			} 
 		}
