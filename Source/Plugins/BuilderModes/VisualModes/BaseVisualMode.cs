@@ -1045,8 +1045,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// When entering this mode
 		public override void OnEngage()
 		{
-			base.OnEngage();
-
 			//mxd
 			useSelectionFromClassicMode = BuilderPlug.Me.SyncSelection ? !General.Interface.ShiftState : General.Interface.ShiftState;
 			if(useSelectionFromClassicMode)	UpdateSelectionInfo();
@@ -1061,9 +1059,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// (Re)create special effects
 			RebuildElementData();
 
-			//mxd. Update event lines
-			renderer.SetEventLines(LinksCollector.GetHelperShapes(General.Map.ThingsFilter.VisibleThings, blockmap));
-		}
+            //mxd. Update event lines
+            renderer.SetEventLines(LinksCollector.GetHelperShapes(General.Map.ThingsFilter.VisibleThings, blockmap));
+
+            // [ZZ] this enables calling of this object from the outside world. Only after properly initialized pls.
+            base.OnEngage();
+        }
 
 		// When returning to another mode
 		public override void OnDisengage()
