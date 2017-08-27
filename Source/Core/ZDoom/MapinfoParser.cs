@@ -116,10 +116,12 @@ namespace CodeImp.DoomBuilder.ZDoom
 						// Get map lump name
 						SkipWhitespace(true);
 						token = ReadToken().ToLowerInvariant();
-						if(token != this.mapname) 
+                        // [ZZ] Note: map name is sometimes in quotes. I think this was "fixed" some time ago, but apparently not.
+                        token = StripQuotes(token);
+                        if (token != this.mapname) 
 						{
-							// Map number? Try to build map name from it...
-							int n;
+                            // Map number? Try to build map name from it...
+                            int n;
 							if(int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out n))
 							{
 								token = ((n > 0 && n < 10) ? "map0" + n : "map" + n);
@@ -472,6 +474,11 @@ namespace CodeImp.DoomBuilder.ZDoom
 						if(!ParseLightMode()) return false;
 						break;
 
+                    // [ZZ]
+                    case "pixelratio":
+                        if (!ParsePixelRatio()) return false;
+                        break;
+
 					case "}": return true; // Block end
 
 					case "{": // Skip inner blocks
@@ -723,6 +730,29 @@ namespace CodeImp.DoomBuilder.ZDoom
 			// All done here
 			return true;
 		} 
+
+        private bool ParsePixelRatio()
+        {
+            SkipWhitespace(true);
+            if (!NextTokenIs("=")) return false; // New format only
+            SkipWhitespace(true);
+            string token = ReadToken();
+
+            float val;
+            if (!float.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out val))
+            {
+                // Not numeric!
+                ReportError("Expected PixelRatio value, but got \"" + token + "\"");
+                return false;
+            }
+
+            // Store
+            mapinfo.PixelRatio = val;
+
+            // All done here
+            return true;
+
+        }
 
 		#endregion
 

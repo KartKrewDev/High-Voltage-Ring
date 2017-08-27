@@ -38,8 +38,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		private const float PROJ_NEAR_PLANE = 1f;
 		private const float FOG_RANGE = 0.9f;
-		internal const float GZDOOM_VERTICAL_VIEW_STRETCH = 1.2f;
-		internal const float GZDOOM_INVERTED_VERTICAL_VIEW_STRETCH = 1.0f / GZDOOM_VERTICAL_VIEW_STRETCH;
 
 		private const int SHADERPASS_LIGHT = 17; //mxd
 		private const int SHADERPASS_SKYBOX = 5; //mxd
@@ -138,7 +136,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		internal Renderer3D(D3DDevice graphics) : base(graphics)
 		{
 			// Initialize
-			CreateProjection();
+			//CreateProjection(); // [ZZ] don't do undefined things once not even ready
 			CreateMatrices2D();
 			renderthingcages = true;
 			showselection = true;
@@ -235,7 +233,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		internal void CreateProjection()
 		{
 			// Calculate aspect
-			float screenheight = General.Map.Graphics.RenderTarget.ClientSize.Height * (General.Settings.GZStretchView ? GZDOOM_INVERTED_VERTICAL_VIEW_STRETCH : 1.0f); //mxd
+			float screenheight = General.Map.Graphics.RenderTarget.ClientSize.Height * (General.Settings.GZStretchView ? General.Map.Data.InvertedVerticalViewStretch : 1.0f); //mxd
 			float aspect = General.Map.Graphics.RenderTarget.ClientSize.Width / screenheight;
 			
 			// The DirectX PerspectiveFovRH matrix method calculates the scaling in X and Y as follows:

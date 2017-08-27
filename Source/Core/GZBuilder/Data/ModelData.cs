@@ -94,7 +94,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		{
 			this.scale = scale;
 			transform = rotation * Matrix.Scaling(scale) * offset;
-			transformstretched = Matrix.Scaling(1.0f, 1.0f, Renderer3D.GZDOOM_INVERTED_VERTICAL_VIEW_STRETCH) * transform;
+			transformstretched = Matrix.Scaling(1.0f, 1.0f, General.Map.Data.InvertedVerticalViewStretch) * transform;
 		}
 
 		//mxd. This greatly speeds up Dictionary lookups

@@ -209,13 +209,33 @@ namespace CodeImp.DoomBuilder.Data
 				return false;
 			}
 		}
-		
-		#endregion
 
-		#region ================== Constructor / Disposer
+        internal const float DOOM_PIXEL_RATIO = 1.2f;
 
-		// Constructor
-		internal DataManager()
+        public float VerticalViewStretch
+        {
+            get
+            {
+                if (mapinfo == null)
+                    return DOOM_PIXEL_RATIO;
+                return mapinfo.PixelRatio;
+            }
+        }
+
+        public float InvertedVerticalViewStretch
+        {
+            get
+            {
+                return 1.0f / VerticalViewStretch;
+            }
+        }
+
+        #endregion
+
+        #region ================== Constructor / Disposer
+
+        // Constructor
+        internal DataManager()
 		{
 			// We have no destructor
 			GC.SuppressFinalize(this);
