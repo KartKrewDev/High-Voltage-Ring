@@ -274,6 +274,30 @@ namespace CodeImp.DoomBuilder.ZDoom
                 int arraylen = -1;
                 if (token.Type == ZScriptTokenType.Integer)
                     arraylen = token.ValueInt;
+                else
+                {
+                    // we can have more identifiers (dotted)
+                    while (true)
+                    {
+                        long cpos = stream.Position;
+                        token = tokenizer.ExpectToken(ZScriptTokenType.Dot);
+                        if (token == null || !token.IsValid)
+                        {
+                            stream.Position = cpos;
+                            break;
+                        }
+                        else
+                        {
+                            token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+                            if (token == null || !token.IsValid)
+                            {
+                                parser.ReportError("Expected identifier, got " + ((Object)token ?? "<null>").ToString());
+                                return null;
+                            }
+                        }
+                    }
+                }
+
                 dimensions.Add(arraylen);
 
                 // closing square
