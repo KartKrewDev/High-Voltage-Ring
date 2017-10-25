@@ -1701,7 +1701,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			graphics.Shaders.World3D.EndPass();
-		}
+            if (lightpass) graphics.Device.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+        }
 
 		//mxd
 		private void RenderSky(IEnumerable<VisualGeometry> geo)
