@@ -264,7 +264,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 
                 // parse identifier or int (identifier is a constant, we don't parse this yet)
                 tokenizer.SkipWhitespace();
-                token = tokenizer.ExpectToken(ZScriptTokenType.Integer, ZScriptTokenType.Identifier);
+                long cpos = stream.Position;
+                token = tokenizer.ExpectToken(ZScriptTokenType.Integer, ZScriptTokenType.Identifier, ZScriptTokenType.CloseSquare);
                 if (token == null || !token.IsValid)
                 {
                     parser.ReportError("Expected integer or const, got " + ((Object)token ?? "<null>").ToString());
@@ -274,12 +275,17 @@ namespace CodeImp.DoomBuilder.ZDoom
                 int arraylen = -1;
                 if (token.Type == ZScriptTokenType.Integer)
                     arraylen = token.ValueInt;
+                else if (token.Type == ZScriptTokenType.CloseSquare)
+                {
+                    /* todo determine this somehow... not for now */
+                    stream.Position = cpos; // code later expects close square
+                }
                 else
                 {
                     // we can have more identifiers (dotted)
                     while (true)
                     {
-                        long cpos = stream.Position;
+                        cpos = stream.Position;
                         token = tokenizer.ExpectToken(ZScriptTokenType.Dot);
                         if (token == null || !token.IsValid)
                         {
@@ -472,7 +478,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
                 // try to read in a variable/method.
                 bool bmethod = false;
-                string[] availablemodifiers = new string[] { "static", "native", "action", "readonly", "protected", "private", "virtual", "override", "meta", "transient", "deprecated", "final", "play", "ui", "clearscope", "virtualscope", "version" };
+                string[] availablemodifiers = new string[] { "static", "native", "action", "readonly", "protected", "private", "virtual", "override", "meta", "transient", "deprecated", "final", "play", "ui", "clearscope", "virtualscope", "version", "const" };
                 string[] versionedmodifiers = new string[] { "version", "deprecated" };
                 string[] methodmodifiers = new string[] { "action", "virtual", "override", "final" };
                 HashSet<string> modifiers = new HashSet<string>();
@@ -660,11 +666,30 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 
                             tokenizer.SkipWhitespace();
-                            token = tokenizer.ExpectToken(ZScriptTokenType.Semicolon, ZScriptTokenType.Comma);
+                            ZScriptTokenType[] expectTokens;
+                            if (modifiers.Contains("static"))
+                                expectTokens = new ZScriptTokenType[] { ZScriptTokenType.Semicolon, ZScriptTokenType.Comma, ZScriptTokenType.OpAssign };
+                            else expectTokens = new ZScriptTokenType[] { ZScriptTokenType.Semicolon, ZScriptTokenType.Comma };
+                            token = tokenizer.ExpectToken(expectTokens);
                             if (token == null || !token.IsValid)
                             {
-                                parser.ReportError("Expected ; or comma, got " + ((Object)token ?? "<null>").ToString());
+                                parser.ReportError("Expected ;, =, or comma, got " + ((Object)token ?? "<null>").ToString());
                                 return;
+                            }
+
+                            // "static int A[] = {1, 2, 3};"
+                            if (token.Type == ZScriptTokenType.OpAssign)
+                            {
+                                // read in array data
+                                tokenizer.SkipWhitespace();
+                                parser.SkipBlock(false);
+                                tokenizer.SkipWhitespace();
+                                token = tokenizer.ExpectToken(ZScriptTokenType.Semicolon, ZScriptTokenType.Comma);
+                                if (token == null || !token.IsValid)
+                                {
+                                    parser.ReportError("Expected ; or comma, got " + ((Object)token ?? "<null>").ToString());
+                                    return;
+                                }
                             }
                         }
                     }

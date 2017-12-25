@@ -334,7 +334,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             }
         }
 
-        internal bool SkipBlock()
+        internal bool SkipBlock(bool eatSemicolon = true)
         {
             List<ZScriptToken> ol = new List<ZScriptToken>();
             //
@@ -382,9 +382,9 @@ namespace CodeImp.DoomBuilder.ZDoom
             }
 
             // there is POTENTIALLY a semicolon after the class definition. it's not supposed to be there, but it's acceptable (GZDoom.pk3 has this)
-            ZScriptToken tailtoken = tokenizer.ReadToken();
             cpos = datastream.Position;
-            if (tailtoken == null || tailtoken.Type != ZScriptTokenType.Semicolon)
+            ZScriptToken tailtoken = tokenizer.ReadToken();
+            if (tailtoken == null || !eatSemicolon || tailtoken.Type != ZScriptTokenType.Semicolon)
                 datastream.Position = cpos;
 
             return true;
