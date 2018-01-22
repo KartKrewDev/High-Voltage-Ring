@@ -756,10 +756,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Remove all vertex handles from selection
 				if(vertices != null && vertices.Count > 0) 
 				{
-					foreach(IVisualEventReceiver i in selectedobjects)
-					{
-						if(i is BaseVisualVertex) RemoveSelectedObject(i);
-					}
+                    for (int i = 0; i < selectedobjects.Count; i++)
+                    {
+                        if (selectedobjects[i] is BaseVisualVertex)
+                        {
+                            RemoveSelectedObject(selectedobjects[i]);
+                            i--;
+                        }
+                    }
 				}
 			}
 
