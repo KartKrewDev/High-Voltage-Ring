@@ -10,6 +10,7 @@ using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.IO;
+using CodeImp.DoomBuilder.GZBuilder;
 
 #endregion
 
@@ -33,7 +34,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			public const string FLICKER2 = "flickerlight2";
 			public const string SECTOR = "sectorlight";
 
-			public static readonly Dictionary<string, DynamicLightType> GLDEFS_TO_GZDOOM_LIGHT_TYPE = new Dictionary<string, DynamicLightType>(StringComparer.Ordinal) { { POINT, DynamicLightType.NORMAL }, { PULSE, DynamicLightType.PULSE }, { FLICKER, DynamicLightType.FLICKER }, { FLICKER2, DynamicLightType.RANDOM }, { SECTOR, DynamicLightType.SECTOR } };
+			public static readonly Dictionary<string, GZGeneral.LightModifier> GLDEFS_TO_GZDOOM_LIGHT_TYPE = new Dictionary<string, GZGeneral.LightModifier>(StringComparer.Ordinal) { { POINT, GZGeneral.LightModifier.NORMAL }, { PULSE, GZGeneral.LightModifier.PULSE }, { FLICKER, GZGeneral.LightModifier.FLICKER }, { FLICKER2, GZGeneral.LightModifier.FLICKERRANDOM }, { SECTOR, GZGeneral.LightModifier.SECTOR } };
 		}
 
 		#endregion
@@ -157,7 +158,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 		private bool ParseLight(string lighttype)
 		{
-			DynamicLightData light = new DynamicLightData { Type = GldefsLightType.GLDEFS_TO_GZDOOM_LIGHT_TYPE[lighttype] };
+            DynamicLightData light = new DynamicLightData(new GZGeneral.LightData(GldefsLightType.GLDEFS_TO_GZDOOM_LIGHT_TYPE[lighttype]));
 
 			// Find classname
 			SkipWhitespace(true);
@@ -288,7 +289,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 							ReportError("Expected Offset Z value, but got \"" + token + "\"");
 							return false;
 						}
-					break;
+					    break;
 
 					case "subtractive":
 					{
@@ -303,9 +304,9 @@ namespace CodeImp.DoomBuilder.ZDoom
 							return false;
 						}
 
-                            light.Style = (i == 1) ? DynamicLightRenderStyle.NEGATIVE : DynamicLightRenderStyle.NORMAL;
-                        }
-					break;
+                        light.Type.SetRenderStyle((i == 1) ? GZGeneral.LightRenderStyle.SUBTRACTIVE : GZGeneral.LightRenderStyle.NORMAL);
+                        break;
+                    }
 
                     case "attenuate":
                     {
@@ -320,9 +321,9 @@ namespace CodeImp.DoomBuilder.ZDoom
                             return false;
                         }
 
-                        light.Style = (i == 1) ? DynamicLightRenderStyle.ATTENUATED : DynamicLightRenderStyle.NORMAL;
+                        light.Type.SetRenderStyle((i == 1) ? GZGeneral.LightRenderStyle.ATTENUATED : GZGeneral.LightRenderStyle.NORMAL);
+                        break;
                     }
-                    break;
 
                     case "dontlightself":
 					{
@@ -474,13 +475,13 @@ namespace CodeImp.DoomBuilder.ZDoom
 						bool skip = (light.Color.Red == 0.0f && light.Color.Green == 0.0f && light.Color.Blue == 0.0f);
 
 						// Light-type specific checks
-						if(light.Type == DynamicLightType.NORMAL && light.PrimaryRadius == 0)
+						if(light.Type.LightModifier == GZGeneral.LightModifier.NORMAL && light.PrimaryRadius == 0)
 						{
 							LogWarning("\"" + lightname + "\" light Size is 0. It won't be shown in GZDoom");
 							skip = true;
 						}
 
-						if(light.Type == DynamicLightType.FLICKER || light.Type == DynamicLightType.PULSE || light.Type == DynamicLightType.RANDOM)
+						if(light.Type.LightAnimated)
 						{
 							if(light.PrimaryRadius == 0 && light.SecondaryRadius == 0)
 							{

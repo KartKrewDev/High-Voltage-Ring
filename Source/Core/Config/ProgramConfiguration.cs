@@ -26,6 +26,7 @@ using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Plugins;
 using CodeImp.DoomBuilder.Rendering;
+using CodeImp.DoomBuilder.Types;
 
 #endregion
 
@@ -669,7 +670,9 @@ namespace CodeImp.DoomBuilder.Config
 			ThingTypeInfo tti = General.Map.Data.GetThingInfoEx(t.Type);
 			if(tti != null) 
 			{
-				t.Args[0] = (int)tti.Args[0].DefaultValue;
+                if (tti.Args[0].DefaultValue is string)
+                    t.Fields["arg0str"] = new UniValue(UniversalType.String, (string)tti.Args[0].DefaultValue);
+				else t.Args[0] = (int)tti.Args[0].DefaultValue;
 				t.Args[1] = (int)tti.Args[1].DefaultValue;
 				t.Args[2] = (int)tti.Args[2].DefaultValue;
 				t.Args[3] = (int)tti.Args[3].DefaultValue;

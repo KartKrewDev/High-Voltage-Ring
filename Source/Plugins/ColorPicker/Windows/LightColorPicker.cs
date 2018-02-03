@@ -102,7 +102,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 
 				foreach(VisualThing t in selectedVisualThings) 
 				{
-					if(GZGeneral.GetGZLightTypeByThing(t.Thing) != -1) 
+					if (t.LightType != null && t.LightType.LightInternal) 
 					{
 						selection.Add(t.Thing);
 						visualSelection.Add(t);
@@ -114,7 +114,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				ICollection<Thing> list = General.Map.Map.GetSelectedThings(true);
 				foreach(Thing t in list) 
 				{
-					if(GZGeneral.GetGZLightTypeByThing(t) != -1)
+					if (t.DynamicLightType != null)
 						selection.Add(t);
 				}
 			}
@@ -124,9 +124,9 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 		//this is called only once
 		private void SetupSliders(Thing referenceThing) 
 		{
-			ThingTypeInfo typeInfo = General.Map.Data.GetThingInfoEx(referenceThing.DynamicLightType);
+			ThingTypeInfo typeInfo = General.Map.Data.GetThingInfoEx(referenceThing.DynamicLightType.LightNum);
 			int firstArg = 3;
-			if(referenceThing.DynamicLightType == 1502 || referenceThing.DynamicLightType == 1503)
+			if(referenceThing.DynamicLightType.LightVavoom)
 				firstArg = 0;
 
 			//first slider is always used
@@ -170,7 +170,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 			
 			//size
 			int firstArg = 3;
-			if(referenceThing.DynamicLightType == 1502 || referenceThing.DynamicLightType == 1503)
+			if (referenceThing.DynamicLightType.LightVavoom)
 				firstArg = 0;
 
 			lightProps.PrimaryRadius = referenceThing.Args[firstArg];
@@ -216,13 +216,13 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				//update color 
 				if(colorChanged) //need this check to allow relative mode to work properly
 				{ 
-					if(t.DynamicLightType == 1503) //Vavoom Light Color
+					if (t.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) //Vavoom Light Color
 					{ 
 						t.Args[1] = lightProps.Red;
 						t.Args[2] = lightProps.Green;
 						t.Args[3] = lightProps.Blue;
 					} 
-					else if(t.DynamicLightType != 1502) //vavoom light has no color settings
+					else if (t.DynamicLightType.LightDef != GZGeneral.LightDef.VAVOOM_GENERIC) //vavoom light has no color settings
 					{ 
 						t.Args[0] = lightProps.Red;
 						t.Args[1] = lightProps.Green;
@@ -231,7 +231,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				}
 
 				int firstArg = 3;
-				if(t.DynamicLightType == 1502 || t.DynamicLightType == 1503) firstArg = 0;
+				if (t.DynamicLightType.LightVavoom) firstArg = 0;
 
 				//update radius and intensity
 				if(RELATIVE_MODE) 
@@ -322,8 +322,9 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 		//this is called only once
 		private static Color GetThingColor(Thing thing) 
 		{
-			if(thing.DynamicLightType == 1502) return Color.White; //vavoom light
-			if(thing.DynamicLightType == 1503) return Color.FromArgb((byte)thing.Args[1], (byte)thing.Args[2], (byte)thing.Args[3]); //vavoom colored light
+			if (thing.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_GENERIC) return Color.White; //vavoom light
+			if (thing.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) return Color.FromArgb((byte)thing.Args[1], (byte)thing.Args[2], (byte)thing.Args[3]); //vavoom colored light
+            if (thing.DynamicLightType.LightType == GZGeneral.LightType.SPOT) return Color.FromArgb((int)((thing.Args[0] & 0xFFFFFF) | 0xFF000000));
 			return Color.FromArgb((byte)thing.Args[0], (byte)thing.Args[1], (byte)thing.Args[2]);
 		}
 
@@ -337,7 +338,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				Thing t = selection[i];
 				LightProps lp = new LightProps();
 				int firstArg = 3;
-				if(t.DynamicLightType == 1502 || t.DynamicLightType == 1503) firstArg = 0;
+				if (t.DynamicLightType.LightVavoom) firstArg = 0;
 				lp.PrimaryRadius = t.Args[firstArg];
 
 				//either both of them or none are used

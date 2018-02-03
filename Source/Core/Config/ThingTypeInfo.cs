@@ -99,7 +99,7 @@ namespace CodeImp.DoomBuilder.Config
 		private AmbientSoundInfo ambientsound;
 
         // [ZZ] GZDoom inheritance data (DECORATE and ZScript). used for dynamic lighting.
-        private int dynamiclighttype = -1;
+        private GZGeneral.LightData dynamiclighttype = null;
 
         // [ZZ] optional thing is a thing that can have nonexistent sprite. this is currently only used for Skulltag things.
         private bool optional;
@@ -151,7 +151,7 @@ namespace CodeImp.DoomBuilder.Config
 		public AmbientSoundInfo AmbientSound { get { return ambientsound; } internal set { ambientsound = value; } }
 
         // [ZZ] GZDoom inheritance data
-        public int DynamicLightType { get { return dynamiclighttype; } set { if (dynamiclighttype < 0) dynamiclighttype = value; } }
+        public GZGeneral.LightData DynamicLightType { get { return dynamiclighttype; } set { if (dynamiclighttype == null) dynamiclighttype = value; } }
         
         // [ZZ]
         public bool Optional {  get { return optional; } }
@@ -270,6 +270,9 @@ namespace CodeImp.DoomBuilder.Config
 
             // [ZZ] optional thing sprite.
             this.optional = cfg.ReadSetting("thingtypes." + cat.Name + "." + key + ".optional", cat.Optional);
+
+            // [ZZ] generate internal light data
+            this.dynamiclighttype = GZGeneral.GetLightDataByNum(index);
 
             // We have no destructor
             GC.SuppressFinalize(this);

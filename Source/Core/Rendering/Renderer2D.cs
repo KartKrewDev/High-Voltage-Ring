@@ -27,6 +27,7 @@ using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Editing;
 using CodeImp.DoomBuilder.GZBuilder.Data; //mxd
 using CodeImp.DoomBuilder.Config; //mxd
+using CodeImp.DoomBuilder.GZBuilder;
 
 #endregion
 
@@ -542,12 +543,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(t.Selected) return General.Colors.Selection;
 			
 			//mxd. If thing is light, set it's color to light color:
-			if(GZBuilder.GZGeneral.GetGZLightTypeByThing(t) != -1)
+			if(t.DynamicLightType != null)
 			{
-				if(t.DynamicLightType == 1502) //vavoom light
+				if (t.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_GENERIC) //vavoom light
 					return new PixelColor(255, 255, 255, 255);
-				if(t.DynamicLightType == 1503) //vavoom colored light
+				if (t.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) //vavoom colored light
 					return new PixelColor(255, (byte)t.Args[1], (byte)t.Args[2], (byte)t.Args[3]);
+                if (t.DynamicLightType.LightType == GZGeneral.LightType.SPOT)
+                    return new PixelColor(255, (byte)((t.Args[0] & 0xFF0000) >> 16), (byte)((t.Args[0] & 0x00FF00) >> 8), (byte)((t.Args[0] & 0x0000FF)));
 				return new PixelColor(255, (byte)t.Args[0], (byte)t.Args[1], (byte)t.Args[2]);
 			}
 

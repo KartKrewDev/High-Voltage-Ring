@@ -539,24 +539,18 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			const int linealpha = 128;
 			foreach(Thing t in things)
 			{
-                int lightid = GZGeneral.GetGZLightTypeByThing(t);
-				if(lightid == -1) continue;
+                GZGeneral.LightData ld = t.DynamicLightType;
+                if (ld == null) continue;
 
 				// TODO: this basically duplicates VisualThing.UpdateLight()...
 				// Determine light radiii
 				int primaryradius;
 				int secondaryradius = 0;
 
-				if(lightid < GZGeneral.GZ_LIGHT_TYPES[3]) //if it's gzdoom light
+				if (ld.LightDef != GZGeneral.LightDef.VAVOOM_GENERIC &&
+                    ld.LightDef != GZGeneral.LightDef.VAVOOM_COLORED) //if it's gzdoom light
 				{
-					int n;
-                    if (lightid < GZGeneral.GZ_LIGHT_TYPES[0]) n = 0;
-                    else if (lightid < GZGeneral.GZ_LIGHT_TYPES[1]) n = 10;
-                    else if (lightid < GZGeneral.GZ_LIGHT_TYPES[2]) n = 20;
-                    else n = 30;
-					DynamicLightType lightType = (DynamicLightType)(t.DynamicLightType - 9800 - n);
-
-					if(lightType == DynamicLightType.SECTOR)
+					if(ld.LightModifier == GZGeneral.LightModifier.SECTOR)
 					{
 						if(t.Sector == null) t.DetermineSector();
 						int scaler = (t.Sector != null ? t.Sector.Brightness / 4 : 2);
@@ -565,7 +559,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 					else
 					{
 						primaryradius = t.Args[3] * 2; //works... that.. way in GZDoom
-						if(lightType > 0) secondaryradius = t.Args[4] * 2;
+						if (ld.LightAnimated) secondaryradius = t.Args[4] * 2;
 					}
 				}
 				else //it's one of vavoom lights
@@ -584,22 +578,29 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 				}
 				else
 				{
-					switch(t.DynamicLightType)
+					switch(t.DynamicLightType.LightDef)
 					{
-						case 1502: // Vavoom light
+						case GZGeneral.LightDef.VAVOOM_GENERIC: // Vavoom light
 							color = new PixelColor(linealpha, 255, 255, 255);
 							break;
 
-						case 1503: // Vavoom colored light
+                        case GZGeneral.LightDef.VAVOOM_COLORED: // Vavoom colored light
 							color = new PixelColor(linealpha, (byte)t.Args[1], (byte)t.Args[2], (byte)t.Args[3]);
 							break;
+
+                        case GZGeneral.LightDef.SPOT_NORMAL:
+                        case GZGeneral.LightDef.SPOT_ADDITIVE:
+                        case GZGeneral.LightDef.SPOT_SUBTRACTIVE:
+                        case GZGeneral.LightDef.SPOT_ATTENUATED:
+                            color = new PixelColor(linealpha, (byte)((t.Args[0] & 0xFF0000) >> 16), (byte)((t.Args[0] & 0x00FF00) >> 8), (byte)((t.Args[0] & 0x0000FF)));
+                            break;
 
 						default:
 							color = new PixelColor(linealpha, (byte)t.Args[0], (byte)t.Args[1], (byte)t.Args[2]);
 							break;
 					}
 				}
-
+                
 				// Add lines if visible
 				if(primaryradius > 0) circles.AddRange(MakeCircleLines(t.Position, color, primaryradius, CIRCLE_SIDES));
 				if(secondaryradius > 0) circles.AddRange(MakeCircleLines(t.Position, color, secondaryradius, CIRCLE_SIDES));

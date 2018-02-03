@@ -26,6 +26,7 @@ using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.VisualModes;
+using CodeImp.DoomBuilder.GZBuilder;
 
 #endregion
 
@@ -56,7 +57,7 @@ namespace CodeImp.DoomBuilder.Map
 		
 		// Properties
 		private int type;
-        private int dynamiclighttype;
+        private GZGeneral.LightData dynamiclighttype;
 		private Vector3D pos;
 		private int angledoom;		// Angle as entered / stored in file
 		private float anglerad;		// Angle in radians
@@ -90,7 +91,7 @@ namespace CodeImp.DoomBuilder.Map
 
 		public MapSet Map { get { return map; } }
 		public int Type { get { return type; } set { BeforePropsChange(); type = value; } } //mxd
-        public int DynamicLightType { get { return dynamiclighttype; } internal set { BeforePropsChange(); dynamiclighttype = value; } }
+        public GZGeneral.LightData DynamicLightType { get { return dynamiclighttype; } internal set { BeforePropsChange(); dynamiclighttype = value; } }
 		public Vector3D Position { get { return pos; } }
 		public float ScaleX { get { return scaleX; } } //mxd. This is UDMF property, not actual scale!
 		public float ScaleY { get { return scaleY; } } //mxd. This is UDMF property, not actual scale!
@@ -526,7 +527,10 @@ namespace CodeImp.DoomBuilder.Map
 			ThingTypeInfo ti = General.Map.Data.GetThingInfo(type);
 
             // Apply size
-            dynamiclighttype = (Array.IndexOf(GZBuilder.GZGeneral.GZ_LIGHTS, type)!=-1) ? type : ti.DynamicLightType;
+            dynamiclighttype = GZGeneral.GetGZLightTypeByClass(ti.Actor);
+            if (dynamiclighttype == null)
+                dynamiclighttype = ti.DynamicLightType;
+            //General.ErrorLogger.Add(ErrorType.Warning, string.Format("thing dynamiclighttype is {0}; class is {1}", dynamiclighttype, ti.Actor.ClassName));
 			size = ti.Radius;
 			height = ti.Height; //mxd
 			fixedsize = ti.FixedSize;

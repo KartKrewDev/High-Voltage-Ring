@@ -27,6 +27,7 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.VisualModes;
 using SlimDX;
 using SlimDX.Direct3D9;
+using CodeImp.DoomBuilder.GZBuilder;
 
 #endregion
 
@@ -576,18 +577,18 @@ namespace CodeImp.DoomBuilder.Rendering
 			lightthings = tl;
 
 			// Sort things by light render style
-			lightthings.Sort((t1, t2) => Math.Sign(t1.LightRenderStyle - t2.LightRenderStyle));
+			lightthings.Sort((t1, t2) => Math.Sign(t1.LightType.LightRenderStyle - t2.LightType.LightRenderStyle));
 			lightOffsets = new int[4];
 
 			foreach(VisualThing t in lightthings) 
 			{
 				//add light to apropriate array.
-				switch(t.LightRenderStyle) 
+				switch(t.LightType.LightRenderStyle) 
 				{
-					case DynamicLightRenderStyle.NORMAL:
-					case DynamicLightRenderStyle.VAVOOM: lightOffsets[0]++; break;
-					case DynamicLightRenderStyle.ADDITIVE: lightOffsets[2]++; break;
-                    case DynamicLightRenderStyle.NEGATIVE: lightOffsets[3]++; break;
+					case GZGeneral.LightRenderStyle.NORMAL:
+					case GZGeneral.LightRenderStyle.VAVOOM: lightOffsets[0]++; break;
+					case GZGeneral.LightRenderStyle.ADDITIVE: lightOffsets[2]++; break;
+                    case GZGeneral.LightRenderStyle.SUBTRACTIVE: lightOffsets[3]++; break;
 					default: lightOffsets[1]++; break; // attenuated
 				}
 			}
@@ -911,7 +912,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							world = CreateThingPositionMatrix(t);
 
 							//mxd. If current thing is light - set it's color to light color
-							if(GZBuilder.GZGeneral.GetGZLightTypeByThing(t.Thing) != -1 && !fullbrightness) 
+							if(t.LightType != null && t.LightType.LightInternal && !fullbrightness) 
 							{
 								wantedshaderpass += 4; // Render using one of passes, which uses World3D.VertexColor
 								vertexcolor = t.LightColor;
@@ -1219,7 +1220,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						world = CreateThingPositionMatrix(t);
 
 						//mxd. If current thing is light - set it's color to light color
-						if(GZBuilder.GZGeneral.GetGZLightTypeByThing(t.Thing) != -1 && !fullbrightness)
+						if(t.LightType != null && t.LightType.LightInternal && !fullbrightness)
 						{
 							wantedshaderpass += 4; // Render using one of passes, which uses World3D.VertexColor
 							vertexcolor = t.LightColor;
@@ -1771,7 +1772,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				float radiusSquared = lt.LightRadius * lt.LightRadius;
 				if(distSquared < radiusSquared) 
 				{
-					int sign = (lt.LightRenderStyle == DynamicLightRenderStyle.NEGATIVE ? -1 : 1);
+					int sign = (lt.LightType.LightRenderStyle == GZGeneral.LightRenderStyle.SUBTRACTIVE ? -1 : 1);
 					float scaler = 1 - distSquared / radiusSquared * lt.LightColor.Alpha;
 					litColor.Red += lt.LightColor.Red * scaler * sign;
 					litColor.Green += lt.LightColor.Green * scaler * sign;
@@ -1854,12 +1855,12 @@ namespace CodeImp.DoomBuilder.Rendering
 		public void AddThingGeometry(VisualThing t)
 		{
 			//mxd. Gather lights
-			if (General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && t.LightType != DynamicLightType.NONE) 
+			if (General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && t.LightType != null && t.LightType.LightInternal)
 			{
 				t.UpdateLightRadius();
                 if (t.LightRadius > 0)
 				{
-                    if (Array.IndexOf(GZBuilder.GZGeneral.GZ_ANIMATED_LIGHT_TYPES, t.LightType) != -1)
+                    if (t.LightType != null && t.LightType.LightAnimated)
                         t.UpdateBoundingBox();
 					lightthings.Add(t);
 				}

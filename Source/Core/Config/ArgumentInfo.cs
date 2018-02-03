@@ -102,12 +102,18 @@ namespace CodeImp.DoomBuilder.Config
 			this.title = cfg.ReadSetting(argspath + ".arg" + istr + ".title", "Argument " + (argindex + 1));
 			this.tooltip = cfg.ReadSetting(argspath + ".arg" + istr + ".tooltip", string.Empty); //mxd
 			this.type = cfg.ReadSetting(argspath + ".arg" + istr + ".type", 0);
-			this.defaultvalue = cfg.ReadSetting(argspath + ".arg" + istr + ".default", 0); //mxd
             this.str = cfg.ReadSetting(argspath + ".arg" + istr + ".str", false);
             this.titlestr = cfg.ReadSetting(argspath + ".arg" + istr + ".titlestr", this.title);
 
-			//mxd. Get rendering hint settings
-			string renderstyle = cfg.ReadSetting(argspath + ".arg" + istr + ".renderstyle", string.Empty);
+            string dv = cfg.ReadSetting(argspath + ".arg" + istr + ".default", string.Empty);
+            int dvi;
+            if (int.TryParse(dv, out dvi))
+                this.defaultvalue = dvi;
+            else if (this.str) this.defaultvalue = dv;
+            else this.defaultvalue = 0;
+
+            //mxd. Get rendering hint settings
+            string renderstyle = cfg.ReadSetting(argspath + ".arg" + istr + ".renderstyle", string.Empty);
 			switch(renderstyle.ToLowerInvariant())
 			{
 				case "circle":
