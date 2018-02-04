@@ -40,8 +40,11 @@ namespace CodeImp.DoomBuilder.Rendering
 		//mxd
 		private readonly EffectHandle vertexColorHandle;
 		private readonly EffectHandle lightPositionAndRadiusHandle; //lights
+        private readonly EffectHandle lightOrientationHandle;
+        private readonly EffectHandle light2RadiusHandle;
 		private readonly EffectHandle lightColorHandle;
         private readonly EffectHandle ignoreNormalsHandle;
+        private readonly EffectHandle spotLightHandle;
 		private readonly EffectHandle world;
 		private readonly EffectHandle camPosHandle; //used for fog rendering
 
@@ -128,6 +131,20 @@ namespace CodeImp.DoomBuilder.Rendering
             }
         }
 
+        private bool spotlight;
+        public bool SpotLight
+        {
+            set
+            {
+                if (spotlight != value)
+                {
+                    effect.SetValue(spotLightHandle, value ? 1f : 0f);
+                    spotlight = value;
+                    settingschanged = true;
+                }
+            }
+        }
+
 		private Vector4 lightpos;
 		public Vector4 LightPositionAndRadius
 		{
@@ -141,6 +158,34 @@ namespace CodeImp.DoomBuilder.Rendering
 				} 
 			}
 		}
+
+        private Vector3 lightori;
+        public Vector3 LightOrientation
+        {
+            set
+            {
+                if (lightori != value)
+                {
+                    effect.SetValue(lightOrientationHandle, value);
+                    lightori = value;
+                    settingschanged = true;
+                }
+            }
+        }
+
+        private Vector2 light2rad;
+        public Vector2 Light2Radius
+        {
+            set
+            {
+                if (light2rad != value)
+                {
+                    effect.SetValue(light2RadiusHandle, value);
+                    light2rad = value;
+                    settingschanged = true;
+                }
+            }
+        }
 		
 		//fog
 		private Vector4 campos;
@@ -211,10 +256,13 @@ namespace CodeImp.DoomBuilder.Rendering
 				vertexColorHandle = effect.GetParameter(null, "vertexColor");
 				//lights
 				lightPositionAndRadiusHandle = effect.GetParameter(null, "lightPosAndRadius");
-				lightColorHandle = effect.GetParameter(null, "lightColor");
+                lightOrientationHandle = effect.GetParameter(null, "lightOrientation");
+                light2RadiusHandle = effect.GetParameter(null, "light2Radius");
+                lightColorHandle = effect.GetParameter(null, "lightColor");
                 ignoreNormalsHandle = effect.GetParameter(null, "ignoreNormals");
-				//fog
-				camPosHandle = effect.GetParameter(null, "campos");
+                spotLightHandle = effect.GetParameter(null, "spotLight");
+                //fog
+                camPosHandle = effect.GetParameter(null, "campos");
 
                 // [ZZ]
                 stencilColorHandle = effect.GetParameter(null, "stencilColor");

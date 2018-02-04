@@ -57,6 +57,7 @@ float4 stencilColor;
 //light
 float4 lightPosAndRadius;
 float3 lightOrientation; // this is a vector that points in light's direction
+float2 light2Radius; // this is used with spotlights
 float4 lightColor; //also used as fog color
 float ignoreNormals; // ignore normals in lighting equation. used for non-attenuated lights on models.
 float spotLight; // use lightOrientation
@@ -270,6 +271,14 @@ float4 ps_lightpass(LitPixelData pd) : COLOR
 	float4 lightColorMod = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	lightColorMod.rgb = lightColor.rgb * max(lightPosAndRadius.w - dist, 0.0f) / lightPosAndRadius.w;
+    
+    if (spotLight > 0.5)
+    {
+        float3 lightDirection = normalize(lightPosAndRadius.xyz - pd.pos_w);
+        float cosDir = dot(lightDirection, lightOrientation);
+        float df = smoothstep(light2Radius.y, light2Radius.x, cosDir);
+        lightColorMod.rgb *= df;
+    }
 
 	if (lightColor.a > 0.979f && lightColor.a < 0.981f) // attenuated light 98%
 		lightColorMod.rgb *= diffuseContribution;

@@ -85,7 +85,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private GZGeneral.LightData lightType;
 		private Color4 lightColor;
 		private float lightRadius; //current radius. used in light animation
-		private float lightPrimaryRadius;
+        private float lightSpotRadius1;
+        private float lightSpotRadius2;
+        private float lightPrimaryRadius;
 		private float lightSecondaryRadius;
 		private Vector3 position_v3;
 		private float lightDelta; //used in light animation
@@ -133,10 +135,22 @@ namespace CodeImp.DoomBuilder.VisualModes
 		//mxd. light properties
 		public GZGeneral.LightData LightType { get { return lightType; } }
 		public float LightRadius { get { return lightRadius; } }
-		public Color4 LightColor { get { return lightColor; } }
+        public float LightSpotRadius1 { get { return lightSpotRadius1; } }
+        public float LightSpotRadius2 { get { return lightSpotRadius2; } }
+        public Color4 LightColor { get { return lightColor; } }
 
         // [ZZ]
         public PixelColor StencilColor { get { return stencilColor; } }
+
+        // [ZZ] this is used for spotlights
+        public Vector3 VectorLookAt
+        {
+            get
+            {
+                // this esoteric value (1.5708) is 90 degrees but in radians
+                return new Vector3((float)(Math.Cos(Thing.Angle+1.5708) * Math.Cos(Angle2D.DegToRad(Thing.Pitch))), (float)(Math.Sin(Thing.Angle+1.5708) * Math.Cos(Angle2D.DegToRad(Thing.Pitch))), (float)Math.Sin(Angle2D.DegToRad(Thing.Pitch)));
+            }
+        }
 
 		/// <summary>
 		/// Returns the Thing that this VisualThing is created for.
@@ -636,6 +650,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
                 lightType = null;
 				lightRadius = -1;
+                lightSpotRadius1 = lightSpotRadius2 = -1;
 				lightPrimaryRadius = -1;
 				lightSecondaryRadius = -1;
 				lightInterval = -1;
@@ -704,6 +719,12 @@ namespace CodeImp.DoomBuilder.VisualModes
                     if (lightType.LightAnimated)
 					    lightSecondaryRadius = (thing.Args[4] * 2);
 				}
+
+                if (lightType.LightType == GZGeneral.LightType.SPOT)
+                {
+                    lightSpotRadius1 = (thing.Args[1]);
+                    lightSpotRadius2 = (thing.Args[2]);
+                }
 			}
 			else //it's one of vavoom lights
 			{ 

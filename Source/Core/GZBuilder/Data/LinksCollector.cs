@@ -541,6 +541,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			{
                 GZGeneral.LightData ld = t.DynamicLightType;
                 if (ld == null) continue;
+                if (ld.LightType == GZGeneral.LightType.SPOT)
+                    continue; // spotlights don't work well with the current representation.
+                              // todo: have 2D ortho projection of actual light cone
 
 				// TODO: this basically duplicates VisualThing.UpdateLight()...
 				// Determine light radiii

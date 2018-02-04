@@ -1329,6 +1329,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 		}
 
+        private float CosDeg(float angle)
+        {
+            return (float)Math.Cos(Angle2D.DegToRad(angle));
+        }
+
         //mxd. Dynamic lights pass!
         private VisualSector RenderLightsFromGeometryList(List<VisualGeometry> geometrytolit, List<VisualThing> lights, VisualSector sector, bool settexture)
         {
@@ -1377,6 +1382,14 @@ namespace CodeImp.DoomBuilder.Rendering
                             if (lpr.W == 0) continue;
                             graphics.Shaders.World3D.LightColor = lights[i].LightColor;
                             graphics.Shaders.World3D.LightPositionAndRadius = lpr;
+                            GZGeneral.LightData ld = lights[i].LightType;
+                            if (ld.LightType == GZGeneral.LightType.SPOT)
+                            {
+                                graphics.Shaders.World3D.SpotLight = true;
+                                graphics.Shaders.World3D.LightOrientation = lights[i].VectorLookAt;
+                                graphics.Shaders.World3D.Light2Radius = new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2));
+                            }
+                            else graphics.Shaders.World3D.SpotLight = false;
                             graphics.Shaders.World3D.ApplySettings();
                             graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
@@ -1397,6 +1410,14 @@ namespace CodeImp.DoomBuilder.Rendering
                             if (lpr.W == 0) continue;
                             graphics.Shaders.World3D.LightColor = lights[i].LightColor;
                             graphics.Shaders.World3D.LightPositionAndRadius = lpr;
+                            GZGeneral.LightData ld = lights[i].LightType;
+                            if (ld.LightType == GZGeneral.LightType.SPOT)
+                            {
+                                graphics.Shaders.World3D.SpotLight = true;
+                                graphics.Shaders.World3D.LightOrientation = lights[i].VectorLookAt;
+                                graphics.Shaders.World3D.Light2Radius = new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2));
+                            }
+                            else graphics.Shaders.World3D.SpotLight = false;
                             graphics.Shaders.World3D.ApplySettings();
                             graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
@@ -1417,6 +1438,14 @@ namespace CodeImp.DoomBuilder.Rendering
                             if (lpr.W == 0) continue;
                             graphics.Shaders.World3D.LightColor = lights[i].LightColor;
                             graphics.Shaders.World3D.LightPositionAndRadius = lpr;
+                            GZGeneral.LightData ld = lights[i].LightType;
+                            if (ld.LightType == GZGeneral.LightType.SPOT)
+                            {
+                                graphics.Shaders.World3D.SpotLight = true;
+                                graphics.Shaders.World3D.LightOrientation = lights[i].VectorLookAt;
+                                graphics.Shaders.World3D.Light2Radius = new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2));
+                            }
+                            else graphics.Shaders.World3D.SpotLight = false;
                             graphics.Shaders.World3D.ApplySettings();
                             graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
@@ -1438,6 +1467,14 @@ namespace CodeImp.DoomBuilder.Rendering
                             Color4 lc = lights[i].LightColor;
                             graphics.Shaders.World3D.LightColor = new Color4(lc.Alpha, (lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2);
                             graphics.Shaders.World3D.LightPositionAndRadius = lpr;
+                            GZGeneral.LightData ld = lights[i].LightType;
+                            if (ld.LightType == GZGeneral.LightType.SPOT)
+                            {
+                                graphics.Shaders.World3D.SpotLight = true;
+                                graphics.Shaders.World3D.LightOrientation = lights[i].VectorLookAt;
+                                graphics.Shaders.World3D.Light2Radius = new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2));
+                            }
+                            else graphics.Shaders.World3D.SpotLight = false;
                             graphics.Shaders.World3D.ApplySettings();
                             graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
@@ -1447,7 +1484,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
             return sector;
         }
-
+        
         // [ZZ] split into RenderLights and RenderTranslucentLights
         private void RenderTranslucentLights(List<VisualGeometry> geometrytolit, List<VisualThing> lights)
         {
@@ -1631,6 +1668,14 @@ namespace CodeImp.DoomBuilder.Rendering
                                     if (lpr.W == 0) continue;
                                     graphics.Shaders.World3D.LightColor = lights[i].LightColor;
                                     graphics.Shaders.World3D.LightPositionAndRadius = lpr;
+                                    GZGeneral.LightData ld = lights[i].LightType;
+                                    if (ld.LightType == GZGeneral.LightType.SPOT)
+                                    {
+                                        graphics.Shaders.World3D.SpotLight = true;
+                                        graphics.Shaders.World3D.LightOrientation = lights[i].VectorLookAt;
+                                        graphics.Shaders.World3D.Light2Radius = new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2));
+                                    }
+                                    else graphics.Shaders.World3D.SpotLight = false;
                                     graphics.Shaders.World3D.ApplySettings();
                                     model.Meshes[j].DrawSubset(0);
                                 }
@@ -1651,6 +1696,14 @@ namespace CodeImp.DoomBuilder.Rendering
                                     if (lpr.W == 0) continue;
                                     graphics.Shaders.World3D.LightColor = lights[i].LightColor;
                                     graphics.Shaders.World3D.LightPositionAndRadius = lpr;
+                                    GZGeneral.LightData ld = lights[i].LightType;
+                                    if (ld.LightType == GZGeneral.LightType.SPOT)
+                                    {
+                                        graphics.Shaders.World3D.SpotLight = true;
+                                        graphics.Shaders.World3D.LightOrientation = lights[i].VectorLookAt;
+                                        graphics.Shaders.World3D.Light2Radius = new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2));
+                                    }
+                                    else graphics.Shaders.World3D.SpotLight = false;
                                     graphics.Shaders.World3D.ApplySettings();
                                     model.Meshes[j].DrawSubset(0);
                                 }
@@ -1671,6 +1724,14 @@ namespace CodeImp.DoomBuilder.Rendering
                                     if (lpr.W == 0) continue;
                                     graphics.Shaders.World3D.LightColor = lights[i].LightColor;
                                     graphics.Shaders.World3D.LightPositionAndRadius = lpr;
+                                    GZGeneral.LightData ld = lights[i].LightType;
+                                    if (ld.LightType == GZGeneral.LightType.SPOT)
+                                    {
+                                        graphics.Shaders.World3D.SpotLight = true;
+                                        graphics.Shaders.World3D.LightOrientation = lights[i].VectorLookAt;
+                                        graphics.Shaders.World3D.Light2Radius = new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2));
+                                    }
+                                    else graphics.Shaders.World3D.SpotLight = false;
                                     graphics.Shaders.World3D.ApplySettings();
                                     model.Meshes[j].DrawSubset(0);
                                 }
@@ -1692,6 +1753,14 @@ namespace CodeImp.DoomBuilder.Rendering
                                     Color4 lc = lights[i].LightColor;
                                     graphics.Shaders.World3D.LightColor = new Color4(lc.Alpha, (lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2);
                                     graphics.Shaders.World3D.LightPositionAndRadius = lpr;
+                                    GZGeneral.LightData ld = lights[i].LightType;
+                                    if (ld.LightType == GZGeneral.LightType.SPOT)
+                                    {
+                                        graphics.Shaders.World3D.SpotLight = true;
+                                        graphics.Shaders.World3D.LightOrientation = lights[i].VectorLookAt;
+                                        graphics.Shaders.World3D.Light2Radius = new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2));
+                                    }
+                                    else graphics.Shaders.World3D.SpotLight = false;
                                     graphics.Shaders.World3D.ApplySettings();
                                     model.Meshes[j].DrawSubset(0);
                                 }
@@ -1756,6 +1825,13 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.Shaders.World3D.EndPass();
 		}
 
+        // [ZZ] this is copied from GZDoom
+        private float Smoothstep(float edge0, float edge1, float x)
+        {
+            double t = Math.Min(Math.Max((x - edge0) / (edge1 - edge0), 0.0), 1.0);
+            return (float)(t * t * (3.0 - 2.0 * t));
+        }
+
 		//mxd. This gets color from dynamic lights based on distance to thing. 
 		//thing position must be in absolute cordinates 
 		//(thing.Position.Z value is relative to floor of the sector the thing is in)
@@ -1768,15 +1844,29 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(General.Map.Data.GldefsEntries.ContainsKey(t.Thing.Type) && General.Map.Data.GldefsEntries[t.Thing.Type].DontLightSelf && t.Thing.Index == lt.Thing.Index)
 					continue;
 
-				float distSquared = Vector3.DistanceSquared(lt.Center, t.PositionV3);
-				float radiusSquared = lt.LightRadius * lt.LightRadius;
+				float distSquared = Vector3.DistanceSquared(lt.Center, t.Center);
+                float radiusSquared = lt.LightRadius * lt.LightRadius;
 				if(distSquared < radiusSquared) 
 				{
-					int sign = (lt.LightType.LightRenderStyle == GZGeneral.LightRenderStyle.SUBTRACTIVE ? -1 : 1);
-					float scaler = 1 - distSquared / radiusSquared * lt.LightColor.Alpha;
-					litColor.Red += lt.LightColor.Red * scaler * sign;
-					litColor.Green += lt.LightColor.Green * scaler * sign;
-					litColor.Blue += lt.LightColor.Blue * scaler * sign;
+                    int sign = (lt.LightType.LightRenderStyle == GZGeneral.LightRenderStyle.SUBTRACTIVE ? -1 : 1);
+                    Vector3 L = (t.Center - lt.Center);
+                    float dist = L.Length();
+                    float scaler = 1 - dist / lt.LightRadius * lt.LightColor.Alpha;
+
+                    if (lt.LightType.LightType == GZGeneral.LightType.SPOT)
+                    {
+                        Vector3 lookAt = lt.VectorLookAt;
+                        L.Normalize();
+                        float cosDir = Vector3.Dot(-L, lookAt);
+                        scaler *= (float)Smoothstep(CosDeg(lt.LightSpotRadius2), CosDeg(lt.LightSpotRadius1), cosDir);
+                    }
+
+                    if (scaler > 0)
+                    {
+                        litColor.Red += lt.LightColor.Red * scaler * sign;
+                        litColor.Green += lt.LightColor.Green * scaler * sign;
+                        litColor.Blue += lt.LightColor.Blue * scaler * sign;
+                    }
 				}
 			}
 
