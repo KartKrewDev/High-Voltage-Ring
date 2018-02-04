@@ -347,7 +347,7 @@ namespace CodeImp.DoomBuilder.GZBuilder
                 // +MISSILEMORE makes it additive.
                 // +MISSILEEVENMORE makes it subtractive.
                 // +INCOMBAT makes it attenuated.
-                LightData ld = GetLightDataByClass(actor.ClassName);
+                LightData ld = GetLightDataByClass(p.ClassName);
                 if (ld != null)
                 {
                     if (ld.LightDef != LightDef.VAVOOM_GENERIC && ld.LightDef != LightDef.VAVOOM_COLORED) // not vavoom
@@ -360,11 +360,13 @@ namespace CodeImp.DoomBuilder.GZBuilder
                             dispType = 9820;
                         else if (actor.GetFlagValue("INCOMBAT", false) || actor.GetFlagValue("DYNAMICLIGHT.ATTENUATE", false))
                             dispType = 9830;
-                        if (actor.GetFlagValue("DYNAMICLIGHT.SPOT", false))
+                        if (!actor.GetFlagValue("DYNAMICLIGHT.SPOT", false) && dispType >= 9840)
+                            dispType -= 40;
+                        if (actor.GetFlagValue("DYNAMICLIGHT.SPOT", false) && dispType < 9840)
                             dispType += 40;
                         return GetLightDataByNum(dispType + baseType);
                     }
-                    else return ld;
+                    else return null;
                 }
 
                 p = p.BaseClass;
