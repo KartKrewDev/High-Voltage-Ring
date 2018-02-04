@@ -605,7 +605,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 		}
 
 		//mxd. This replicates ZDoom's V_GetColorFromString method
-		public static bool GetColorFromString(string name, ref PixelColor color)
+		public static bool GetColorFromString(string name, out PixelColor color)
 		{
 			name = StripQuotes(name.Replace(" ", ""));
 
@@ -644,7 +644,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 				return true;
 			}
 
-			return false;
+            color = new PixelColor();
+            return false;
 		}
 
 		//mxd

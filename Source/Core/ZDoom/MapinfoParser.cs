@@ -641,7 +641,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			
 			// Try to get the color...
 			PixelColor color = new PixelColor();
-			if(GetColorFromString(colorval, ref color))
+			if(GetColorFromString(colorval, out color))
 			{
 				if(fadetype == "fade")
 					mapinfo.FadeColor = color.ToColorValue();

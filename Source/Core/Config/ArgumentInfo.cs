@@ -129,7 +129,7 @@ namespace CodeImp.DoomBuilder.Config
 				string rendercolor = cfg.ReadSetting(argspath + ".arg" + istr + ".rendercolor", string.Empty);
 				this.rendercolor = General.Colors.InfoLine;
 
-				if(!string.IsNullOrEmpty(rendercolor) && !ZDTextParser.GetColorFromString(rendercolor, ref this.rendercolor))
+				if(!string.IsNullOrEmpty(rendercolor) && !ZDTextParser.GetColorFromString(rendercolor, out this.rendercolor))
 					General.ErrorLogger.Add(ErrorType.Error, "\"" + argspath + ".arg" + istr + "\": action argument \"" + this.title + "\": unable to get rendercolor from value \"" + rendercolor + "\"!");
 
 				this.rendercolor.a = HELPER_SHAPE_ALPHA;
@@ -142,7 +142,7 @@ namespace CodeImp.DoomBuilder.Config
 					string minrangecolor = cfg.ReadSetting(argspath + ".arg" + istr + ".minrangecolor", string.Empty);
 					this.minrangecolor = General.Colors.Indication;
 
-					if(!string.IsNullOrEmpty(minrangecolor) && !ZDTextParser.GetColorFromString(minrangecolor, ref this.minrangecolor))
+					if(!string.IsNullOrEmpty(minrangecolor) && !ZDTextParser.GetColorFromString(minrangecolor, out this.minrangecolor))
 						General.ErrorLogger.Add(ErrorType.Error, "\"" + argspath + ".arg" + istr + "\": action argument \"" + this.title + "\": unable to get minrangecolor from value \"" + minrangecolor + "\"!");
 
 					this.minrangecolor.a = RANGE_SHAPE_ALPHA;
@@ -156,7 +156,7 @@ namespace CodeImp.DoomBuilder.Config
 					string maxrangecolor = cfg.ReadSetting(argspath + ".arg" + istr + ".maxrangecolor", string.Empty);
 					this.maxrangecolor = General.Colors.Indication;
 
-					if(!string.IsNullOrEmpty(maxrangecolor) && !ZDTextParser.GetColorFromString(maxrangecolor, ref this.maxrangecolor))
+					if(!string.IsNullOrEmpty(maxrangecolor) && !ZDTextParser.GetColorFromString(maxrangecolor, out this.maxrangecolor))
 						General.ErrorLogger.Add(ErrorType.Error, "\"" + argspath + ".arg" + istr + "\": action argument \"" + this.title + "\": unable to get maxrangecolor from value \"" + maxrangecolor + "\"!");
 
 					this.maxrangecolor.a = RANGE_SHAPE_ALPHA;
@@ -303,7 +303,7 @@ namespace CodeImp.DoomBuilder.Config
 				// Get rendercolor
 				this.rendercolor = General.Colors.InfoLine;
 
-				if(!string.IsNullOrEmpty(rendercolor) && !ZDTextParser.GetColorFromString(rendercolor, ref this.rendercolor))
+				if(!string.IsNullOrEmpty(rendercolor) && !ZDTextParser.GetColorFromString(rendercolor, out this.rendercolor))
 					General.ErrorLogger.Add(ErrorType.Error, actorname + ": action argument \"" + argtitle + "\": unable to get rendercolor from value \"" + rendercolor + "\"!");
 
 				this.rendercolor.a = HELPER_SHAPE_ALPHA;
@@ -314,7 +314,7 @@ namespace CodeImp.DoomBuilder.Config
 					// Get minrangecolor
 					this.minrangecolor = General.Colors.Indication;
 
-					if(!string.IsNullOrEmpty(minrangecolor) && !ZDTextParser.GetColorFromString(minrangecolor, ref this.minrangecolor))
+					if(!string.IsNullOrEmpty(minrangecolor) && !ZDTextParser.GetColorFromString(minrangecolor, out this.minrangecolor))
 						General.ErrorLogger.Add(ErrorType.Error, actorname + ": action argument \"" + this.title + "\": unable to get minrangecolor from value \"" + minrangecolor + "\"!");
 
 					this.minrangecolor.a = RANGE_SHAPE_ALPHA;
@@ -326,7 +326,7 @@ namespace CodeImp.DoomBuilder.Config
 					// Get minrangecolor
 					this.maxrangecolor = General.Colors.Indication;
 
-					if(!string.IsNullOrEmpty(maxrangecolor) && !ZDTextParser.GetColorFromString(maxrangecolor, ref this.maxrangecolor))
+					if(!string.IsNullOrEmpty(maxrangecolor) && !ZDTextParser.GetColorFromString(maxrangecolor, out this.maxrangecolor))
 						General.ErrorLogger.Add(ErrorType.Error, actorname + ": action argument \"" + this.title + "\": unable to get maxrangecolor from value \"" + maxrangecolor + "\"!");
 
 					this.maxrangecolor.a = RANGE_SHAPE_ALPHA;

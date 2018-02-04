@@ -531,7 +531,81 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 
 		#region ================== GetDynamicLightShapes
 
-		public static List<Line3D> GetDynamicLightShapes(IEnumerable<Thing> things, bool highlight)
+        public static List<Line3D> GetPointLightShape(Thing t, bool highlight, GZGeneral.LightData ld, int linealpha)
+        {
+            // TODO: this basically duplicates VisualThing.UpdateLight()...
+            // Determine light radiii
+            int primaryradius;
+            int secondaryradius = 0;
+
+            if (ld.LightDef != GZGeneral.LightDef.VAVOOM_GENERIC &&
+                ld.LightDef != GZGeneral.LightDef.VAVOOM_COLORED) //if it's gzdoom light
+            {
+                if (ld.LightModifier == GZGeneral.LightModifier.SECTOR)
+                {
+                    if (t.Sector == null) t.DetermineSector();
+                    int scaler = (t.Sector != null ? t.Sector.Brightness / 4 : 2);
+                    primaryradius = t.Args[3] * scaler;
+                }
+                else
+                {
+                    primaryradius = t.Args[3] * 2; //works... that.. way in GZDoom
+                    if (ld.LightAnimated) secondaryradius = t.Args[4] * 2;
+                }
+            }
+            else //it's one of vavoom lights
+            {
+                primaryradius = t.Args[0] * 8;
+            }
+
+            // Check radii...
+            if (primaryradius < 1 && secondaryradius < 1) return null;
+
+            // Determine light color
+            PixelColor color;
+            if (highlight)
+            {
+                color = General.Colors.Highlight.WithAlpha((byte)linealpha);
+            }
+            else
+            {
+                switch (t.DynamicLightType.LightDef)
+                {
+                    case GZGeneral.LightDef.VAVOOM_GENERIC: // Vavoom light
+                        color = new PixelColor((byte)linealpha, 255, 255, 255);
+                        break;
+
+                    case GZGeneral.LightDef.VAVOOM_COLORED: // Vavoom colored light
+                        color = new PixelColor((byte)linealpha, (byte)t.Args[1], (byte)t.Args[2], (byte)t.Args[3]);
+                        break;
+
+                    default:
+                        color = new PixelColor((byte)linealpha, (byte)t.Args[0], (byte)t.Args[1], (byte)t.Args[2]);
+                        break;
+                }
+            }
+
+            // Add lines if visible
+            List<Line3D> circles = new List<Line3D>();
+            if (primaryradius > 0) circles.AddRange(MakeCircleLines(t.Position, color, primaryradius, CIRCLE_SIDES));
+            if (secondaryradius > 0) circles.AddRange(MakeCircleLines(t.Position, color, secondaryradius, CIRCLE_SIDES));
+            return circles;
+        }
+
+        public static List<Line3D> GetSpotLightShape(Thing t, bool highlight, GZGeneral.LightData ld, int linealpha)
+        {
+            List<Line3D> shapes = new List<Line3D>();
+            float lAngle1 = Angle2D.DegToRad(t.Args[1] / 2);
+            float lAngle2 = Angle2D.DegToRad(t.Args[2] / 2);
+            float lRadius = t.Args[3];
+            float lDirY = (float)Math.Sin(-lAngle1) * lRadius;
+            float lDirX = (float)Math.Cos(-lAngle1) * lRadius;
+            shapes.Add(new Line3D(new Vector3D(0, 0, 0), new Vector3D(lDirX, lDirY, 0)));
+            shapes.Add(new Line3D(new Vector3D(0, 0, 0), new Vector3D(lDirX, -lDirY, 0)));
+            return shapes;
+        }
+
+        public static List<Line3D> GetDynamicLightShapes(IEnumerable<Thing> things, bool highlight)
 		{
 			List<Line3D> circles = new List<Line3D>();
 			if(General.Map.DOOM) return circles;
@@ -541,72 +615,17 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			{
                 GZGeneral.LightData ld = t.DynamicLightType;
                 if (ld == null) continue;
-                if (ld.LightType == GZGeneral.LightType.SPOT)
-                    continue; // spotlights don't work well with the current representation.
-                              // todo: have 2D ortho projection of actual light cone
 
-				// TODO: this basically duplicates VisualThing.UpdateLight()...
-				// Determine light radiii
-				int primaryradius;
-				int secondaryradius = 0;
-
-				if (ld.LightDef != GZGeneral.LightDef.VAVOOM_GENERIC &&
-                    ld.LightDef != GZGeneral.LightDef.VAVOOM_COLORED) //if it's gzdoom light
-				{
-					if(ld.LightModifier == GZGeneral.LightModifier.SECTOR)
-					{
-						if(t.Sector == null) t.DetermineSector();
-						int scaler = (t.Sector != null ? t.Sector.Brightness / 4 : 2);
-						primaryradius = t.Args[3] * scaler;
-					}
-					else
-					{
-						primaryradius = t.Args[3] * 2; //works... that.. way in GZDoom
-						if (ld.LightAnimated) secondaryradius = t.Args[4] * 2;
-					}
-				}
-				else //it's one of vavoom lights
-				{
-					primaryradius = t.Args[0] * 8;
-				}
-
-				// Check radii...
-				if(primaryradius < 1 && secondaryradius < 1) continue;
-
-				// Determine light color
-				PixelColor color;
-				if(highlight)
-				{
-					color = General.Colors.Highlight.WithAlpha(linealpha);
-				}
-				else
-				{
-					switch(t.DynamicLightType.LightDef)
-					{
-						case GZGeneral.LightDef.VAVOOM_GENERIC: // Vavoom light
-							color = new PixelColor(linealpha, 255, 255, 255);
-							break;
-
-                        case GZGeneral.LightDef.VAVOOM_COLORED: // Vavoom colored light
-							color = new PixelColor(linealpha, (byte)t.Args[1], (byte)t.Args[2], (byte)t.Args[3]);
-							break;
-
-                        case GZGeneral.LightDef.SPOT_NORMAL:
-                        case GZGeneral.LightDef.SPOT_ADDITIVE:
-                        case GZGeneral.LightDef.SPOT_SUBTRACTIVE:
-                        case GZGeneral.LightDef.SPOT_ATTENUATED:
-                            color = new PixelColor(linealpha, (byte)((t.Args[0] & 0xFF0000) >> 16), (byte)((t.Args[0] & 0x00FF00) >> 8), (byte)((t.Args[0] & 0x0000FF)));
-                            break;
-
-						default:
-							color = new PixelColor(linealpha, (byte)t.Args[0], (byte)t.Args[1], (byte)t.Args[2]);
-							break;
-					}
-				}
-                
-				// Add lines if visible
-				if(primaryradius > 0) circles.AddRange(MakeCircleLines(t.Position, color, primaryradius, CIRCLE_SIDES));
-				if(secondaryradius > 0) circles.AddRange(MakeCircleLines(t.Position, color, secondaryradius, CIRCLE_SIDES));
+                if (ld.LightType != GZGeneral.LightType.SPOT)
+                {
+                    List<Line3D> lshape = GetPointLightShape(t, highlight, ld, linealpha);
+                    circles.AddRange(lshape);
+                }
+                else
+                {
+                    List<Line3D> lshape = GetSpotLightShape(t, highlight, ld, linealpha);
+                    circles.AddRange(lshape);
+                }
 			}
 
 			// Done

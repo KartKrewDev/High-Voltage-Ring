@@ -637,7 +637,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 						SkipWhitespace(true);
 						token = ReadToken(false);
 
-						if(!GetColorFromString(token, ref color))
+						if(!GetColorFromString(token, out color))
 						{
 							ReportError("Expected glow color value, but got \"" + token + "\"");
 							return false;

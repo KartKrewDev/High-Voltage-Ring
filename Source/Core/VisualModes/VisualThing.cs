@@ -688,9 +688,22 @@ namespace CodeImp.DoomBuilder.VisualModes
                 }
                 else
                 {
-                    int c1 = (thing.Args[0] & 0xFF0000) >> 16;
-                    int c2 = (thing.Args[0] & 0x00FF00) >> 8;
-                    int c3 = (thing.Args[0] & 0x0000FF);
+                    int c1, c2, c3;
+                    if (thing.Fields.ContainsKey("arg0str"))
+                    {
+                        PixelColor pc;
+                        ZDoom.ZDTextParser.GetColorFromString(thing.Fields["arg0str"].Value.ToString(), out pc);
+                        c1 = pc.r;
+                        c2 = pc.g;
+                        c3 = pc.b;
+                    }
+                    else
+                    {
+                        c1 = (thing.Args[0] & 0xFF0000) >> 16;
+                        c2 = (thing.Args[0] & 0x00FF00) >> 8;
+                        c3 = (thing.Args[0] & 0x0000FF);
+                    }
+
                     if (ld.LightDef != GZGeneral.LightDef.SPOT_SUBTRACTIVE)
                     {
                         lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
