@@ -8,6 +8,7 @@ using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.GZBuilder;
 using CodeImp.DoomBuilder.VisualModes;
 using CodeImp.DoomBuilder.ColorPicker.Controls;
+using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.ColorPicker.Windows 
 {
@@ -216,7 +217,13 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				//update color 
 				if(colorChanged) //need this check to allow relative mode to work properly
 				{ 
-					if (t.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) //Vavoom Light Color
+                    if (t.DynamicLightType.LightType == GZGeneral.LightType.SPOT)
+                    {
+                        int c = ((int)lightProps.Red << 16) | ((int)lightProps.Green << 8) | lightProps.Blue;
+                        t.Args[0] = 0;
+                        t.Fields["arg0str"] = new UniValue(Types.UniversalType.String, c.ToString("X6"));
+                    }
+					else if (t.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) //Vavoom Light Color
 					{ 
 						t.Args[1] = lightProps.Red;
 						t.Args[2] = lightProps.Green;
@@ -324,7 +331,17 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 		{
 			if (thing.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_GENERIC) return Color.White; //vavoom light
 			if (thing.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) return Color.FromArgb((byte)thing.Args[1], (byte)thing.Args[2], (byte)thing.Args[3]); //vavoom colored light
-            if (thing.DynamicLightType.LightType == GZGeneral.LightType.SPOT) return Color.FromArgb((int)((thing.Args[0] & 0xFFFFFF) | 0xFF000000));
+            if (thing.DynamicLightType.LightType == GZGeneral.LightType.SPOT)
+            {
+                if (thing.Fields.ContainsKey("arg0str"))
+                {
+                    PixelColor pc;
+                    ZDoom.ZDTextParser.GetColorFromString(thing.Fields["arg0str"].Value.ToString(), out pc);
+                    return Color.FromArgb(255, pc.r, pc.g, pc.b);
+                }
+
+                return Color.FromArgb((int)((thing.Args[0] & 0xFFFFFF) | 0xFF000000));
+            }
 			return Color.FromArgb((byte)thing.Args[0], (byte)thing.Args[1], (byte)thing.Args[2]);
 		}
 
