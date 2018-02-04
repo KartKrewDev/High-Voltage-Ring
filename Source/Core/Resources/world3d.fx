@@ -56,8 +56,10 @@ float4 stencilColor;
 
 //light
 float4 lightPosAndRadius;
+float3 lightOrientation; // this is a vector that points in light's direction
 float4 lightColor; //also used as fog color
 float ignoreNormals; // ignore normals in lighting equation. used for non-attenuated lights on models.
+float spotLight; // use lightOrientation
 
 //fog
 const float4 campos;  //w is set to fade factor (distance, at wich fog color completely overrides pixel color)

@@ -104,13 +104,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.type = cfg.ReadSetting(argspath + ".arg" + istr + ".type", 0);
             this.str = cfg.ReadSetting(argspath + ".arg" + istr + ".str", false);
             this.titlestr = cfg.ReadSetting(argspath + ".arg" + istr + ".titlestr", this.title);
-
-            string dv = cfg.ReadSetting(argspath + ".arg" + istr + ".default", string.Empty);
-            int dvi;
-            if (int.TryParse(dv, out dvi))
-                this.defaultvalue = dvi;
-            else if (this.str) this.defaultvalue = dv;
-            else this.defaultvalue = 0;
+            this.defaultvalue = cfg.ReadSetting(argspath + ".arg" + istr + ".default", 0);
 
             //mxd. Get rendering hint settings
             string renderstyle = cfg.ReadSetting(argspath + ".arg" + istr + ".renderstyle", string.Empty);
