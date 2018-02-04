@@ -623,7 +623,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 
             List<Line3D> shapes = new List<Line3D>();
             float lAngle1 = Angle2D.DegToRad(t.Args[1] / 2);
-            float lAngle2 = Angle2D.DegToRad(t.Args[2] / 2);
+            float lAngle2 = Angle2D.DegToRad(t.Args[2] / 2)+lAngle1;
             float lRadius = t.Args[3]*2;
             float lDirY1 = (float)Math.Sin(-lAngle1) * lRadius;
             float lDirX1 = (float)Math.Cos(-lAngle1) * lRadius;
