@@ -527,9 +527,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			return lines;
 		}
 
-		#endregion
+        #endregion
 
-		#region ================== GetDynamicLightShapes
+        #region ================== GetDynamicLightShapes
 
         public static List<Line3D> GetPointLightShape(Thing t, bool highlight, GZGeneral.LightData ld, int linealpha)
         {
@@ -592,27 +592,132 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
             return circles;
         }
 
+        private static Vector3D GetRotatedVertex(Vector3D bp, float angle, float pitch)
+        {
+            Vector3D bp_rotated = bp;
+            bp_rotated.x = bp.x * (float)Math.Cos(pitch) - bp.z * (float)Math.Sin(pitch);
+            bp_rotated.z = bp.z * (float)Math.Cos(pitch) + bp.x * (float)Math.Sin(pitch);
+            bp = bp_rotated;
+            bp_rotated.x = bp.x * (float)Math.Cos(angle) - bp.y * (float)Math.Sin(angle);
+            bp_rotated.y = bp.y * (float)Math.Cos(angle) + bp.x * (float)Math.Sin(angle);
+            return bp_rotated;
+        }
+
         public static List<Line3D> GetSpotLightShape(Thing t, bool highlight, GZGeneral.LightData ld, int linealpha)
         {
+            PixelColor color;
+            if (t.Fields.ContainsKey("arg0str"))
+            {
+                ZDoom.ZDTextParser.GetColorFromString(t.Fields["arg0str"].Value.ToString(), out color);
+                color.a = (byte)linealpha;
+            }
+            else color = new PixelColor((byte)linealpha, (byte)((t.Args[0] & 0xFF0000) >> 16), (byte)((t.Args[0] & 0x00FF00) >> 8), (byte)((t.Args[0] & 0x0000FF)));
+
+            if (highlight)
+            {
+                color = General.Colors.Highlight.WithAlpha((byte)linealpha);
+            }
+
+            PixelColor color_secondary = color;
+            color_secondary.a /= 2;
+
             List<Line3D> shapes = new List<Line3D>();
             float lAngle1 = Angle2D.DegToRad(t.Args[1] / 2);
             float lAngle2 = Angle2D.DegToRad(t.Args[2] / 2);
-            float lRadius = t.Args[3];
-            float lDirY = (float)Math.Sin(-lAngle1) * lRadius;
-            float lDirX = (float)Math.Cos(-lAngle1) * lRadius;
-            shapes.Add(new Line3D(new Vector3D(0, 0, 0), new Vector3D(lDirX, lDirY, 0)));
-            shapes.Add(new Line3D(new Vector3D(0, 0, 0), new Vector3D(lDirX, -lDirY, 0)));
+            float lRadius = t.Args[3]*2;
+            float lDirY1 = (float)Math.Sin(-lAngle1) * lRadius;
+            float lDirX1 = (float)Math.Cos(-lAngle1) * lRadius;
+            float lDirY2 = (float)Math.Sin(-lAngle2) * lRadius;
+            float lDirX2 = (float)Math.Cos(-lAngle2) * lRadius;
+            
+            IEnumerable<Line3D> circleLines = MakeCircleLines(new Vector3D(0, 0, 0), color, (float)Math.Abs(lDirY1), CIRCLE_SIDES);
+            foreach (Line3D l3d in circleLines)
+            {
+                shapes.Add(new Line3D(new Vector3D(lDirX1, l3d.Start.x, l3d.Start.y),
+                                      new Vector3D(lDirX1, l3d.End.x, l3d.End.y),
+                                      color, false));
+            }
+
+            if (lAngle2 != lAngle1)
+            {
+                circleLines = MakeCircleLines(new Vector3D(0, 0, 0), color_secondary, (float)Math.Abs(lDirY2), CIRCLE_SIDES);
+                foreach (Line3D l3d in circleLines)
+                {
+                    shapes.Add(new Line3D(new Vector3D(lDirX2, l3d.Start.x, l3d.Start.y),
+                                          new Vector3D(lDirX2, l3d.End.x, l3d.End.y),
+                                          color_secondary, false));
+                }
+            }
+
+            // draw another circle to show the front cone shape
+            int numsides = CIRCLE_SIDES * 2;
+            float anglestep = Angle2D.PI2 / numsides;
+            for (int j = -1; j <= 1; j++)
+            {
+                if (j == 0) continue;
+                List<Line3D> tmplines = new List<Line3D>();
+                PixelColor ccol = color;
+                for (int i = 1; i < numsides + 1; i++)
+                {
+                    float angc = j * i * anglestep;
+                    float angp = j * (i - 1) * anglestep;
+                    if (i * anglestep > lAngle1 && ccol.a == color.a)
+                    {
+                        shapes.Add(new Line3D(new Vector3D((float)Math.Cos(angp) * lRadius, (float)Math.Sin(angp) * lRadius, 0),
+                                                new Vector3D((float)Math.Cos(j * lAngle1) * lRadius, (float)Math.Sin(j * lAngle1) * lRadius, 0),
+                                                ccol, false));
+                        shapes.Add(new Line3D(new Vector3D((float)Math.Cos(j * lAngle1) * lRadius, (float)Math.Sin(j * lAngle1) * lRadius, 0),
+                                                new Vector3D((float)Math.Cos(angc) * lRadius, (float)Math.Sin(angc) * lRadius, 0),
+                                                color_secondary, false));
+                        ccol = color_secondary;
+                    }
+                    else if (i * anglestep > lAngle2)
+                    {
+                        angc = j * lAngle2;
+                        shapes.Add(new Line3D(new Vector3D((float)Math.Cos(angp) * lRadius, (float)Math.Sin(angp) * lRadius, 0),
+                                                new Vector3D((float)Math.Cos(angc) * lRadius, (float)Math.Sin(angc) * lRadius, 0),
+                                                ccol, false));
+                        break;
+                    }
+                    else
+                    {
+                        shapes.Add(new Line3D(new Vector3D((float)Math.Cos(angp) * lRadius, (float)Math.Sin(angp) * lRadius, 0),
+                                                new Vector3D((float)Math.Cos(angc) * lRadius, (float)Math.Sin(angc) * lRadius, 0),
+                                                ccol, false));
+                    }
+                }
+            }
+
+            shapes.Add(new Line3D(new Vector3D(0, 0, 0), new Vector3D(lDirX1, lDirY1, 0), color, false));
+            shapes.Add(new Line3D(new Vector3D(0, 0, 0), new Vector3D(lDirX1, -lDirY1, 0), color, false));
+            if (lAngle2 != lAngle1)
+            {
+                shapes.Add(new Line3D(new Vector3D(0, 0, 0), new Vector3D(lDirX2, lDirY2, 0), color_secondary, false));
+                shapes.Add(new Line3D(new Vector3D(0, 0, 0), new Vector3D(lDirX2, -lDirY2, 0), color_secondary, false));
+            }
+
+            // do translation and rotation
+            foreach (Line3D l3d in shapes)
+            {
+                // rotate
+                l3d.Start = GetRotatedVertex(l3d.Start, t.Angle-1.5708f, Angle2D.DegToRad(t.Pitch));
+                l3d.End = GetRotatedVertex(l3d.End, t.Angle-1.5708f, Angle2D.DegToRad(t.Pitch));
+                // translate
+                l3d.Start += t.Position;
+                l3d.End += t.Position;
+            }
+
             return shapes;
         }
 
         public static List<Line3D> GetDynamicLightShapes(IEnumerable<Thing> things, bool highlight)
-		{
-			List<Line3D> circles = new List<Line3D>();
-			if(General.Map.DOOM) return circles;
+        {
+            List<Line3D> circles = new List<Line3D>();
+            if (General.Map.DOOM) return circles;
 
-			const int linealpha = 128;
-			foreach(Thing t in things)
-			{
+            const int linealpha = 128;
+            foreach (Thing t in things)
+            {
                 GZGeneral.LightData ld = t.DynamicLightType;
                 if (ld == null) continue;
 
@@ -626,11 +731,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                     List<Line3D> lshape = GetSpotLightShape(t, highlight, ld, linealpha);
                     circles.AddRange(lshape);
                 }
-			}
+            }
 
-			// Done
-			return circles;
-		}
+            // Done
+            return circles;
+        }
 
 		#endregion
 
