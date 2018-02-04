@@ -622,8 +622,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
             color_secondary.a /= 2;
 
             List<Line3D> shapes = new List<Line3D>();
-            float lAngle1 = Angle2D.DegToRad(t.Args[1] / 2);
-            float lAngle2 = Angle2D.DegToRad(t.Args[2] / 2)+lAngle1;
+            float _lAngle1 = Angle2D.DegToRad(t.Args[1]);
+            float _lAngle2 = Angle2D.DegToRad(t.Args[2]);
+            float lAngle1 = _lAngle1;
+            float lAngle2 = _lAngle2;
+            
             float lRadius = t.Args[3]*2;
             float lDirY1 = (float)Math.Sin(-lAngle1) * lRadius;
             float lDirX1 = (float)Math.Cos(-lAngle1) * lRadius;
@@ -666,10 +669,17 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                         shapes.Add(new Line3D(new Vector3D((float)Math.Cos(angp) * lRadius, (float)Math.Sin(angp) * lRadius, 0),
                                                 new Vector3D((float)Math.Cos(j * lAngle1) * lRadius, (float)Math.Sin(j * lAngle1) * lRadius, 0),
                                                 ccol, false));
+                        bool dobreak = false;
+                        if (i * anglestep > lAngle2)
+                        {
+                            angc = j * lAngle2;
+                            dobreak = true;
+                        }
                         shapes.Add(new Line3D(new Vector3D((float)Math.Cos(j * lAngle1) * lRadius, (float)Math.Sin(j * lAngle1) * lRadius, 0),
                                                 new Vector3D((float)Math.Cos(angc) * lRadius, (float)Math.Sin(angc) * lRadius, 0),
                                                 color_secondary, false));
                         ccol = color_secondary;
+                        if (dobreak) break;
                     }
                     else if (i * anglestep > lAngle2)
                     {

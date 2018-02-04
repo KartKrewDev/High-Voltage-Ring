@@ -310,6 +310,7 @@ namespace CodeImp.DoomBuilder
 			}
 			catch(WebException)
 			{
+                //throw;
 				return null;
 			}
 			
