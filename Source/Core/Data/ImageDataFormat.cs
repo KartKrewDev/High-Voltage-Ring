@@ -44,39 +44,45 @@ namespace CodeImp.DoomBuilder.Data
 		{
 			if(data == null) return new UnknownImageReader(); //mxd
 
-            // [ZZ] If it's 4096 bytes long, and expected to be a flat, ignore all further checks.
-            //      This is __NOT__ the good way to resolve it, but at least it works somewhat.
-            //      I don't think if much can be done given the fact that Doom graphics are headerless themselves.
-            //      https://forum.zdoom.org/viewtopic.php?p=1047520#p1047520
-            if (data.Length == 4096 && guessformat == DOOMFLAT)
-            {
-                DoomFlatReader flatreader = new DoomFlatReader(palette);
-                if (flatreader.Validate(data)) return flatreader;
-            }
-
             // Data long enough to check for signatures?
             if (data.Length > 10) 
 			{
-				// Check for PNG signature
-				if(CheckSignature(data, PNG_SIGNATURE)) return new FileImageReader(DevilImageType.IL_PNG);
+                uint ilType = DevilImageType.IL_TYPE_UNKNOWN;
 
-				// Check for DDS signature
-				if(CheckSignature(data, DDS_SIGNATURE)) return new FileImageReader(DevilImageType.IL_DDS);
+                // Check for PNG signature
+                if (CheckSignature(data, PNG_SIGNATURE))
+                    ilType = DevilImageType.IL_PNG;
 
-				//mxd. Check for PCX signature
-				if(CheckSignature(data, PCX_SIGNATURE)) return new FileImageReader(DevilImageType.IL_PCX);
+                // Check for DDS signature
+                else if (CheckSignature(data, DDS_SIGNATURE))
+                    ilType = DevilImageType.IL_DDS;
 
-				//mxd. Check for JPG signature
-				if(CheckSignature(data, JPG_SIGNATURE)) return new FileImageReader(DevilImageType.IL_JPG);
+                //mxd. Check for PCX signature
+                if (CheckSignature(data, PCX_SIGNATURE))
+                    ilType = DevilImageType.IL_PCX;
 
-				//mxd. TGA is VERY special in that it doesn't have a proper signature...
-				if(CheckTgaSignature(data)) return new FileImageReader(DevilImageType.IL_TGA);
+                //mxd. Check for JPG signature
+                if (CheckSignature(data, JPG_SIGNATURE))
+                    ilType = DevilImageType.IL_JPG;
 
+                //mxd. TGA is VERY special in that it doesn't have a proper signature...
+                if (CheckTgaSignature(data))
+                    ilType = DevilImageType.IL_TGA;
+
+                if (ilType != DevilImageType.IL_TYPE_UNKNOWN)
+                {
+                    FileImageReader ilreader = new FileImageReader(ilType);
+                    if (ilreader.Validate(data))
+                        return ilreader;
+                }
+
+                /*
 				// Check for GIF signature
 				if(CheckSignature(data, GIF_SIGNATURE)) return new UnknownImageReader(); //mxd. Not supported by (G)ZDoom
 
 				// Check for BMP signature
 				if(CheckSignature(data, BMP_SIGNATURE)) return new UnknownImageReader(); //mxd. Not supported by (G)ZDoom
+                */
 			}
 				
 			// Could it be a doom picture?

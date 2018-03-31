@@ -41,8 +41,40 @@ namespace CodeImp.DoomBuilder.IO
 		internal const int IL_GIF = 0x0436;  //!< Graphics Interchange Format - .gif extension
 		internal const int IL_DDS = 0x0437;  //!< DirectDraw Surface - .dds extension
 	}
-	
-	internal unsafe class FileImageReader : IImageReader
+
+    // [ZZ]
+    internal enum DevilError
+    {
+        IL_NO_ERROR             = 0x0000,
+        IL_INVALID_ENUM         = 0x0501,
+        IL_OUT_OF_MEMORY        = 0x0502,
+        IL_FORMAT_NOT_SUPPORTED = 0x0503,
+        IL_INTERNAL_ERROR       = 0x0504,
+        IL_INVALID_VALUE        = 0x0505,
+        IL_ILLEGAL_OPERATION    = 0x0506,
+        IL_ILLEGAL_FILE_VALUE   = 0x0507,
+        IL_INVALID_FILE_HEADER  = 0x0508,
+        IL_INVALID_PARAM        = 0x0509,
+        IL_COULD_NOT_OPEN_FILE  = 0x050A,
+        IL_INVALID_EXTENSION    = 0x050B,
+        IL_FILE_ALREADY_EXISTS  = 0x050C,
+        IL_OUT_FORMAT_SAME      = 0x050D,
+        IL_STACK_OVERFLOW       = 0x050E,
+        IL_STACK_UNDERFLOW      = 0x050F,
+        IL_INVALID_CONVERSION   = 0x0510,
+        IL_BAD_DIMENSIONS       = 0x0511,
+        IL_FILE_READ_ERROR      = 0x0512,  // 05/12/2002: Addition by Sam.
+        IL_FILE_WRITE_ERROR     = 0x0512,
+
+        IL_LIB_GIF_ERROR  = 0x05E1,
+        IL_LIB_JPEG_ERROR = 0x05E2,
+        IL_LIB_PNG_ERROR  = 0x05E3,
+        IL_LIB_TIFF_ERROR = 0x05E4,
+        IL_LIB_MNG_ERROR  = 0x05E5,
+        IL_UNKNOWN_ERROR  = 0x05FF
+    }
+
+    internal unsafe class FileImageReader : IImageReader
 	{
 		#region ================== APIs
 
@@ -60,6 +92,9 @@ namespace CodeImp.DoomBuilder.IO
 
 		[DllImport("devil.dll")]
 		private static extern int ilGetInteger(uint mode);
+
+        [DllImport("devil.dll")]
+        private static extern int ilGetError();
 
 		[DllImport("devil.dll")]
 		private static extern int ilConvertImage(uint destformat, uint desttype);
@@ -432,7 +467,12 @@ namespace CodeImp.DoomBuilder.IO
 					if(!ilLoadL(imagetype, new IntPtr(bptr), (uint)bytes.Length))
 						throw new BadImageFormatException();
 				}
-				
+
+                // [ZZ] check if there was any error code
+                DevilError ilerror = (DevilError)ilGetError();
+                if (ilerror != DevilError.IL_NO_ERROR)
+                    throw new BadImageFormatException("DevIL error: " + ilerror.ToString());
+
 				// Get the image properties
 				int width = ilGetInteger(IL_IMAGE_WIDTH);
 				int height = ilGetInteger(IL_IMAGE_HEIGHT);
@@ -512,6 +552,64 @@ namespace CodeImp.DoomBuilder.IO
 		{
 			return (buffer[0] << 24) | (buffer[1] << 16) | (buffer[2] << 8) | buffer[3];
 		}
+
+        public bool Validate(Stream stream)
+        {
+            uint _vimageid = 0;
+            try
+            {
+                byte[] bytes = new byte[stream.Length - stream.Position];
+                stream.Seek(0, SeekOrigin.Begin);
+                stream.Read(bytes, 0, bytes.Length);
+
+                // Create an image in DevIL
+                ilGenImages(1, new IntPtr(&_vimageid));
+                ilBindImage(_vimageid);
+
+                // Read image data from stream
+                fixed (byte* bptr = bytes)
+                {
+                    if (!ilLoadL(imagetype, new IntPtr(bptr), (uint)bytes.Length))
+                        throw new BadImageFormatException();
+                }
+
+                // [ZZ] check if there was any error code
+                DevilError ilerror = (DevilError)ilGetError();
+                if (ilerror != DevilError.IL_NO_ERROR)
+                    throw new BadImageFormatException("DevIL error: " + ilerror.ToString());
+
+                // Get the image properties
+                int width = ilGetInteger(IL_IMAGE_WIDTH);
+                int height = ilGetInteger(IL_IMAGE_HEIGHT);
+                if ((width < 1) || (height < 1))
+                    throw new BadImageFormatException();
+
+                // Clean up
+                ilDeleteImages(1, new IntPtr(&_vimageid));
+                _vimageid = 0;
+            }
+            catch (Exception /*e*/)
+            {
+                //General.ErrorLogger.Add(ErrorType.Warning, e.ToString());
+                return false;
+            }
+            finally
+            {
+                if (_vimageid != 0)
+                {
+                    try
+                    {
+                        ilDeleteImages(1, new IntPtr(&_vimageid));
+                    }
+                    catch (Exception /*e_nested*/)
+                    {
+                        /* really really failed */
+                    }
+                }
+            }
+
+            return true;
+        }
 		
 		#endregion
 	}
