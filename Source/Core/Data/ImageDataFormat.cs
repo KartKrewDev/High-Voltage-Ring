@@ -58,22 +58,23 @@ namespace CodeImp.DoomBuilder.Data
                     ilType = DevilImageType.IL_DDS;
 
                 //mxd. Check for PCX signature
-                if (CheckSignature(data, PCX_SIGNATURE))
+                else if (CheckSignature(data, PCX_SIGNATURE))
                     ilType = DevilImageType.IL_PCX;
 
                 //mxd. Check for JPG signature
-                if (CheckSignature(data, JPG_SIGNATURE))
+                else if (CheckSignature(data, JPG_SIGNATURE))
                     ilType = DevilImageType.IL_JPG;
 
                 //mxd. TGA is VERY special in that it doesn't have a proper signature...
-                if (CheckTgaSignature(data))
+                else if (CheckTgaSignature(data))
                     ilType = DevilImageType.IL_TGA;
 
+                // 
                 if (ilType != DevilImageType.IL_TYPE_UNKNOWN)
                 {
-                    FileImageReader ilreader = new FileImageReader(ilType);
-                    if (ilreader.Validate(data))
-                        return ilreader;
+                    FileImageReader ilreader = new FileImageReader(ilType, guessformat, palette);
+                    // also fill in the possible proxy type
+                    return ilreader;
                 }
 
                 /*

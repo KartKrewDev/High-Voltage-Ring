@@ -22,6 +22,7 @@ using System.IO;
 using System.Drawing;
 using CodeImp.DoomBuilder.Rendering;
 using System.Drawing.Imaging;
+using CodeImp.DoomBuilder.Data;
 
 #endregion
 
@@ -378,6 +379,14 @@ namespace CodeImp.DoomBuilder.IO
 
 		//mxd
 		private readonly uint imagetype;
+        // [ZZ]
+        private byte[] imagebytes;
+        // [ZZ] basically, the logic here is: if the image is not loaded correctly,
+        //      then it might be misinterpreted Doom headerless image.
+        //      so here we just allocate a DoomFlat/Colormap/Image reader and proxy calls
+        private readonly int guesstype;
+        private readonly Playpal guesspalette;
+        private IImageReader proxyreader;
 		
 		#endregion
 
@@ -401,6 +410,17 @@ namespace CodeImp.DoomBuilder.IO
 			GC.SuppressFinalize(this);
 		}
 
+        // [ZZ]
+        public FileImageReader(uint devilImagetype, int guesstype, Playpal guesspalette)
+        {
+            imagetype = devilImagetype;
+            this.guesstype = guesstype;
+            this.guesspalette = guesspalette;
+
+            // We have no destructor
+            GC.SuppressFinalize(this);
+        }
+
 		#endregion
 
 		#region ================== Methods
@@ -409,9 +429,13 @@ namespace CodeImp.DoomBuilder.IO
 		// Returns null on failure
 		public Bitmap ReadAsBitmap(Stream stream, out int offsetx, out int offsety)
 		{
+            if (proxyreader != null)
+                return proxyreader.ReadAsBitmap(stream, out offsetx, out offsety);
+
 			offsetx = int.MinValue;
 			offsety = int.MinValue;
-			Bitmap bmp = ReadAsBitmap(stream);
+
+		    Bitmap bmp = ReadAsBitmap(stream);
 
 			//mxd. Read PNG offsets
 			if(imagetype == DevilImageType.IL_PNG && bmp != null)
@@ -452,17 +476,28 @@ namespace CodeImp.DoomBuilder.IO
 		// This reads the image and returns a Bitmap
 		public Bitmap ReadAsBitmap(Stream stream)
 		{
-			try
+            if (proxyreader != null)
+                return proxyreader.ReadAsBitmap(stream);
+
+            try
 			{
 				// Create an image in DevIL
 				uint imageid = 0;
 				ilGenImages(1, new IntPtr(&imageid));
 				ilBindImage(imageid);
-				
-				// Read image data from stream
-				byte[] bytes = new byte[stream.Length - stream.Position];
-				stream.Read(bytes, 0, bytes.Length);
-				fixed(byte* bptr = bytes)
+
+                // Read image data from stream
+                byte[] bytes;
+                if (imagebytes == null)
+                {
+                    bytes = new byte[stream.Length];
+                    stream.Seek(0, SeekOrigin.Begin);
+                    stream.Read(bytes, 0, bytes.Length);
+                    imagebytes = bytes;
+                }
+                else bytes = imagebytes;
+
+                fixed (byte* bptr = bytes)
 				{
 					if(!ilLoadL(imagetype, new IntPtr(bptr), (uint)bytes.Length))
 						throw new BadImageFormatException();
@@ -499,8 +534,39 @@ namespace CodeImp.DoomBuilder.IO
 			}
 			catch(Exception e)
 			{
-				// Unable to make bitmap
-				General.ErrorLogger.Add(ErrorType.Error, "Unable to make file image. " + e.GetType().Name + ": " + e.Message);
+                // [ZZ] try to make a guessed reader
+                switch (guesstype)
+                {
+                    case ImageDataFormat.DOOMPICTURE:
+                        // Check if data is valid for a doom picture
+                        stream.Seek(0, SeekOrigin.Begin);
+                        DoomPictureReader picreader = new DoomPictureReader(guesspalette);
+                        if (picreader.Validate(stream)) proxyreader = picreader;
+                        break;
+
+                    case ImageDataFormat.DOOMFLAT:
+                        // Check if data is valid for a doom flat
+                        stream.Seek(0, SeekOrigin.Begin);
+                        DoomFlatReader flatreader = new DoomFlatReader(guesspalette);
+                        if (flatreader.Validate(stream)) proxyreader = flatreader;
+                        break;
+
+                    case ImageDataFormat.DOOMCOLORMAP:
+                        // Check if data is valid for a doom colormap
+                        stream.Seek(0, SeekOrigin.Begin);
+                        DoomColormapReader colormapreader = new DoomColormapReader(guesspalette);
+                        if (colormapreader.Validate(stream)) proxyreader = colormapreader;
+                        break;
+                }
+
+                if (proxyreader != null)
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return proxyreader.ReadAsBitmap(stream);
+                }
+
+                // Unable to make bitmap
+                General.ErrorLogger.Add(ErrorType.Error, "Unable to make file image. " + e.GetType().Name + ": " + e.Message);
 				return null;
 			}
 		}
@@ -558,9 +624,15 @@ namespace CodeImp.DoomBuilder.IO
             uint _vimageid = 0;
             try
             {
-                byte[] bytes = new byte[stream.Length - stream.Position];
-                stream.Seek(0, SeekOrigin.Begin);
-                stream.Read(bytes, 0, bytes.Length);
+                byte[] bytes;
+                if (imagebytes == null)
+                {
+                    bytes = new byte[stream.Length];
+                    stream.Seek(0, SeekOrigin.Begin);
+                    stream.Read(bytes, 0, bytes.Length);
+                    imagebytes = bytes;
+                }
+                else bytes = imagebytes;
 
                 // Create an image in DevIL
                 ilGenImages(1, new IntPtr(&_vimageid));
