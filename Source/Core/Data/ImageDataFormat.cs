@@ -43,9 +43,19 @@ namespace CodeImp.DoomBuilder.Data
 		public static IImageReader GetImageReader(Stream data, int guessformat, Playpal palette)
 		{
 			if(data == null) return new UnknownImageReader(); //mxd
-			
-			// Data long enough to check for signatures?
-			if(data.Length > 10) 
+
+            // [ZZ] If it's 4096 bytes long, and expected to be a flat, ignore all further checks.
+            //      This is __NOT__ the good way to resolve it, but at least it works somewhat.
+            //      I don't think if much can be done given the fact that Doom graphics are headerless themselves.
+            //      https://forum.zdoom.org/viewtopic.php?p=1047520#p1047520
+            if (data.Length == 4096 && guessformat == DOOMFLAT)
+            {
+                DoomFlatReader flatreader = new DoomFlatReader(palette);
+                if (flatreader.Validate(data)) return flatreader;
+            }
+
+            // Data long enough to check for signatures?
+            if (data.Length > 10) 
 			{
 				// Check for PNG signature
 				if(CheckSignature(data, PNG_SIGNATURE)) return new FileImageReader(DevilImageType.IL_PNG);

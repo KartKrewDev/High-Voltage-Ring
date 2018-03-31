@@ -308,9 +308,9 @@ namespace CodeImp.DoomBuilder
 			{
 				response = request.GetResponse();
 			}
-			catch(WebException)
+			catch(WebException e)
 			{
-                //throw;
+                //General.ErrorLogger.Add(ErrorType.Warning, e.ToString());
 				return null;
 			}
 			
