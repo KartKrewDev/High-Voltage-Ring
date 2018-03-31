@@ -734,12 +734,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                 if (ld.LightType != GZGeneral.LightType.SPOT)
                 {
                     List<Line3D> lshape = GetPointLightShape(t, highlight, ld, linealpha);
-                    circles.AddRange(lshape);
+                    if (lshape != null) circles.AddRange(lshape);
                 }
                 else
                 {
                     List<Line3D> lshape = GetSpotLightShape(t, highlight, ld, linealpha);
-                    circles.AddRange(lshape);
+                    if (lshape != null) circles.AddRange(lshape);
                 }
             }
 
