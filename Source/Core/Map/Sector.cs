@@ -411,9 +411,10 @@ namespace CodeImp.DoomBuilder.Map
 				General.Plugins.OnSectorCeilingSurfaceUpdate(this, ref updateinfo.ceilvertices);
 				updateinfo.floortexture = longfloortexname;
 				updateinfo.ceiltexture = longceiltexname;
+                updateinfo.desaturation = this.Desaturation;
 
-				// Update surfaces
-				General.Map.CRenderer2D.Surfaces.UpdateSurfaces(surfaceentries, updateinfo);
+                // Update surfaces
+                General.Map.CRenderer2D.Surfaces.UpdateSurfaces(surfaceentries, updateinfo);
 
 				// Updated
 				updateneeded = false;
@@ -446,6 +447,7 @@ namespace CodeImp.DoomBuilder.Map
 			flatvertices.CopyTo(updateinfo.ceilvertices, 0);
 			General.Plugins.OnSectorCeilingSurfaceUpdate(this, ref updateinfo.ceilvertices);
 			updateinfo.ceiltexture = longceiltexname;
+            updateinfo.desaturation = this.Desaturation;
 			
 			// Update entry
 			General.Map.CRenderer2D.Surfaces.UpdateSurfaces(surfaceentries, updateinfo);
