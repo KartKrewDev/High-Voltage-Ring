@@ -128,6 +128,15 @@ namespace CodeImp.DoomBuilder.Map
 		//mxd. Rednering
 		public Color4 FogColor { get { return fogcolor; } }
 		public SectorFogMode FogMode { get { return fogmode; } }
+        public float Desaturation
+        {
+            get
+            {
+                if (General.Map.UDMF && Fields.ContainsKey("desaturation"))
+                    return (float)Fields["desaturation"].Value;
+                return 0f;
+            }
+        }
 
 		//mxd. Slopes
 		public Vector3D FloorSlope { get { return floorslope; } set { BeforePropsChange(); floorslope = value; updateneeded = true; } }
@@ -898,7 +907,7 @@ namespace CodeImp.DoomBuilder.Map
 				fogmode = (brightness < 248 ? SectorFogMode.CLASSIC : SectorFogMode.NONE);
 			}
 		}
-		
-		#endregion
-	}
+
+        #endregion
+    }
 }
