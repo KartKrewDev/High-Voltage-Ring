@@ -79,8 +79,9 @@ namespace CodeImp.DoomBuilder
 			string[] inilines = File.ReadAllLines(inipath);
 			foreach(string line in inilines)
 			{
+                string cplatform = (Environment.Is64BitProcess ? "x64" : "x86");
 				if(line.StartsWith("URL")) url = line.Substring(3).Trim();
-				else if(line.StartsWith("UpdaterName")) updaterpackname = line.Substring(11).Trim();
+				else if(line.StartsWith("UpdaterName")) updaterpackname = line.Substring(11).Trim().Replace("[PLATFORM]", cplatform);
 			}
 
 			if(string.IsNullOrEmpty(url))
