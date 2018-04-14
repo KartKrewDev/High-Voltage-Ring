@@ -36,6 +36,7 @@ using CodeImp.DoomBuilder.Plugins;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.Windows;
+using System.Runtime.CompilerServices;
 
 #endregion
 
@@ -514,9 +515,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			drawingOverridesPanel.Terminate();
 			General.Interface.RemoveDocker(drawingOverridesDocker);
 		}
-		
-		// Map closed
-		public override void OnMapCloseEnd()
+
+        // Map closed
+        public override void OnMapCloseEnd()
 		{
 			base.OnMapCloseEnd();
 			undoredopanel.UpdateList();
