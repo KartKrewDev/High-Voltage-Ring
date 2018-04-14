@@ -440,6 +440,8 @@ namespace CodeImp.DoomBuilder.Windows
 		private void UpdateTitle()
 		{
             string programname = this.Text = Application.ProductName + " R" + General.ThisAssembly.GetName().Version.Revision;
+            if (Environment.Is64BitProcess)
+                programname += " (64-bit)";
 
             // Map opened?
             if (General.Map != null)
