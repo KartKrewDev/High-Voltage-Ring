@@ -590,7 +590,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Build\SharpCompress.dll</HintPath>
     </Reference>
-    <Reference Include="SlimDX, Version=2.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86" />
+    <Reference Include="SlimDX, Version=v4.0.30319, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Build\SlimDX.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -1506,6 +1509,8 @@
     <PreBuildEvent>echo Current Output Directory: %25cd%25
 echo Copying platform-appropriate DevIL.dll file.
 copy /Y ..\DevIL\$(PlatformName)\DevIL.dll .\
+echo Copying platform-appropriate SlimDX.dll file.
+copy /Y ..\SlimDX\$(PlatformName)\SlimDX.dll .\
 echo Copying platform-appropriate Updater.ini.
 copy /Y ..\UpdaterConfig\Updater-$(PlatformName).ini Updater.ini</PreBuildEvent>
     <PostBuildEvent>if exist "%25VS140COMNTOOLS%25" goto tools140 
