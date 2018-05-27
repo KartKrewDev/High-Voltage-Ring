@@ -396,14 +396,22 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                 vertices[i].nz = -nsum.z / total;
             }
 
+            List<int> exGroups = new List<int>();
             Dictionary<int, int> textureGroupRemap = new Dictionary<int, int>();
-            int topGrp = 0;
             for (int i = 0; i < polys.Length; i++)
             {
-                if (textureGroupRemap.ContainsKey(polys[i].TexNum))
+                if (exGroups.Contains(polys[i].TexNum))
                     continue;
-                textureGroupRemap[polys[i].TexNum] = topGrp++;
+                if (exGroups.Count == 0 ||
+                    polys[i].TexNum <= exGroups[0])
+                    exGroups.Insert(0, polys[i].TexNum);
+                else if (exGroups.Count == 0 ||
+                         polys[i].TexNum >= exGroups[exGroups.Count - 1])
+                    exGroups.Add(polys[i].TexNum);
             }
+
+            for (int i = 0; i < exGroups.Count; i++)
+                textureGroupRemap[exGroups[i]] = i;
 
             if (skins == null)
             {
@@ -427,7 +435,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
             }
             else
             {
-                for (int k = 0; k < topGrp; k++)
+                for (int k = 0; k < exGroups.Count; k++)
                 {
                     List<WorldVertex> out_verts = new List<WorldVertex>();
                     List<int> out_polys = new List<int>();
