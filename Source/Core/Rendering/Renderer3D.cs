@@ -838,7 +838,8 @@ namespace CodeImp.DoomBuilder.Rendering
 							if(wantedshaderpass > 7)
 							{
 								graphics.Shaders.World3D.World = world;
-							}
+                                graphics.Shaders.World3D.ModelNormal = Matrix.Identity;
+                            }
 						}
 
 						//mxd. Set variables for fog rendering?
@@ -948,7 +949,8 @@ namespace CodeImp.DoomBuilder.Rendering
 							if(wantedshaderpass > 7)
 							{
 								graphics.Shaders.World3D.World = world;
-								graphics.Shaders.World3D.CameraPosition = new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor);
+                                graphics.Shaders.World3D.ModelNormal = Matrix.Identity;
+                                graphics.Shaders.World3D.CameraPosition = new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor);
 							}
 
 							// Set the colors to use
@@ -1121,6 +1123,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         if (wantedshaderpass > 7)
                         {
                             graphics.Shaders.World3D.World = world;
+                            graphics.Shaders.World3D.ModelNormal = Matrix.Identity;
                         }
                     }
 
@@ -1264,7 +1267,8 @@ namespace CodeImp.DoomBuilder.Rendering
 						if(wantedshaderpass > 7)
 						{
 							graphics.Shaders.World3D.World = world;
-							if(t.FogFactor != fogfactor)
+                            graphics.Shaders.World3D.ModelNormal = Matrix.Identity;
+                            if (t.FogFactor != fogfactor)
 							{
 								graphics.Shaders.World3D.CameraPosition = new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor);
 								fogfactor = t.FogFactor;
@@ -1508,6 +1512,7 @@ namespace CodeImp.DoomBuilder.Rendering
             if (geometrytolit.Count == 0) return;
 
             graphics.Shaders.World3D.World = Matrix.Identity;
+            graphics.Shaders.World3D.ModelNormal = Matrix.Identity;
             graphics.Shaders.World3D.BeginPass(SHADERPASS_LIGHT);
 
             VisualSector sector = null;
@@ -1530,6 +1535,7 @@ namespace CodeImp.DoomBuilder.Rendering
             if (geometrytolit.Count == 0) return;
 
             graphics.Shaders.World3D.World = Matrix.Identity;
+            graphics.Shaders.World3D.ModelNormal = Matrix.Identity;
             graphics.Shaders.World3D.BeginPass(SHADERPASS_LIGHT);
 
             VisualSector sector = null;
@@ -1639,7 +1645,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Create the matrix for positioning / rotation
 				float sx = t.Thing.ScaleX * t.Thing.ActorScale.Width;
 				float sy = t.Thing.ScaleY * t.Thing.ActorScale.Height;
-
+                
 				Matrix modelscale = Matrix.Scaling(sx, sx, sy);
 				Matrix modelrotation = Matrix.RotationY(-t.Thing.RollRad) * Matrix.RotationX(-t.Thing.PitchRad) * Matrix.RotationZ(t.Thing.Angle);
 
@@ -1650,10 +1656,12 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(wantedshaderpass > 7)
 				{
 					graphics.Shaders.World3D.World = world;
-					if(t.Thing.Sector != null) graphics.Shaders.World3D.LightColor = t.Thing.Sector.FogColor;
+                    // this is not right...
+                    graphics.Shaders.World3D.ModelNormal = General.Map.Data.ModeldefEntries[t.Thing.Type].TransformRotation * modelrotation;
+                    if (t.Thing.Sector != null) graphics.Shaders.World3D.LightColor = t.Thing.Sector.FogColor;
 					graphics.Shaders.World3D.CameraPosition = new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor);
 				}
-
+                
                 graphics.Shaders.World3D.Desaturation = t.Thing.Sector.Desaturation;
 
                 GZModel model = General.Map.Data.ModeldefEntries[t.Thing.Type].Model;

@@ -47,7 +47,8 @@ namespace CodeImp.DoomBuilder.Rendering
         private readonly EffectHandle ignoreNormalsHandle;
         private readonly EffectHandle spotLightHandle;
 		private readonly EffectHandle world;
-		private readonly EffectHandle camPosHandle; //used for fog rendering
+        private readonly EffectHandle modelnormal;
+        private readonly EffectHandle camPosHandle; //used for fog rendering
 
         // [ZZ]
         private readonly EffectHandle stencilColorHandle;
@@ -230,10 +231,24 @@ namespace CodeImp.DoomBuilder.Rendering
 					settingschanged = true;
 				}
 			}
-		}
+        }
 
-		//mxd. This sets the highlight color
-		private Color4 hicolor;
+        private Matrix mmodelnormal;
+        public Matrix ModelNormal
+        {
+            set
+            {
+                if (mmodelnormal != value)
+                {
+                    effect.SetValue(modelnormal, value);
+                    mmodelnormal = value;
+                    settingschanged = true;
+                }
+            }
+        }
+
+        //mxd. This sets the highlight color
+        private Color4 hicolor;
 		public Color4 HighlightColor
 		{
 			set
@@ -285,7 +300,8 @@ namespace CodeImp.DoomBuilder.Rendering
                 stencilColorHandle = effect.GetParameter(null, "stencilColor");
 
 				world = effect.GetParameter(null, "world");
-			}
+                modelnormal = effect.GetParameter(null, "modelnormal");
+            }
 
 			// Initialize world vertex declaration
 			VertexElement[] ve = {
@@ -328,9 +344,10 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(camPosHandle != null) camPosHandle.Dispose();
                 if(stencilColorHandle != null) stencilColorHandle.Dispose();
 				if(world != null) world.Dispose();
+                if(modelnormal != null) modelnormal.Dispose();
 
-				// Done
-				base.Dispose();
+                // Done
+                base.Dispose();
 			}
 		}
 

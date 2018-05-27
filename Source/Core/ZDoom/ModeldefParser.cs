@@ -103,8 +103,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 									// Things are complicated in GZDoom...
 									Matrix moffset = Matrix.Translation(mds.Offset.Y, -mds.Offset.X, mds.Offset.Z);
-									Matrix mrotation = Matrix.RotationY(-Angle2D.DegToRad(mds.RollOffset)) * Matrix.RotationX(-Angle2D.DegToRad(mds.PitchOffset)) * Matrix.RotationZ(Angle2D.DegToRad(mds.AngleOffset));
-									md.SetTransform(mrotation, moffset, mds.Scale);
+									Matrix mrotation = Matrix.RotationZ(Angle2D.DegToRad(mds.AngleOffset)) * Matrix.RotationY(-Angle2D.DegToRad(mds.RollOffset)) * Matrix.RotationX(-Angle2D.DegToRad(mds.PitchOffset));
+                                    md.SetTransform(mrotation, moffset, mds.Scale);
 
 									// Add models
 									int disabledframescount = 0;
@@ -113,7 +113,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 										// Sanity checks
 										if(string.IsNullOrEmpty(mds.ModelNames[fs.ModelIndex]))
 										{
-											LogWarning("Model definition \"" + classname + "\", frame \"" + fs.SpriteName + " " + fs.FrameName + "\" references undefiend model index " + fs.ModelIndex);
+											LogWarning("Model definition \"" + classname + "\", frame \"" + fs.SpriteName + " " + fs.FrameName + "\" references undefined model index " + fs.ModelIndex);
 											continue;
 										}
 

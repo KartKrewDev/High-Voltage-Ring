@@ -50,6 +50,7 @@ const float4x4 worldviewproj;
 
 //mxd
 float4x4 world;
+float4x4 modelnormal;
 float4 vertexColor;
 // [ZZ]
 float4 stencilColor;
@@ -137,7 +138,7 @@ LitPixelData vs_customvertexcolor_fog(VertexData vd)
 	pd.pos_w = mul(float4(vd.pos, 1.0f), world).xyz;
 	pd.color = vertexColor;
 	pd.uv = vd.uv;
-	pd.normal = vd.normal;
+	pd.normal = normalize(mul(float4(vd.normal, 1.0f), modelnormal).xyz);
 	
 	// Return result
 	return pd;
@@ -151,7 +152,7 @@ LitPixelData vs_lightpass(VertexData vd)
 	pd.pos_w = mul(float4(vd.pos, 1.0f), world).xyz;
 	pd.color = vd.color;
 	pd.uv = vd.uv;
-	pd.normal = vd.normal;
+	pd.normal = normalize(mul(float4(vd.normal, 1.0f), modelnormal).xyz);
 
 	// Return result
 	return pd;
@@ -259,7 +260,7 @@ float4 ps_lightpass(LitPixelData pd) : COLOR
 	//is face facing away from light source?
 	// [ZZ] oddly enough pd.normal is not a proper normal, so using dot on it returns rather unexpected results. wrapped in normalize().
 	//      update 01.02.2017: offset the equation by 3px back to try to emulate GZDoom's broken visibility check.
-	float diffuseContribution = dot(normalize(pd.normal), normalize(lightPosAndRadius.xyz - pd.pos_w + normalize(pd.normal)*3));
+	float diffuseContribution = dot(pd.normal, normalize(lightPosAndRadius.xyz - pd.pos_w + pd.normal*3));
 	if (diffuseContribution < 0 && ignoreNormals < 0.5)
 		clip(-1);
 	diffuseContribution = max(diffuseContribution, 0); // to make sure
