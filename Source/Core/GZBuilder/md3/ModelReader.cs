@@ -313,20 +313,6 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
             stream_d.Position += 12; // padding[12]
 
             long start_d = stream_d.Position;
-            uint numGroups = 0;
-
-            // some black magic
-            bool[] used = new bool[256];
-            for (int i = 0; i < d3d_numpolys; i++)
-            {
-                stream_d.Position = start_d + 16 * i;
-                stream_d.Position += 14;
-                byte texnum = br_d.ReadByte();
-                used[texnum] = true;
-            }
-
-            for (int i = 0; i < 256; i++)
-                if (used[i]) numGroups++;
 
             // read a3d header
             uint a3d_numframes = br_a.ReadUInt16();
@@ -410,26 +396,62 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                 vertices[i].nz = -nsum.z / total;
             }
 
-            // wtf is skin groups?
-            // don't do this for now
-
-            List<WorldVertex> out_verts = new List<WorldVertex>();
-            List<int> out_polys = new List<int>();
-
+            Dictionary<int, int> textureGroupRemap = new Dictionary<int, int>();
+            int topGrp = 0;
             for (int i = 0; i < polys.Length; i++)
             {
-                for (int j = 0; j < 3; j++)
-                {
-                    WorldVertex vx = vertices[polys[i].V[j]];
-                    vx.u = polys[i].S[j];
-                    vx.v = polys[i].T[j];
-                    out_polys.Add(out_verts.Count);
-                    out_verts.Add(vx);
-                }
+                if (textureGroupRemap.ContainsKey(polys[i].TexNum))
+                    continue;
+                textureGroupRemap[polys[i].TexNum] = topGrp++;
             }
 
-            CreateMesh(device, ref result, out_verts, out_polys);
-            result.Skins.Add("");
+            if (skins == null)
+            {
+                List<WorldVertex> out_verts = new List<WorldVertex>();
+                List<int> out_polys = new List<int>();
+
+                for (int i = 0; i < polys.Length; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        WorldVertex vx = vertices[polys[i].V[j]];
+                        vx.u = polys[i].S[j];
+                        vx.v = polys[i].T[j];
+                        out_polys.Add(out_verts.Count);
+                        out_verts.Add(vx);
+                    }
+                }
+
+                CreateMesh(device, ref result, out_verts, out_polys);
+                result.Skins.Add("");
+            }
+            else
+            {
+                for (int k = 0; k < topGrp; k++)
+                {
+                    List<WorldVertex> out_verts = new List<WorldVertex>();
+                    List<int> out_polys = new List<int>();
+
+                    for (int i = 0; i < polys.Length; i++)
+                    {
+
+                        if (textureGroupRemap[polys[i].TexNum] != k)
+                            continue;
+
+                        for (int j = 0; j < 3; j++)
+                        {
+                            WorldVertex vx = vertices[polys[i].V[j]];
+                            vx.u = polys[i].S[j];
+                            vx.v = polys[i].T[j];
+                            out_polys.Add(out_verts.Count);
+                            out_verts.Add(vx);
+                        }
+                    }
+
+                    CreateMesh(device, ref result, out_verts, out_polys);
+                    result.Skins.Add(skins.ContainsKey(k)?skins[k].ToLowerInvariant():string.Empty);
+                }
+            }
 
             return result;
         }
