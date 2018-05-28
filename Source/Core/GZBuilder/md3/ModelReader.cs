@@ -334,9 +334,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                 WorldVertex Vert = new WorldVertex();
                 stream_a.Position = start_a + (i + frame * d3d_numverts) * 4;
                 int v_uint = br_a.ReadInt32();
-                Vert.y = -UnpackUVertex(v_uint, 0);
-                Vert.z = UnpackUVertex(v_uint, 1);
-                Vert.x = UnpackUVertex(v_uint, 2);
+                //Vert.y = -UnpackUVertex(v_uint, 0);
+                //Vert.z = UnpackUVertex(v_uint, 1);
+                //Vert.x = UnpackUVertex(v_uint, 2);
+                Vert.y = UnpackUVertex(v_uint, 2);
+                Vert.z = UnpackUVertex(v_uint, 0);
+                Vert.x = UnpackUVertex(v_uint, 1);
                 vertices[i] = Vert;
             }
 
@@ -391,9 +394,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                     nsum.z += norm.z;
                     total++;
                 }
-                vertices[i].nx = nsum.x / total;
-                vertices[i].ny = nsum.y / total;
-                vertices[i].nz = nsum.z / total;
+                vertices[i].nx = -nsum.x / total;
+                vertices[i].ny = -nsum.y / total;
+                vertices[i].nz = -nsum.z / total;
             }
 
             List<int> exGroups = new List<int>();
