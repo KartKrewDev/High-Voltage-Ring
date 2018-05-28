@@ -337,9 +337,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                 //Vert.y = -UnpackUVertex(v_uint, 0);
                 //Vert.z = UnpackUVertex(v_uint, 1);
                 //Vert.x = UnpackUVertex(v_uint, 2);
-                Vert.y = UnpackUVertex(v_uint, 2);
+                Vert.y = -UnpackUVertex(v_uint, 2);
                 Vert.z = UnpackUVertex(v_uint, 0);
-                Vert.x = UnpackUVertex(v_uint, 1);
+                Vert.x = -UnpackUVertex(v_uint, 1);
                 vertices[i] = Vert;
             }
 
