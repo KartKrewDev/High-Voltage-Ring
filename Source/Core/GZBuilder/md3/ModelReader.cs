@@ -254,11 +254,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
             switch (c)
             {
                 case 2:
-                    return PadInt16((n & 0x7ff) << 5) / 127f;
+                    return PadInt16((n & 0x7ff) << 5) / 128f;
                 case 1:
-                    return PadInt16((((int)n >> 11) & 0x7ff) << 5) / 127f;
+                    return PadInt16((((int)n >> 11) & 0x7ff) << 5) / 128f;
                 case 0:
-                    return PadInt16((((int)n >> 22) & 0x3ff) << 6) / 127f;
+                    return PadInt16((((int)n >> 22) & 0x3ff) << 6) / 128f;
                 default:
                     return 0f;
             }
