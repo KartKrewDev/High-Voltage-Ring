@@ -572,6 +572,50 @@ namespace CodeImp.DoomBuilder.Data
 
         #endregion
 
+        #region ================== MODELDEF
+
+        // This finds and returns MODELDEF streams
+        public override IEnumerable<TextResourceData> GetModeldefData(string pname)
+        {
+            // Error when suspended
+            if (issuspended) throw new Exception("Data reader is suspended");
+
+            List<TextResourceData> result = new List<TextResourceData>();
+            string[] allfilenames;
+
+            // Find in root directory
+            string filename = Path.GetFileName(pname);
+            string pathname = Path.GetDirectoryName(pname);
+
+            if (filename.IndexOf('.') > -1)
+            {
+                string fullname = Path.Combine(pathname, filename);
+                if (FileExists(fullname))
+                {
+                    allfilenames = new string[1];
+                    allfilenames[0] = Path.Combine(pathname, filename);
+                }
+                else
+                {
+                    allfilenames = new string[0];
+                    General.ErrorLogger.Add(ErrorType.Warning, "Unable to load MODELDEF file \"" + fullname + "\"");
+                }
+            }
+            else
+                allfilenames = GetAllFilesWithTitle(pathname, filename, false);
+
+            foreach (string foundfile in allfilenames)
+                result.Add(new TextResourceData(this, LoadFile(foundfile), foundfile, true));
+
+            // Find in any of the wad files
+            for (int i = wads.Count - 1; i >= 0; i--)
+                result.AddRange(wads[i].GetModeldefData(pname));
+
+            return result;
+        }
+
+        #endregion
+
         #region ================== VOXELDEF (mxd)
 
         //mxd. This returns the list of voxels, which can be used without VOXELDEF definition

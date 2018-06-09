@@ -1047,6 +1047,20 @@ namespace CodeImp.DoomBuilder.Data
             return new List<TextResourceData> { result[result.Count - 1] };
         }
 
+        // [ZZ] This finds and returns MODELDEF streams
+        public override IEnumerable<TextResourceData> GetModeldefData(string pname)
+        {
+            if (issuspended) throw new Exception("Data reader is suspended");
+            List<TextResourceData> result = GetAllLumpsData(pname); //mxd
+
+            //mxd. Return ALL DECORATE lumps
+            if (result.Count == 0 || string.Compare(pname, "MODELDEF", StringComparison.OrdinalIgnoreCase) == 0)
+                return result;
+
+            //mxd. Return THE LAST include lump, because that's the way ZDoom seems to operate
+            return new List<TextResourceData> { result[result.Count - 1] };
+        }
+
         //mxd. Should be only one entry per wad
         public override IEnumerable<TextResourceData> GetMapinfoData() 
 		{

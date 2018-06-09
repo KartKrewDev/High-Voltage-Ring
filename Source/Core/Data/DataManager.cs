@@ -2287,6 +2287,24 @@ namespace CodeImp.DoomBuilder.Data
                 }
             }
         }
+
+        // This loads MODELDEF data from a specific file or lump name
+        private void LoadModeldefFromLocation(ModeldefParser parser, string location)
+        {
+            IEnumerable<TextResourceData> streams = currentreader.GetModeldefData(location);
+            foreach (TextResourceData data in streams)
+            {
+                // Parse this data
+                parser.Parse(data, false);
+
+                //mxd. DECORATE lumps are interdepandable. Can't carry on...
+                if (parser.HasError)
+                {
+                    parser.LogError();
+                    return;
+                }
+            }
+        }
 		
 		// This gets thing information by index
 		public ThingTypeInfo GetThingInfo(int thingtype)
@@ -2407,7 +2425,7 @@ namespace CodeImp.DoomBuilder.Data
 			// Abort if no classnames are defined in DECORATE or game config...
 			if(actorsbyclass.Count == 0) return;
 
-			ModeldefParser parser = new ModeldefParser(actorsbyclass);
+			ModeldefParser parser = new ModeldefParser(actorsbyclass) { OnInclude = LoadModeldefFromLocation };
 			foreach(DataReader dr in containers)
 			{
 				currentreader = dr;

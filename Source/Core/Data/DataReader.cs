@@ -239,6 +239,9 @@ namespace CodeImp.DoomBuilder.Data
         // [ZZ] When implemented, this returns ZSCRIPT lumps
         public abstract IEnumerable<TextResourceData> GetZScriptData(string pname);
 
+        // [ZZ] When implemented, this returns MODELDEF lumps
+        public abstract IEnumerable<TextResourceData> GetModeldefData(string pname);
+
         //mxd. When implemented, this returns MAPINFO lumps
         public abstract IEnumerable<TextResourceData> GetMapinfoData();
 

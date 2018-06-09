@@ -133,6 +133,7 @@
     <ProjectReference Include="..\..\Core\Builder.csproj">
       <Project>{818b3d10-f791-4c3f-9af5-bb2d0079b63c}</Project>
       <Name>Builder</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
