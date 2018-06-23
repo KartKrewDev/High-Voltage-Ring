@@ -964,6 +964,7 @@ namespace CodeImp.DoomBuilder.Rendering
                             // [ZZ] apply desaturation
                             if (t.Thing.Sector != null)
                                 graphics.Shaders.World3D.Desaturation = t.Thing.Sector.Desaturation;
+                            else graphics.Shaders.World3D.Desaturation = 0;
 
                             // Apply changes
                             ApplyMatrices3D();
@@ -1661,8 +1662,10 @@ namespace CodeImp.DoomBuilder.Rendering
                     if (t.Thing.Sector != null) graphics.Shaders.World3D.LightColor = t.Thing.Sector.FogColor;
 					graphics.Shaders.World3D.CameraPosition = new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor);
 				}
-                
-                graphics.Shaders.World3D.Desaturation = t.Thing.Sector.Desaturation;
+
+                if (t.Thing.Sector != null)
+                    graphics.Shaders.World3D.Desaturation = t.Thing.Sector.Desaturation;
+                else graphics.Shaders.World3D.Desaturation = 0;
 
                 GZModel model = General.Map.Data.ModeldefEntries[t.Thing.Type].Model;
                 for (int j = 0; j < model.Meshes.Count; j++)
