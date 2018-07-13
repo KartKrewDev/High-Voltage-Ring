@@ -161,6 +161,7 @@
     <Compile Include="Controls\ArgumentBox.Designer.cs">
       <DependentUpon>ArgumentBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\FolderSelectDialog.cs" />
     <Compile Include="Controls\TransparentTrackBar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1505,6 +1506,7 @@
       <DependentUpon>VertexEditForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <PreBuildEvent>echo Current Output Directory: %25cd%25
 echo Copying platform-appropriate DevIL.dll file.
