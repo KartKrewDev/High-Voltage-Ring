@@ -301,12 +301,12 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             // wadfiledialog
             // 
-            this.wadfiledialog.Filter = "Doom WAD Files (*.wad)|*.wad";
+            this.wadfiledialog.Filter = "Doom WAD Files (*.wad;*.iwad)|*.wad;*.iwad";
             this.wadfiledialog.Title = "Browse WAD File";
             // 
             // pk3filedialog
             // 
-            this.pk3filedialog.Filter = "Doom PK3/PK7 Files (*.pk3;*.pk7)|*.pk3;*.pk7";
+            this.pk3filedialog.Filter = "Doom PK3/PK7 Files (*.pk3;*.pk7;*.ipk3;*.ipk7)|*.pk3;*.pk7;*.ipk3;*.ipk7";
             this.pk3filedialog.Title = "Browse PK3 or PK7 File";
             // 
             // notfortesting

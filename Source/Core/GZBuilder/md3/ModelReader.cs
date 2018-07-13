@@ -438,14 +438,14 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
                 for (int i = 0; i < polys.Length; i++)
                 {
-                    if ( polys[i].Type&0x08 )
+                    if ( (polys[i].Type&0x08) != 0 )
                         continue;
                     for (int j = 0; j < 3; j++)
                     {
                         WorldVertex vx = vertices[polys[i].V[j]];
                         vx.u = polys[i].S[j];
                         vx.v = polys[i].T[j];
-                        if ( polys[i].Type&0x20 )
+                        if ( (polys[i].Type&0x20) != 0 )
                         {
                             vx.nx = polys[i].Normal.x;
                             vx.ny = polys[i].Normal.y;
@@ -468,7 +468,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
                     for (int i = 0; i < polys.Length; i++)
                     {
-                        if ( polys[i].Type&0x08 )
+                        if ( (polys[i].Type&0x08) != 0 )
                             continue;
 
                         if (textureGroupRemap[polys[i].TexNum] != k)
@@ -479,7 +479,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                             WorldVertex vx = vertices[polys[i].V[j]];
                             vx.u = polys[i].S[j];
                             vx.v = polys[i].T[j];
-                            if ( polys[i].Type&0x20 )
+                            if ( (polys[i].Type&0x20) != 0 )
                             {
                                 vx.nx = polys[i].Normal.x;
                                 vx.ny = polys[i].Normal.y;
