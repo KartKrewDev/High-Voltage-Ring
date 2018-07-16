@@ -7,5 +7,4 @@ obj
 /.vs
 /Build/DevIL.dll
 /Build/Plugins/*.dll
-/Build/Builder.exe.config
 /Build/Builder.pdb
