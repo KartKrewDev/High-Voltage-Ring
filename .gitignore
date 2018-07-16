@@ -8,3 +8,4 @@ obj
 /Build/DevIL.dll
 /Build/Plugins/*.dll
 /Build/Builder.pdb
+/Build/Builder.exe.config
