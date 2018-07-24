@@ -54,6 +54,7 @@ namespace CodeImp.DoomBuilder.ZDoom
         // Properties
         internal Dictionary<string, List<string>> props;
         internal Dictionary<string, UniversalType> uservars; //mxd
+        internal Dictionary<string, object> uservar_defaults; // [ZZ] should correspond to UniversalType
 
         //mxd. Categories
         internal DecorateCategoryInfo catinfo;
@@ -76,6 +77,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 		public ActorStructure BaseClass { get { return baseclass; } }
 		internal int DoomEdNum { get { return doomednum; } set { doomednum = value; } }
 		public Dictionary<string, UniversalType> UserVars { get { return uservars; } } //mxd
+        public Dictionary<string, object> UserVarDefaults { get { return uservar_defaults; } } // [ZZ]
 		internal DecorateCategoryInfo CategoryInfo { get { return catinfo; } } //mxd
 
 		#endregion
@@ -90,6 +92,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			props = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 			states = new Dictionary<string, StateStructure>(StringComparer.OrdinalIgnoreCase);
 			uservars = new Dictionary<string, UniversalType>(StringComparer.OrdinalIgnoreCase);//mxd
+            uservar_defaults = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);// [ZZ]
 			
 			// Always define a game property, but default to 0 values
 			props["game"] = new List<string>();

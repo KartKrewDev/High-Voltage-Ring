@@ -17,6 +17,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 
         internal static bool ParseGZDBComment(Dictionary<string, List<string>> props, string text)
         {
+            if (string.IsNullOrWhiteSpace(text))
+                return false;
             text = text.Trim();
             // check if it's a GZDB comment
             if (text[0] != '$')
@@ -415,6 +417,9 @@ namespace CodeImp.DoomBuilder.ZDoom
                 return;
             }
 
+            // this dict holds temporary user settings per field (function, etc)
+            Dictionary<string, List<string>> var_props = new Dictionary<string, List<string>>();
+
             // in the class definition, we can have the following:
             // - Defaults block
             // - States block
@@ -425,7 +430,18 @@ namespace CodeImp.DoomBuilder.ZDoom
             // we are skipping everything, except Defaults and States.
             while (true)
             {
-                tokenizer.SkipWhitespace();
+                var_props.Clear();
+                while (true)
+                {
+                    ZScriptToken tt = tokenizer.ExpectToken(ZScriptTokenType.Whitespace, ZScriptTokenType.BlockComment, ZScriptTokenType.LineComment, ZScriptTokenType.Newline);
+                    if (tt == null || !tt.IsValid)
+                        break;
+
+                    if (tt.Type == ZScriptTokenType.LineComment)
+                        ParseGZDBComment(var_props, tt.Value);
+                }
+
+                //tokenizer.SkipWhitespace();
                 long ocpos = stream.Position;
                 ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.Identifier, ZScriptTokenType.CloseCurly);
                 if (token == null || !token.IsValid)
@@ -749,12 +765,13 @@ namespace CodeImp.DoomBuilder.ZDoom
                     //  - bool
                     string type = types[0];
                     UniversalType utype;
+                    object udefault = null;
                     switch (type)
                     {
                         case "int":
                             utype = UniversalType.Integer;
                             break;
-                        /*case "float":
+                        case "float":
                         case "double":
                             utype = UniversalType.Float;
                             break;
@@ -764,10 +781,50 @@ namespace CodeImp.DoomBuilder.ZDoom
                         case "string":
                             utype = UniversalType.String;
                             break;
-                            // todo test if class names and colors will work*/
-                            // [ZZ] currently only integer variable works.
+                            // todo test if class names and colors will work
                         default:
                             continue; // go read next field
+                    }
+
+                    if (var_props.ContainsKey("$userdefaultvalue"))
+                    {
+                        string sp = var_props["$userdefaultvalue"][0];
+                        switch (utype)
+                        {
+                            case UniversalType.String:
+                                if (sp[0] == '"' && sp[sp.Length - 1] == '"')
+                                    sp = sp.Substring(1, sp.Length - 2);
+                                udefault = sp;
+                                break;
+                            case UniversalType.Float:
+                                float d;
+                                if (!float.TryParse(sp, out d))
+                                {
+                                    parser.LogWarning("Incorrect float default from string \"" + sp + "\"");
+                                    break;
+                                }
+                                udefault = d;
+                                break;
+                            case UniversalType.Integer:
+                                int i;
+                                if (!int.TryParse(sp, out i))
+                                {
+                                    if (type == "bool")
+                                    {
+                                        sp = sp.ToLowerInvariant();
+                                        if (sp == "true")
+                                            udefault = true;
+                                        else if (sp == "false")
+                                            udefault = false;
+                                        else parser.LogWarning("Incorrect boolean default from string \"" + sp + "\"");
+                                        break;
+                                    }
+                                    parser.LogWarning("Incorrect integer default from string \"" + sp + "\"");
+                                    break;
+                                }
+                                udefault = i;
+                                break;
+                        }
                     }
 
                     for (int i = 0; i < names.Count; i++)
@@ -779,6 +836,8 @@ namespace CodeImp.DoomBuilder.ZDoom
                             continue; // we don't process non-user_ fields (because ZScript won't pick them up anyway)
                         // parent class is not guaranteed to be loaded already, so handle collisions later
                         uservars.Add(name, utype);
+                        if (udefault != null)
+                            uservar_defaults.Add(name, udefault);
                     }
                 }
             }

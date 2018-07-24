@@ -206,7 +206,7 @@ namespace CodeImp.DoomBuilder.Windows
 			//mxd. User vars. Should be done before adding regular fields
 			ThingTypeInfo fti = General.Map.Data.GetThingInfoEx(ft.Type);
 			if(fti != null && fti.Actor != null && fti.Actor.UserVars.Count > 0)
-				fieldslist.SetUserVars(fti.Actor.UserVars, ft.Fields, true);
+				fieldslist.SetUserVars(fti.Actor.UserVars, fti.Actor.UserVarDefaults, ft.Fields, true);
 			thinginfo = fti; //mxd
 
 			// Custom fields
@@ -289,7 +289,7 @@ namespace CodeImp.DoomBuilder.Windows
 				//mxd. User vars. Should be done before adding regular fields
 				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
 				if(ti != null && ti.Actor != null && ti.Actor.UserVars.Count > 0)
-					fieldslist.SetUserVars(ti.Actor.UserVars, t.Fields, false);
+					fieldslist.SetUserVars(ti.Actor.UserVars, ti.Actor.UserVarDefaults, t.Fields, false);
 
 				//mxd. Custom fields
 				fieldslist.SetValues(t.Fields, false);
