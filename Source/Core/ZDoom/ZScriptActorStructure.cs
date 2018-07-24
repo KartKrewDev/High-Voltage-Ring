@@ -786,6 +786,23 @@ namespace CodeImp.DoomBuilder.ZDoom
                             continue; // go read next field
                     }
 
+                    UniversalType utype_reinterpret = utype;
+                    if (var_props.ContainsKey("$userreinterpret"))
+                    {
+                        string sp = var_props["$userreinterpret"][0].Trim().ToLowerInvariant();
+                        switch (sp)
+                        {
+                            case "color":
+                                if (utype != UniversalType.Integer)
+                                {
+                                    parser.LogWarning("Cannot use $UserReinterpret Color with non-integers");
+                                    break;
+                                }
+                                utype_reinterpret = UniversalType.Color;
+                                break;
+                        }
+                    }
+
                     if (var_props.ContainsKey("$userdefaultvalue"))
                     {
                         string sp = var_props["$userdefaultvalue"][0];
@@ -809,6 +826,18 @@ namespace CodeImp.DoomBuilder.ZDoom
                                 int i;
                                 if (!int.TryParse(sp, out i))
                                 {
+                                    if (utype_reinterpret == UniversalType.Color)
+                                    {
+                                        sp = sp.ToLowerInvariant();
+                                        Rendering.PixelColor pc;
+                                        if (!ZDTextParser.GetColorFromString(sp, out pc))
+                                        {
+                                            parser.LogWarning("Incorrect color default from string \"" + sp + "\"");
+                                            break;
+                                        }
+                                        udefault = pc.ToInt()&0xFFFFFF;
+                                        break;
+                                    }
                                     if (type == "bool")
                                     {
                                         sp = sp.ToLowerInvariant();
@@ -835,7 +864,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                         if (!name.StartsWith("user_"))
                             continue; // we don't process non-user_ fields (because ZScript won't pick them up anyway)
                         // parent class is not guaranteed to be loaded already, so handle collisions later
-                        uservars.Add(name, utype);
+                        uservars.Add(name, utype_reinterpret);
                         if (udefault != null)
                             uservar_defaults.Add(name, udefault);
                     }
