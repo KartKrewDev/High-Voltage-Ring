@@ -356,6 +356,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
             }
 
             // read polygons
+            int minverthack = 0;
+            int minvert = 2147483647;
             UE1Poly[] polys = new UE1Poly[d3d_numpolys];
             int[] polyindexlist = new int[d3d_numpolys*3];
             for (uint i = 0; i < d3d_numpolys; i++)
@@ -365,8 +367,23 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                 polys[i].V = new int[3];
                 polys[i].S = new float[3];
                 polys[i].T = new float[3];
+                bool brokenpoly = false;
                 for (int j = 0; j < 3; j++)
-                    polyindexlist[i*3+j] = polys[i].V[j] = br_d.ReadInt16();
+                {
+                    polyindexlist[i * 3 + j] = polys[i].V[j] = br_d.ReadInt16();
+                    if (polys[i].V[j] >= vertices.Length || polys[i].V[j] < 0)
+                        brokenpoly = true;
+                }
+
+                // Resolves polygons that reference out-of-bounds vertices by simply making them null size.
+                // This is easier than changing array to dynamically sized list.
+                if (brokenpoly)
+                {
+                    polys[i].V[0] = 0;
+                    polys[i].V[1] = 0;
+                    polys[i].V[2] = 0;
+                }
+
                 polys[i].Type = br_d.ReadByte();
                 stream_d.Position += 1; // color
                 for (int j = 0; j < 3; j++)
