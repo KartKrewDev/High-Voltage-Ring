@@ -319,6 +319,60 @@ namespace CodeImp.DoomBuilder.ZDoom
             }
         }
 
+        private bool ParseFlagdef()
+        {
+            // flagdef identifier: variable, bitnum;
+            tokenizer.SkipWhitespace();
+            ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+            if (token == null || !token.IsValid)
+            {
+                parser.ReportError("Expected flag name, got " + ((Object)token ?? "<null>").ToString());
+                return false;
+            }
+
+            tokenizer.SkipWhitespace();
+            token = tokenizer.ExpectToken(ZScriptTokenType.Colon);
+            if (token == null || !token.IsValid)
+            {
+                parser.ReportError("Expected :, got " + ((Object)token ?? "<null>").ToString());
+                return false;
+            }
+
+            tokenizer.SkipWhitespace();
+            token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+            if (token == null || !token.IsValid)
+            {
+                parser.ReportError("Expected flag base variable, got " + ((Object)token ?? "<null>").ToString());
+                return false;
+            }
+
+            tokenizer.SkipWhitespace();
+            token = tokenizer.ExpectToken(ZScriptTokenType.Comma);
+            if (token == null || !token.IsValid)
+            {
+                parser.ReportError("Expected comma, got " + ((Object)token ?? "<null>").ToString());
+                return false;
+            }
+
+            tokenizer.SkipWhitespace();
+            token = tokenizer.ExpectToken(ZScriptTokenType.Integer);
+            if (token == null || !token.IsValid)
+            {
+                parser.ReportError("Expected flag bit index, got " + ((Object)token ?? "<null>").ToString());
+                return false;
+            }
+
+            tokenizer.SkipWhitespace();
+            token = tokenizer.ExpectToken(ZScriptTokenType.Semicolon);
+            if (token == null || !token.IsValid)
+            {
+                parser.ReportError("Expected semicolon, got " + ((Object)token ?? "<null>").ToString());
+                return false;
+            }
+
+            return true;
+        }
+
         private bool ParseProperty()
         {
             // property identifier: identifier, identifier, identifier, ...;
@@ -484,6 +538,12 @@ namespace CodeImp.DoomBuilder.ZDoom
                     // new properties syntax
                     case "property":
                         if (!ParseProperty())
+                            return;
+                        continue;
+
+                    // new flags syntax
+                    case "flagdef":
+                        if (!ParseFlagdef())
                             return;
                         continue;
 
