@@ -356,8 +356,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
             }
 
             // read polygons
-            int minverthack = 0;
-            int minvert = 2147483647;
+            //int minverthack = 0;
+            //int minvert = 2147483647;
             UE1Poly[] polys = new UE1Poly[d3d_numpolys];
             int[] polyindexlist = new int[d3d_numpolys*3];
             for (uint i = 0; i < d3d_numpolys; i++)

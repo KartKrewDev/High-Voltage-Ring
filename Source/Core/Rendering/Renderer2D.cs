@@ -839,7 +839,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				if(General.Settings.RenderGrid) //mxd
 				{
-					bool transformed = Math.Abs(General.Map.Grid.GridOriginX) > 1e-4 || Math.Abs(General.Map.Grid.GridOriginY) > 1e-4 || Math.Abs(General.Map.Grid.GridRotate) > 1e-4));
+					bool transformed = Math.Abs(General.Map.Grid.GridOriginX) > 1e-4 || Math.Abs(General.Map.Grid.GridOriginY) > 1e-4 || Math.Abs(General.Map.Grid.GridRotate) > 1e-4;
 
 					if (transformed)
 					{
@@ -902,7 +902,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		private void RenderGridTransformed(float size, float angle, float originx, float originy, PixelColor c, Plotter gridplotter)
 		{
 			const int mask = 0x55555555; // dotted line mask
-			Vector2D pos = new Vector2D();
 
 			//mxd. Increase rendered grid size if needed
 			if(!General.Settings.DynamicGridSize && size * scale <= 6f)
