@@ -15,7 +15,7 @@ ECHO.
 
 SET STUDIODIR=c:\Program Files (x86)\Microsoft Visual Studio 14.0
 SET HHWDIR=c:\Program Files (x86)\HTML Help Workshop
-SET SEVENZIPDIR=c:\Program Files (x86)\7-Zip
+SET SEVENZIPDIR=c:\Program Files\7-Zip
 
 IF NOT DEFINED PLATFORM SET PLATFORM=x86
 
@@ -171,6 +171,16 @@ IF EXIST "Source\Plugins\TagRange\obj" RD /S /Q "Source\Plugins\TagRange\obj"
 msbuild "Source\Plugins\TagRange\TagRange.csproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
 IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "Build\Plugins\TagRange.dll" GOTO FILEFAIL
+
+ECHO.
+ECHO Compiling vpo_dll...
+ECHO.
+IF EXIST "Source\Plugins\VisplaneExplorer\Resources\vpo.dll" DEL /F /Q "Source\Plugins\VisplaneExplorer\Resources\vpo.dll" > NUL
+IF EXIST "Source\Plugins\vpo_dll\Release" RD /S /Q "Source\Plugins\vpo_dll\Release"
+msbuild "Source\Plugins\vpo_dll\vpo_dll.vcxproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
+IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+IF NOT EXIST "Source\Plugins\VisplaneExplorer\Resources\vpo.dll" GOTO FILEFAIL
+
 
 ECHO.
 ECHO Compiling Visplane Explorer plugin...
