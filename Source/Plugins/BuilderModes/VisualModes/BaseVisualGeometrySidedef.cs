@@ -528,6 +528,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(ignorelight) lightabsolute = false;
 		}
 
+		// biwa
+		protected static float GetNewTexutreOffset(float oldValue, float offset, float textureSize)
+		{
+			return GetRoundedTextureOffset(oldValue, offset, 1.0f, textureSize);
+		}
+
 		//mxd
 		protected static float GetRoundedTextureOffset(float oldValue, float offset, float scale, float textureSize) 
 		{
