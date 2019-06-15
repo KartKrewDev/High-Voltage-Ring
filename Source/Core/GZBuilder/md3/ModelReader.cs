@@ -1507,13 +1507,13 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			{
 				v.x = float.Parse(fields[0], CultureInfo.InvariantCulture);
 				v.z = float.Parse(fields[1], CultureInfo.InvariantCulture);
-				v.y = float.Parse(fields[2], CultureInfo.InvariantCulture);
+				v.y = -float.Parse(fields[2], CultureInfo.InvariantCulture);
 
 
 				// Prepare to fix rotation angle
-				float angleOfsetCos = (float)Math.Cos(Angle2D.PIHALF);
-				float angleOfsetSin = (float)Math.Sin(Angle2D.PIHALF);
-
+				float angleOfsetCos = (float)Math.Cos(-Angle2D.PIHALF);
+				float angleOfsetSin = (float)Math.Sin(-Angle2D.PIHALF);
+				
 				// Fix rotation angle
 				float rx = angleOfsetCos * v.x - angleOfsetSin * v.y;
 				float ry = angleOfsetSin * v.x + angleOfsetCos * v.y;
