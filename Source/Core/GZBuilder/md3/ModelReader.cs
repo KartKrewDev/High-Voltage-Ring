@@ -1520,7 +1520,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				v.x = rx;
 				v.y = ry;
 			}
-			catch (FormatException e)
+			catch (FormatException)
 			{
 				message = "field is not a float";
 				return false;
@@ -1549,7 +1549,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				else
 					t.y = 0.0f;
 			}
-			catch (FormatException e)
+			catch (FormatException)
 			{
 				message = "field is not a float";
 				return false;
@@ -1575,7 +1575,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				normal.y = float.Parse(fields[1], CultureInfo.InvariantCulture);
 				normal.z = float.Parse(fields[2], CultureInfo.InvariantCulture);
 			}
-			catch (FormatException e)
+			catch (FormatException)
 			{
 				message = "field is not a float";
 				return false;
@@ -1620,7 +1620,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 						normals.Add(-1);
 				}
 			}
-			catch(FormatException e)
+			catch(FormatException)
 			{
 				message = "field is not an integer";
 				return false;
