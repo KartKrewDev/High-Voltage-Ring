@@ -14,7 +14,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 	{
 		#region ================== Constants
 
-		public static readonly string[] SUPPORTED_TEXTURE_EXTENSIONS = { ".jpg", ".tga", ".png", ".dds", ".pcx" };
+		// Keep sage order of extensions as in GZDoom's r_data\models\models.cpp FindGFXFile function. That doesn't
+		// list .dds, but just keep it in here
+		public static readonly string[] SUPPORTED_TEXTURE_EXTENSIONS = { ".png", ".jpg", ".tga", ".pcx", ".dds" };
 
 		#endregion
 
