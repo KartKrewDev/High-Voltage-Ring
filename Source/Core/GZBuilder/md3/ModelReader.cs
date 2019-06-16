@@ -1342,7 +1342,10 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					if (fields[0].Trim() == "#") continue; // Comment
 
 					string keyword = fields[0].Trim();
-					string payload = fields[1].Trim();
+					string payload = null;
+
+					if (fields.Length == 2)
+						 payload = fields[1].Trim();
 
 					switch(keyword)
 					{
@@ -1467,6 +1470,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 						case "": // Empty line
 						case "#": // Line is a comment
 						case "s": // Smooth
+						case "g": // Group
+						case "o": // Object
 						default:
 							break;
 					}
@@ -1495,6 +1500,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 		private static bool OBJParseVertex(string payload, ref Vector3D v, out string message)
 		{
+			if(String.IsNullOrEmpty(payload))
+			{
+				message = "no arguments given";
+				return false;
+			}
+
 			string[] fields = payload.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if(fields.Length < 3)
@@ -1532,6 +1543,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 		private static bool OBJParseTextureCoords(string payload, ref Vector2D t, out string message)
 		{
+			if (String.IsNullOrEmpty(payload))
+			{
+				message = "no arguments given";
+				return false;
+			}
+
 			string[] fields = payload.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (fields.Length < 2)
@@ -1561,6 +1578,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 		private static bool OBJParseNormal(string payload, ref Vector3D normal, out string message)
 		{
+			if (String.IsNullOrEmpty(payload))
+			{
+				message = "no arguments given";
+				return false;
+			}
+
 			string[] fields = payload.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (fields.Length < 3)
@@ -1587,6 +1610,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 		private static bool OBJParseFace(string payload, ref List<int> face, ref List<int> texcoords, ref List<int> normals, out string message)
 		{
+			if (String.IsNullOrEmpty(payload))
+			{
+				message = "no arguments given";
+				return false;
+			}
+
 			string[] fields = payload.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (fields.Length < 3)
@@ -1690,7 +1719,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			//create mesh
 			Mesh mesh = new Mesh(device, indices.Count / 3, verts.Count, MeshFlags.Use32Bit | MeshFlags.IndexBufferManaged | MeshFlags.VertexBufferManaged, vertexElements);
 
-			using(DataStream stream = mesh.LockVertexBuffer(LockFlags.None))
+			TextureAddress ta = (TextureAddress)device.GetSamplerState(0, SamplerState.AddressU);
+
+			using (DataStream stream = mesh.LockVertexBuffer(LockFlags.None))
 			{
 				stream.WriteRange(verts.ToArray());
 			}
