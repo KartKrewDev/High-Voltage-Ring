@@ -192,10 +192,20 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 							Texture t = GetTexture(containers, path, device);
 
-							if(t == null)
+							if(t != null)
+							{
+								mde.Model.Textures.Add(t);
+								continue;
+							}
+
+							// That didn't work, let's try to load the texture without the additional path
+							path = result.Skins[m].Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+							t = GetTexture(containers, path, device);
+
+							if (t == null)
 							{
 								mde.Model.Textures.Add(General.Map.Data.UnknownTexture3D.Texture);
-								errors.Add("unable to load skin \"" + result.Skins[m] + "\"");
+								errors.Add("unable to load skin \"" + path + "\"");
 								continue;
 							}
 
