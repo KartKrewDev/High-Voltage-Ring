@@ -37,6 +37,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		internal List<Dictionary<int, string>> SurfaceSkinNames;
 		internal List<string> FrameNames;
 		internal List<int> FrameIndices;
+		internal string Path; // biwa
 
 		internal GZModel Model;
 
@@ -71,6 +72,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			SurfaceSkinNames = new List<Dictionary<int, string>>();
 			FrameNames = new List<string>();
 			FrameIndices = new List<int>();
+			Path = string.Empty;
 			transform = Matrix.Identity;
 			transformstretched = Matrix.Identity;
 			hashcode = hashcounter++;

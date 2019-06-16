@@ -185,7 +185,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 								continue;
 							}
 
-							Texture t = GetTexture(containers, result.Skins[m], device);
+							string path = result.Skins[m].Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+
+							if(!String.IsNullOrEmpty(mde.Path))
+								path = Path.Combine(mde.Path, path);
+
+							Texture t = GetTexture(containers, path, device);
 
 							if(t == null)
 							{

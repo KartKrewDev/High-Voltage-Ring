@@ -63,6 +63,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 		public bool InheritActorPitch { get { return inheritactorpitch; } }
 		public bool UseActorPitch { get { return useactorpitch; } }
 		public bool UseActorRoll { get { return useactorroll; } }
+		public string DataPath { get { return path; } } // biwa
 
 		public Dictionary<string, HashSet<FrameStructure>> Frames { get { return frames; } }
 
