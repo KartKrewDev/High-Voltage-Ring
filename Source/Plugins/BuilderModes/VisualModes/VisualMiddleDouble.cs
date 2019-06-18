@@ -201,8 +201,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			CropPoly(ref poly, osd.Ceiling.plane, true);
 			CropPoly(ref poly, osd.Floor.plane, true);
 
-			// Determine if we should repeat the middle texture
-			repeatmidtex = Sidedef.IsFlagSet("wrapmidtex") || Sidedef.Line.IsFlagSet("wrapmidtex"); //mxd
+			// Determine if we should repeat the middle texture. In UDMF this is done with a flag, in Hexen with
+			// a argument to the 121:Line_SetIdentification. See https://www.zdoom.org/w/index.php?title=Line_SetIdentification
+			if (General.Map.UDMF)
+				repeatmidtex = Sidedef.IsFlagSet("wrapmidtex") || Sidedef.Line.IsFlagSet("wrapmidtex"); //mxd
+			else if (General.Map.HEXEN)
+				repeatmidtex = Sidedef.Line.Action == 121 && (Sidedef.Line.Args[1] & 16) == 16;
+			else
+				repeatmidtex = false;
+
 			if(!repeatmidtex) 
 			{
 				// First determine the visible portion of the texture
