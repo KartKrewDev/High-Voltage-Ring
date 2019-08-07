@@ -220,6 +220,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SlimDX.cs" />
     <Compile Include="Windows\ThingStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -590,10 +591,6 @@
     <Reference Include="SharpCompress, Version=0.20.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Build\SharpCompress.dll</HintPath>
-    </Reference>
-    <Reference Include="SlimDX, Version=v4.0.30319, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\SlimDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
