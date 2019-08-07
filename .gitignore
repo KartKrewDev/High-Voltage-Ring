@@ -9,3 +9,10 @@ obj
 /Build/Plugins/*.dll
 /Build/Builder.pdb
 /Build/Builder.exe.config
+/Build/Plugins/*.pdb
+/Source/Plugins/VisplaneExplorer/Resources/*.ilk
+/Source/Plugins/VisplaneExplorer/Resources/*.exp
+/Source/Plugins/VisplaneExplorer/Resources/*.lib
+/Source/Plugins/VisplaneExplorer/Resources/*.pdb
+/Source/Plugins/vpo_dll/Debug
+/Source/Plugins/vpo_dll/*.user
