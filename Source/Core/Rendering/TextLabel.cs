@@ -22,7 +22,6 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Drawing;
-using SlimDX;
 using CodeImp.DoomBuilder.Geometry;
 using Font = System.Drawing.Font;
 

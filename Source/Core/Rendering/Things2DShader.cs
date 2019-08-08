@@ -17,7 +17,6 @@
 #region ================== Namespaces
 
 using System;
-using SlimDX;
 
 #endregion
 

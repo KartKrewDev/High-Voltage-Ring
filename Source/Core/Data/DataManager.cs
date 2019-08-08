@@ -36,8 +36,7 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.ZDoom;
-using SlimDX;
-using Matrix = SlimDX.Matrix;
+using Matrix = CodeImp.DoomBuilder.Rendering.Matrix;
 using CodeImp.DoomBuilder.Controls;
 
 #endregion

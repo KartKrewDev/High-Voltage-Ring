@@ -22,7 +22,6 @@ using System.Drawing;
 using System.IO;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Map;
-using SlimDX;
 
 #endregion
 

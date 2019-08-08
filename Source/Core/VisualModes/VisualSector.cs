@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using CodeImp.DoomBuilder.Map;
-using SlimDX;
 using CodeImp.DoomBuilder.Rendering;
 
 #endregion

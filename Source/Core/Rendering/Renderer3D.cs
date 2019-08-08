@@ -25,7 +25,6 @@ using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.GZBuilder.MD3;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.VisualModes;
-using SlimDX;
 using CodeImp.DoomBuilder.GZBuilder;
 
 #endregion

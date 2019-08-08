@@ -19,7 +19,6 @@
 using System;
 using System.Globalization;
 using System.Drawing;
-using SlimDX;
 using Configuration = CodeImp.DoomBuilder.IO.Configuration;
 
 #endregion

@@ -1,4 +1,4 @@
-﻿using SlimDX;
+﻿using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.GZBuilder.Data
 {

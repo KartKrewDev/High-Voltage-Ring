@@ -22,7 +22,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Geometry;
-using SlimDX;
 
 #endregion
 

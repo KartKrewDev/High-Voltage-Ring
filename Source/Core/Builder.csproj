@@ -220,7 +220,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SlimDX.cs" />
+    <Compile Include="Rendering\Color3.cs" />
+    <Compile Include="Rendering\Color4.cs" />
+    <Compile Include="Rendering\Matrix.cs" />
+    <Compile Include="Rendering\Vector2.cs" />
+    <Compile Include="Rendering\Vector3.cs" />
+    <Compile Include="Rendering\Vector4.cs" />
     <Compile Include="Windows\ThingStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -23,7 +23,6 @@ using CodeImp.DoomBuilder.Geometry;
 using System.Drawing;
 using CodeImp.DoomBuilder.Rendering;
 using System.Collections.ObjectModel;
-using SlimDX;
 
 #endregion
 

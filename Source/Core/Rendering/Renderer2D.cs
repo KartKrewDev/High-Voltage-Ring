@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
 using CodeImp.DoomBuilder.Map;
-using SlimDX;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Editing;

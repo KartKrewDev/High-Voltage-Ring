@@ -11,7 +11,6 @@ using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.GZBuilder.Data;
-using SlimDX;
 using CodeImp.DoomBuilder.Geometry;
 
 #endregion
