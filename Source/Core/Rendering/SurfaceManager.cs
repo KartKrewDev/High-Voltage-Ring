@@ -140,10 +140,10 @@ namespace CodeImp.DoomBuilder.Rendering
 				for(int i = 0; i < set.Value.buffersizes.Count; i++)
 				{
 					// Make the new buffer!
-					VertexBuffer b = new VertexBuffer(FlatVertex.Stride * set.Value.buffersizes[i], Usage.WriteOnly | Usage.Dynamic, Pool.Default);
+					VertexBuffer b = new VertexBuffer(FlatVertex.Stride * set.Value.buffersizes[i]);
 
 					// Start refilling the buffer with sector geometry
-					DataStream bstream = b.Lock(0, FlatVertex.Stride * set.Value.buffersizes[i], LockFlags.Discard);
+					DataStream bstream = b.Lock(LockFlags.Discard);
 					foreach(SurfaceEntry e in set.Value.entries)
 					{
 						if(e.bufferindex == i)
@@ -280,7 +280,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!resourcesunloaded)
 					{
 						// Make the new buffer!
-						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
+						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices);
 
 						// Add it.
 						set.buffers.Add(vb);
@@ -331,8 +331,8 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!resourcesunloaded)
 					{
 						// Make the new buffer and lock it
-						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
-						bstream = vb.Lock(0, FlatVertex.Stride * theseentries.Count * verticesperentry, LockFlags.Discard);
+						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices);
+						bstream = vb.Lock(LockFlags.Discard);
 					}
 					
 					// Start refilling the buffer with sector geometry

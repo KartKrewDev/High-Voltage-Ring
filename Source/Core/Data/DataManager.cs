@@ -3425,7 +3425,7 @@ namespace CodeImp.DoomBuilder.Data
 
 			// Make custom rendertarget
 			const int cubemaptexsize = 1024;
-			Texture rendertarget = new Texture(cubemaptexsize, cubemaptexsize, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
+			Texture rendertarget = new Texture(cubemaptexsize, cubemaptexsize, 1, Format.A8R8G8B8);
 
             // Start rendering
             General.Map.Graphics.StartRendering(true, new Color4(), rendertarget, true);
@@ -3453,7 +3453,7 @@ namespace CodeImp.DoomBuilder.Data
 			yscale *= 1.65f;
 
 			// Make cubemap texture
-			CubeTexture cubemap = new CubeTexture(cubemaptexsize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+			CubeTexture cubemap = new CubeTexture(cubemaptexsize, 1, Format.A8R8G8B8);
 
             // Set render settings...
             General.Map.Graphics.SetRenderState(RenderState.ZEnable, false);
@@ -3653,7 +3653,7 @@ namespace CodeImp.DoomBuilder.Data
 		// sides[] must contain 6 square Po2 images in this order: North, East, South, West, Top, Bottom
 		private static CubeTexture MakeSkyBox(Bitmap[] sides, int targetsize, bool fliptop)
 		{
-			CubeTexture cubemap = new CubeTexture(targetsize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+			CubeTexture cubemap = new CubeTexture(targetsize, 1, Format.A8R8G8B8);
 
 			// Draw faces
 			sides[3].RotateFlip(RotateFlipType.Rotate90FlipNone);
@@ -3679,21 +3679,7 @@ namespace CodeImp.DoomBuilder.Data
 
 		private static void DrawCubemapFace(CubeTexture texture, CubeMapFace face, Bitmap image)
 		{
-			DataRectangle rect = texture.LockRectangle(face, 0, LockFlags.None);
-			
-			if(rect.Data.CanWrite)
-			{
-				BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-				int len = Math.Abs(data.Stride) * image.Height;
-				rect.Data.WriteRange(data.Scan0, len);
-				image.UnlockBits(data);
-			}
-			else
-			{
-				General.ErrorLogger.Add(ErrorType.Error, "Skybox creation failed: CubeTexture is unwritable...");
-			}
-
-			texture.UnlockRectangle(face, 0);
+            texture.SetPixels(face, image);
 		}
 
 		private static Bitmap ResizeImage(Image image, int width, int height)
@@ -3774,7 +3760,7 @@ namespace CodeImp.DoomBuilder.Data
 
 				// Classic skies textures can be NPo2 (and D3D Texture is resized to Po2 by default),
 				// so we need to explicitly specify the size
-				return Texture.FromStream(ms, (int) ms.Length, image.Size.Width, image.Size.Height, 0, Usage.None, Format.Unknown, Pool.Managed);
+				return Texture.FromStream(ms, (int) ms.Length, image.Size.Width, image.Size.Height, 0, Format.Unknown);
 			}
 		}
 		

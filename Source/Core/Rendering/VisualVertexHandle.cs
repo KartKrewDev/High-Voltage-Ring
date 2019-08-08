@@ -84,8 +84,8 @@ namespace CodeImp.DoomBuilder.Rendering
 									   v2, v3,
 									   v3, v0 };
 
-			upper = new VertexBuffer(WorldVertex.Stride * vu.Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
-			upper.Lock(0, WorldVertex.Stride * vu.Length, LockFlags.None).WriteRange(vu);
+			upper = new VertexBuffer(WorldVertex.Stride * vu.Length);
+			upper.Lock(LockFlags.None).WriteRange(vu);
 			upper.Unlock();
 
 			WorldVertex[] vl = new[]{ c, v4,
@@ -98,8 +98,8 @@ namespace CodeImp.DoomBuilder.Rendering
 									  v6, v7,
 									  v7, v4 };
 
-			lower = new VertexBuffer(WorldVertex.Stride * vl.Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
-			lower.Lock(0, WorldVertex.Stride * vl.Length, LockFlags.None).WriteRange(vl);
+			lower = new VertexBuffer(WorldVertex.Stride * vl.Length);
+			lower.Lock(LockFlags.None).WriteRange(vl);
 			lower.Unlock();
 		}
 

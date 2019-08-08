@@ -36,11 +36,6 @@ namespace CodeImp.DoomBuilder.Rendering
         public VertexBuffer VertexBuffer { get; private set; }
         public IndexBuffer IndexBuffer { get; private set; }
 
-        public DataStream LockVertexBuffer(LockFlags flags) { return null; }
-        public DataStream LockIndexBuffer(LockFlags flags) { return null; }
-        public void UnlockVertexBuffer() { }
-        public void UnlockIndexBuffer() { }
-
         public void DrawSubset(int index) { }
 
         public void Dispose() { }
@@ -53,7 +48,6 @@ namespace CodeImp.DoomBuilder.Rendering
         public void SetTexture(EffectHandle handle, BaseTexture texture) { }
         public void SetValue<T>(EffectHandle handle, T value) where T : struct { }
         public EffectHandle GetParameter(EffectHandle parameter, string name) { return null; }
-        public string Technique { set; private get; }
         public void CommitChanges() { }
 
         public void Begin() { }
@@ -86,8 +80,9 @@ namespace CodeImp.DoomBuilder.Rendering
     #region Buffer objects
     public class VertexBuffer
     {
-        public VertexBuffer(int sizeInBytes, Usage usage, Pool pool) { }
+        public VertexBuffer(int sizeInBytes) { }
 
+        public DataStream Lock(LockFlags flags) { return null; }
         public DataStream Lock(int offset, int size, LockFlags flags) { return null; }
         public void Unlock() { }
 
@@ -99,72 +94,69 @@ namespace CodeImp.DoomBuilder.Rendering
 
     public class IndexBuffer
     {
-        public DataStream Lock(int offset, int size, LockFlags flags) { return null; }
+        public DataStream Lock(LockFlags flags) { return null; }
         public void Unlock() { }
-
-        public object Tag { get; set; }
 
         public bool Disposed { get; private set; }
         public void Dispose() { Disposed = true; }
-    }
-    #endregion
-
-    #region Textures
-    public class BaseTexture
-    {
-        public bool Disposed { get; }
-        public void Dispose() { }
-    }
-
-    public class Texture : BaseTexture
-    {
-        public Texture(int width, int height, int levels, Usage usage, Format format, Pool pool) { }
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-
-        public object Tag { get; set; }
-
-        public DataRectangle LockRectangle(int level, LockFlags flags) { return null; }
-        public void UnlockRectangle(int level) { }
-
-        public static Texture FromStream(System.IO.Stream stream) { return null; }
-        public static Texture FromStream(System.IO.Stream stream, int length, int width, int height, int levels, Usage usage, Format format, Pool pool) { return null; }
-    }
-
-    public class CubeTexture : BaseTexture
-    {
-        public CubeTexture(int size, int levels, Usage usage, Format format, Pool pool) { }
-
-        public DataRectangle LockRectangle(CubeMapFace face, int level, LockFlags flags) { return null; }
-        public void UnlockRectangle(CubeMapFace face, int level) { }
-    }
-    #endregion
-
-    #region Locked buffer writing and reading
-    public class DataRectangle
-    {
-        public DataRectangle(int pitch, DataStream s) { Data = s; Pitch = pitch; }
-        public DataStream Data { get; private set; }
-        public int Pitch { get; private set; }
     }
 
     public class DataStream : IDisposable
     {
         public void Seek(long offset, System.IO.SeekOrigin origin) { }
         public void Write(ushort v) { }
-        public void Write(Array data, long offset, long size) { }
         public void WriteRange(Array data) { }
         public void WriteRange(Array data, long offset, long size) { }
-        public void WriteRange(IntPtr data, long size) { }
         public void Dispose() { }
+    }
+    #endregion
 
-        public void ReadRange(Array data, long offset, long size) { }
+    #region Textures
+    public class BaseTexture
+    {
+        public bool Disposed { get; private set; }
+        public void Dispose() { Disposed = true; }
+    }
 
-        public bool CanRead { get; private set; }
-        public bool CanWrite { get; private set; }
-        public long Length { get; private set; }
-        public IntPtr DataPointer { get; private set; }
+    public class Texture : BaseTexture
+    {
+        public Texture(int width, int height, int levels, Format format) { }
+
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+
+        public object Tag { get; set; }
+
+        public void SetPixels(System.Drawing.Bitmap bitmap)
+        {
+            /*
+            BitmapData bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+            DataRectangle textureLock = texture.LockRectangle(0, LockFlags.None);
+            textureLock.Data.WriteRange(bmlock.Scan0, bmlock.Height * bmlock.Stride);
+            texture.UnlockRectangle(0);
+
+            bitmap.UnlockBits(bmpdata);
+            */
+        }
+
+        internal Plotter LockPlotter(int visibleWidth, int visibleHeight)
+        {
+            //return new Plotter((PixelColor*)plotlocked.Data.DataPointer.ToPointer(), plotlocked.Pitch / sizeof(PixelColor), Height, visibleWidth, visibleHeight);
+            return null;
+        }
+
+        public void UnlockPlotter() { }
+
+        public static Texture FromStream(System.IO.Stream stream) { return null; }
+        public static Texture FromStream(System.IO.Stream stream, int length, int width, int height, int levels, Format format) { return null; }
+    }
+
+    public class CubeTexture : BaseTexture
+    {
+        public CubeTexture(int size, int levels, Format format) { }
+
+        public void SetPixels(CubeMapFace face, System.Drawing.Bitmap bitmap) { }
     }
     #endregion
 
@@ -197,8 +189,6 @@ namespace CodeImp.DoomBuilder.Rendering
     public enum SamplerState { AddressU, AddressV, AddressW }
     public enum TextureAddress { Wrap, Clamp }
     public enum Format { Unknown, A8R8G8B8 }
-    public enum Usage { None, WriteOnly, Dynamic, RenderTarget }
-    public enum Pool { Default, Managed, SystemMemory }
     public enum LockFlags { None, Discard }
     public enum MeshFlags { Use32Bit, IndexBufferManaged, VertexBufferManaged, Managed }
     public enum ShaderFlags { None, Debug }

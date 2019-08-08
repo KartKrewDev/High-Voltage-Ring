@@ -67,9 +67,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		private Texture overlaytex;
 		private Texture surfacetex;
 
-		// Locking data
-		private DataRectangle plotlocked;
-
 		// Rendertarget sizes
 		private Size windowsize;
 		private Size structsize;
@@ -365,11 +362,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			windowsize.Height = graphics.RenderTarget.ClientSize.Height;
 
 			// Create rendertargets textures
-			plottertex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-			thingstex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
-			backtex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-			overlaytex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
-			surfacetex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
+			plottertex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
+			thingstex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
+			backtex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
+			overlaytex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
+			surfacetex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
 			
 			// Get the real surface sizes
 			structsize.Width = plottertex.Width;
@@ -391,11 +388,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.ClearTexture(General.Colors.Background.WithAlpha(0).ToColorValue(), overlaytex);
 			
 			// Create vertex buffers
-			screenverts = new VertexBuffer(4 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, Pool.Default);
-			thingsvertices = new VertexBuffer(THING_BUFFER_SIZE * 12 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, Pool.Default);
+			screenverts = new VertexBuffer(4 * sizeof(FlatVertex));
+			thingsvertices = new VertexBuffer(THING_BUFFER_SIZE * 12 * sizeof(FlatVertex));
 
 			// Make screen vertices
-			DataStream stream = screenverts.Lock(0, 4 * sizeof(FlatVertex), LockFlags.Discard);
+			DataStream stream = screenverts.Lock(LockFlags.Discard);
 			FlatVertex[] verts = CreateScreenVerts(structsize);
 			stream.WriteRange(verts);
 			screenverts.Unlock();
@@ -636,11 +633,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Rendertargets available?
 			if(plottertex != null)
 			{
-				// Lock structures rendertarget memory
-				plotlocked = plottertex.LockRectangle(0, LockFlags.None);
-
 				// Create structures plotter
-				plotter = new Plotter((PixelColor*)plotlocked.Data.DataPointer.ToPointer(), plotlocked.Pitch / sizeof(PixelColor), structsize.Height, structsize.Width, structsize.Height);
+				plotter = plottertex.LockPlotter(structsize.Width, structsize.Height);
 
 				// Redraw grid when structures image was cleared
 				if(clear)
@@ -726,8 +720,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Clean up plotter
 			if(renderlayer == RenderLayers.Plotter)
 			{
-				if(plottertex != null) plottertex.UnlockRectangle(0);
-				if(plotlocked.Data != null) plotlocked.Data.Dispose();
+				if(plottertex != null) plottertex.UnlockPlotter();
 				plotter = null;
 			}
 			
@@ -795,11 +788,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(lastgridsize != General.Map.Grid.GridSizeF || lastgridscale != scale ||
 			   lastgridx != offsetx || lastgridy != offsety || drawmapcenter != lastdrawmapcenter)
 			{
-				// Lock background rendertarget memory
-				DataRectangle lockedrect = backtex.LockRectangle(0, LockFlags.None);
-
 				// Create a plotter
-				Plotter gridplotter = new Plotter((PixelColor*)lockedrect.Data.DataPointer.ToPointer(), lockedrect.Pitch / sizeof(PixelColor), backsize.Height, backsize.Width, backsize.Height);
+				Plotter gridplotter = backtex.LockPlotter(backsize.Width, backsize.Height);
 				gridplotter.Clear();
 
 				if(General.Settings.RenderGrid) //mxd
@@ -853,8 +843,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Done
-				backtex.UnlockRectangle(0);
-				lockedrect.Data.Dispose();
+				backtex.UnlockPlotter();
 				lastgridscale = scale;
 				lastgridsize = General.Map.Grid.GridSizeF;
 				lastgridx = offsetx;
@@ -2008,8 +1997,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			// Write to buffer
-			VertexBuffer vb = new VertexBuffer(FlatVertex.Stride * verts.Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
-			DataStream s = vb.Lock(0, FlatVertex.Stride * verts.Length, LockFlags.Discard);
+			VertexBuffer vb = new VertexBuffer(FlatVertex.Stride * verts.Length);
+			DataStream s = vb.Lock(LockFlags.Discard);
 			s.WriteRange(verts);
 			vb.Unlock();
 			s.Dispose();

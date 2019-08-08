@@ -138,10 +138,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if(numverts > 0)
 			{
 				// Make a new buffer
-				geobuffer = new VertexBuffer(WorldVertex.Stride * numverts, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
+				geobuffer = new VertexBuffer(WorldVertex.Stride * numverts);
 
 				// Fill the buffer
-				DataStream bufferstream = geobuffer.Lock(0, WorldVertex.Stride * numverts, LockFlags.Discard);
+				DataStream bufferstream = geobuffer.Lock(LockFlags.Discard);
 				foreach(VisualGeometry g in allgeometry)
 				{
 					if((g.Vertices != null) && (g.Vertices.Length > 0))

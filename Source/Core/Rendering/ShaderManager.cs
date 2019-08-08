@@ -30,9 +30,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		#region ================== Variables
 
-		// Settings
-		private readonly string shadertechnique;
-		
 		// Shaders
 		private Display2DShader display2dshader;
 		private Things2DShader things2dshader;
@@ -48,7 +45,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		#region ================== Properties
 
-		public string ShaderTechnique { get { return shadertechnique; } }
 		public Display2DShader Display2D { get { return display2dshader; } }
 		public Things2DShader Things2D { get { return things2dshader; } }
 		public World3DShader World3D { get { return world3dshader; } }
@@ -64,7 +60,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			// Initialize
 			this.device = device;
-			shadertechnique = "SM20"; //mxd
 			
 			// Load
 			ReloadResource();

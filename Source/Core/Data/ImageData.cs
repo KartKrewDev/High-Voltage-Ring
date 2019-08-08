@@ -474,11 +474,11 @@ namespace CodeImp.DoomBuilder.Data
 					memstream.Seek(0, SeekOrigin.Begin);
 					if(dynamictexture)
 					{
-						texture = Texture.FromStream(memstream, (int)memstream.Length, img.Size.Width, img.Size.Height, mipmaplevels, Usage.Dynamic, Format.A8R8G8B8, Pool.Default);
+						texture = Texture.FromStream(memstream, (int)memstream.Length, img.Size.Width, img.Size.Height, mipmaplevels, Format.A8R8G8B8);
 					}
 					else
 					{
-						texture = Texture.FromStream(memstream, (int)memstream.Length, img.Size.Width, img.Size.Height, mipmaplevels, Usage.None, Format.Unknown, Pool.Managed);
+						texture = Texture.FromStream(memstream, (int)memstream.Length, img.Size.Width, img.Size.Height, mipmaplevels, Format.Unknown);
 					}
 					memstream.Dispose();
 					
@@ -505,30 +505,7 @@ namespace CodeImp.DoomBuilder.Data
             {
 				if((texture != null) && !texture.Disposed)
 				{
-					// Lock the bitmap and texture
-					BitmapData bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-					DataRectangle texdata = texture.LockRectangle(0, LockFlags.Discard);
-
-					// Copy data
-					int* bp = (int*)bmpdata.Scan0.ToPointer();
-					int* tp = (int*)texdata.Data.DataPointer.ToPointer();
-					for(int y = 0; y < bmpdata.Height; y++)
-					{
-						for(int x = 0; x < bmpdata.Width; x++)
-						{
-							*tp = *bp;
-							bp++;
-							tp++;
-						}
-
-						// Skip extra data in texture
-						int extrapitch = (texdata.Pitch >> 2) - bmpdata.Width;
-						tp += extrapitch;
-					}
-
-					// Unlock
-					texture.UnlockRectangle(0);
-					bitmap.UnlockBits(bmpdata);
+                    texture.SetPixels(bitmap);
 				}
 			}
 		}

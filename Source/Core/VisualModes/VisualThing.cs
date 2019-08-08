@@ -526,10 +526,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 					for(int i = 0; i < vertices.Length; i++)
 					{
 						// Make a new buffer
-						geobuffers[i] = new VertexBuffer(WorldVertex.Stride * vertices[i].Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
+						geobuffers[i] = new VertexBuffer(WorldVertex.Stride * vertices[i].Length);
 
 						// Fill the buffer
-						DataStream bufferstream = geobuffers[i].Lock(0, WorldVertex.Stride * vertices[i].Length, LockFlags.Discard);
+						DataStream bufferstream = geobuffers[i].Lock(LockFlags.Discard);
 						bufferstream.WriteRange(vertices[i]);
 						geobuffers[i].Unlock();
 						bufferstream.Dispose();
@@ -616,8 +616,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 				// Create buffer
 				WorldVertex[] cv = cageverts.ToArray();
 				cagelength = cv.Length / 2;
-				cagebuffer = new VertexBuffer(WorldVertex.Stride * cv.Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
-				cagebuffer.Lock(0, WorldVertex.Stride * cv.Length, LockFlags.None).WriteRange(cv);
+				cagebuffer = new VertexBuffer(WorldVertex.Stride * cv.Length);
+				cagebuffer.Lock(LockFlags.None).WriteRange(cv);
 				cagebuffer.Unlock();
 
 				// Done

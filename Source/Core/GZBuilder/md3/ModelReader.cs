@@ -991,17 +991,17 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				//mesh
 				Mesh mesh = new Mesh(polyIndecesList.Count / 3, vertList.Count, MeshFlags.Use32Bit | MeshFlags.IndexBufferManaged | MeshFlags.VertexBufferManaged, vertexElements);
 
-				using(DataStream stream = mesh.LockVertexBuffer(LockFlags.None))
+				using(DataStream stream = mesh.VertexBuffer.Lock(LockFlags.None))
 				{
 					stream.WriteRange(vertList.ToArray());
 				}
-				mesh.UnlockVertexBuffer();
+				mesh.VertexBuffer.Unlock();
 
-				using(DataStream stream = mesh.LockIndexBuffer(LockFlags.None))
+				using(DataStream stream = mesh.IndexBuffer.Lock(LockFlags.None))
 				{
 					stream.WriteRange(polyIndecesList.ToArray());
 				}
-				mesh.UnlockIndexBuffer();
+				mesh.IndexBuffer.Unlock();
 
 				//store in result
 				result.Meshes.Add(mesh);
@@ -1177,7 +1177,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			using(Bitmap bmp = CreateVoxelTexture(palette)) bmp.Save(memstream, ImageFormat.Bmp);
 			memstream.Seek(0, SeekOrigin.Begin);
 
-			Texture texture = Texture.FromStream(memstream, (int)memstream.Length, 64, 64, 0, Usage.None, Format.Unknown, Pool.Managed);
+			Texture texture = Texture.FromStream(memstream, (int)memstream.Length, 64, 64, 0, Format.Unknown);
 			memstream.Dispose();
 
 			// Add texture
@@ -1189,11 +1189,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 			Mesh mesh = new Mesh(facescount, verts.Count, meshflags, vertexElements);
 
-			DataStream mstream = mesh.VertexBuffer.Lock(0, 0, LockFlags.None);
+			DataStream mstream = mesh.VertexBuffer.Lock(LockFlags.None);
 			mstream.WriteRange(verts.ToArray());
 			mesh.VertexBuffer.Unlock();
 
-			mstream = mesh.IndexBuffer.Lock(0, 0, LockFlags.None);
+			mstream = mesh.IndexBuffer.Lock(LockFlags.None);
 
 			if(indices.Count > ushort.MaxValue - 1)
 				mstream.WriteRange(indices.ToArray());
@@ -1703,14 +1703,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 				if(bitmap != null)
 				{
-					BitmapData bmlock = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-					texture = new Texture(bitmap.Width, bitmap.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-
-					DataRectangle textureLock = texture.LockRectangle(0, LockFlags.None);
-					textureLock.Data.WriteRange(bmlock.Scan0, bmlock.Height * bmlock.Stride);
-
-					bitmap.UnlockBits(bmlock);
-					texture.UnlockRectangle(0);
+                    texture.SetPixels(bitmap);
 				}
 			}
 			else
@@ -1728,17 +1721,17 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			//create mesh
 			Mesh mesh = new Mesh(indices.Count / 3, verts.Count, MeshFlags.Use32Bit | MeshFlags.IndexBufferManaged | MeshFlags.VertexBufferManaged, vertexElements);
 
-			using (DataStream stream = mesh.LockVertexBuffer(LockFlags.None))
+			using (DataStream stream = mesh.VertexBuffer.Lock(LockFlags.None))
 			{
 				stream.WriteRange(verts.ToArray());
 			}
-			mesh.UnlockVertexBuffer();
+			mesh.VertexBuffer.Unlock();
 
-			using(DataStream stream = mesh.LockIndexBuffer(LockFlags.None))
+			using(DataStream stream = mesh.IndexBuffer.Lock(LockFlags.None))
 			{
 				stream.WriteRange(indices.ToArray());
 			}
-			mesh.UnlockIndexBuffer();
+			mesh.IndexBuffer.Unlock();
 
 			//store in result
 			result.Meshes.Add(mesh);

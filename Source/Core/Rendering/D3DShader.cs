@@ -143,9 +143,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			fxdata.Dispose();
 			
-			// Set the technique to use
-			fx.Technique = manager.ShaderTechnique;
-
 			// Return result
 			return fx;
 		}

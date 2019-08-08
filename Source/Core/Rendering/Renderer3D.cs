@@ -720,8 +720,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 			}
 
-			VertexBuffer vb = new VertexBuffer(WorldVertex.Stride * verts.Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
-			DataStream s = vb.Lock(0, WorldVertex.Stride * verts.Length, LockFlags.Discard);
+			VertexBuffer vb = new VertexBuffer(WorldVertex.Stride * verts.Length);
+			DataStream s = vb.Lock(LockFlags.Discard);
 			s.WriteRange(verts);
 			vb.Unlock();
 			s.Dispose();
