@@ -27,7 +27,6 @@ using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Windows;
 using SlimDX;
-using SlimDX.Direct3D9;
 
 #endregion
 

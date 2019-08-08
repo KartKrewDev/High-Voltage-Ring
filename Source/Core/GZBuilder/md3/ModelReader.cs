@@ -11,7 +11,6 @@ using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.GZBuilder.Data;
 using SlimDX;
-using SlimDX.Direct3D9;
 using CodeImp.DoomBuilder.Geometry;
 
 #endregion
@@ -38,11 +37,10 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 		private static readonly VertexElement[] vertexElements = new[]
 		{
-			new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-			new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
-			new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
-			new VertexElement(0, 24, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
-			VertexElement.VertexDeclarationEnd
+			new VertexElement(0, 0, DeclarationType.Float3, DeclarationUsage.Position),
+			new VertexElement(0, 12, DeclarationType.Color, DeclarationUsage.Color),
+			new VertexElement(0, 16, DeclarationType.Float2, DeclarationUsage.TextureCoordinate),
+			new VertexElement(0, 24, DeclarationType.Float3, DeclarationUsage.Normal)
 		};
 
 		#endregion

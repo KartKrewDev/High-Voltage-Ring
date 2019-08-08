@@ -40,7 +40,6 @@ using CodeImp.DoomBuilder.Plugins;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.Windows;
-using SlimDX.Direct3D9;
 
 #endregion
 

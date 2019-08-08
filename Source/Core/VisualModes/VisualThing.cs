@@ -25,7 +25,6 @@ using CodeImp.DoomBuilder.GZBuilder.Data; //mxd
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using SlimDX;
-using SlimDX.Direct3D9;
 using Plane = CodeImp.DoomBuilder.Geometry.Plane;
 using CodeImp.DoomBuilder.GZBuilder;
 
@@ -527,7 +526,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					for(int i = 0; i < vertices.Length; i++)
 					{
 						// Make a new buffer
-						geobuffers[i] = new VertexBuffer(WorldVertex.Stride * vertices[i].Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+						geobuffers[i] = new VertexBuffer(WorldVertex.Stride * vertices[i].Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
 
 						// Fill the buffer
 						DataStream bufferstream = geobuffers[i].Lock(0, WorldVertex.Stride * vertices[i].Length, LockFlags.Discard);
@@ -617,7 +616,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				// Create buffer
 				WorldVertex[] cv = cageverts.ToArray();
 				cagelength = cv.Length / 2;
-				cagebuffer = new VertexBuffer(WorldVertex.Stride * cv.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+				cagebuffer = new VertexBuffer(WorldVertex.Stride * cv.Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
 				cagebuffer.Lock(0, WorldVertex.Stride * cv.Length, LockFlags.None).WriteRange(cv);
 				cagebuffer.Unlock();
 

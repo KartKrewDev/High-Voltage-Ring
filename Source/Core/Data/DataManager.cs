@@ -37,7 +37,6 @@ using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.ZDoom;
 using SlimDX;
-using SlimDX.Direct3D9;
 using Matrix = SlimDX.Matrix;
 using CodeImp.DoomBuilder.Controls;
 

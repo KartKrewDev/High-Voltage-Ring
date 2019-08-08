@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using CodeImp.DoomBuilder.Map;
-using SlimDX.Direct3D9;
 using SlimDX;
 using CodeImp.DoomBuilder.Rendering;
 
@@ -139,7 +138,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if(numverts > 0)
 			{
 				// Make a new buffer
-				geobuffer = new VertexBuffer(WorldVertex.Stride * numverts, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+				geobuffer = new VertexBuffer(WorldVertex.Stride * numverts, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
 
 				// Fill the buffer
 				DataStream bufferstream = geobuffer.Lock(0, WorldVertex.Stride * numverts, LockFlags.Discard);

@@ -22,7 +22,6 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Drawing;
-using SlimDX.Direct3D9;
 using SlimDX;
 using CodeImp.DoomBuilder.Geometry;
 using Font = System.Drawing.Font;
@@ -343,7 +342,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					//mxd. Create the buffer
 					if(textbuffer == null || textbuffer.Disposed)
 					{
-						textbuffer = new VertexBuffer(4 * FlatVertex.Stride, Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
+						textbuffer = new VertexBuffer(4 * FlatVertex.Stride, Usage.Dynamic | Usage.WriteOnly, Pool.Default);
 					}
 
 					//mxd. Lock the buffer

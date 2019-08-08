@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
 using CodeImp.DoomBuilder.Map;
-using SlimDX.Direct3D9;
 using SlimDX;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Data;
@@ -392,8 +391,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.ClearTexture(General.Colors.Background.WithAlpha(0).ToColorValue(), overlaytex);
 			
 			// Create vertex buffers
-			screenverts = new VertexBuffer(4 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
-			thingsvertices = new VertexBuffer(THING_BUFFER_SIZE * 12 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
+			screenverts = new VertexBuffer(4 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, Pool.Default);
+			thingsvertices = new VertexBuffer(THING_BUFFER_SIZE * 12 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, Pool.Default);
 
 			// Make screen vertices
 			DataStream stream = screenverts.Lock(0, 4 * sizeof(FlatVertex), LockFlags.Discard);
@@ -2009,7 +2008,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			// Write to buffer
-			VertexBuffer vb = new VertexBuffer(FlatVertex.Stride * verts.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+			VertexBuffer vb = new VertexBuffer(FlatVertex.Stride * verts.Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
 			DataStream s = vb.Lock(0, FlatVertex.Stride * verts.Length, LockFlags.Discard);
 			s.WriteRange(verts);
 			vb.Unlock();

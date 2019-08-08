@@ -17,7 +17,6 @@
 #region ================== Namespaces
 
 using System.Collections.Generic;
-using SlimDX.Direct3D9;
 
 #endregion
 

@@ -26,7 +26,6 @@ using CodeImp.DoomBuilder.GZBuilder.MD3;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.VisualModes;
 using SlimDX;
-using SlimDX.Direct3D9;
 using CodeImp.DoomBuilder.GZBuilder;
 
 #endregion
@@ -721,7 +720,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 			}
 
-			VertexBuffer vb = new VertexBuffer(WorldVertex.Stride * verts.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+			VertexBuffer vb = new VertexBuffer(WorldVertex.Stride * verts.Length, Usage.WriteOnly | Usage.Dynamic, Pool.Default);
 			DataStream s = vb.Lock(0, WorldVertex.Stride * verts.Length, LockFlags.Discard);
 			s.WriteRange(verts);
 			vb.Unlock();

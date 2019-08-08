@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SlimDX.Direct3D9;
+using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.GZBuilder.MD3
 {

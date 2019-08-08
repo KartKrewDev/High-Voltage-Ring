@@ -23,12 +23,193 @@ using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Geometry;
 using SlimDX;
-using SlimDX.Direct3D9;
 
 #endregion
 
 namespace CodeImp.DoomBuilder.Rendering
 {
+    #region High level mesh rendering
+    public class Mesh
+    {
+        public Mesh(int indexCount, int vertexCount, MeshFlags flags, VertexElement[] elements) { }
+
+        public VertexBuffer VertexBuffer { get; private set; }
+        public IndexBuffer IndexBuffer { get; private set; }
+
+        public DataStream LockVertexBuffer(LockFlags flags) { return null; }
+        public DataStream LockIndexBuffer(LockFlags flags) { return null; }
+        public void UnlockVertexBuffer() { }
+        public void UnlockIndexBuffer() { }
+
+        public void DrawSubset(int index) { }
+
+        public void Dispose() { }
+    }
+
+    public class Effect
+    {
+        public static Effect FromStream(System.IO.Stream stream, ShaderFlags flags, out string errors) { errors = ""; return null; }
+
+        public void SetTexture(EffectHandle handle, BaseTexture texture) { }
+        public void SetValue<T>(EffectHandle handle, T value) where T : struct { }
+        public EffectHandle GetParameter(EffectHandle parameter, string name) { return null; }
+        public string Technique { set; private get; }
+        public void CommitChanges() { }
+
+        public void Begin() { }
+        public void BeginPass(int index) { }
+        public void EndPass() { }
+        public void End() { }
+
+        public void Dispose() { }
+    }
+
+    public class EffectHandle
+    {
+        public void Dispose() { }
+    }
+    #endregion
+
+    #region Vertex buffer format / Input assembly
+    public class VertexDeclaration
+    {
+        public VertexDeclaration(VertexElement[] elements) { }
+        public void Dispose() { }
+    }
+
+    public struct VertexElement
+    {
+        public VertexElement(short stream, short offset, DeclarationType type, DeclarationUsage usage) { }
+    }
+    #endregion
+
+    #region Buffer objects
+    public class VertexBuffer
+    {
+        public VertexBuffer(int sizeInBytes, Usage usage, Pool pool) { }
+
+        public DataStream Lock(int offset, int size, LockFlags flags) { return null; }
+        public void Unlock() { }
+
+        public object Tag { get; set; }
+
+        public bool Disposed { get; private set; }
+        public void Dispose() { Disposed = true; }
+    }
+
+    public class IndexBuffer
+    {
+        public DataStream Lock(int offset, int size, LockFlags flags) { return null; }
+        public void Unlock() { }
+
+        public object Tag { get; set; }
+
+        public bool Disposed { get; private set; }
+        public void Dispose() { Disposed = true; }
+    }
+    #endregion
+
+    #region Textures
+    public class BaseTexture
+    {
+        public bool Disposed { get; }
+        public void Dispose() { }
+    }
+
+    public class Texture : BaseTexture
+    {
+        public Texture(int width, int height, int levels, Usage usage, Format format, Pool pool) { }
+
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+
+        public object Tag { get; set; }
+
+        public DataRectangle LockRectangle(int level, LockFlags flags) { return null; }
+        public void UnlockRectangle(int level) { }
+
+        public static Texture FromStream(System.IO.Stream stream) { return null; }
+        public static Texture FromStream(System.IO.Stream stream, int length, int width, int height, int levels, Usage usage, Format format, Pool pool) { return null; }
+    }
+
+    public class CubeTexture : BaseTexture
+    {
+        public CubeTexture(int size, int levels, Usage usage, Format format, Pool pool) { }
+
+        public DataRectangle LockRectangle(CubeMapFace face, int level, LockFlags flags) { return null; }
+        public void UnlockRectangle(CubeMapFace face, int level) { }
+    }
+    #endregion
+
+    #region Locked buffer writing and reading
+    public class DataRectangle
+    {
+        public DataRectangle(int pitch, DataStream s) { Data = s; Pitch = pitch; }
+        public DataStream Data { get; private set; }
+        public int Pitch { get; private set; }
+    }
+
+    public class DataStream : IDisposable
+    {
+        public void Seek(long offset, System.IO.SeekOrigin origin) { }
+        public void Write(ushort v) { }
+        public void Write(Array data, long offset, long size) { }
+        public void WriteRange(Array data) { }
+        public void WriteRange(Array data, long offset, long size) { }
+        public void WriteRange(IntPtr data, long size) { }
+        public void Dispose() { }
+
+        public void ReadRange(Array data, long offset, long size) { }
+
+        public bool CanRead { get; private set; }
+        public bool CanWrite { get; private set; }
+        public long Length { get; private set; }
+        public IntPtr DataPointer { get; private set; }
+    }
+    #endregion
+
+    #region Enumerations
+    public enum RenderState
+    {
+        AlphaBlendEnable,
+        AlphaRef,
+        AlphaTestEnable,
+        CullMode,
+        BlendOperation,
+        SourceBlend,
+        DestinationBlend,
+        FillMode,
+        FogEnable,
+        FogColor,
+        FogStart,
+        FogEnd,
+        MultisampleAntialias,
+        TextureFactor,
+        ZEnable,
+        ZWriteEnable
+    }
+
+    public enum Cull { None, Counterclockwise }
+    public enum Blend { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
+    public enum BlendOperation { Add, ReverseSubtract }
+    public enum FillMode { Solid, Wireframe }
+    public enum TransformState { World, View, Projection }
+    public enum SamplerState { AddressU, AddressV, AddressW }
+    public enum TextureAddress { Wrap, Clamp }
+    public enum Format { Unknown, A8R8G8B8 }
+    public enum Usage { None, WriteOnly, Dynamic, RenderTarget }
+    public enum Pool { Default, Managed, SystemMemory }
+    public enum LockFlags { None, Discard }
+    public enum MeshFlags { Use32Bit, IndexBufferManaged, VertexBufferManaged, Managed }
+    public enum ShaderFlags { None, Debug }
+    public enum PrimitiveType { LineList, TriangleList, TriangleStrip }
+    public enum CubeMapFace { PositiveX, PositiveY, PositiveZ, NegativeX, NegativeY, NegativeZ }
+    public enum TextureFilter { None, Point, Linear, Anisotropic }
+    public enum DeclarationType { Float2, Float3, Color }
+    public enum DeclarationUsage { Position, Color, TextureCoordinate, Normal }
+    #endregion
+
+    #region Device context
     internal class D3DDevice : IDisposable
     {
 		internal D3DDevice(RenderTargetControl rendertarget)
@@ -42,7 +223,6 @@ namespace CodeImp.DoomBuilder.Rendering
         public void SetRenderState(RenderState state, float v) { }
         public void SetRenderState(RenderState state, bool v) { }
         public void SetRenderState(RenderState state, int v) { }
-        public void SetRenderState(RenderState state, Compare v) { }
         public void SetRenderState(RenderState state, Cull v) { }
         public void SetRenderState(RenderState state, Blend v) { }
         public void SetRenderState(RenderState state, BlendOperation v) { }
@@ -87,7 +267,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			// Setup renderstates
 			SetRenderState(RenderState.AlphaBlendEnable, false);
-			SetRenderState(RenderState.AlphaFunc, Compare.GreaterEqual);
 			SetRenderState(RenderState.AlphaRef, 0x0000007E);
 			SetRenderState(RenderState.AlphaTestEnable, false);
 			SetRenderState(RenderState.CullMode, Cull.None);
@@ -153,4 +332,5 @@ namespace CodeImp.DoomBuilder.Rendering
 			return new Vector2D(v2.X, v2.Y);
 		}
     }
+    #endregion
 }

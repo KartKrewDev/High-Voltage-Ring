@@ -18,7 +18,6 @@
 
 using System;
 using System.IO;
-using SlimDX.Direct3D9;
 
 #endregion
 

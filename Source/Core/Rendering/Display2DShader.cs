@@ -17,7 +17,6 @@
 #region ================== Namespaces
 
 using System;
-using SlimDX.Direct3D9;
 using SlimDX;
 
 #endregion
@@ -79,10 +78,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Initialize world vertex declaration
 			VertexElement[] elements = new[]
 			{
-				new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-				new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
-				new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
-				VertexElement.VertexDeclarationEnd
+				new VertexElement(0, 0, DeclarationType.Float3, DeclarationUsage.Position),
+				new VertexElement(0, 12, DeclarationType.Color, DeclarationUsage.Color),
+				new VertexElement(0, 16, DeclarationType.Float2, DeclarationUsage.TextureCoordinate)
 			};
 			vertexdecl = new VertexDeclaration(elements);
 

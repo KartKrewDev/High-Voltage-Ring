@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using SlimDX.Direct3D9;
 using Font = System.Drawing.Font;
 
 namespace CodeImp.DoomBuilder.Rendering
