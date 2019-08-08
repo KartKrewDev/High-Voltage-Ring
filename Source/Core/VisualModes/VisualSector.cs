@@ -139,8 +139,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if(numverts > 0)
 			{
 				// Make a new buffer
-				geobuffer = new VertexBuffer(General.Map.Graphics.Device, WorldVertex.Stride * numverts,
-											 Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+				geobuffer = new VertexBuffer(WorldVertex.Stride * numverts, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
 
 				// Fill the buffer
 				DataStream bufferstream = geobuffer.Lock(0, WorldVertex.Stride * numverts, LockFlags.Discard);

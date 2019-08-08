@@ -85,7 +85,7 @@ namespace CodeImp.DoomBuilder.Rendering
 									   v2, v3,
 									   v3, v0 };
 
-			upper = new VertexBuffer(General.Map.Graphics.Device, WorldVertex.Stride * vu.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+			upper = new VertexBuffer(WorldVertex.Stride * vu.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
 			upper.Lock(0, WorldVertex.Stride * vu.Length, LockFlags.None).WriteRange(vu);
 			upper.Unlock();
 
@@ -99,7 +99,7 @@ namespace CodeImp.DoomBuilder.Rendering
 									  v6, v7,
 									  v7, v4 };
 
-			lower = new VertexBuffer(General.Map.Graphics.Device, WorldVertex.Stride * vl.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+			lower = new VertexBuffer(WorldVertex.Stride * vl.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
 			lower.Lock(0, WorldVertex.Stride * vl.Length, LockFlags.None).WriteRange(vl);
 			lower.Unlock();
 		}

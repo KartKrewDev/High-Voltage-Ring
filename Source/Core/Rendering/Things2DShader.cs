@@ -99,7 +99,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
 				VertexElement.VertexDeclarationEnd
 			};
-			vertexdecl = new VertexDeclaration(General.Map.Graphics.Device, elements);
+			vertexdecl = new VertexDeclaration(elements);
 
 			// We have no destructor
 			GC.SuppressFinalize(this);
@@ -132,8 +132,8 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			Vector4 values = new Vector4(0.0f, 0.0f, 1.0f, alpha);
 			effect.SetValue(rendersettings, values);
-			Matrix world = manager.D3DDevice.Device.GetTransform(TransformState.World);
-			Matrix view = manager.D3DDevice.Device.GetTransform(TransformState.View);
+			Matrix world = manager.D3DDevice.GetTransform(TransformState.World);
+			Matrix view = manager.D3DDevice.GetTransform(TransformState.View);
 			effect.SetValue(transformsettings, world * view);
 			settingschanged = true; //mxd
 		}
@@ -141,7 +141,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		//mxd. Used to render models
 		public void SetTransformSettings(Matrix world)
 		{
-			Matrix view = manager.D3DDevice.Device.GetTransform(TransformState.View);
+			Matrix view = manager.D3DDevice.GetTransform(TransformState.View);
 			effect.SetValue(transformsettings, world * view);
 			settingschanged = true;
 		}

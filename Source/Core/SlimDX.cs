@@ -2,78 +2,12 @@
 
 namespace SlimDX
 {
-    #region Device context
-    namespace Direct3D9
-    {
-        public class Device
-        {
-            public Device(Direct3D d3d, int adapter, DeviceType type, IntPtr windowHandle, CreateFlags createFlags, PresentParameters pp) { }
-
-            public void Reset(PresentParameters pp) { }
-
-            public void SetStreamSource(int index, VertexBuffer buffer, long offset, long stride) { }
-            public void SetRenderState(RenderState state, float v) { }
-            public void SetRenderState(RenderState state, bool v) { }
-            public void SetRenderState(RenderState state, int v) { }
-            public void SetRenderState(RenderState state, Compare v) { }
-            public void SetRenderState(RenderState state, ColorWriteEnable v) { }
-            public void SetRenderState(RenderState state, ColorSource v) { }
-            public void SetRenderState(RenderState state, Cull v) { }
-            public void SetRenderState(RenderState state, Blend v) { }
-            public void SetRenderState(RenderState state, BlendOperation v) { }
-            public void SetRenderState(RenderState state, FillMode v) { }
-            public void SetRenderState(RenderState state, FogMode v) { }
-            public void SetRenderState(RenderState state, ShadeMode v) { }
-
-            public Matrix GetTransform(TransformState state) { return Matrix.Identity; }
-            public void SetTransform(TransformState state, Matrix matrix) { }
-
-            public void SetSamplerState(int unit, SamplerState state, TextureAddress address) { }
-
-            public void BeginScene() { }
-            public void EndScene() { }
-            public void Present() { }
-
-            public void Clear(ClearFlags flags, Color4 color, float depth, int stencil) { }
-            public void DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount) { }
-            public void DrawUserPrimitives<T>(PrimitiveType type, int startIndex, int primitiveCount, T[] data) where T : struct { }
-
-            public void GetRenderTargetData(Surface renderTarget, Surface destinationSurface) { } // Copies the render-target data from device memory to system memory
-
-            public void SetRenderTarget(int i, Surface surface) { }
-
-            public Surface GetBackBuffer(int i, int j) { return null; }
-
-            public Capabilities Capabilities { get; }
-            public Material Material { private get; set; }
-            public VertexDeclaration VertexDeclaration { private get; set; }
-            public object PixelShader { private get; set; }
-            public object VertexShader { private get; set; }
-            public Surface DepthStencilSurface { get; set; }
-            public Viewport Viewport { get; private set; }
-
-            public Result TestCooperativeLevel() { return new Result { IsSuccess = true }; }
-
-            public void Dispose() { }
-        }
-
-        public class Material
-        {
-            public Color4 Ambient;
-            public Color4 Diffuse;
-            public Color4 Specular;
-        }
-
-        public struct Viewport { }
-    }
-    #endregion
-
     #region High level mesh rendering
     namespace Direct3D9
     {
         public class Mesh
         {
-            public Mesh(Device device, int indexCount, int vertexCount, MeshFlags flags, VertexElement[] elements) { }
+            public Mesh(int indexCount, int vertexCount, MeshFlags flags, VertexElement[] elements) { }
 
             public VertexBuffer VertexBuffer { get; private set; }
             public IndexBuffer IndexBuffer { get; private set; }
@@ -83,20 +17,14 @@ namespace SlimDX
             public void UnlockVertexBuffer() { }
             public void UnlockIndexBuffer() { }
 
-            public void OptimizeInPlace(MeshOptimizeFlags flags) { }
-
             public void DrawSubset(int index) { }
 
             public void Dispose() { }
         }
 
-        public class Macro { }
-        public class Include { }
-        public class EffectPool { }
-
         public class Effect
         {
-            public static Effect FromStream(Device device, System.IO.Stream stream, Macro[] macro, Include include, string skipConstants, ShaderFlags flags, EffectPool pool, out string errors) { errors = ""; return null; }
+            public static Effect FromStream(System.IO.Stream stream, ShaderFlags flags, out string errors) { errors = ""; return null; }
 
             public void SetTexture(EffectHandle handle, BaseTexture texture) { }
             public void SetValue<T>(EffectHandle handle, T value) where T : struct { }
@@ -104,7 +32,7 @@ namespace SlimDX
             public string Technique { set; private get; }
             public void CommitChanges() { }
 
-            public void Begin(FX fx) { }
+            public void Begin() { }
             public void BeginPass(int index) { }
             public void EndPass() { }
             public void End() { }
@@ -124,7 +52,7 @@ namespace SlimDX
     {
         public class VertexDeclaration
         {
-            public VertexDeclaration(Device device, VertexElement[] elements) { }
+            public VertexDeclaration(VertexElement[] elements) { }
             public void Dispose() { }
         }
 
@@ -141,15 +69,15 @@ namespace SlimDX
     {
         public class VertexBuffer
         {
-            public VertexBuffer(Device device, int sizeInBytes, Usage usage, VertexFormat format, Pool pool) { }
+            public VertexBuffer(int sizeInBytes, Usage usage, VertexFormat format, Pool pool) { }
 
             public DataStream Lock(int offset, int size, LockFlags flags) { return null; }
             public void Unlock() { }
 
             public object Tag { get; set; }
 
-            public bool Disposed { get; }
-            public void Dispose() { }
+            public bool Disposed { get; private set; }
+            public void Dispose() { Disposed = true; }
         }
 
         public class IndexBuffer
@@ -159,8 +87,8 @@ namespace SlimDX
 
             public object Tag { get; set; }
 
-            public bool Disposed { get; }
-            public void Dispose() { }
+            public bool Disposed { get; private set; }
+            public void Dispose() { Disposed = true; }
         }
     }
     #endregion
@@ -168,27 +96,6 @@ namespace SlimDX
     #region Images (textures and surfaces)
     namespace Direct3D9
     {
-        public class Surface
-        {
-            public static Surface CreateRenderTarget(Device device, int width, int height, Format format, MultisampleType multisample, int multisampleQuality, bool lockable) { return null; }
-            public static Surface CreateDepthStencil(Device device, int width, int height, Format format, MultisampleType multisample, int multisampleQuality, bool discard) { return null; }
-            public static Surface CreateOffscreenPlain(Device device, int width, int height, Format format, Pool pool) { return null; }
-
-            public SurfaceDescription Description { get; private set; }
-
-            public DataRectangle LockRectangle(LockFlags flags) { return null; }
-            public void UnlockRectangle() { }
-
-            public void Dispose() { }
-        }
-
-        public class SurfaceDescription
-        {
-            public int Width { get; set; }
-            public int Height { get; set; }
-            public Format Format { get; set; }
-        }
-
         public class BaseTexture
         {
             public bool Disposed { get; }
@@ -197,25 +104,23 @@ namespace SlimDX
 
         public class Texture : BaseTexture
         {
-            public Texture(Device device, int width, int height, int levels, Usage usage, Format format, Pool pool) { }
+            public Texture(int width, int height, int levels, Usage usage, Format format, Pool pool) { }
+
+            public int Width { get; private set; }
+            public int Height { get; private set; }
 
             public object Tag { get; set; }
 
             public DataRectangle LockRectangle(int level, LockFlags flags) { return null; }
             public void UnlockRectangle(int level) { }
 
-            public SurfaceDescription GetLevelDescription(int level) { return null; }
-            public Surface GetSurfaceLevel(int level) { return null; }
-
-            public static Texture FromStream(Device device, System.IO.Stream stream) { return null; }
-            public static Texture FromStream(Device device, System.IO.Stream stream, int length, int width, int height, int levels, Usage usage, Format format, Pool pool, Filter filter, Filter mipFilter, int colorkey) { return null; }
+            public static Texture FromStream(System.IO.Stream stream) { return null; }
+            public static Texture FromStream(System.IO.Stream stream, int length, int width, int height, int levels, Usage usage, Format format, Pool pool) { return null; }
         }
 
         public class CubeTexture : BaseTexture
         {
-            public CubeTexture(Device device, int size, int levels, Usage usage, Format format, Pool pool) { }
-
-            public Surface GetCubeMapSurface(CubeMapFace face, int level) { return null; }
+            public CubeTexture(int size, int levels, Usage usage, Format format, Pool pool) { }
 
             public DataRectangle LockRectangle(CubeMapFace face, int level, LockFlags flags) { return null; }
             public void UnlockRectangle(CubeMapFace face, int level) { }
@@ -259,65 +164,38 @@ namespace SlimDX
             AlphaFunc,
             AlphaRef,
             AlphaTestEnable,
-            Ambient,
-            AmbientMaterialSource,
-            AntialiasedLineEnable,
-            Clipping,
-            ColorVertex,
-            ColorWriteEnable,
             CullMode,
             BlendOperation,
             SourceBlend,
             DestinationBlend,
-            DiffuseMaterialSource,
             FillMode,
             FogEnable,
-            FogTableMode,
-            FogDensity,
             FogColor,
             FogStart,
             FogEnd,
-            Lighting,
-            LocalViewer,
             MultisampleAntialias,
-            NormalizeNormals,
-            PointSpriteEnable,
-            RangeFogEnable,
-            ShadeMode,
-            SpecularEnable,
-            StencilEnable,
             TextureFactor,
             ZEnable,
             ZWriteEnable
         }
 
         public enum Compare { GreaterEqual }
-        public enum ColorWriteEnable { Red, Green, Blue, Alpha }
-        public enum ColorSource { Material, Color1 }
         public enum Cull { None, Counterclockwise }
         public enum Blend { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
         public enum BlendOperation { Add, ReverseSubtract }
         public enum FillMode { Solid, Wireframe }
-        public enum FogMode { Linear }
-        public enum ShadeMode { Gouraud }
         public enum TransformState { World, View, Projection }
         public enum SamplerState { AddressU, AddressV, AddressW }
         public enum TextureAddress { Wrap, Clamp }
         public enum ClearFlags { Target, ZBuffer }
-        public enum Format { Unknown, A8R8G8B8, D24X8 }
+        public enum Format { Unknown, A8R8G8B8 }
         public enum Usage { None, WriteOnly, Dynamic, RenderTarget }
         public enum VertexFormat { None }
         public enum Pool { Default, Managed, SystemMemory }
-        public enum LockFlags { None, Discard, NoSystemLock }
+        public enum LockFlags { None, Discard }
         public enum MeshFlags { Use32Bit, IndexBufferManaged, VertexBufferManaged, Managed }
-        public enum MeshOptimizeFlags { AttributeSort }
         public enum ShaderFlags { None, Debug }
-        public enum FX { DoNotSaveState }
-        public enum SwapEffect { Discard }
-        public enum MultisampleType { None }
-        public enum PresentInterval { Immediate }
         public enum PrimitiveType { LineList, TriangleList, TriangleStrip }
-        public enum Filter { None, Point, Box }
         public enum CubeMapFace { PositiveX, PositiveY, PositiveZ, NegativeX, NegativeY, NegativeZ }
         public enum TextureFilter { None, Point, Linear, Anisotropic }
         public enum DeclarationType { Float2, Float3, Color }
@@ -586,71 +464,6 @@ namespace SlimDX
     }
     #endregion
 
-    #region Direct3D init
-    namespace Direct3D9
-    {
-        public enum DeviceType { Reference, Hardware }
-        public enum CreateFlags { SoftwareVertexProcessing, HardwareVertexProcessing }
-        public enum DeviceCaps { HWTransformAndLight }
-
-        public class Direct3D : ComObject
-        {
-            public Capabilities GetDeviceCaps(int adapter, DeviceType type) { return null; }
-            public bool CheckDeviceMultisampleType(int adapter, DeviceType type, Format format, bool windowed, MultisampleType multisample) { return true; }
-
-            public Adapter[] Adapters = new Adapter[1];
-        }
-
-        public class AdapterDetails
-        {
-            public string Description { get; private set; }
-        }
-
-        public class DisplayMode
-        {
-            public Format Format { get; private set; }
-        }
-
-        public class Adapter
-        {
-            public AdapterDetails Details { get; private set; }
-            public DisplayMode CurrentDisplayMode { get; private set; }
-        }
-
-        public class ShaderVersion
-        {
-            public int Major;
-        }
-
-        public class Capabilities
-        {
-            public float MaxAnisotropy { get; }
-            public DeviceCaps DeviceCaps { get; }
-            public ShaderVersion PixelShaderVersion { get; }
-        }
-
-        public class Result
-        {
-            public bool IsSuccess { get; set; }
-            public string Name { get; set; }
-        }
-
-        public class PresentParameters
-        {
-            public bool Windowed { get; set; }
-            public SwapEffect SwapEffect { private get; set; }
-            public int BackBufferCount { private get; set; }
-            public Format BackBufferFormat { private get; set; }
-            public int BackBufferWidth { private get; set; }
-            public int BackBufferHeight { private get; set; }
-            public bool EnableAutoDepthStencil { private get; set; }
-            public Format AutoDepthStencilFormat { private get; set; }
-            public MultisampleType Multisample { private get; set; }
-            public PresentInterval PresentationInterval { private get; set; }
-        }
-    }
-    #endregion
-
     #region DirectInput mouse handling
     namespace DirectInput
     {
@@ -707,47 +520,12 @@ namespace SlimDX
     }
     #endregion
 
-    #region COM infrastructure
-    public class ComObject
-    {
-        public object Tag { get; set; }
-        public string CreationSource { get; set; }
-        public void Dispose() { }
-    }
-
-    public class ObjectTable
-    {
-        public static System.Collections.Generic.List<ComObject> Objects = new System.Collections.Generic.List<ComObject>();
-    }
-    #endregion
-
     #region Exceptions
-    public class SlimDXException : ApplicationException
-    {
-    }
-
-    namespace Direct3D9
-    {
-        public class Direct3D9NotFoundException : SlimDXException
-        {
-        }
-
-        public class Direct3DX9NotFoundException : SlimDXException
-        {
-        }
-    }
-
     namespace DirectInput
     {
-        public class DirectInputException : SlimDXException
+        public class DirectInputException : ApplicationException
         {
         }
-    }
-    #endregion
-
-    #region Junk
-    namespace Direct3D10_1
-    {
     }
     #endregion
 }

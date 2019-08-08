@@ -29,7 +29,6 @@ using CodeImp.DoomBuilder.Editing;
 using CodeImp.DoomBuilder.GZBuilder.Data; //mxd
 using CodeImp.DoomBuilder.Config; //mxd
 using CodeImp.DoomBuilder.GZBuilder;
-using SlimDX.Direct3D10_1;
 
 #endregion
 
@@ -71,7 +70,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		// Locking data
 		private DataRectangle plotlocked;
-		private Surface targetsurface;
 
 		// Rendertarget sizes
 		private Size windowsize;
@@ -183,133 +181,127 @@ namespace CodeImp.DoomBuilder.Rendering
 		public unsafe void Present()
 		{
 			General.Plugins.OnPresentDisplayBegin();
-			
-			// Start drawing
-			if(graphics.StartRendering(true, General.Colors.Background.ToColorValue(), graphics.BackBuffer, graphics.DepthBuffer))
+
+            // Start drawing
+            graphics.StartRendering(true, General.Colors.Background.ToColorValue());
+
+			// Renderstates that count for this whole sequence
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetStreamSource(0, screenverts, 0, sizeof(FlatVertex));
+			graphics.SetTransform(TransformState.World, Matrix.Identity);
+			graphics.Shaders.Display2D.Begin();
+
+			// Go for all layers
+			foreach(PresentLayer layer in present.layers)
 			{
-				// Renderstates that count for this whole sequence
-				graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-				graphics.Device.SetRenderState(RenderState.ZEnable, false);
-				graphics.Device.SetRenderState(RenderState.FogEnable, false);
-				graphics.Device.SetStreamSource(0, screenverts, 0, sizeof(FlatVertex));
-				graphics.Device.SetTransform(TransformState.World, Matrix.Identity);
-				graphics.Shaders.Display2D.Begin();
+				int aapass;
 
-				// Go for all layers
-				foreach(PresentLayer layer in present.layers)
+				// Set blending mode
+				switch(layer.blending)
 				{
-					int aapass;
+					case BlendingMode.None:
+						graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+						graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+						graphics.SetRenderState(RenderState.TextureFactor, -1);
+						break;
 
-					// Set blending mode
-					switch(layer.blending)
-					{
-						case BlendingMode.None:
-							graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-							graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-							graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-							break;
+					case BlendingMode.Mask:
+						graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+						graphics.SetRenderState(RenderState.AlphaTestEnable, true);
+						graphics.SetRenderState(RenderState.TextureFactor, -1);
+						break;
 
-						case BlendingMode.Mask:
-							graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-							graphics.Device.SetRenderState(RenderState.AlphaTestEnable, true);
-							graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-							break;
+					case BlendingMode.Alpha:
+						graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
+						graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+						graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+						graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+						graphics.SetRenderState(RenderState.TextureFactor, (new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
+						break;
 
-						case BlendingMode.Alpha:
-							graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-							graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-							graphics.Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-							graphics.Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-							graphics.Device.SetRenderState(RenderState.TextureFactor, (new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
-							break;
-
-						case BlendingMode.Additive:
-							graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-							graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-							graphics.Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-							graphics.Device.SetRenderState(RenderState.DestinationBlend, Blend.One);
-							graphics.Device.SetRenderState(RenderState.TextureFactor, (new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
-							break;
-					}
-
-					// Check which pass to use
-					if(layer.antialiasing && General.Settings.QualityDisplay) aapass = 0; else aapass = 1;
-
-					// Render layer
-					switch(layer.layer)
-					{
-						// BACKGROUND
-						case RendererLayer.Background:
-							if((backimageverts == null) || (General.Map.Grid.Background.Texture == null)) break;
-							graphics.Shaders.Display2D.Texture1 = General.Map.Grid.Background.Texture;
-							graphics.Shaders.Display2D.SetSettings(1f / windowsize.Width, 1f / windowsize.Height, FSAA_FACTOR, layer.alpha, false);
-							graphics.Shaders.Display2D.BeginPass(aapass);
-							graphics.Device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
-							graphics.Shaders.Display2D.EndPass();
-							graphics.Device.SetStreamSource(0, screenverts, 0, sizeof(FlatVertex));
-							break;
-
-						// GRID
-						case RendererLayer.Grid:
-							graphics.Shaders.Display2D.Texture1 = backtex;
-							graphics.Shaders.Display2D.SetSettings(1f / backsize.Width, 1f / backsize.Height, FSAA_FACTOR, layer.alpha, false);
-							graphics.Shaders.Display2D.BeginPass(aapass);
-							graphics.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-							graphics.Shaders.Display2D.EndPass();
-							break;
-
-						// GEOMETRY
-						case RendererLayer.Geometry:
-							graphics.Shaders.Display2D.Texture1 = plottertex;
-							graphics.Shaders.Display2D.SetSettings(1f / structsize.Width, 1f / structsize.Height, FSAA_FACTOR, layer.alpha, false);
-							graphics.Shaders.Display2D.BeginPass(aapass);
-							graphics.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-							graphics.Shaders.Display2D.EndPass();
-							break;
-
-						// THINGS
-						case RendererLayer.Things:
-							graphics.Shaders.Display2D.Texture1 = thingstex;
-							graphics.Shaders.Display2D.SetSettings(1f / thingssize.Width, 1f / thingssize.Height, FSAA_FACTOR, layer.alpha, false);
-							graphics.Shaders.Display2D.BeginPass(aapass);
-							graphics.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-							graphics.Shaders.Display2D.EndPass();
-							break;
-
-						// OVERLAY
-						case RendererLayer.Overlay:
-							graphics.Shaders.Display2D.Texture1 = overlaytex;
-							graphics.Shaders.Display2D.SetSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false);
-							graphics.Shaders.Display2D.BeginPass(aapass);
-							graphics.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-							graphics.Shaders.Display2D.EndPass();
-							break;
-
-						// SURFACE
-						case RendererLayer.Surface:
-							graphics.Shaders.Display2D.Texture1 = surfacetex;
-							graphics.Shaders.Display2D.SetSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false);
-							graphics.Shaders.Display2D.BeginPass(aapass);
-							graphics.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-							graphics.Shaders.Display2D.EndPass();
-							break;
-					}
+					case BlendingMode.Additive:
+						graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
+						graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+						graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+						graphics.SetRenderState(RenderState.DestinationBlend, Blend.One);
+						graphics.SetRenderState(RenderState.TextureFactor, (new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
+						break;
 				}
 
-				// Done
-				graphics.Shaders.Display2D.End();
-				graphics.FinishRendering();
-				graphics.Present();
+				// Check which pass to use
+				if(layer.antialiasing && General.Settings.QualityDisplay) aapass = 0; else aapass = 1;
 
-				// Release binds
-				graphics.Shaders.Display2D.Texture1 = null;
-				graphics.Device.SetStreamSource(0, null, 0, 0);
+				// Render layer
+				switch(layer.layer)
+				{
+					// BACKGROUND
+					case RendererLayer.Background:
+						if((backimageverts == null) || (General.Map.Grid.Background.Texture == null)) break;
+						graphics.Shaders.Display2D.Texture1 = General.Map.Grid.Background.Texture;
+						graphics.Shaders.Display2D.SetSettings(1f / windowsize.Width, 1f / windowsize.Height, FSAA_FACTOR, layer.alpha, false);
+						graphics.Shaders.Display2D.BeginPass(aapass);
+						graphics.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
+						graphics.Shaders.Display2D.EndPass();
+						graphics.SetStreamSource(0, screenverts, 0, sizeof(FlatVertex));
+						break;
+
+					// GRID
+					case RendererLayer.Grid:
+						graphics.Shaders.Display2D.Texture1 = backtex;
+						graphics.Shaders.Display2D.SetSettings(1f / backsize.Width, 1f / backsize.Height, FSAA_FACTOR, layer.alpha, false);
+						graphics.Shaders.Display2D.BeginPass(aapass);
+						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Shaders.Display2D.EndPass();
+						break;
+
+					// GEOMETRY
+					case RendererLayer.Geometry:
+						graphics.Shaders.Display2D.Texture1 = plottertex;
+						graphics.Shaders.Display2D.SetSettings(1f / structsize.Width, 1f / structsize.Height, FSAA_FACTOR, layer.alpha, false);
+						graphics.Shaders.Display2D.BeginPass(aapass);
+						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Shaders.Display2D.EndPass();
+						break;
+
+					// THINGS
+					case RendererLayer.Things:
+						graphics.Shaders.Display2D.Texture1 = thingstex;
+						graphics.Shaders.Display2D.SetSettings(1f / thingssize.Width, 1f / thingssize.Height, FSAA_FACTOR, layer.alpha, false);
+						graphics.Shaders.Display2D.BeginPass(aapass);
+						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Shaders.Display2D.EndPass();
+						break;
+
+					// OVERLAY
+					case RendererLayer.Overlay:
+						graphics.Shaders.Display2D.Texture1 = overlaytex;
+						graphics.Shaders.Display2D.SetSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false);
+						graphics.Shaders.Display2D.BeginPass(aapass);
+						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Shaders.Display2D.EndPass();
+						break;
+
+					// SURFACE
+					case RendererLayer.Surface:
+						graphics.Shaders.Display2D.Texture1 = surfacetex;
+						graphics.Shaders.Display2D.SetSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false);
+						graphics.Shaders.Display2D.BeginPass(aapass);
+						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Shaders.Display2D.EndPass();
+						break;
+				}
 			}
-			else
-			{
-				// Request delayed redraw
-				General.MainWindow.DelayedRedraw();
-			}
+
+			// Done
+			graphics.Shaders.Display2D.End();
+			graphics.FinishRendering();
+			graphics.Present();
+
+			// Release binds
+			graphics.Shaders.Display2D.Texture1 = null;
+			graphics.SetStreamSource(0, null, 0, 0);
 		}
 		
 		#endregion
@@ -374,25 +366,21 @@ namespace CodeImp.DoomBuilder.Rendering
 			windowsize.Height = graphics.RenderTarget.ClientSize.Height;
 
 			// Create rendertargets textures
-			plottertex = new Texture(graphics.Device, windowsize.Width, windowsize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-			thingstex = new Texture(graphics.Device, windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
-			backtex = new Texture(graphics.Device, windowsize.Width, windowsize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-			overlaytex = new Texture(graphics.Device, windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
-			surfacetex = new Texture(graphics.Device, windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
+			plottertex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+			thingstex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
+			backtex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+			overlaytex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
+			surfacetex = new Texture(windowsize.Width, windowsize.Height, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
 			
 			// Get the real surface sizes
-			SurfaceDescription sd = plottertex.GetLevelDescription(0);
-			structsize.Width = sd.Width;
-			structsize.Height = sd.Height;
-			sd = thingstex.GetLevelDescription(0);
-			thingssize.Width = sd.Width;
-			thingssize.Height = sd.Height;
-			sd = backtex.GetLevelDescription(0);
-			backsize.Width = sd.Width;
-			backsize.Height = sd.Height;
-			sd = overlaytex.GetLevelDescription(0);
-			overlaysize.Width = sd.Width;
-			overlaysize.Height = sd.Height;
+			structsize.Width = plottertex.Width;
+			structsize.Height = plottertex.Height;
+			thingssize.Width = thingstex.Width;
+			thingssize.Height = thingstex.Height;
+			backsize.Width = backtex.Width;
+			backsize.Height = backtex.Height;
+			overlaysize.Width = overlaytex.Width;
+			overlaysize.Height = overlaytex.Height;
 			
 			// Clear rendertargets
 			// This may cause a crash when resetting because it recursively
@@ -400,15 +388,15 @@ namespace CodeImp.DoomBuilder.Rendering
 			//StartPlotter(true); Finish();
 			//StartThings(true); Finish();
 			//StartOverlay(true); Finish();
-			graphics.ClearRendertarget(General.Colors.Background.WithAlpha(0).ToColorValue(), thingstex.GetSurfaceLevel(0), null);
-			graphics.ClearRendertarget(General.Colors.Background.WithAlpha(0).ToColorValue(), overlaytex.GetSurfaceLevel(0), null);
+			graphics.ClearTexture(General.Colors.Background.WithAlpha(0).ToColorValue(), thingstex);
+			graphics.ClearTexture(General.Colors.Background.WithAlpha(0).ToColorValue(), overlaytex);
 			
 			// Create vertex buffers
-			screenverts = new VertexBuffer(graphics.Device, 4 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
-			thingsvertices = new VertexBuffer(graphics.Device, THING_BUFFER_SIZE * 12 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
+			screenverts = new VertexBuffer(4 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
+			thingsvertices = new VertexBuffer(THING_BUFFER_SIZE * 12 * sizeof(FlatVertex), Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
 
 			// Make screen vertices
-			DataStream stream = screenverts.Lock(0, 4 * sizeof(FlatVertex), LockFlags.Discard | LockFlags.NoSystemLock);
+			DataStream stream = screenverts.Lock(0, 4 * sizeof(FlatVertex), LockFlags.Discard);
 			FlatVertex[] verts = CreateScreenVerts(structsize);
 			stream.WriteRange(verts);
 			screenverts.Unlock();
@@ -495,8 +483,8 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			Matrix scaling = Matrix.Scaling((1f / windowsize.Width) * 2f, (1f / windowsize.Height) * -2f, 1f);
 			Matrix translate = Matrix.Translation(-(float)windowsize.Width * 0.5f, -(float)windowsize.Height * 0.5f, 0f);
-			graphics.Device.SetTransform(TransformState.View, translate * scaling);
-			graphics.Device.SetTransform(TransformState.Projection, Matrix.Identity);
+			graphics.SetTransform(TransformState.View, translate * scaling);
+			graphics.SetTransform(TransformState.Projection, Matrix.Identity);
 			Vector2D lt = DisplayToMap(new Vector2D(0.0f, 0.0f));
 			Vector2D rb = DisplayToMap(new Vector2D(windowsize.Width, windowsize.Height));
 			viewport = new RectangleF(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
@@ -510,11 +498,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				Matrix translate = Matrix.Translation(translatex, translatey, 0f);
 				Matrix scaling = Matrix.Scaling(scale, -scale, 1f);
-				graphics.Device.SetTransform(TransformState.World, translate * scaling);
+				graphics.SetTransform(TransformState.World, translate * scaling);
 			}
 			else
 			{
-				graphics.Device.SetTransform(TransformState.World, Matrix.Identity);
+				graphics.SetTransform(TransformState.World, Matrix.Identity);
 			}
 		}
 		
@@ -650,7 +638,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(plottertex != null)
 			{
 				// Lock structures rendertarget memory
-				plotlocked = plottertex.LockRectangle(0, LockFlags.NoSystemLock);
+				plotlocked = plottertex.LockRectangle(0, LockFlags.None);
 
 				// Create structures plotter
 				plotter = new Plotter((PixelColor*)plotlocked.Data.DataPointer.ToPointer(), plotlocked.Pitch / sizeof(PixelColor), structsize.Height, structsize.Width, structsize.Height);
@@ -691,17 +679,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(thingstex != null)
 			{
 				// Set the rendertarget to the things texture
-				targetsurface = thingstex.GetSurfaceLevel(0);
-				if(graphics.StartRendering(clear, General.Colors.Background.WithAlpha(0).ToColorValue(), targetsurface, null))
-				{
-					// Ready for rendering
-					UpdateTransformations();
-					return true;
-				}
+                graphics.StartRendering(clear, General.Colors.Background.WithAlpha(0).ToColorValue(), thingstex, false);
 
-				// Can't render!
-				Finish();
-				return false;
+				// Ready for rendering
+				UpdateTransformations();
+				return true;
 			}
 
 			// Can't render!
@@ -727,17 +709,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(overlaytex != null)
 			{
 				// Set the rendertarget to the things texture
-				targetsurface = overlaytex.GetSurfaceLevel(0);
-				if(graphics.StartRendering(clear, General.Colors.Background.WithAlpha(0).ToColorValue(), targetsurface, null))
-				{
-					// Ready for rendering
-					UpdateTransformations();
-					return true;
-				}
+                graphics.StartRendering(clear, General.Colors.Background.WithAlpha(0).ToColorValue(), overlaytex, false);
 
-				// Can't render!
-				Finish();
-				return false;
+				// Ready for rendering
+				UpdateTransformations();
+				return true;
 			}
 
 			// Can't render!
@@ -761,16 +737,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				// Stop rendering
 				graphics.FinishRendering();
-				
-				// Release rendertarget
-				try
-				{
-					graphics.Device.DepthStencilSurface = graphics.DepthBuffer;
-					graphics.Device.SetRenderTarget(0, graphics.BackBuffer);
-				}
-				catch(Exception) { }
-				if(targetsurface != null) targetsurface.Dispose();
-				targetsurface = null;
 			}
 			
 			// Done
@@ -831,7 +797,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			   lastgridx != offsetx || lastgridy != offsety || drawmapcenter != lastdrawmapcenter)
 			{
 				// Lock background rendertarget memory
-				DataRectangle lockedrect = backtex.LockRectangle(0, LockFlags.NoSystemLock);
+				DataRectangle lockedrect = backtex.LockRectangle(0, LockFlags.None);
 
 				// Create a plotter
 				Plotter gridplotter = new Plotter((PixelColor*)lockedrect.Data.DataPointer.ToPointer(), lockedrect.Pitch / sizeof(PixelColor), backsize.Height, backsize.Width, backsize.Height);
@@ -1257,15 +1223,15 @@ namespace CodeImp.DoomBuilder.Rendering
 				bool isthingsmode = (General.Editing.Mode.GetType().Name == "ThingsMode");
 				
 				// Set renderstates for things rendering
-				graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-				graphics.Device.SetRenderState(RenderState.ZEnable, false);
-				graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-				graphics.Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-				graphics.Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-				graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-				graphics.Device.SetRenderState(RenderState.FogEnable, false);
-				graphics.Device.SetRenderState(RenderState.TextureFactor, alphacolor.ToArgb());
-				graphics.Device.SetStreamSource(0, thingsvertices, 0, FlatVertex.Stride);
+				graphics.SetRenderState(RenderState.CullMode, Cull.None);
+				graphics.SetRenderState(RenderState.ZEnable, false);
+				graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
+				graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+				graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+				graphics.SetRenderState(RenderState.FogEnable, false);
+				graphics.SetRenderState(RenderState.TextureFactor, alphacolor.ToArgb());
+				graphics.SetStreamSource(0, thingsvertices, 0, FlatVertex.Stride);
 				
 				// Set things texture
 				graphics.Shaders.Things2D.Texture1 = General.Map.Data.ThingTexture.Texture; //mxd
@@ -1325,7 +1291,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						stream.Dispose();
 						
 						// Draw!
-						graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
 						buffercount = 0;
 						
 						// Determine next lock size
@@ -1341,7 +1307,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				
 				// Draw what's still remaining
 				if(buffercount > 0)
-					graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+					graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
 
 				// Done
 				graphics.Shaders.Things2D.EndPass();
@@ -1474,7 +1440,7 @@ namespace CodeImp.DoomBuilder.Rendering
 								stream.Dispose();
 
 								// Draw!
-								graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+								graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
 
 								buffercount = 0;
 
@@ -1490,7 +1456,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						stream.Dispose();
 
 						// Draw what's still remaining
-						if(buffercount > 0) graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+						if(buffercount > 0) graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
 					}
 				}
 
@@ -1527,7 +1493,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						stream.Dispose();
 
 						// Draw!
-						graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
 						buffercount = 0;
 
 						// Determine next lock size
@@ -1543,7 +1509,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				// Draw what's still remaining
 				if(buffercount > 0) 
-					graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+					graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
 
 				//Done with this pass
 				graphics.Shaders.Things2D.EndPass();
@@ -1552,9 +1518,9 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(General.Settings.GZDrawModelsMode != ModelRenderMode.NONE) 
 				{
 					// Set renderstates for rendering
-					graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-					graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-					graphics.Device.SetRenderState(RenderState.FillMode, FillMode.Wireframe);
+					graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+					graphics.SetRenderState(RenderState.TextureFactor, -1);
+					graphics.SetRenderState(RenderState.FillMode, FillMode.Wireframe);
 
 					graphics.Shaders.Things2D.BeginPass(2);
 
@@ -1601,7 +1567,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 					//Done with this pass
 					graphics.Shaders.Things2D.EndPass();
-					graphics.Device.SetRenderState(RenderState.FillMode, FillMode.Solid);
+					graphics.SetRenderState(RenderState.FillMode, FillMode.Solid);
 				}
 
 				graphics.Shaders.Things2D.End();
@@ -1639,44 +1605,42 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(surfacetex != null)
 			{
 				// Set the rendertarget to the surface texture
-				targetsurface = surfacetex.GetSurfaceLevel(0);
-				if(graphics.StartRendering(true, General.Colors.Background.WithAlpha(0).ToColorValue(), targetsurface, null))
-				{
-					// Make sure anything we need is loaded
-					General.Map.Data.UnknownTexture3D.CreateTexture();
-					General.Map.Data.MissingTexture3D.CreateTexture(); //mxd
+                graphics.StartRendering(true, General.Colors.Background.WithAlpha(0).ToColorValue(), surfacetex, false);
 
-					// Set transformations
-					UpdateTransformations();
+				// Make sure anything we need is loaded
+				General.Map.Data.UnknownTexture3D.CreateTexture();
+				General.Map.Data.MissingTexture3D.CreateTexture(); //mxd
 
-					// Set states
-					graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-					graphics.Device.SetRenderState(RenderState.ZEnable, false);
-					graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-					graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-					graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-					graphics.Device.SetRenderState(RenderState.FogEnable, false);
-					SetWorldTransformation(true);
-					graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
+				// Set transformations
+				UpdateTransformations();
+
+				// Set states
+				graphics.SetRenderState(RenderState.CullMode, Cull.None);
+				graphics.SetRenderState(RenderState.ZEnable, false);
+				graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+				graphics.SetRenderState(RenderState.TextureFactor, -1);
+				graphics.SetRenderState(RenderState.FogEnable, false);
+				SetWorldTransformation(true);
+				graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 					
-					// Prepare for rendering
-					switch(viewmode)
-					{
-						case ViewMode.Brightness:
-							surfaces.RenderSectorBrightness(yviewport);
-							surfaces.RenderSectorSurfaces(graphics);
-							break;
+				// Prepare for rendering
+				switch(viewmode)
+				{
+					case ViewMode.Brightness:
+						surfaces.RenderSectorBrightness(yviewport);
+						surfaces.RenderSectorSurfaces(graphics);
+						break;
 							
-						case ViewMode.FloorTextures:
-							surfaces.RenderSectorFloors(yviewport);
-							surfaces.RenderSectorSurfaces(graphics);
-							break;
+					case ViewMode.FloorTextures:
+						surfaces.RenderSectorFloors(yviewport);
+						surfaces.RenderSectorSurfaces(graphics);
+						break;
 							
-						case ViewMode.CeilingTextures:
-							surfaces.RenderSectorCeilings(yviewport);
-							surfaces.RenderSectorSurfaces(graphics);
-							break;
-					}
+					case ViewMode.CeilingTextures:
+						surfaces.RenderSectorCeilings(yviewport);
+						surfaces.RenderSectorSurfaces(graphics);
+						break;
 				}
 			}
 			
@@ -1709,12 +1673,12 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Set renderstates for rendering
-				graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-				graphics.Device.SetRenderState(RenderState.ZEnable, false);
-				graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-				graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-				graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-				graphics.Device.SetRenderState(RenderState.FogEnable, false);
+				graphics.SetRenderState(RenderState.CullMode, Cull.None);
+				graphics.SetRenderState(RenderState.ZEnable, false);
+				graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+				graphics.SetRenderState(RenderState.TextureFactor, -1);
+				graphics.SetRenderState(RenderState.FogEnable, false);
 				graphics.Shaders.Display2D.Texture1 = t;
 				SetWorldTransformation(transformcoords);
 				graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1722,7 +1686,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Draw
 				graphics.Shaders.Display2D.Begin();
 				graphics.Shaders.Display2D.BeginPass(1);
-				graphics.Device.DrawUserPrimitives(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
+				graphics.DrawUserPrimitives(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
 				graphics.Shaders.Display2D.EndPass();
 				graphics.Shaders.Display2D.End();
 			}
@@ -1734,12 +1698,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(vertices.Length < 3) return;
 
 			// Set renderstates for rendering
-			graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.Device.SetRenderState(RenderState.ZEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.Device.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetRenderState(RenderState.FogEnable, false);
 
 			SetWorldTransformation(true);
 			graphics.Shaders.Things2D.FillColor = new Color4(color);
@@ -1748,7 +1712,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Draw
 			graphics.Shaders.Things2D.Begin();
 			graphics.Shaders.Things2D.BeginPass(2);
-			graphics.Device.DrawUserPrimitives(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
+			graphics.DrawUserPrimitives(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
 			graphics.Shaders.Things2D.EndPass();
 			graphics.Shaders.Things2D.End();
 		}
@@ -1765,21 +1729,21 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(label.SkipRendering) return;
 			
 			// Set renderstates for rendering
-			graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.Device.SetRenderState(RenderState.ZEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-			graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.Device.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
+			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetRenderState(RenderState.FogEnable, false);
 			graphics.Shaders.Display2D.Texture1 = label.Texture;
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, false);
-			graphics.Device.SetStreamSource(0, label.VertexBuffer, 0, FlatVertex.Stride);
+			graphics.SetStreamSource(0, label.VertexBuffer, 0, FlatVertex.Stride);
 
 			// Draw
 			graphics.Shaders.Display2D.Begin();
 			graphics.Shaders.Display2D.BeginPass(1); //mxd
-			graphics.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+			graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
 			graphics.Shaders.Display2D.EndPass();
 			graphics.Shaders.Display2D.End();
 		}
@@ -1799,12 +1763,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(labels.Count == skipped) return;
 			
 			// Set renderstates for rendering
-			graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.Device.SetRenderState(RenderState.ZEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-			graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.Device.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
+			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetRenderState(RenderState.FogEnable, false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, false);
 			
@@ -1819,10 +1783,10 @@ namespace CodeImp.DoomBuilder.Rendering
 				{
 					graphics.Shaders.Display2D.Texture1 = label.Texture;
 					graphics.Shaders.Display2D.ApplySettings();
-					graphics.Device.SetStreamSource(0, label.VertexBuffer, 0, FlatVertex.Stride);
+					graphics.SetStreamSource(0, label.VertexBuffer, 0, FlatVertex.Stride);
 
 					// Draw
-					graphics.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+					graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
 				}
 			}
 			
@@ -1874,12 +1838,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			quads[3].SetColors(c.ToInt());
 			
 			// Set renderstates for rendering
-			graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.Device.SetRenderState(RenderState.ZEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.Device.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetRenderState(RenderState.FogEnable, false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = General.Map.Data.WhiteTexture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1912,12 +1876,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			quad.SetColors(c.ToInt());
 			
 			// Set renderstates for rendering
-			graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.Device.SetRenderState(RenderState.ZEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.Device.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetRenderState(RenderState.FogEnable, false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = General.Map.Data.WhiteTexture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1947,12 +1911,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			quad.SetColors(c.ToInt());
 
 			// Set renderstates for rendering
-			graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.Device.SetRenderState(RenderState.ZEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.Device.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetRenderState(RenderState.FogEnable, false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = texture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -2045,19 +2009,19 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			// Write to buffer
-			VertexBuffer vb = new VertexBuffer(General.Map.Graphics.Device, FlatVertex.Stride * verts.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+			VertexBuffer vb = new VertexBuffer(FlatVertex.Stride * verts.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
 			DataStream s = vb.Lock(0, FlatVertex.Stride * verts.Length, LockFlags.Discard);
 			s.WriteRange(verts);
 			vb.Unlock();
 			s.Dispose();
 
 			// Set renderstates for rendering
-			graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.Device.SetRenderState(RenderState.ZEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.Device.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetRenderState(RenderState.FogEnable, false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = General.Map.Data.WhiteTexture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -2065,8 +2029,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Draw
 			graphics.Shaders.Display2D.Begin();
 			graphics.Shaders.Display2D.BeginPass(1);
-			graphics.Device.SetStreamSource(0, vb, 0, FlatVertex.Stride);
-			graphics.Device.DrawPrimitives(PrimitiveType.LineList, 0, pointscount / 2);
+			graphics.SetStreamSource(0, vb, 0, FlatVertex.Stride);
+			graphics.DrawPrimitives(PrimitiveType.LineList, 0, pointscount / 2);
 			graphics.Shaders.Display2D.EndPass();
 			graphics.Shaders.Display2D.End();
 			vb.Dispose();
@@ -2107,12 +2071,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			verts[3].c = c.ToInt();
 			
 			// Set renderstates for rendering
-			graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.Device.SetRenderState(RenderState.ZEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.Device.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.Device.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.Device.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetRenderState(RenderState.CullMode, Cull.None);
+			graphics.SetRenderState(RenderState.ZEnable, false);
+			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
+			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
+			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetRenderState(RenderState.FogEnable, false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = General.Map.Data.WhiteTexture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -2120,7 +2084,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Draw
 			graphics.Shaders.Display2D.Begin();
 			graphics.Shaders.Display2D.BeginPass(0);
-			graphics.Device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, verts);
+			graphics.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, verts);
 			graphics.Shaders.Display2D.EndPass();
 			graphics.Shaders.Display2D.End();
 		}

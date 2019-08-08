@@ -395,7 +395,6 @@ namespace CodeImp.DoomBuilder
 				// Device reset may be needed...
 				if(General.Editing.Mode is ClassicMode)
 				{
-					General.Map.Graphics.Reset();
 					General.MainWindow.RedrawDisplay();
 				}
 			}

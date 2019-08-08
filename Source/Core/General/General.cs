@@ -544,9 +544,6 @@ namespace CodeImp.DoomBuilder
 			//mxd. Set CultureInfo
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 			
-			// Hook to DLL loading failure event
-			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-			
 			// Set current thread name
 			Thread.CurrentThread.Name = "Main Application";
 
@@ -637,12 +634,6 @@ namespace CodeImp.DoomBuilder
 					mainwindow.Show();
 					mainwindow.Update();
 				}
-				
-				// Start Direct3D
-				General.WriteLogLine("Starting Direct3D graphics driver...");
-				try { D3DDevice.Startup(); }
-				catch(Direct3D9NotFoundException e) { AskDownloadDirectX(e.Message); return; }
-				catch(Direct3DX9NotFoundException e) { AskDownloadDirectX(e.Message); return; }
 				
 				// Load plugin manager
 				General.WriteLogLine("Loading plugins...");
@@ -739,58 +730,6 @@ namespace CodeImp.DoomBuilder
 				// Terminate
 				Terminate(false);
 			}
-		}
-
-		// This handles DLL linking errors
-		private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-		{
-			// Check if SlimDX failed loading
-			if(args.Name.Contains("SlimDX")) AskDownloadSlimDX();
-
-			// Return null
-			return null;
-		}
-		
-		// This asks the user to download DirectX
-		private static void AskDownloadDirectX(string message)
-		{
-			// Cancel loading map from command-line parameters, if any.
-			// This causes problems, because when the window is shown, the map will
-			// be loaded and DirectX is initialized (which we seem to be missing)
-			CancelAutoMapLoad();
-			
-			// Ask the user to download DirectX
-			if(MessageBox.Show("Unable to initialize DirectX: " + message + Environment.NewLine + Environment.NewLine +
-				"Do you want to install and/or update Microsoft DirectX 9.0 now?", "DirectX 9.0 Error", MessageBoxButtons.YesNo,
-				MessageBoxIcon.Exclamation) == DialogResult.Yes)
-			{
-				// Go to DirectX End-User Runtime Web Installer page (mxd)
-				OpenWebsite("https://www.microsoft.com/en-us/download/details.aspx?id=35&44F86079-8679-400C-BFF2-9CA5F2BCBDFC=1");
-			}
-
-			// End program here
-			Terminate(false);
-		}
-
-		// This asks the user to download SlimDX (mxd)
-		private static void AskDownloadSlimDX() 
-		{
-			// Cancel loading map from command-line parameters, if any.
-			// This causes problems, because when the window is shown, the map will
-			// be loaded and SlimDX is initialized (which we seem to be missing)
-			CancelAutoMapLoad();
-
-			// Ask the user to download SlimDX
-			if(MessageBox.Show("This application requires the latest version of SlimDX for .NET 2.0 installed on your computer." + Environment.NewLine +
-				"Do you want to install SlimDX now?", "SlimDX Error", MessageBoxButtons.YesNo,
-				MessageBoxIcon.Exclamation) == DialogResult.Yes) 
-			{
-				// Go to SlimDX download page
-				OpenWebsite("http://slimdx.org/download.php");
-			}
-
-			// End program here
-			Terminate(false);
 		}
 
 		// This parses the command line arguments
@@ -1034,7 +973,6 @@ namespace CodeImp.DoomBuilder
 				if(mainwindow != null) { mainwindow.Dispose(); mainwindow = null; }
 				if(actions != null) { actions.Dispose(); actions = null; }
 				if(types != null) { types.Dispose(); types = null; }
-				try { D3DDevice.Terminate(); } catch { }
 
 				// Application ends here and now
 				General.WriteLogLine("Termination done");

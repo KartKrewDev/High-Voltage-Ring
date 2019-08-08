@@ -337,20 +337,17 @@ namespace CodeImp.DoomBuilder.Rendering
 						img.Save(memstream, ImageFormat.Bmp);
 						memstream.Seek(0, SeekOrigin.Begin);
 
-						texture = Texture.FromStream(General.Map.Graphics.Device, memstream, (int)memstream.Length,
-								img.Size.Width, img.Size.Height, 1, Usage.None, Format.Unknown,
-								Pool.Managed, General.Map.Graphics.PostFilter, General.Map.Graphics.MipGenerateFilter, 0);
+						texture = Texture.FromStream(memstream, (int)memstream.Length, img.Size.Width, img.Size.Height, 1, Usage.None, Format.Unknown, Pool.Managed);
 					}
 
 					//mxd. Create the buffer
 					if(textbuffer == null || textbuffer.Disposed)
 					{
-						textbuffer = new VertexBuffer(General.Map.Graphics.Device, 4 * FlatVertex.Stride,
-												  Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
+						textbuffer = new VertexBuffer(4 * FlatVertex.Stride, Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
 					}
 
 					//mxd. Lock the buffer
-					using(DataStream stream = textbuffer.Lock(0, 4 * FlatVertex.Stride, LockFlags.Discard | LockFlags.NoSystemLock))
+					using(DataStream stream = textbuffer.Lock(0, 4 * FlatVertex.Stride, LockFlags.Discard))
 					{
 						FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, beginx, beginy, beginx + texturesize.Width, beginy + texturesize.Height);
 						stream.WriteRange(quad.Vertices);

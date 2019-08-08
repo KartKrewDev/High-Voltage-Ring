@@ -141,8 +141,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				for(int i = 0; i < set.Value.buffersizes.Count; i++)
 				{
 					// Make the new buffer!
-					VertexBuffer b = new VertexBuffer(General.Map.Graphics.Device, FlatVertex.Stride * set.Value.buffersizes[i],
-													Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+					VertexBuffer b = new VertexBuffer(FlatVertex.Stride * set.Value.buffersizes[i], Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
 
 					// Start refilling the buffer with sector geometry
 					DataStream bstream = b.Lock(0, FlatVertex.Stride * set.Value.buffersizes[i], LockFlags.Discard);
@@ -282,8 +281,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!resourcesunloaded)
 					{
 						// Make the new buffer!
-						vb = new VertexBuffer(General.Map.Graphics.Device, FlatVertex.Stride * buffernumvertices,
-												Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
 
 						// Add it.
 						set.buffers.Add(vb);
@@ -334,8 +332,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!resourcesunloaded)
 					{
 						// Make the new buffer and lock it
-						vb = new VertexBuffer(General.Map.Graphics.Device, FlatVertex.Stride * buffernumvertices,
-												Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
 						bstream = vb.Lock(0, FlatVertex.Stride * theseentries.Count * verticesperentry, LockFlags.Discard);
 					}
 					
@@ -682,11 +679,11 @@ namespace CodeImp.DoomBuilder.Rendering
 						if(set.buffers[entry.bufferindex] != lastbuffer)
 						{
 							lastbuffer = set.buffers[entry.bufferindex];
-							graphics.Device.SetStreamSource(0, lastbuffer, 0, FlatVertex.Stride);
+							graphics.SetStreamSource(0, lastbuffer, 0, FlatVertex.Stride);
 						}
 
 						// Draw
-						graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, entry.vertexoffset + (entry.numvertices * surfacevertexoffsetmul), entry.numvertices / 3);
+						graphics.DrawPrimitives(PrimitiveType.TriangleList, entry.vertexoffset + (entry.numvertices * surfacevertexoffsetmul), entry.numvertices / 3);
 					}
 					
 					graphics.Shaders.Display2D.EndPass();

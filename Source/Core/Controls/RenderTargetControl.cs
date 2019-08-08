@@ -71,14 +71,6 @@ namespace CodeImp.DoomBuilder.Controls
 
 		#region ================== Overrides
 		
-		// Paint method
-		protected override void OnPaint(PaintEventArgs pe)
-		{
-			// Pass on to base
-			// Do we really want this?
-			if(!D3DDevice.IsRendering) base.RaisePaintEvent(this, pe); //mxd. Dont raise event when in the middle of rendering
-		}
-
 		//mxd
 		protected override void OnKeyUp(KeyEventArgs e) 
 		{

@@ -1060,9 +1060,6 @@ namespace CodeImp.DoomBuilder.Windows
 				// Display was resized?
 				if(displayresized)
 				{
-					// Reset graphics to match changes
-					General.Map.Graphics.Reset();
-
 					//mxd. Aspect ratio may've been changed
 					General.Map.CRenderer3D.CreateProjection();
 				}

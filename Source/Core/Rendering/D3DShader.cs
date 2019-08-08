@@ -101,7 +101,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			try
 			{
 				// Compile effect
-				fx = Effect.FromStream(General.Map.Graphics.Device, fxdata, null, null, null, ShaderFlags.None, null, out errors);
+				fx = Effect.FromStream(fxdata, ShaderFlags.None, out errors);
 				if(!string.IsNullOrEmpty(errors))
 				{
 					throw new Exception("Errors in effect file " + fxfile + ": " + errors);
@@ -118,7 +118,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					fxdata.Seek(0, SeekOrigin.Begin);
 					
 					// Compile effect
-					fx = Effect.FromStream(General.Map.Graphics.Device, fxdata, null, null, null, ShaderFlags.Debug, null, out debugerrors);
+					fx = Effect.FromStream(fxdata, ShaderFlags.Debug, out debugerrors);
 					if(!string.IsNullOrEmpty(debugerrors))
 					{
 						throw new Exception("Errors in effect file " + fxfile + ": " + debugerrors);
@@ -155,10 +155,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		public void Begin()
 		{
 			// Set vertex declaration
-			General.Map.Graphics.Device.VertexDeclaration = vertexdecl;
+			General.Map.Graphics.SetVertexDeclaration(vertexdecl);
 
 			// Set effect
-			effect.Begin(FX.DoNotSaveState);
+			effect.Begin();
 		}
 
 		// This begins a pass

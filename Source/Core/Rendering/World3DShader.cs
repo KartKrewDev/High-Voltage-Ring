@@ -312,7 +312,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				VertexElement.VertexDeclarationEnd
 			};
 
-			vertexdecl = new VertexDeclaration(General.Map.Graphics.Device, ve);
+			vertexdecl = new VertexDeclaration(ve);
 
 			// We have no destructor
 			GC.SuppressFinalize(this);

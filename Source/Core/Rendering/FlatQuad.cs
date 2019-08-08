@@ -259,7 +259,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public void Render(D3DDevice device)
 		{
 			// Render the quad
-			device.Device.DrawUserPrimitives(type, 0, 2, vertices);
+			device.DrawUserPrimitives(type, 0, 2, vertices);
 		}
 		
 		#endregion

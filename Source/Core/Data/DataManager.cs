@@ -920,7 +920,7 @@ namespace CodeImp.DoomBuilder.Data
 			if(modeldefentries[type].LoadState != ModelLoadState.None) return true;
 
 			//create models
-			ModelReader.Load(modeldefentries[type], containers, General.Map.Graphics.Device);
+			ModelReader.Load(modeldefentries[type], containers);
 
 			if(modeldefentries[type].Model != null) 
 			{
@@ -3310,24 +3310,17 @@ namespace CodeImp.DoomBuilder.Data
 					General.ErrorLogger.Add(ErrorType.Warning, "Skybox creation failed: unable to load texture \"" + skytex + "\"");
 				
 				// Use the built-in texture
-				if(General.Map.Graphics.CheckAvailability())
-				{
-					ImageData tex = LoadInternalTexture("MissingSky3D.png");
-					tex.CreateTexture();
-                    Bitmap bmp = tex.GetBitmap();
-                    Bitmap sky;
-                    lock (bmp)
-                    {
-                        sky = new Bitmap(bmp);
-                    }
-					sky.RotateFlip(RotateFlipType.RotateNoneFlipX); // We don't want our built-in image mirrored...
-					skybox = MakeClassicSkyBox(sky);
-					tex.Dispose();
-				}
-				else
-				{
-					General.ErrorLogger.Add(ErrorType.Warning, "Skybox creation failed: Direct3D device is not available");
-				}
+				ImageData tex = LoadInternalTexture("MissingSky3D.png");
+				tex.CreateTexture();
+                Bitmap bmp = tex.GetBitmap();
+                Bitmap sky;
+                lock (bmp)
+                {
+                    sky = new Bitmap(bmp);
+                }
+				sky.RotateFlip(RotateFlipType.RotateNoneFlipX); // We don't want our built-in image mirrored...
+				skybox = MakeClassicSkyBox(sky);
+				tex.Dispose();
 			}
 		}
 
@@ -3426,38 +3419,26 @@ namespace CodeImp.DoomBuilder.Data
 			}
 
 			// Get Device and shader...
-			Device device = General.Map.Graphics.Device;
 			World3DShader effect = General.Map.Graphics.Shaders.World3D;
 
 			// Make custom rendertarget
 			const int cubemaptexsize = 1024;
-			Surface rendertarget = Surface.CreateRenderTarget(device, cubemaptexsize, cubemaptexsize, Format.A8R8G8B8, MultisampleType.None, 0, false);
-			Surface depthbuffer = Surface.CreateDepthStencil(device, cubemaptexsize, cubemaptexsize, General.Map.Graphics.DepthBuffer.Description.Format, MultisampleType.None, 0, false);
+			Texture rendertarget = new Texture(cubemaptexsize, cubemaptexsize, 1, Usage.RenderTarget, Format.A8R8G8B8, Pool.Default);
 
-			// Start rendering
-			if(!General.Map.Graphics.StartRendering(true, new Color4(), rendertarget, depthbuffer))
-			{
-				General.ErrorLogger.Add(ErrorType.Error, "Skybox creation failed: unable to start rendering...");
-
-				// Get rid of unmanaged stuff...
-				rendertarget.Dispose();
-				depthbuffer.Dispose();
-
-				// No dice...
-				return null;
-			}
+            // Start rendering
+            General.Map.Graphics.StartRendering(true, new Color4(), rendertarget, true);
 
 			// Load the skysphere model...
 			BoundingBoxSizes bbs = new BoundingBoxSizes();
 			Stream modeldata = General.ThisAssembly.GetManifestResourceStream("CodeImp.DoomBuilder.Resources.SkySphere.md3");
-			ModelReader.MD3LoadResult meshes = ModelReader.ReadMD3Model(ref bbs, new Dictionary<int, string>(), modeldata, device, 0);
+			ModelReader.MD3LoadResult meshes = ModelReader.ReadMD3Model(ref bbs, new Dictionary<int, string>(), modeldata, 0);
 			if(meshes.Meshes.Count != 3) throw new Exception("Skybox creation failed: " 
 				+ (string.IsNullOrEmpty(meshes.Errors) ? "skybox model must contain 3 surfaces" : meshes.Errors));
 
 			// Make skysphere textures...
-			Texture texside = TextureFromBitmap(device, skyimage);
-			Texture textop = TextureFromBitmap(device, topimg);
-			Texture texbottom = TextureFromBitmap(device, bottomimg);
+			Texture texside = TextureFromBitmap(skyimage);
+			Texture textop = TextureFromBitmap(topimg);
+			Texture texbottom = TextureFromBitmap(bottomimg);
 
 			// Calculate model scaling (gl.skydone.cpp:RenderDome() in GZDoom)
 			float yscale;
@@ -3470,14 +3451,13 @@ namespace CodeImp.DoomBuilder.Data
 			yscale *= 1.65f;
 
 			// Make cubemap texture
-			CubeTexture cubemap = new CubeTexture(device, cubemaptexsize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-			Surface sysmemsurf = Surface.CreateOffscreenPlain(device, cubemaptexsize, cubemaptexsize, Format.A8R8G8B8, Pool.SystemMemory);
+			CubeTexture cubemap = new CubeTexture(cubemaptexsize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 
-			// Set render settings...
-			device.SetRenderState(RenderState.ZEnable, false);
-			device.SetRenderState(RenderState.CullMode, Cull.None);
-			device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
-			device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
+            // Set render settings...
+            General.Map.Graphics.SetRenderState(RenderState.ZEnable, false);
+            General.Map.Graphics.SetRenderState(RenderState.CullMode, Cull.None);
+            General.Map.Graphics.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
+            General.Map.Graphics.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
 			
 			// Setup matrices
 			Vector3 offset = new Vector3(0f, 0f, -1.8f); // Sphere size is 10 mu
@@ -3516,29 +3496,7 @@ namespace CodeImp.DoomBuilder.Data
 					meshes.Meshes[j].DrawSubset(0);
 				}
 
-				// Get rendered data from video memory...
-				device.GetRenderTargetData(rendertarget, sysmemsurf);
-
-				// ...Then copy it to destination texture
-				Surface targetsurf = cubemap.GetCubeMapSurface((CubeMapFace)i, 0);
-				DataRectangle sourcerect = sysmemsurf.LockRectangle(LockFlags.NoSystemLock);
-				DataRectangle targetrect = targetsurf.LockRectangle(LockFlags.NoSystemLock);
-
-				if(sourcerect.Data.CanRead && targetrect.Data.CanWrite)
-				{
-					byte[] data = new byte[sourcerect.Data.Length];
-					sourcerect.Data.ReadRange(data, 0, (int)sourcerect.Data.Length);
-					targetrect.Data.Write(data, 0, data.Length);
-				}
-				else
-				{
-					General.ErrorLogger.Add(ErrorType.Error, "Skybox creation failed: unable to copy to CubeTexture surface...");
-				}
-
-				// Unlock and dispose
-				sysmemsurf.UnlockRectangle();
-				targetsurf.UnlockRectangle();
-				targetsurf.Dispose();
+                General.Map.Graphics.CopyTexture(rendertarget, cubemap, (CubeMapFace)i);
 			}
 
 			// End rendering
@@ -3548,8 +3506,6 @@ namespace CodeImp.DoomBuilder.Data
 
 			// Dispose unneeded stuff
 			rendertarget.Dispose();
-			depthbuffer.Dispose();
-			sysmemsurf.Dispose();
 			textop.Dispose();
 			texside.Dispose();
 			texbottom.Dispose();
@@ -3695,7 +3651,7 @@ namespace CodeImp.DoomBuilder.Data
 		// sides[] must contain 6 square Po2 images in this order: North, East, South, West, Top, Bottom
 		private static CubeTexture MakeSkyBox(Bitmap[] sides, int targetsize, bool fliptop)
 		{
-			CubeTexture cubemap = new CubeTexture(General.Map.Graphics.Device, targetsize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+			CubeTexture cubemap = new CubeTexture(targetsize, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 
 			// Draw faces
 			sides[3].RotateFlip(RotateFlipType.Rotate90FlipNone);
@@ -3721,7 +3677,7 @@ namespace CodeImp.DoomBuilder.Data
 
 		private static void DrawCubemapFace(CubeTexture texture, CubeMapFace face, Bitmap image)
 		{
-			DataRectangle rect = texture.LockRectangle(face, 0, LockFlags.NoSystemLock);
+			DataRectangle rect = texture.LockRectangle(face, 0, LockFlags.None);
 			
 			if(rect.Data.CanWrite)
 			{
@@ -3807,7 +3763,7 @@ namespace CodeImp.DoomBuilder.Data
 			return Matrix.LookAtLH(eye, lookdir, updir);
 		}
 
-		private static Texture TextureFromBitmap(Device device, Image image)
+		private static Texture TextureFromBitmap(Image image)
 		{
 			using(MemoryStream ms = new MemoryStream())
 			{
@@ -3816,9 +3772,7 @@ namespace CodeImp.DoomBuilder.Data
 
 				// Classic skies textures can be NPo2 (and D3D Texture is resized to Po2 by default),
 				// so we need to explicitly specify the size
-				return Texture.FromStream(device, ms, (int) ms.Length,
-										  image.Size.Width, image.Size.Height, 0, Usage.None, Format.Unknown,
-										  Pool.Managed, Filter.None, Filter.None, 0);
+				return Texture.FromStream(ms, (int) ms.Length, image.Size.Width, image.Size.Height, 0, Usage.None, Format.Unknown, Pool.Managed);
 			}
 		}
 		
