@@ -344,15 +344,8 @@ namespace CodeImp.DoomBuilder.Rendering
 						textbuffer = new VertexBuffer(4 * FlatVertex.Stride);
 					}
 
-					//mxd. Lock the buffer
-					using(DataStream stream = textbuffer.Lock(LockFlags.Discard))
-					{
-						FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, beginx, beginy, beginx + texturesize.Width, beginy + texturesize.Height);
-						stream.WriteRange(quad.Vertices);
-					}
-
-					// Done filling the vertex buffer
-					textbuffer.Unlock();
+					FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, beginx, beginy, beginx + texturesize.Width, beginy + texturesize.Height);
+                    textbuffer.SetBufferData(quad.Vertices);
 				}
 				else
 				{

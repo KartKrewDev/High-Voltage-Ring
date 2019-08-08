@@ -30,10 +30,7 @@ namespace CodeImp.DoomBuilder.Rendering
     #region High level mesh rendering
     public class Mesh
     {
-        public Mesh(int indexCount, int vertexCount, MeshFlags flags, VertexElement[] elements) { }
-
-        public VertexBuffer VertexBuffer { get; private set; }
-        public IndexBuffer IndexBuffer { get; private set; }
+        public Mesh(VertexElement[] vertexDecl, Array vertexData, Array indexData) { }
 
         public void DrawSubset(int index) { }
 
@@ -81,32 +78,12 @@ namespace CodeImp.DoomBuilder.Rendering
     {
         public VertexBuffer(int sizeInBytes) { }
 
-        public DataStream Lock(LockFlags flags) { return null; }
-        public DataStream Lock(int offset, int size, LockFlags flags) { return null; }
-        public void Unlock() { }
-
-        public object Tag { get; set; }
+        public void SetBufferData(Array data) { }
+        public void SetBufferSubdata(long destOffset, Array data) { }
+        public void SetBufferSubdata(long destOffset, Array data, long offset, long size) { }
 
         public bool Disposed { get; private set; }
         public void Dispose() { Disposed = true; }
-    }
-
-    public class IndexBuffer
-    {
-        public DataStream Lock(LockFlags flags) { return null; }
-        public void Unlock() { }
-
-        public bool Disposed { get; private set; }
-        public void Dispose() { Disposed = true; }
-    }
-
-    public class DataStream : IDisposable
-    {
-        public void Seek(long offset, System.IO.SeekOrigin origin) { }
-        public void Write(ushort v) { }
-        public void WriteRange(Array data) { }
-        public void WriteRange(Array data, long offset, long size) { }
-        public void Dispose() { }
     }
     #endregion
 
@@ -188,8 +165,6 @@ namespace CodeImp.DoomBuilder.Rendering
     public enum SamplerState { AddressU, AddressV, AddressW }
     public enum TextureAddress { Wrap, Clamp }
     public enum Format { Unknown, A8R8G8B8 }
-    public enum LockFlags { None, Discard }
-    public enum MeshFlags { Use32Bit, IndexBufferManaged, VertexBufferManaged, Managed }
     public enum ShaderFlags { None, Debug }
     public enum PrimitiveType { LineList, TriangleList, TriangleStrip }
     public enum CubeMapFace { PositiveX, PositiveY, PositiveZ, NegativeX, NegativeY, NegativeZ }

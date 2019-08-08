@@ -140,18 +140,15 @@ namespace CodeImp.DoomBuilder.VisualModes
 				geobuffer = new VertexBuffer(WorldVertex.Stride * numverts);
 
 				// Fill the buffer
-				DataStream bufferstream = geobuffer.Lock(LockFlags.Discard);
 				foreach(VisualGeometry g in allgeometry)
 				{
 					if((g.Vertices != null) && (g.Vertices.Length > 0))
 					{
-						bufferstream.WriteRange(g.Vertices);
+                        geobuffer.SetBufferSubdata(v * WorldVertex.Stride, g.Vertices);
 						g.VertexOffset = v;
 						v += g.Vertices.Length;
 					}
 				}
-				geobuffer.Unlock();
-				bufferstream.Dispose();
 			}
 
 			this.sector.UpdateFogColor(); //mxd

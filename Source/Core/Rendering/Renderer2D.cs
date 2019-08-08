@@ -391,11 +391,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			thingsvertices = new VertexBuffer(THING_BUFFER_SIZE * 12 * sizeof(FlatVertex));
 
 			// Make screen vertices
-			DataStream stream = screenverts.Lock(LockFlags.Discard);
 			FlatVertex[] verts = CreateScreenVerts(structsize);
-			stream.WriteRange(verts);
-			screenverts.Unlock();
-			stream.Dispose();
+            screenverts.SetBufferData(verts);
 			
 			// Force update of view
 			lastgridscale = -1f;
@@ -1203,8 +1200,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Anything to render?
 			if(things.Count > 0)
 			{
-				DataStream stream;
-				
 				// Make alpha color
 				Color4 alphacolor = new Color4(alpha, 1.0f, 1.0f, 1.0f);
 				bool isthingsmode = (General.Editing.Mode.GetType().Name == "ThingsMode");
@@ -1272,10 +1267,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(buffercount == locksize)
 					{
 						// Write to buffer
-						stream = thingsvertices.Lock(0, locksize * 6 * FlatVertex.Stride, LockFlags.Discard);
-						stream.WriteRange(verts, 0, buffercount * 6);
-						thingsvertices.Unlock();
-						stream.Dispose();
+                        thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
 						
 						// Draw!
 						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1287,10 +1279,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Write to buffer
-				stream = thingsvertices.Lock(0, locksize * 6 * FlatVertex.Stride, LockFlags.Discard);
-				if(buffercount > 0) stream.WriteRange(verts, 0, buffercount * 6);
-				thingsvertices.Unlock();
-				stream.Dispose();
+				if(buffercount > 0) thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
 				
 				// Draw what's still remaining
 				if(buffercount > 0)
@@ -1421,10 +1410,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							if(buffercount == locksize)
 							{
 								// Write to buffer
-								stream = thingsvertices.Lock(0, locksize * 6 * FlatVertex.Stride, LockFlags.Discard);
-								stream.WriteRange(verts, 0, buffercount * 6);
-								thingsvertices.Unlock();
-								stream.Dispose();
+                                thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
 
 								// Draw!
 								graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1437,10 +1423,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 
 						// Write to buffer
-						stream = thingsvertices.Lock(0, locksize * 6 * FlatVertex.Stride, LockFlags.Discard);
-						if(buffercount > 0) stream.WriteRange(verts, 0, buffercount * 6);
-						thingsvertices.Unlock();
-						stream.Dispose();
+                        thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
 
 						// Draw what's still remaining
 						if(buffercount > 0) graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1474,10 +1457,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(buffercount == locksize) 
 					{
 						// Write to buffer
-						stream = thingsvertices.Lock(0, locksize * 6 * FlatVertex.Stride, LockFlags.Discard);
-						stream.WriteRange(verts, 0, buffercount * 6);
-						thingsvertices.Unlock();
-						stream.Dispose();
+                        thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
 
 						// Draw!
 						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1489,10 +1469,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Write to buffer
-				stream = thingsvertices.Lock(0, locksize * 6 * FlatVertex.Stride, LockFlags.Discard);
-				if(buffercount > 0) stream.WriteRange(verts, 0, buffercount * 6);
-				thingsvertices.Unlock();
-				stream.Dispose();
+				if(buffercount > 0) thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
 
 				// Draw what's still remaining
 				if(buffercount > 0) 
@@ -1997,10 +1974,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Write to buffer
 			VertexBuffer vb = new VertexBuffer(FlatVertex.Stride * verts.Length);
-			DataStream s = vb.Lock(LockFlags.Discard);
-			s.WriteRange(verts);
-			vb.Unlock();
-			s.Dispose();
+			vb.SetBufferData(verts);
 
 			// Set renderstates for rendering
 			graphics.SetRenderState(RenderState.CullMode, Cull.None);

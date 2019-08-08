@@ -142,22 +142,15 @@ namespace CodeImp.DoomBuilder.Rendering
 					VertexBuffer b = new VertexBuffer(FlatVertex.Stride * set.Value.buffersizes[i]);
 
 					// Start refilling the buffer with sector geometry
-					DataStream bstream = b.Lock(LockFlags.Discard);
 					foreach(SurfaceEntry e in set.Value.entries)
 					{
 						if(e.bufferindex == i)
 						{
-							// Fill buffer
-							bstream.Seek(e.vertexoffset * FlatVertex.Stride, SeekOrigin.Begin);
-							bstream.WriteRange(e.floorvertices);
-							bstream.WriteRange(e.ceilvertices);
+							b.SetBufferSubdata(e.vertexoffset * FlatVertex.Stride, e.floorvertices);
+                            b.SetBufferSubdata((e.vertexoffset + e.floorvertices.Length) * FlatVertex.Stride, e.ceilvertices);
 						}
 					}
 
-					// Unlock buffer
-					b.Unlock();
-					bstream.Dispose();
-					
 					// Add to list
 					set.Value.buffers[i] = b;
 				}
@@ -246,7 +239,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This ensures there is enough space for a given number of free entries (also adds new bufers if needed)
 		private void EnsureFreeBufferSpace(SurfaceBufferSet set, int freeentries)
 		{
-			DataStream bstream = null;
 			VertexBuffer vb = null;
 			
 			// Check if we have to add entries
@@ -301,15 +293,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Reallocate a buffer
 				else
 				{
-					// Trash the old buffer
-					if(set.buffers[bufferindex].Tag != null)
-					{
-						bstream = (DataStream)set.buffers[bufferindex].Tag;
-						set.buffers[bufferindex].Unlock();
-						bstream.Dispose();
-						set.buffers[bufferindex].Tag = null;
-					}
-
 					if((set.buffers[bufferindex] != null) && !resourcesunloaded)
 						set.buffers[bufferindex].Dispose();
 
@@ -331,7 +314,6 @@ namespace CodeImp.DoomBuilder.Rendering
 					{
 						// Make the new buffer and lock it
 						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices);
-						bstream = vb.Lock(LockFlags.Discard);
 					}
 					
 					// Start refilling the buffer with sector geometry
@@ -340,9 +322,9 @@ namespace CodeImp.DoomBuilder.Rendering
 					{
 						if(!resourcesunloaded)
 						{
-							// Fill buffer
-							bstream.WriteRange(e.floorvertices);
-							bstream.WriteRange(e.ceilvertices);
+                            // Fill buffer
+                            set.buffers[bufferindex].SetBufferSubdata(vertexoffset * FlatVertex.Stride, e.floorvertices);
+                            set.buffers[bufferindex].SetBufferSubdata((vertexoffset + e.floorvertices.Length) * FlatVertex.Stride, e.ceilvertices);
 						}
 
 						// Set the new location in the buffer
@@ -354,9 +336,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
 					if(!resourcesunloaded)
 					{
-						// Unlock buffer
-						vb.Unlock();
-						bstream.Dispose();
 						set.buffers[bufferindex] = vb;
 					}
 					else
@@ -465,26 +444,9 @@ namespace CodeImp.DoomBuilder.Rendering
 				
 				if(!resourcesunloaded)
 				{
-					// Lock the buffer
-					DataStream bstream;
 					VertexBuffer vb = set.buffers[e.bufferindex];
-					if(vb.Tag == null)
-					{
-						// Note: DirectX warns me that I am not using LockFlags.Discard or LockFlags.NoOverwrite here,
-						// but we don't have much of a choice since we want to update our data and not destroy other data
-						bstream = vb.Lock(0, set.buffersizes[e.bufferindex] * FlatVertex.Stride, LockFlags.None);
-						vb.Tag = bstream;
-						lockedbuffers.Add(vb);
-					}
-					else
-					{
-						bstream = (DataStream)vb.Tag;
-					}
-
-					// Write the vertices to buffer
-					bstream.Seek(e.vertexoffset * FlatVertex.Stride, SeekOrigin.Begin);
-					bstream.WriteRange(e.floorvertices);
-					bstream.WriteRange(e.ceilvertices);
+                    vb.SetBufferSubdata(e.vertexoffset * FlatVertex.Stride, e.floorvertices);
+                    vb.SetBufferSubdata((e.vertexoffset + e.floorvertices.Length) * FlatVertex.Stride, e.ceilvertices);
 				}
 			}
 		}
@@ -511,17 +473,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			if(!resourcesunloaded)
 			{
-				foreach(VertexBuffer vb in lockedbuffers)
-				{
-					if(vb.Tag != null)
-					{
-						DataStream bstream = (DataStream)vb.Tag;
-						vb.Unlock();
-						bstream.Dispose();
-						vb.Tag = null;
-					}
-				}
-
 				// Clear list
 				lockedbuffers = new List<VertexBuffer>();
 			}

@@ -720,10 +720,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			VertexBuffer vb = new VertexBuffer(WorldVertex.Stride * verts.Length);
-			DataStream s = vb.Lock(LockFlags.Discard);
-			s.WriteRange(verts);
-			vb.Unlock();
-			s.Dispose();
+			vb.SetBufferData(verts);
 			
 			//begin rendering
 			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);

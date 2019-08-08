@@ -12,6 +12,7 @@ using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.Geometry;
+using System.Linq;
 
 #endregion
 
@@ -988,19 +989,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				}
 
 				//mesh
-				Mesh mesh = new Mesh(polyIndecesList.Count / 3, vertList.Count, MeshFlags.Use32Bit | MeshFlags.IndexBufferManaged | MeshFlags.VertexBufferManaged, vertexElements);
-
-				using(DataStream stream = mesh.VertexBuffer.Lock(LockFlags.None))
-				{
-					stream.WriteRange(vertList.ToArray());
-				}
-				mesh.VertexBuffer.Unlock();
-
-				using(DataStream stream = mesh.IndexBuffer.Lock(LockFlags.None))
-				{
-					stream.WriteRange(polyIndecesList.ToArray());
-				}
-				mesh.IndexBuffer.Unlock();
+				Mesh mesh = new Mesh(vertexElements, vertList.ToArray(), polyIndecesList.ToArray());
 
 				//store in result
 				result.Meshes.Add(mesh);
@@ -1183,23 +1172,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			mde.Model.Textures.Add(texture);
 
 			// Create mesh
-			MeshFlags meshflags = MeshFlags.Managed;
-			if(indices.Count > ushort.MaxValue - 1) meshflags |= MeshFlags.Use32Bit;
-
-			Mesh mesh = new Mesh(facescount, verts.Count, meshflags, vertexElements);
-
-			DataStream mstream = mesh.VertexBuffer.Lock(LockFlags.None);
-			mstream.WriteRange(verts.ToArray());
-			mesh.VertexBuffer.Unlock();
-
-			mstream = mesh.IndexBuffer.Lock(LockFlags.None);
-
-			if(indices.Count > ushort.MaxValue - 1)
-				mstream.WriteRange(indices.ToArray());
-			else
-				foreach(int index in indices) mstream.Write((ushort)index);
-
-			mesh.IndexBuffer.Unlock();
+			Mesh mesh = new Mesh(vertexElements, verts.ToArray(), indices.ToArray());
 
 			// Add mesh
 			mde.Model.Meshes.Add(mesh);
@@ -1718,19 +1691,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 		private static void CreateMesh(ref MD3LoadResult result, List<WorldVertex> verts, List<int> indices)
 		{
 			//create mesh
-			Mesh mesh = new Mesh(indices.Count / 3, verts.Count, MeshFlags.Use32Bit | MeshFlags.IndexBufferManaged | MeshFlags.VertexBufferManaged, vertexElements);
-
-			using (DataStream stream = mesh.VertexBuffer.Lock(LockFlags.None))
-			{
-				stream.WriteRange(verts.ToArray());
-			}
-			mesh.VertexBuffer.Unlock();
-
-			using(DataStream stream = mesh.IndexBuffer.Lock(LockFlags.None))
-			{
-				stream.WriteRange(indices.ToArray());
-			}
-			mesh.IndexBuffer.Unlock();
+			Mesh mesh = new Mesh(vertexElements, verts.ToArray(), indices.ToArray());
 
 			//store in result
 			result.Meshes.Add(mesh);

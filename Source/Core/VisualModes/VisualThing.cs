@@ -527,11 +527,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 						// Make a new buffer
 						geobuffers[i] = new VertexBuffer(WorldVertex.Stride * vertices[i].Length);
 
-						// Fill the buffer
-						DataStream bufferstream = geobuffers[i].Lock(LockFlags.Discard);
-						bufferstream.WriteRange(vertices[i]);
-						geobuffers[i].Unlock();
-						bufferstream.Dispose();
+                        // Fill the buffer
+                        geobuffers[i].SetBufferData(vertices[i]);
 					}
 				}
 				
@@ -616,8 +613,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				WorldVertex[] cv = cageverts.ToArray();
 				cagelength = cv.Length / 2;
 				cagebuffer = new VertexBuffer(WorldVertex.Stride * cv.Length);
-				cagebuffer.Lock(LockFlags.None).WriteRange(cv);
-				cagebuffer.Unlock();
+                cagebuffer.SetBufferData(cv);
 
 				// Done
 				updatecage = false;
