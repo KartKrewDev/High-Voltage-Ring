@@ -306,19 +306,4 @@ namespace SlimDX
         }
     }
     #endregion
-
-    #region Stop watch timer
-    // Actually System.Diagnostics (System.Runtime.Extensions.dll, System.dll, netstandard.dll)
-    public class StopWatch
-    {
-        public long ElapsedMilliseconds { get; }
-        public void Reset() { }
-        public void Start() { }
-    }
-
-    public class Configuration
-    {
-        public static StopWatch Timer { get; set; }
-    }
-    #endregion
 }

@@ -136,21 +136,21 @@ namespace CodeImp.DoomBuilder
 
 		public static void StartTimer() 
 		{
-			starttime = SlimDX.Configuration.Timer.ElapsedMilliseconds;
+			starttime = Clock.Timer.ElapsedMilliseconds;
 		}
 
 		public static void PauseTimer()
 		{
 			if(starttime == -1) throw new InvalidOperationException("DebugConsole.StartTimer() must be called before DebugConsole.PauseTimer()!");
 			
-			storedtime += SlimDX.Configuration.Timer.ElapsedMilliseconds - starttime;
+			storedtime += Clock.Timer.ElapsedMilliseconds - starttime;
 		}
 
 		public static void StopTimer(string message) 
 		{
 			if(starttime == -1) throw new InvalidOperationException("DebugConsole.StartTimer() must be called before DebugConsole.StopTimer()!");
 
-			long duration = SlimDX.Configuration.Timer.ElapsedMilliseconds - starttime + storedtime;
+			long duration = Clock.Timer.ElapsedMilliseconds - starttime + storedtime;
 			
 			if(message.Contains("%"))
 				message = message.Replace("%", duration.ToString(CultureInfo.InvariantCulture));
