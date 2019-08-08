@@ -261,49 +261,4 @@ namespace SlimDX
         public static bool operator !=(Vector4 left, Vector4 right) { return left.X != right.X || left.Y != right.Y || left.Z != right.Z || left.W != right.W; }
     }
     #endregion
-
-    #region DirectInput mouse handling
-    namespace DirectInput
-    {
-        public enum DeviceAxisMode { Relative }
-        public enum CooperativeLevel { Nonexclusive, Foreground }
-
-        public class DirectInput
-        {
-            public void Dispose() { }
-        }
-
-        public class MouseProperties
-        {
-            public DeviceAxisMode AxisMode { private get; set; }
-        }
-
-        public class MouseState
-        {
-            public float X { get; }
-            public float Y { get; }
-        }
-
-        public class Result
-        {
-            public bool IsSuccess { get; }
-        }
-
-        public class Mouse
-        {
-            public Mouse(DirectInput dinput) { }
-            public MouseProperties Properties { get; }
-            public void SetCooperativeLevel(System.Windows.Forms.Control control, CooperativeLevel level) { }
-            public void Acquire() { }
-            public void Unacquire() { }
-            public Result Poll() { return null; }
-            public MouseState GetCurrentState() { return null; }
-            public void Dispose() { }
-        }
-
-        public class DirectInputException : ApplicationException
-        {
-        }
-    }
-    #endregion
 }

@@ -18,8 +18,6 @@
 
 using System;
 using System.Windows.Forms;
-using SlimDX;
-using SlimDX.DirectInput;
 using CodeImp.DoomBuilder.Geometry;
 
 #endregion
@@ -31,18 +29,8 @@ namespace CodeImp.DoomBuilder.Actions
 		#region ================== Variables
 
 		// Mouse input
-		private DirectInput dinput;
-		private Mouse mouse;
+		private RawMouse mouse;
 		
-		// Disposing
-		private bool isdisposed;
-
-		#endregion
-
-		#region ================== Properties
-
-		public bool IsDisposed { get { return isdisposed; } }
-
 		#endregion
 
 		#region ================== Constructor / Disposer
@@ -50,30 +38,8 @@ namespace CodeImp.DoomBuilder.Actions
 		// Constructor
 		public MouseInput(Control source)
 		{
-			// Initialize
-			dinput = new DirectInput();
-			
 			// Start mouse input
-			mouse = new Mouse(dinput);
-			if(mouse == null) throw new Exception("No mouse device found.");
-			
-			// Set mouse input settings
-			mouse.Properties.AxisMode = DeviceAxisMode.Relative;
-			
-			// Set cooperative level
-			mouse.SetCooperativeLevel(source,
-				CooperativeLevel.Nonexclusive | CooperativeLevel.Foreground);
-			
-			// Aquire device
-			try { mouse.Acquire(); }
-#if DEBUG
-			catch(Exception e)
-			{
-				Console.WriteLine("MouseInput initialization failed: " + e.Message);
-			}
-#else
-			catch(Exception) { }
-#endif
+			mouse = new RawMouse(source);
 
 			// We have no destructor
 			GC.SuppressFinalize(this);
@@ -82,20 +48,10 @@ namespace CodeImp.DoomBuilder.Actions
 		// Disposer
 		public void Dispose()
 		{
-			// Not already disposed?
-			if(!isdisposed)
+			if(mouse != null)
 			{
-				// Dispose
-				mouse.Unacquire();
 				mouse.Dispose();
-				dinput.Dispose();
-				
-				// Clean up
 				mouse = null;
-				dinput = null;
-				
-				// Done
-				isdisposed = true;
 			}
 		}
 
@@ -110,62 +66,39 @@ namespace CodeImp.DoomBuilder.Actions
 		// This processes the input
 		public Vector2D Process()
 		{
-			// Poll the device
-			try
-			{
-				Result result = mouse.Poll();
-				if(result.IsSuccess)
-				{
-					// Get the changes since previous poll
-					MouseState ms = mouse.GetCurrentState();
+			MouseState ms = mouse.Poll();
 
-					// Calculate changes depending on sensitivity
-					float changex = ms.X * General.Settings.VisualMouseSensX * General.Settings.MouseSpeed * 0.01f;
-					float changey = ms.Y * General.Settings.VisualMouseSensY * General.Settings.MouseSpeed * 0.01f;
+			// Calculate changes depending on sensitivity
+			float changex = ms.X * General.Settings.VisualMouseSensX * General.Settings.MouseSpeed * 0.01f;
+			float changey = ms.Y * General.Settings.VisualMouseSensY * General.Settings.MouseSpeed * 0.01f;
 
-					// Return changes
-					return new Vector2D(changex, changey);
-				}
-
-				// Reaquire device
-				try { mouse.Acquire(); }
-#if DEBUG
-				catch(Exception e)
-				{
-					Console.WriteLine("MouseInput process failed: " + e.Message);
-				}
-#else
-				catch(Exception) { }
-#endif
-				return new Vector2D();
-			}
-#if DEBUG
-			catch(DirectInputException die)
-			{
-				Console.WriteLine("MouseInput process failed: " + die.Message);
-			
-				// Reaquire device
-				try
-				{
-					mouse.Acquire();
-				}
-				catch(Exception e)
-				{
-					Console.WriteLine("MouseInput process failed: " + e.Message);
-				}
-				return new Vector2D();
-			}
-#else
-			catch(DirectInputException)
-			{
-				// Reaquire device
-				try { mouse.Acquire(); } 
-				catch(Exception) { }
-				return new Vector2D();
-			}
-#endif
+			return new Vector2D(changex, changey);
 		}
 
 		#endregion
 	}
+
+    public struct MouseState
+    {
+        public MouseState(float x, float y) { X = x; Y = y; }
+        public float X { get; }
+        public float Y { get; }
+    }
+
+    public class RawMouse
+    {
+        public RawMouse(System.Windows.Forms.Control control)
+        {
+        }
+
+        public MouseState Poll()
+        {
+            // To do: use WM_RAWINPUT to get data
+            return new MouseState(0.0f, 0.0f);
+        }
+
+        public void Dispose()
+        {
+        }
+    }
 }
