@@ -223,9 +223,12 @@
     <Compile Include="Rendering\Color3.cs" />
     <Compile Include="Rendering\Color4.cs" />
     <Compile Include="Rendering\Effect.cs" />
+    <Compile Include="Rendering\EffectShader.cs" />
     <Compile Include="Rendering\IndexBuffer.cs" />
+    <Compile Include="Rendering\IRenderResource.cs" />
     <Compile Include="Rendering\Matrix.cs" />
     <Compile Include="Rendering\Mesh.cs" />
+    <Compile Include="Rendering\RenderDevice.cs" />
     <Compile Include="Rendering\Texture.cs" />
     <Compile Include="Rendering\Vector2.cs" />
     <Compile Include="Rendering\Vector3.cs" />
@@ -558,12 +561,9 @@
     <Compile Include="Rendering\Display2DShader.cs" />
     <Compile Include="Rendering\ColorCollection.cs" />
     <Compile Include="Rendering\ColorSetting.cs" />
-    <Compile Include="Rendering\D3DDevice.cs" />
     <Compile Include="Data\ImageData.cs" />
-    <Compile Include="Rendering\D3DShader.cs" />
     <Compile Include="Rendering\FlatQuad.cs" />
     <Compile Include="Rendering\FlatVertex.cs" />
-    <Compile Include="Rendering\ID3DResource.cs" />
     <Compile Include="Rendering\IRenderer2D.cs" />
     <Compile Include="Rendering\IRenderer3D.cs" />
     <Compile Include="Rendering\RenderLayers.cs" />
