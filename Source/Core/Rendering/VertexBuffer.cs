@@ -58,7 +58,7 @@ namespace CodeImp.DoomBuilder.Rendering
             }
         }
 
-        IntPtr Handle;
+        internal IntPtr Handle;
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr VertexBuffer_New(int sizeInBytes);

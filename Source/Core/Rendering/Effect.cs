@@ -7,6 +7,8 @@ using System.IO;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
+    public enum ShaderFlags { None, Debug }
+
     public class Effect
     {
         public static Effect FromStream(Stream stream, ShaderFlags flags, out string errors)

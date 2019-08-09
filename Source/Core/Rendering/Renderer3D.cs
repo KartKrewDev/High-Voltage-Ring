@@ -306,23 +306,21 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.StartRendering(true, General.Colors.Background.ToColorValue());
 
 			// Beginning renderstates
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-			graphics.SetRenderState(RenderState.FogEnable, false);
-			graphics.SetRenderState(RenderState.FogColor, General.Colors.Background.ToInt());
-			graphics.SetRenderState(RenderState.FogStart, General.Settings.ViewDistance * FOG_RANGE);
-			graphics.SetRenderState(RenderState.FogEnd, General.Settings.ViewDistance);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(false);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetSourceBlend(Blend.SourceAlpha);
+			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
+			graphics.SetFogEnable(false);
+			graphics.SetFogColor(General.Colors.Background.ToInt());
+			graphics.SetFogStart(General.Settings.ViewDistance * FOG_RANGE);
+			graphics.SetFogEnd(General.Settings.ViewDistance);
+			graphics.SetTextureFactor(-1);
 			graphics.Shaders.World3D.HighlightColor = new Color4(); //mxd
 
 			// Texture addressing
-			graphics.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
-			graphics.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
-			graphics.SetSamplerState(0, SamplerState.AddressW, TextureAddress.Wrap);
+			graphics.SetSamplerState(0, TextureAddress.Wrap);
 
 			// Matrices
 			world = Matrix.Identity;
@@ -381,12 +379,12 @@ namespace CodeImp.DoomBuilder.Rendering
 				UpdateLights();
 
 			// Initial renderstates
-			graphics.SetRenderState(RenderState.CullMode, Cull.Counterclockwise);
-			graphics.SetRenderState(RenderState.ZEnable, true);
-			graphics.SetRenderState(RenderState.ZWriteEnable, true);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetCullMode(Cull.Counterclockwise);
+			graphics.SetZEnable(true);
+			graphics.SetZWriteEnable(true);
+			graphics.SetAlphaBlendEnable(false);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
 			graphics.Shaders.World3D.Begin();
 
 			//mxd. SKY PASS
@@ -405,10 +403,10 @@ namespace CodeImp.DoomBuilder.Rendering
 			//mxd. Render models, without backface culling
 			if(maskedmodelthings.Count > 0)
 			{
-				graphics.SetRenderState(RenderState.AlphaTestEnable, true);
-				graphics.SetRenderState(RenderState.CullMode, Cull.None);
+				graphics.SetAlphaTestEnable(true);
+				graphics.SetCullMode(Cull.None);
 				RenderModels(false, false);
-                graphics.SetRenderState(RenderState.CullMode, Cull.Counterclockwise);
+                graphics.SetCullMode(Cull.Counterclockwise);
 			}
 
 			// MASK PASS
@@ -416,7 +414,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				world = Matrix.Identity;
 				ApplyMatrices3D();
-				graphics.SetRenderState(RenderState.AlphaTestEnable, true);
+				graphics.SetAlphaTestEnable(true);
 				RenderSinglePass(maskedgeo, maskedthings);
 			}
 
@@ -425,22 +423,22 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				world = Matrix.Identity;
 				ApplyMatrices3D();
-				graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-				graphics.SetRenderState(RenderState.ZWriteEnable, false);
-				graphics.SetRenderState(RenderState.DestinationBlend, Blend.One);
+				graphics.SetAlphaBlendEnable(true);
+				graphics.SetAlphaTestEnable(false);
+				graphics.SetZWriteEnable(false);
+				graphics.SetDestinationBlend(Blend.One);
 				
 				RenderLights(solidgeo, lightthings);
 				RenderLights(maskedgeo, lightthings);
 
                 if (maskedmodelthings.Count > 0)
                 {
-                    graphics.SetRenderState(RenderState.AlphaTestEnable, true);
-                    graphics.SetRenderState(RenderState.CullMode, Cull.None);
+                    graphics.SetAlphaTestEnable(true);
+                    graphics.SetCullMode(Cull.None);
                     graphics.Shaders.World3D.IgnoreNormals = true;
                     RenderModels(true, false);
                     graphics.Shaders.World3D.IgnoreNormals = false;
-                    graphics.SetRenderState(RenderState.CullMode, Cull.Counterclockwise);
+                    graphics.SetCullMode(Cull.Counterclockwise);
                 }
             }
 
@@ -449,10 +447,10 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				world = Matrix.Identity;
 				ApplyMatrices3D();
-				graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-				graphics.SetRenderState(RenderState.ZWriteEnable, false);
-				graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+				graphics.SetAlphaBlendEnable(true);
+				graphics.SetAlphaTestEnable(false);
+				graphics.SetZWriteEnable(false);
+				graphics.SetSourceBlend(Blend.SourceAlpha);
 				RenderTranslucentPass(translucentgeo, translucentthings);
 			}
 
@@ -461,27 +459,27 @@ namespace CodeImp.DoomBuilder.Rendering
             {
                 world = Matrix.Identity;
                 ApplyMatrices3D();
-                graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-                graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-                graphics.SetRenderState(RenderState.ZWriteEnable, false);
-                graphics.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                graphics.SetAlphaBlendEnable(true);
+                graphics.SetAlphaTestEnable(false);
+                graphics.SetZWriteEnable(false);
+                graphics.SetDestinationBlend(Blend.One);
                 RenderTranslucentLights(translucentgeo, lightthings);
             }
 
 			//mxd. Render translucent models, with backface culling
 			if(translucentmodelthings.Count > 0)
 			{
-				graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-				graphics.SetRenderState(RenderState.ZWriteEnable, false);
-				graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+				graphics.SetAlphaBlendEnable(true);
+				graphics.SetAlphaTestEnable(false);
+				graphics.SetZWriteEnable(false);
+				graphics.SetSourceBlend(Blend.SourceAlpha);
                 RenderModels(false, true);
             }
 
             // [ZZ] light pass on alpha models
             if (General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0 && translucentmodelthings.Count > 0)
             {
-                graphics.SetRenderState(RenderState.AlphaTestEnable, true);
+                graphics.SetAlphaTestEnable(true);
                 graphics.Shaders.World3D.IgnoreNormals = true;
                 RenderModels(true, true);
                 graphics.Shaders.World3D.IgnoreNormals = false;
@@ -588,11 +586,11 @@ namespace CodeImp.DoomBuilder.Rendering
 		//It should render faster and it has fancy arrow! :)
 		private void RenderThingCages() 
 		{
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.ZWriteEnable, false);
-			graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			graphics.SetRenderState(RenderState.DestinationBlend, Blend.SourceAlpha);
+			graphics.SetAlphaBlendEnable(true);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetZWriteEnable(false);
+			graphics.SetSourceBlend(Blend.SourceAlpha);
+			graphics.SetDestinationBlend(Blend.SourceAlpha);
 
 			graphics.Shaders.World3D.BeginPass(16);
 
@@ -613,13 +611,13 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				//Render cage
 				graphics.Shaders.World3D.ApplySettings();
-				graphics.SetStreamSource(0, t.CageBuffer, 0, WorldVertex.Stride);
+				graphics.SetVertexBuffer(0, t.CageBuffer, 0, WorldVertex.Stride);
 				graphics.DrawPrimitives(PrimitiveType.LineList, 0, t.CageLength);
 			}
 
 			// Done
 			graphics.Shaders.World3D.EndPass();
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetTextureFactor(-1);
 		}
 
 		//mxd
@@ -627,11 +625,11 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			if(visualvertices == null) return;
 
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.ZWriteEnable, false);
-			graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			graphics.SetRenderState(RenderState.DestinationBlend, Blend.SourceAlpha);
+			graphics.SetAlphaBlendEnable(true);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetZWriteEnable(false);
+			graphics.SetSourceBlend(Blend.SourceAlpha);
+			graphics.SetDestinationBlend(Blend.SourceAlpha);
 
 			graphics.Shaders.World3D.BeginPass(16);
 
@@ -655,13 +653,13 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				//Commence drawing!!11
 				graphics.Shaders.World3D.ApplySettings();
-				graphics.SetStreamSource(0, v.CeilingVertex ? vertexhandle.Upper : vertexhandle.Lower, 0, WorldVertex.Stride);
+				graphics.SetVertexBuffer(0, v.CeilingVertex ? vertexhandle.Upper : vertexhandle.Lower, 0, WorldVertex.Stride);
 				graphics.DrawPrimitives(PrimitiveType.LineList, 0, 8);
 			}
 
 			// Done
 			graphics.Shaders.World3D.EndPass();
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetTextureFactor(-1);
 		}
 
 		//mxd
@@ -723,11 +721,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			vb.SetBufferData(verts);
 			
 			//begin rendering
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.ZWriteEnable, false);
-			graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			graphics.SetRenderState(RenderState.DestinationBlend, Blend.SourceAlpha);
+			graphics.SetAlphaBlendEnable(true);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetZWriteEnable(false);
+			graphics.SetSourceBlend(Blend.SourceAlpha);
+			graphics.SetDestinationBlend(Blend.SourceAlpha);
 
 			graphics.Shaders.World3D.BeginPass(15);
 
@@ -736,12 +734,12 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			//render
 			graphics.Shaders.World3D.ApplySettings();
-			graphics.SetStreamSource(0, vb, 0, WorldVertex.Stride);
+			graphics.SetVertexBuffer(0, vb, 0, WorldVertex.Stride);
 			graphics.DrawPrimitives(PrimitiveType.LineList, 0, pointscount / 2);
 
 			// Done
 			graphics.Shaders.World3D.EndPass();
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetTextureFactor(-1);
 			vb.Dispose();
 		}
 
@@ -795,7 +793,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							sector = g.Sector;
 
 							// Set stream source
-							graphics.SetStreamSource(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
+							graphics.SetVertexBuffer(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
 						}
 						else
 						{
@@ -854,10 +852,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(thingspass.Count > 0)
 			{
 				// Texture addressing
-				graphics.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
-				graphics.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
-				graphics.SetSamplerState(0, SamplerState.AddressW, TextureAddress.Clamp);
-				graphics.SetRenderState(RenderState.CullMode, Cull.None); //mxd. Disable backside culling, because otherwise sprites with positive ScaleY and negative ScaleX will be facing away from the camera...
+				graphics.SetSamplerState(0, TextureAddress.Clamp);
+				graphics.SetCullMode(Cull.None); //mxd. Disable backside culling, because otherwise sprites with positive ScaleY and negative ScaleX will be facing away from the camera...
 
 				Color4 vertexcolor = new Color4(); //mxd
 
@@ -957,7 +953,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							graphics.Shaders.World3D.ApplySettings();
 
 							// Apply buffer
-							graphics.SetStreamSource(0, t.GeometryBuffer, 0, WorldVertex.Stride);
+							graphics.SetVertexBuffer(0, t.GeometryBuffer, 0, WorldVertex.Stride);
 
 							// Render!
 							graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, t.Triangles);
@@ -969,10 +965,8 @@ namespace CodeImp.DoomBuilder.Rendering
                 }
 
                 // Texture addressing
-                graphics.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
-				graphics.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
-				graphics.SetSamplerState(0, SamplerState.AddressW, TextureAddress.Wrap);
-				graphics.SetRenderState(RenderState.CullMode, Cull.Counterclockwise); //mxd
+                graphics.SetSamplerState(0, TextureAddress.Wrap);
+				graphics.SetCullMode(Cull.Counterclockwise); //mxd
 			}
 
 			// Done rendering with this shader
@@ -1037,11 +1031,11 @@ namespace CodeImp.DoomBuilder.Rendering
 					switch(g.RenderPass)
 					{
 						case RenderPass.Additive:
-							graphics.SetRenderState(RenderState.DestinationBlend, Blend.One);
+							graphics.SetDestinationBlend(Blend.One);
 							break;
 
 						case RenderPass.Alpha:
-							graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+							graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
 							break;
 					}
 
@@ -1082,7 +1076,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						sector = g.Sector;
 
 						// Set stream source
-						graphics.SetStreamSource(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
+						graphics.SetVertexBuffer(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
 					}
 					else
 					{
@@ -1141,10 +1135,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(thingspass.Count > 0)
 			{
 				// Texture addressing
-				graphics.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
-				graphics.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
-				graphics.SetSamplerState(0, SamplerState.AddressW, TextureAddress.Clamp);
-				graphics.SetRenderState(RenderState.CullMode, Cull.None); //mxd. Disable backside culling, because otherwise sprites with positive ScaleY and negative ScaleX will be facing away from the camera...
+				graphics.SetSamplerState(0, TextureAddress.Clamp);
+				graphics.SetCullMode(Cull.None); //mxd. Disable backside culling, because otherwise sprites with positive ScaleY and negative ScaleX will be facing away from the camera...
 
 				// Sort geometry by camera distance. First vertex of the BoundingBox is it's center
 				thingspass.Sort(delegate(VisualThing vt1, VisualThing vt2)
@@ -1179,11 +1171,11 @@ namespace CodeImp.DoomBuilder.Rendering
 						switch(t.RenderPass)
 						{
 							case RenderPass.Additive:
-								graphics.SetRenderState(RenderState.DestinationBlend, Blend.One);
+								graphics.SetDestinationBlend(Blend.One);
 								break;
 
 							case RenderPass.Alpha:
-								graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+								graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
 								break;
 						}
 
@@ -1278,7 +1270,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.Shaders.World3D.ApplySettings();
 
 						// Apply buffer
-						graphics.SetStreamSource(0, t.GeometryBuffer, 0, WorldVertex.Stride);
+						graphics.SetVertexBuffer(0, t.GeometryBuffer, 0, WorldVertex.Stride);
 
 						// Render!
 						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, t.Triangles);
@@ -1289,10 +1281,8 @@ namespace CodeImp.DoomBuilder.Rendering
                 graphics.Shaders.World3D.StencilColor = new Color4(0f, 1f, 1f, 1f);
 
                 // Texture addressing
-                graphics.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
-				graphics.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
-				graphics.SetSamplerState(0, SamplerState.AddressW, TextureAddress.Wrap);
-				graphics.SetRenderState(RenderState.CullMode, Cull.Counterclockwise); //mxd
+                graphics.SetSamplerState(0, TextureAddress.Wrap);
+				graphics.SetCullMode(Cull.Counterclockwise); //mxd
 			}
 
 			// Done rendering with this shader
@@ -1356,7 +1346,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         sector = g.Sector;
 
                         // Set stream source
-                        graphics.SetStreamSource(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
+                        graphics.SetVertexBuffer(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
                     }
                     else
                     {
@@ -1380,7 +1370,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 Vector4 lpr;
                 if (lightOffsets[0] > 0)
                 {
-                    graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+                    graphics.SetBlendOperation(BlendOperation.Add);
 
                     for (int i = 0; i < count; i++)
                     {
@@ -1408,7 +1398,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 if (lightOffsets[1] > 0)
                 {
                     count += lightOffsets[1];
-                    graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+                    graphics.SetBlendOperation(BlendOperation.Add);
 
                     for (int i = lightOffsets[0]; i < count; i++)
                     {
@@ -1436,7 +1426,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 if (lightOffsets[2] > 0)
                 {
                     count += lightOffsets[2];
-                    graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+                    graphics.SetBlendOperation(BlendOperation.Add);
 
                     for (int i = lightOffsets[0] + lightOffsets[1]; i < count; i++)
                     {
@@ -1464,7 +1454,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 if (lightOffsets[3] > 0)
                 {
                     count += lightOffsets[3];
-                    graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.ReverseSubtract);
+                    graphics.SetBlendOperation(BlendOperation.ReverseSubtract);
 
                     for (int i = lightOffsets[0] + lightOffsets[1] + lightOffsets[2]; i < count; i++)
                     {
@@ -1504,15 +1494,15 @@ namespace CodeImp.DoomBuilder.Rendering
 
             VisualSector sector = null;
 
-            graphics.SetRenderState(RenderState.SourceBlend, Blend.One);
-            graphics.SetRenderState(RenderState.DestinationBlend, Blend.BlendFactor);
+            graphics.SetSourceBlend(Blend.One);
+            graphics.SetDestinationBlend(Blend.BlendFactor);
 
             //
             RenderLightsFromGeometryList(geometrytolit, lights, sector, true);
 
             //
             graphics.Shaders.World3D.EndPass();
-            graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+            graphics.SetBlendOperation(BlendOperation.Add);
         }
 
         //
@@ -1527,8 +1517,8 @@ namespace CodeImp.DoomBuilder.Rendering
 
             VisualSector sector = null;
 
-            graphics.SetRenderState(RenderState.SourceBlend, Blend.One);
-            graphics.SetRenderState(RenderState.DestinationBlend, Blend.BlendFactor);
+            graphics.SetSourceBlend(Blend.One);
+            graphics.SetDestinationBlend(Blend.BlendFactor);
 
             foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geometrytolit)
             {
@@ -1539,7 +1529,7 @@ namespace CodeImp.DoomBuilder.Rendering
             }
 
             graphics.Shaders.World3D.EndPass();
-            graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+            graphics.SetBlendOperation(BlendOperation.Add);
         }
 
         //mxd. Render models
@@ -1587,11 +1577,11 @@ namespace CodeImp.DoomBuilder.Rendering
                         switch (t.RenderPass)
                         {
                             case RenderPass.Additive:
-                                graphics.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                                graphics.SetDestinationBlend(Blend.One);
                                 break;
 
                             case RenderPass.Alpha:
-                                graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+                                graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
                                 break;
                         }
 
@@ -1674,7 +1664,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         // normal lights
                         if (lightOffsets[0] > 0)
                         {
-                            graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+                            graphics.SetBlendOperation(BlendOperation.Add);
 
                             for (int i = 0; i < count; i++)
                             {
@@ -1702,7 +1692,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         if (lightOffsets[1] > 0)
                         {
                             count += lightOffsets[1];
-                            graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+                            graphics.SetBlendOperation(BlendOperation.Add);
 
                             for (int i = lightOffsets[0]; i < count; i++)
                             {
@@ -1730,7 +1720,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         if (lightOffsets[2] > 0)
                         {
                             count += lightOffsets[2];
-                            graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+                            graphics.SetBlendOperation(BlendOperation.Add);
 
                             for (int i = lightOffsets[0] + lightOffsets[1]; i < count; i++)
                             {
@@ -1758,7 +1748,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         if (lightOffsets[3] > 0)
                         {
                             count += lightOffsets[3];
-                            graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.ReverseSubtract);
+                            graphics.SetBlendOperation(BlendOperation.ReverseSubtract);
 
                             for (int i = lightOffsets[0] + lightOffsets[1] + lightOffsets[2]; i < count; i++)
                             {
@@ -1787,7 +1777,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			graphics.Shaders.World3D.EndPass();
-            if (lightpass) graphics.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+            if (lightpass) graphics.SetBlendOperation(BlendOperation.Add);
         }
 
 		//mxd
@@ -1817,7 +1807,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						sector = g.Sector;
 
 						// Set stream source
-						graphics.SetStreamSource(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
+						graphics.SetVertexBuffer(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
 					}
 					else
 					{
@@ -2057,13 +2047,13 @@ namespace CodeImp.DoomBuilder.Rendering
 			ApplyMatrices3D();
 			
 			// Set renderstates
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(true);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetSourceBlend(Blend.SourceAlpha);
+			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
+			graphics.SetTextureFactor(-1);
 			graphics.SetTransform(TransformState.World, Matrix.Identity);
 			graphics.SetTransform(TransformState.Projection, Matrix.Identity);
 			ApplyMatrices2D();
@@ -2092,7 +2082,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This switches fog on and off
 		public void SetFogMode(bool usefog)
 		{
-			graphics.SetRenderState(RenderState.FogEnable, usefog);
+			graphics.SetFogEnable(usefog);
 		}
 
 		// This siwtches crosshair busy icon on and off

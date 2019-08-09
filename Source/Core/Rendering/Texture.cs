@@ -32,7 +32,7 @@ namespace CodeImp.DoomBuilder.Rendering
             }
         }
 
-        protected IntPtr Handle;
+        internal IntPtr Handle;
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         protected static extern IntPtr Texture_New();

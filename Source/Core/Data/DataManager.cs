@@ -3455,10 +3455,9 @@ namespace CodeImp.DoomBuilder.Data
 			CubeTexture cubemap = new CubeTexture(cubemaptexsize);
 
             // Set render settings...
-            General.Map.Graphics.SetRenderState(RenderState.ZEnable, false);
-            General.Map.Graphics.SetRenderState(RenderState.CullMode, Cull.None);
-            General.Map.Graphics.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
-            General.Map.Graphics.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
+            General.Map.Graphics.SetZEnable(false);
+            General.Map.Graphics.SetCullMode(Cull.None);
+            General.Map.Graphics.SetSamplerState(0, TextureAddress.Clamp);
 			
 			// Setup matrices
 			Vector3 offset = new Vector3(0f, 0f, -1.8f); // Sphere size is 10 mu

@@ -3,6 +3,34 @@ EXPORTS
 	
 	RenderDevice_New
 	RenderDevice_Delete
+	RenderDevice_SetVertexBuffer
+	RenderDevice_SetIndexBuffer
+	RenderDevice_SetAlphaBlendEnable
+	RenderDevice_SetAlphaRef
+	RenderDevice_SetAlphaTestEnable
+	RenderDevice_SetCullMode
+	RenderDevice_SetBlendOperation
+	RenderDevice_SetSourceBlend
+	RenderDevice_SetDestinationBlend
+	RenderDevice_SetFillMode
+	RenderDevice_SetFogEnable
+	RenderDevice_SetFogColor
+	RenderDevice_SetFogStart
+	RenderDevice_SetFogEnd
+	RenderDevice_SetMultisampleAntialias
+	RenderDevice_SetTextureFactor
+	RenderDevice_SetZEnable
+	RenderDevice_SetZWriteEnable
+	RenderDevice_SetTransform
+	RenderDevice_SetSamplerState
+	RenderDevice_DrawPrimitives
+	RenderDevice_DrawUserPrimitives
+	RenderDevice_SetVertexDeclaration
+	RenderDevice_StartRendering
+	RenderDevice_FinishRendering
+	RenderDevice_Present
+	RenderDevice_ClearTexture
+	RenderDevice_CopyTexture
 	VertexBuffer_New
 	VertexBuffer_Delete
 	VertexBuffer_SetBufferData

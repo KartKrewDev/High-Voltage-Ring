@@ -628,7 +628,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						if(set.buffers[entry.bufferindex] != lastbuffer)
 						{
 							lastbuffer = set.buffers[entry.bufferindex];
-							graphics.SetStreamSource(0, lastbuffer, 0, FlatVertex.Stride);
+							graphics.SetVertexBuffer(0, lastbuffer, 0, FlatVertex.Stride);
 						}
 
 						// Draw

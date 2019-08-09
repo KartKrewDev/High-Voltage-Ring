@@ -57,114 +57,192 @@ namespace CodeImp.DoomBuilder.Rendering
             }
         }
 
-        public void SetStreamSource(int index, VertexBuffer buffer, long offset, long stride)
+        public void SetVertexBuffer(int index, VertexBuffer buffer, long offset, long stride)
         {
+            RenderDevice_SetVertexBuffer(Handle, index, buffer != null ? buffer.Handle : IntPtr.Zero, offset, stride);
         }
 
-        public void SetRenderState(RenderState state, float v)
+        public void SetIndexBuffer(IndexBuffer buffer)
         {
+            RenderDevice_SetIndexBuffer(Handle, buffer != null ? buffer.Handle : IntPtr.Zero);
         }
 
-        public void SetRenderState(RenderState state, bool v)
+        public void SetAlphaBlendEnable(bool value)
         {
+            RenderDevice_SetAlphaBlendEnable(Handle, value);
         }
 
-        public void SetRenderState(RenderState state, int v)
+        public void SetAlphaRef(int value)
         {
+            RenderDevice_SetAlphaRef(Handle, value);
         }
 
-        public void SetRenderState(RenderState state, Cull v)
+        public void SetAlphaTestEnable(bool value)
         {
+            RenderDevice_SetAlphaTestEnable(Handle, value);
         }
 
-        public void SetRenderState(RenderState state, Blend v)
+        public void SetCullMode(Cull mode)
         {
+            RenderDevice_SetCullMode(Handle, mode);
         }
 
-        public void SetRenderState(RenderState state, BlendOperation v)
+        public void SetBlendOperation(BlendOperation op)
         {
+            RenderDevice_SetBlendOperation(Handle, op);
         }
 
-        public void SetRenderState(RenderState state, FillMode v)
+        public void SetSourceBlend(Blend blend)
         {
+            RenderDevice_SetSourceBlend(Handle, blend);
         }
+
+        public void SetDestinationBlend(Blend blend)
+        {
+            RenderDevice_SetDestinationBlend(Handle, blend);
+        }
+
+        public void SetFillMode(FillMode mode)
+        {
+            RenderDevice_SetFillMode(Handle, mode);
+        }
+
+        public void SetFogEnable(bool value)
+        {
+            RenderDevice_SetFogEnable(Handle, value);
+        }
+
+        public void SetFogColor(int value)
+        {
+            RenderDevice_SetFogColor(Handle, value);
+        }
+
+        public void SetFogStart(float value)
+        {
+            RenderDevice_SetFogStart(Handle, value);
+        }
+
+        public void SetFogEnd(float value)
+        {
+            RenderDevice_SetFogEnd(Handle, value);
+        }
+
+        public void SetMultisampleAntialias(bool value)
+        {
+            RenderDevice_SetMultisampleAntialias(Handle, value);
+        }
+
+        public void SetTextureFactor(int factor)
+        {
+            RenderDevice_SetTextureFactor(Handle, factor);
+        }
+
+        public void SetZEnable(bool value)
+        {
+            RenderDevice_SetZEnable(Handle, value);
+        }
+
+        public void SetZWriteEnable(bool value)
+        {
+            RenderDevice_SetZWriteEnable(Handle, value);
+        }
+
+        Matrix[] Transforms = new Matrix[] { Matrix.Identity, Matrix.Identity, Matrix.Identity };
 
         public Matrix GetTransform(TransformState state)
         {
-            return Matrix.Identity;
+            return Transforms[(int)state];
         }
 
         public void SetTransform(TransformState state, Matrix matrix)
         {
+            Transforms[(int)state] = matrix;
+            RenderDevice_SetTransform(Handle, state, new float[] {
+                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
+                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
+                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
+                matrix.M41, matrix.M42, matrix.M43, matrix.M44
+            });
         }
 
-        public void SetSamplerState(int unit, SamplerState state, TextureAddress address)
+        public void SetSamplerState(int unit, TextureAddress address)
         {
+            SetSamplerState(unit, address, address, address);
+        }
+
+        public void SetSamplerState(int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
+        {
+            RenderDevice_SetSamplerState(Handle, unit, addressU, addressV, addressW);
         }
 
         public void DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount)
         {
+            RenderDevice_DrawPrimitives(Handle, type, startIndex, primitiveCount);
         }
 
-        public void DrawUserPrimitives<T>(PrimitiveType type, int startIndex, int primitiveCount, T[] data) where T : struct
+        public void DrawUserPrimitives(PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data)
         {
+            RenderDevice_DrawUserPrimitives(Handle, type, startIndex, primitiveCount, data);
         }
 
         public void SetVertexDeclaration(VertexDeclaration decl)
         {
-        }
-
-		internal void RegisterResource(IRenderResource res)
-        {
-        }
-
-		internal void UnregisterResource(IRenderResource res)
-        {
+            RenderDevice_SetVertexDeclaration(Handle, decl.Handle);
         }
 
         public void StartRendering(bool clear, Color4 backcolor)
         {
-            //if (clear)
-            //    Clear(ClearFlags.Target | ClearFlags.ZBuffer, backcolor, 1f, 0);
+            RenderDevice_StartRendering(Handle, clear, backcolor.ToArgb(), IntPtr.Zero, true);
         }
 
         public void StartRendering(bool clear, Color4 backcolor, Texture target, bool usedepthbuffer)
         {
-            //if (clear)
-            //    Clear(ClearFlags.Target, backcolor, 1f, 0);
+            RenderDevice_StartRendering(Handle, clear, backcolor.ToArgb(), target.Handle, true);
         }
 
         public void FinishRendering()
         {
+            RenderDevice_FinishRendering(Handle);
         }
 
         public void Present()
         {
+            RenderDevice_Present(Handle);
         }
 
         public void ClearTexture(Color4 backcolor, Texture texture)
         {
+            RenderDevice_ClearTexture(Handle, backcolor.ToArgb(), texture.Handle);
         }
 
         public void CopyTexture(Texture src, CubeTexture dst, CubeMapFace face)
         {
+            RenderDevice_CopyTexture(Handle, src.Handle, dst.Handle, face);
         }
 
-		public void SetupSettings()
+        internal void RegisterResource(IRenderResource res)
+        {
+        }
+
+        internal void UnregisterResource(IRenderResource res)
+        {
+        }
+
+        public void SetupSettings()
 		{
 			// Setup renderstates
-			SetRenderState(RenderState.AlphaBlendEnable, false);
-			SetRenderState(RenderState.AlphaRef, 0x0000007E);
-			SetRenderState(RenderState.AlphaTestEnable, false);
-			SetRenderState(RenderState.CullMode, Cull.None);
-			SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-			SetRenderState(RenderState.FillMode, FillMode.Solid);
-			SetRenderState(RenderState.FogEnable, false);
-			SetRenderState(RenderState.MultisampleAntialias, (General.Settings.AntiAliasingSamples > 0));
-			SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			SetRenderState(RenderState.TextureFactor, -1);
-			SetRenderState(RenderState.ZEnable, false);
-			SetRenderState(RenderState.ZWriteEnable, false);
+			SetAlphaBlendEnable(false);
+			SetAlphaRef(0x0000007E);
+			SetAlphaTestEnable(false);
+			SetCullMode(Cull.None);
+			SetDestinationBlend(Blend.InverseSourceAlpha);
+			SetFillMode(FillMode.Solid);
+			SetFogEnable(false);
+			SetMultisampleAntialias((General.Settings.AntiAliasingSamples > 0));
+			SetSourceBlend(Blend.SourceAlpha);
+			SetTextureFactor(-1);
+			SetZEnable(false);
+			SetZWriteEnable(false);
 
 			// Matrices
 			SetTransform(TransformState.World, Matrix.Identity);
@@ -172,9 +250,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			SetTransform(TransformState.Projection, Matrix.Identity);
 			
 			// Texture addressing
-			SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
-			SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
-			SetSamplerState(0, SamplerState.AddressW, TextureAddress.Wrap);
+			SetSamplerState(0, TextureAddress.Wrap);
 			
 			// Shader settings
 			Shaders.World3D.SetConstants(General.Settings.VisualBilinear, General.Settings.FilterAnisotropy);
@@ -190,6 +266,93 @@ namespace CodeImp.DoomBuilder.Rendering
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_Delete(IntPtr handle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetVertexBuffer(IntPtr handle, int index, IntPtr buffer, long offset, long stride);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetIndexBuffer(IntPtr handle, IntPtr buffer);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetAlphaBlendEnable(IntPtr handle, bool value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetAlphaRef(IntPtr handle, int value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetAlphaTestEnable(IntPtr handle, bool value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetCullMode(IntPtr handle, Cull mode);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetBlendOperation(IntPtr handle, BlendOperation op);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetSourceBlend(IntPtr handle, Blend blend);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetDestinationBlend(IntPtr handle, Blend blend);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetFillMode(IntPtr handle, FillMode mode);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetFogEnable(IntPtr handle, bool value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetFogColor(IntPtr handle, int value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetFogStart(IntPtr handle, float value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetFogEnd(IntPtr handle, float value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetMultisampleAntialias(IntPtr handle, bool value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetTextureFactor(IntPtr handle, int factor);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetZEnable(IntPtr handle, bool value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetZWriteEnable(IntPtr handle, bool value);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetTransform(IntPtr handle, TransformState state, float[] matrix);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetSamplerState(IntPtr handle, int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_DrawPrimitives(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_DrawUserPrimitives(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetVertexDeclaration(IntPtr handle, IntPtr decl);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_StartRendering(IntPtr handle, bool clear, int backcolor);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_StartRendering(IntPtr handle, bool clear, int backcolor, IntPtr target, bool usedepthbuffer);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_FinishRendering(IntPtr handle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_Present(IntPtr handle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_ClearTexture(IntPtr handle, int backcolor, IntPtr texture);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_CopyTexture(IntPtr handle, IntPtr src, IntPtr dst, CubeMapFace face);
 
         //mxd. Anisotropic filtering steps
         public static readonly List<float> AF_STEPS = new List<float> { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
@@ -237,34 +400,12 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
     }
 
-    public enum RenderState
-    {
-        AlphaBlendEnable,
-        AlphaRef,
-        AlphaTestEnable,
-        CullMode,
-        BlendOperation,
-        SourceBlend,
-        DestinationBlend,
-        FillMode,
-        FogEnable,
-        FogColor,
-        FogStart,
-        FogEnd,
-        MultisampleAntialias,
-        TextureFactor,
-        ZEnable,
-        ZWriteEnable
-    }
-
-    public enum Cull { None, Counterclockwise }
-    public enum Blend { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
-    public enum BlendOperation { Add, ReverseSubtract }
-    public enum FillMode { Solid, Wireframe }
-    public enum TransformState { World, View, Projection }
-    public enum SamplerState { AddressU, AddressV, AddressW }
-    public enum TextureAddress { Wrap, Clamp }
-    public enum ShaderFlags { None, Debug }
-    public enum PrimitiveType { LineList, TriangleList, TriangleStrip }
-    public enum TextureFilter { None, Point, Linear, Anisotropic }
+    public enum Cull : int { None, Counterclockwise }
+    public enum Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
+    public enum BlendOperation : int { Add, ReverseSubtract }
+    public enum FillMode : int { Solid, Wireframe }
+    public enum TransformState : int { World, View, Projection }
+    public enum TextureAddress : int { Wrap, Clamp }
+    public enum PrimitiveType : int { LineList, TriangleList, TriangleStrip }
+    public enum TextureFilter : int { None, Point, Linear, Anisotropic }
 }

@@ -181,10 +181,10 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.StartRendering(true, General.Colors.Background.ToColorValue());
 
 			// Renderstates that count for this whole sequence
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.FogEnable, false);
-			graphics.SetStreamSource(0, screenverts, 0, sizeof(FlatVertex));
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetFogEnable(false);
+			graphics.SetVertexBuffer(0, screenverts, 0, sizeof(FlatVertex));
 			graphics.SetTransform(TransformState.World, Matrix.Identity);
 			graphics.Shaders.Display2D.Begin();
 
@@ -197,31 +197,31 @@ namespace CodeImp.DoomBuilder.Rendering
 				switch(layer.blending)
 				{
 					case BlendingMode.None:
-						graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-						graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-						graphics.SetRenderState(RenderState.TextureFactor, -1);
+						graphics.SetAlphaBlendEnable(false);
+						graphics.SetAlphaTestEnable(false);
+						graphics.SetTextureFactor(-1);
 						break;
 
 					case BlendingMode.Mask:
-						graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-						graphics.SetRenderState(RenderState.AlphaTestEnable, true);
-						graphics.SetRenderState(RenderState.TextureFactor, -1);
+						graphics.SetAlphaBlendEnable(false);
+						graphics.SetAlphaTestEnable(true);
+						graphics.SetTextureFactor(-1);
 						break;
 
 					case BlendingMode.Alpha:
-						graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-						graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-						graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-						graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-						graphics.SetRenderState(RenderState.TextureFactor, (new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
+						graphics.SetAlphaBlendEnable(true);
+						graphics.SetAlphaTestEnable(false);
+						graphics.SetSourceBlend(Blend.SourceAlpha);
+						graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
+						graphics.SetTextureFactor((new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
 						break;
 
 					case BlendingMode.Additive:
-						graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-						graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-						graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-						graphics.SetRenderState(RenderState.DestinationBlend, Blend.One);
-						graphics.SetRenderState(RenderState.TextureFactor, (new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
+						graphics.SetAlphaBlendEnable(true);
+						graphics.SetAlphaTestEnable(false);
+						graphics.SetSourceBlend(Blend.SourceAlpha);
+						graphics.SetDestinationBlend(Blend.One);
+						graphics.SetTextureFactor((new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
 						break;
 				}
 
@@ -239,7 +239,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.Shaders.Display2D.BeginPass(aapass);
 						graphics.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
 						graphics.Shaders.Display2D.EndPass();
-						graphics.SetStreamSource(0, screenverts, 0, sizeof(FlatVertex));
+						graphics.SetVertexBuffer(0, screenverts, 0, sizeof(FlatVertex));
 						break;
 
 					// GRID
@@ -296,7 +296,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Release binds
 			graphics.Shaders.Display2D.Texture1 = null;
-			graphics.SetStreamSource(0, null, 0, 0);
+			graphics.SetVertexBuffer(0, null, 0, 0);
 		}
 		
 		#endregion
@@ -1205,15 +1205,15 @@ namespace CodeImp.DoomBuilder.Rendering
 				bool isthingsmode = (General.Editing.Mode.GetType().Name == "ThingsMode");
 				
 				// Set renderstates for things rendering
-				graphics.SetRenderState(RenderState.CullMode, Cull.None);
-				graphics.SetRenderState(RenderState.ZEnable, false);
-				graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-				graphics.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-				graphics.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-				graphics.SetRenderState(RenderState.FogEnable, false);
-				graphics.SetRenderState(RenderState.TextureFactor, alphacolor.ToArgb());
-				graphics.SetStreamSource(0, thingsvertices, 0, FlatVertex.Stride);
+				graphics.SetCullMode(Cull.None);
+				graphics.SetZEnable(false);
+				graphics.SetAlphaBlendEnable(true);
+				graphics.SetSourceBlend(Blend.SourceAlpha);
+				graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
+				graphics.SetAlphaTestEnable(false);
+				graphics.SetFogEnable(false);
+				graphics.SetTextureFactor(alphacolor.ToArgb());
+				graphics.SetVertexBuffer(0, thingsvertices, 0, FlatVertex.Stride);
 				
 				// Set things texture
 				graphics.Shaders.Things2D.Texture1 = General.Map.Data.ThingTexture.Texture; //mxd
@@ -1482,9 +1482,9 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(General.Settings.GZDrawModelsMode != ModelRenderMode.NONE) 
 				{
 					// Set renderstates for rendering
-					graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-					graphics.SetRenderState(RenderState.TextureFactor, -1);
-					graphics.SetRenderState(RenderState.FillMode, FillMode.Wireframe);
+					graphics.SetAlphaBlendEnable(false);
+					graphics.SetTextureFactor(-1);
+					graphics.SetFillMode(FillMode.Wireframe);
 
 					graphics.Shaders.Things2D.BeginPass(2);
 
@@ -1531,7 +1531,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 					//Done with this pass
 					graphics.Shaders.Things2D.EndPass();
-					graphics.SetRenderState(RenderState.FillMode, FillMode.Solid);
+					graphics.SetFillMode(FillMode.Solid);
 				}
 
 				graphics.Shaders.Things2D.End();
@@ -1579,12 +1579,12 @@ namespace CodeImp.DoomBuilder.Rendering
 				UpdateTransformations();
 
 				// Set states
-				graphics.SetRenderState(RenderState.CullMode, Cull.None);
-				graphics.SetRenderState(RenderState.ZEnable, false);
-				graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-				graphics.SetRenderState(RenderState.TextureFactor, -1);
-				graphics.SetRenderState(RenderState.FogEnable, false);
+				graphics.SetCullMode(Cull.None);
+				graphics.SetZEnable(false);
+				graphics.SetAlphaBlendEnable(false);
+				graphics.SetAlphaTestEnable(false);
+				graphics.SetTextureFactor(-1);
+				graphics.SetFogEnable(false);
 				SetWorldTransformation(true);
 				graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 					
@@ -1637,12 +1637,12 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Set renderstates for rendering
-				graphics.SetRenderState(RenderState.CullMode, Cull.None);
-				graphics.SetRenderState(RenderState.ZEnable, false);
-				graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-				graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-				graphics.SetRenderState(RenderState.TextureFactor, -1);
-				graphics.SetRenderState(RenderState.FogEnable, false);
+				graphics.SetCullMode(Cull.None);
+				graphics.SetZEnable(false);
+				graphics.SetAlphaBlendEnable(false);
+				graphics.SetAlphaTestEnable(false);
+				graphics.SetTextureFactor(-1);
+				graphics.SetFogEnable(false);
 				graphics.Shaders.Display2D.Texture1 = t;
 				SetWorldTransformation(transformcoords);
 				graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1662,12 +1662,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(vertices.Length < 3) return;
 
 			// Set renderstates for rendering
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(false);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
+			graphics.SetFogEnable(false);
 
 			SetWorldTransformation(true);
 			graphics.Shaders.Things2D.FillColor = new Color4(color);
@@ -1693,16 +1693,16 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(label.SkipRendering) return;
 			
 			// Set renderstates for rendering
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(true);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
+			graphics.SetFogEnable(false);
 			graphics.Shaders.Display2D.Texture1 = label.Texture;
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, false);
-			graphics.SetStreamSource(0, label.VertexBuffer, 0, FlatVertex.Stride);
+			graphics.SetVertexBuffer(0, label.VertexBuffer, 0, FlatVertex.Stride);
 
 			// Draw
 			graphics.Shaders.Display2D.Begin();
@@ -1727,12 +1727,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(labels.Count == skipped) return;
 			
 			// Set renderstates for rendering
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, true);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(true);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
+			graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, false);
 			
@@ -1747,7 +1747,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				{
 					graphics.Shaders.Display2D.Texture1 = label.Texture;
 					graphics.Shaders.Display2D.ApplySettings();
-					graphics.SetStreamSource(0, label.VertexBuffer, 0, FlatVertex.Stride);
+					graphics.SetVertexBuffer(0, label.VertexBuffer, 0, FlatVertex.Stride);
 
 					// Draw
 					graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
@@ -1802,12 +1802,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			quads[3].SetColors(c.ToInt());
 			
 			// Set renderstates for rendering
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(false);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
+			graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = General.Map.Data.WhiteTexture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1840,12 +1840,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			quad.SetColors(c.ToInt());
 			
 			// Set renderstates for rendering
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(false);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
+			graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = General.Map.Data.WhiteTexture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1875,12 +1875,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			quad.SetColors(c.ToInt());
 
 			// Set renderstates for rendering
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(false);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
+			graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = texture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1977,12 +1977,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			vb.SetBufferData(verts);
 
 			// Set renderstates for rendering
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(false);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
+			graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = General.Map.Data.WhiteTexture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1990,7 +1990,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Draw
 			graphics.Shaders.Display2D.Begin();
 			graphics.Shaders.Display2D.BeginPass(1);
-			graphics.SetStreamSource(0, vb, 0, FlatVertex.Stride);
+			graphics.SetVertexBuffer(0, vb, 0, FlatVertex.Stride);
 			graphics.DrawPrimitives(PrimitiveType.LineList, 0, pointscount / 2);
 			graphics.Shaders.Display2D.EndPass();
 			graphics.Shaders.Display2D.End();
@@ -2032,12 +2032,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			verts[3].c = c.ToInt();
 			
 			// Set renderstates for rendering
-			graphics.SetRenderState(RenderState.CullMode, Cull.None);
-			graphics.SetRenderState(RenderState.ZEnable, false);
-			graphics.SetRenderState(RenderState.AlphaBlendEnable, false);
-			graphics.SetRenderState(RenderState.AlphaTestEnable, false);
-			graphics.SetRenderState(RenderState.TextureFactor, -1);
-			graphics.SetRenderState(RenderState.FogEnable, false);
+			graphics.SetCullMode(Cull.None);
+			graphics.SetZEnable(false);
+			graphics.SetAlphaBlendEnable(false);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetTextureFactor(-1);
+			graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
 			graphics.Shaders.Display2D.Texture1 = General.Map.Data.WhiteTexture.Texture;
 			graphics.Shaders.Display2D.SetSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
