@@ -22,7 +22,7 @@ using System;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal sealed class Things2DShader : D3DShader
+	internal sealed class Things2DShader : EffectShader
 	{
 		#region ================== Variables
 

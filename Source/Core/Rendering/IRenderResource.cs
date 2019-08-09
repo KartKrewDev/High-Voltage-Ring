@@ -20,7 +20,7 @@
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal interface ID3DResource
+	internal interface IRenderResource
 	{
 		// This is used to unload the resouce
 		void UnloadResource();

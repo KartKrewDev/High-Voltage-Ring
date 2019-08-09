@@ -109,8 +109,8 @@ namespace CodeImp.DoomBuilder.Windows
 				browseScreenshotsFolderDialog.SelectedPath = General.Settings.ScreenshotsPath;
 
 			//mxd. Anisotropic filtering
-			anisotropicfiltering.Value = Math.Max(D3DDevice.AF_STEPS.IndexOf(General.Settings.FilterAnisotropy), 0); //mxd
-			antialiasing.Value = Math.Max(D3DDevice.AA_STEPS.IndexOf(General.Settings.AntiAliasingSamples), 0); //mxd
+			anisotropicfiltering.Value = Math.Max(RenderDevice.AF_STEPS.IndexOf(General.Settings.FilterAnisotropy), 0); //mxd
+			antialiasing.Value = Math.Max(RenderDevice.AA_STEPS.IndexOf(General.Settings.AntiAliasingSamples), 0); //mxd
 
 			//mxd. Script editor
 			scriptfontbold.Checked = General.Settings.ScriptFontBold;
@@ -403,8 +403,8 @@ namespace CodeImp.DoomBuilder.Windows
 			//mxd
 			General.Settings.GZSynchCameras = cbSynchCameras.Checked;
 			General.Settings.GZMaxDynamicLights = tbDynLightCount.Value * 16;
-			General.Settings.FilterAnisotropy = D3DDevice.AF_STEPS[anisotropicfiltering.Value];
-			General.Settings.AntiAliasingSamples = D3DDevice.AA_STEPS[antialiasing.Value];
+			General.Settings.FilterAnisotropy = RenderDevice.AF_STEPS[anisotropicfiltering.Value];
+			General.Settings.AntiAliasingSamples = RenderDevice.AA_STEPS[antialiasing.Value];
 			General.Settings.GZStretchView = cbStretchView.Checked;
 			General.Settings.GZVertexScale2D = vertexScale.Value;
 			General.Settings.GZOldHighlightMode = cbOldHighlightMode.Checked;
@@ -1013,13 +1013,13 @@ namespace CodeImp.DoomBuilder.Windows
 		//mxd
 		private void anisotropicfiltering_ValueChanged(object sender, EventArgs e)
 		{
-			labelanisotropicfiltering.Text = anisotropicfiltering.Value == 0 ? "None" : (int)D3DDevice.AF_STEPS[anisotropicfiltering.Value] + "x";
+			labelanisotropicfiltering.Text = anisotropicfiltering.Value == 0 ? "None" : (int)RenderDevice.AF_STEPS[anisotropicfiltering.Value] + "x";
 		}
 
 		//mxd
 		private void antialiasing_ValueChanged(object sender, EventArgs e)
 		{
-			labelantialiasing.Text = (antialiasing.Value == 0 ? "None" : D3DDevice.AA_STEPS[antialiasing.Value] + " samples");
+			labelantialiasing.Text = (antialiasing.Value == 0 ? "None" : RenderDevice.AA_STEPS[antialiasing.Value] + " samples");
 		}
 
 		#endregion

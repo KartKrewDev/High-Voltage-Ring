@@ -132,7 +132,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Constructor / Disposer
 
 		// Constructor
-		internal Renderer3D(D3DDevice graphics) : base(graphics)
+		internal Renderer3D(RenderDevice graphics) : base(graphics)
 		{
 			// Initialize
 			//CreateProjection(); // [ZZ] don't do undefined things once not even ready
@@ -265,7 +265,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				General.Settings.ViewDistance, Angle2D.DegToRad(General.Settings.VisualFOV));
 			
 			// Make the view matrix
-			view3d = Matrix.LookAtRH(D3DDevice.V3(pos), D3DDevice.V3(lookat), new Vector3(0f, 0f, 1f));
+			view3d = Matrix.LookAtRH(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3(0f, 0f, 1f));
 			viewproj = view3d * projection; //mxd
 			
 			// Make the billboard matrix

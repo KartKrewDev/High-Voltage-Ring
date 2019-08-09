@@ -255,7 +255,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Rendering
 
 		// This renders the quad
-		public void Render(D3DDevice device)
+		public void Render(RenderDevice device)
 		{
 			// Render the quad
 			device.DrawUserPrimitives(type, 0, 2, vertices);

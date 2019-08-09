@@ -75,7 +75,7 @@ namespace CodeImp.DoomBuilder
 		private ConfigurationInfo configinfo;
 		private GameConfiguration config;
 		private DataManager data;
-		private D3DDevice graphics;
+		private RenderDevice graphics;
 		private Renderer2D renderer2d;
 		private Renderer3D renderer3d;
 		private WADReader tempwadreader;
@@ -107,7 +107,7 @@ namespace CodeImp.DoomBuilder
 		public DataManager Data { get { return data; } }
 		public bool IsChanged { get { return changed | CheckScriptChanged(); } set { changed |= value; if(!maploading) General.MainWindow.UpdateMapChangedStatus(); } }
 		public bool IsDisposed { get { return isdisposed; } }
-		internal D3DDevice Graphics { get { return graphics; } }
+		internal RenderDevice Graphics { get { return graphics; } }
 		public IRenderer2D Renderer2D { get { return renderer2d; } }
 		public IRenderer3D Renderer3D { get { return renderer3d; } }
 		internal Renderer2D CRenderer2D { get { return renderer2d; } }
@@ -261,7 +261,7 @@ namespace CodeImp.DoomBuilder
 
 			// Initiate graphics
 			General.WriteLogLine("Initializing graphics device...");
-			graphics = new D3DDevice(General.MainWindow.Display);
+			graphics = new RenderDevice(General.MainWindow.Display);
 
 			// Create renderers
 			renderer2d = new Renderer2D(graphics);
@@ -368,7 +368,7 @@ namespace CodeImp.DoomBuilder
 
 			// Initiate graphics
 			General.WriteLogLine("Initializing graphics device...");
-			graphics = new D3DDevice(General.MainWindow.Display);
+			graphics = new RenderDevice(General.MainWindow.Display);
 
 			// Create renderers
 			renderer2d = new Renderer2D(graphics);

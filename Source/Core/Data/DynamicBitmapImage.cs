@@ -23,7 +23,7 @@ using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.Data
 {
-	public class DynamicBitmapImage : BitmapImage, ID3DResource
+	public class DynamicBitmapImage : BitmapImage, IRenderResource
 	{
 		#region ================== Variables
 

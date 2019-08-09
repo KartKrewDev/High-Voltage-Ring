@@ -25,7 +25,7 @@ using CodeImp.DoomBuilder.Geometry;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal abstract class Renderer : ID3DResource, IDisposable
+	internal abstract class Renderer : IRenderResource, IDisposable
 	{
 		#region ================== Constants
 
@@ -34,7 +34,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Variables
 
 		// Graphics
-		protected D3DDevice graphics;
+		protected RenderDevice graphics;
 		protected static bool fullbrightness;
 
 		// Disposing
@@ -53,7 +53,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Constructor / Disposer
 
 		// Constructor
-		protected Renderer(D3DDevice g)
+		protected Renderer(RenderDevice g)
 		{
 			// Initialize
 			this.graphics = g;

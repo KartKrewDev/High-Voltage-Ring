@@ -31,7 +31,7 @@ using CodeImp.DoomBuilder.GZBuilder;
 
 namespace CodeImp.DoomBuilder.VisualModes
 {
-	public abstract class VisualThing : IVisualPickable, ID3DResource, IDisposable
+	public abstract class VisualThing : IVisualPickable, IRenderResource, IDisposable
 	{
 		#region ================== Constants
 
@@ -125,7 +125,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				return new Vector3(position_v3.X, position_v3.Y, position_v3.Z + thingheight / 2f); 
 			} 
 		}
-		public Vector3D CenterV3D { get { return D3DDevice.V3D(Center); } }
+		public Vector3D CenterV3D { get { return RenderDevice.V3D(Center); } }
 		public float LocalCenterZ { get { return thingheight / 2f; } } //mxd
 		public Vector3 PositionV3 { get { return position_v3; } }
 		public Vector3D[] BoundingBox { get { return boundingBox; } }
@@ -271,7 +271,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		public void SetPosition(Vector3D pos)
 		{
-			position_v3 = D3DDevice.V3(pos); //mxd
+			position_v3 = RenderDevice.V3(pos); //mxd
 			position = Matrix.Translation(position_v3);
 			updategeo = true;
 			updatecage = true; //mxd

@@ -25,7 +25,7 @@ using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.VisualModes
 {
-	public class VisualSector : ID3DResource, IDisposable
+	public class VisualSector : IRenderResource, IDisposable
 	{
 		#region ================== Constants
 

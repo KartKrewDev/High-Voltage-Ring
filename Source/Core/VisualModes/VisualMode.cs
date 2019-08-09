@@ -489,7 +489,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 
 			VisualThing vt = target.picked as VisualThing;
-			if(vt != null) return GetIntersection(start, start + delta, vt.CenterV3D, D3DDevice.V3D(vt.Center - vt.PositionV3));
+			if(vt != null) return GetIntersection(start, start + delta, vt.CenterV3D, RenderDevice.V3D(vt.Center - vt.PositionV3));
 
 			return new Vector2D(float.NaN, float.NaN);
 		}

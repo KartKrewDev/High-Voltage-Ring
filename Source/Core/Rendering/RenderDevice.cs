@@ -28,9 +28,9 @@ using System.Runtime.InteropServices;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-    internal class D3DDevice : IDisposable
+    internal class RenderDevice : IDisposable
     {
-		internal D3DDevice(RenderTargetControl rendertarget)
+		internal RenderDevice(RenderTargetControl rendertarget)
 		{
             Handle = RenderDevice_New();
             if (Handle == IntPtr.Zero)
@@ -41,7 +41,7 @@ namespace CodeImp.DoomBuilder.Rendering
             SetupSettings();
         }
 
-        ~D3DDevice()
+        ~RenderDevice()
         {
             Dispose();
         }
@@ -114,11 +114,11 @@ namespace CodeImp.DoomBuilder.Rendering
         {
         }
 
-		internal void RegisterResource(ID3DResource res)
+		internal void RegisterResource(IRenderResource res)
         {
         }
 
-		internal void UnregisterResource(ID3DResource res)
+		internal void UnregisterResource(IRenderResource res)
         {
         }
 

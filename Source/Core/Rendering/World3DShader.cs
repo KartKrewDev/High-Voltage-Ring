@@ -22,7 +22,7 @@ using System;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal sealed class World3DShader : D3DShader
+	internal sealed class World3DShader : EffectShader
 	{
 		#region ================== Variables
 

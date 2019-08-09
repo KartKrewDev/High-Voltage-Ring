@@ -7,7 +7,7 @@ using CodeImp.DoomBuilder.VisualModes;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal sealed class VisualVertexHandle : IDisposable, ID3DResource
+	internal sealed class VisualVertexHandle : IDisposable, IRenderResource
 	{
 		#region ================== Variables
 

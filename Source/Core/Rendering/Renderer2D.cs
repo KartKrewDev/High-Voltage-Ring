@@ -133,7 +133,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Constructor / Disposer
 		
 		// Constructor
-		internal Renderer2D(D3DDevice graphics) : base(graphics)
+		internal Renderer2D(RenderDevice graphics) : base(graphics)
 		{
 			// Create surface manager
 			surfaces = new SurfaceManager();

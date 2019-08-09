@@ -27,7 +27,7 @@ using CodeImp.DoomBuilder.Map;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal class SurfaceManager : ID3DResource
+	internal class SurfaceManager : IRenderResource
 	{
 		#region ================== Constants
 		
@@ -603,7 +603,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 		
 		// This renders the sorted sector surfaces
-		internal void RenderSectorSurfaces(D3DDevice graphics)
+		internal void RenderSectorSurfaces(RenderDevice graphics)
 		{
 			if(!resourcesunloaded)
 			{

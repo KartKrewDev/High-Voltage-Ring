@@ -23,7 +23,7 @@ using System.IO;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal abstract class D3DShader : IDisposable
+	internal abstract class EffectShader : IDisposable
 	{
 		#region ================== Constants
 
@@ -58,7 +58,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Constructor / Disposer
 
 		// Constructor
-		protected D3DShader(ShaderManager manager)
+		protected EffectShader(ShaderManager manager)
 		{
 			// Initialize
 			this.manager = manager;

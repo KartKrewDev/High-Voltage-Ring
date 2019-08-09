@@ -45,7 +45,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		void Update(float translatex, float translatey, float scalex, float scaley);
 	}
 	
-	public class TextLabel : IDisposable, ID3DResource, ITextLabel
+	public class TextLabel : IDisposable, IRenderResource, ITextLabel
 	{
 		#region ================== Constants
 

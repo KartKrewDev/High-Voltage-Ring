@@ -22,7 +22,7 @@ using System;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal class ShaderManager : ID3DResource, IDisposable
+	internal class ShaderManager : IRenderResource, IDisposable
 	{
 		#region ================== Constants
 
@@ -36,7 +36,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		private World3DShader world3dshader;
 		
 		// Device
-		private D3DDevice device;
+		private RenderDevice device;
 		
 		// Disposing
 		private bool isdisposed;
@@ -49,14 +49,14 @@ namespace CodeImp.DoomBuilder.Rendering
 		public Things2DShader Things2D { get { return things2dshader; } }
 		public World3DShader World3D { get { return world3dshader; } }
 		public bool IsDisposed { get { return isdisposed; } }
-		internal D3DDevice D3DDevice { get { return device; } }
+		internal RenderDevice D3DDevice { get { return device; } }
 
 		#endregion
 
 		#region ================== Constructor / Disposer
 
 		// Constructor
-		public ShaderManager(D3DDevice device)
+		public ShaderManager(RenderDevice device)
 		{
 			// Initialize
 			this.device = device;
