@@ -3424,7 +3424,7 @@ namespace CodeImp.DoomBuilder.Data
 
 			// Make custom rendertarget
 			const int cubemaptexsize = 1024;
-			Texture rendertarget = new Texture(cubemaptexsize, cubemaptexsize, 1, Format.A8R8G8B8);
+			Texture rendertarget = new Texture(cubemaptexsize, cubemaptexsize);
 
             // Start rendering
             General.Map.Graphics.StartRendering(true, new Color4(), rendertarget, true);
@@ -3452,7 +3452,7 @@ namespace CodeImp.DoomBuilder.Data
 			yscale *= 1.65f;
 
 			// Make cubemap texture
-			CubeTexture cubemap = new CubeTexture(cubemaptexsize, 1, Format.A8R8G8B8);
+			CubeTexture cubemap = new CubeTexture(cubemaptexsize);
 
             // Set render settings...
             General.Map.Graphics.SetRenderState(RenderState.ZEnable, false);
@@ -3652,7 +3652,7 @@ namespace CodeImp.DoomBuilder.Data
 		// sides[] must contain 6 square Po2 images in this order: North, East, South, West, Top, Bottom
 		private static CubeTexture MakeSkyBox(Bitmap[] sides, int targetsize, bool fliptop)
 		{
-			CubeTexture cubemap = new CubeTexture(targetsize, 1, Format.A8R8G8B8);
+			CubeTexture cubemap = new CubeTexture(targetsize);
 
 			// Draw faces
 			sides[3].RotateFlip(RotateFlipType.Rotate90FlipNone);
@@ -3752,15 +3752,10 @@ namespace CodeImp.DoomBuilder.Data
 
 		private static Texture TextureFromBitmap(Image image)
 		{
-			using(MemoryStream ms = new MemoryStream())
-			{
-				image.Save(ms, ImageFormat.Png);
-				ms.Seek(0, SeekOrigin.Begin);
-
-				// Classic skies textures can be NPo2 (and D3D Texture is resized to Po2 by default),
-				// so we need to explicitly specify the size
-				return Texture.FromStream(ms, (int) ms.Length, image.Size.Width, image.Size.Height, 0, Format.Unknown);
-			}
+            using (var bitmap = new Bitmap(image))
+            {
+                return new Texture(bitmap);
+            }
 		}
 		
 		#endregion

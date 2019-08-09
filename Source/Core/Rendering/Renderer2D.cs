@@ -361,11 +361,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			windowsize.Height = graphics.RenderTarget.ClientSize.Height;
 
 			// Create rendertargets textures
-			plottertex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
-			thingstex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
-			backtex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
-			overlaytex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
-			surfacetex = new Texture(windowsize.Width, windowsize.Height, 1, Format.A8R8G8B8);
+			plottertex = new Texture(windowsize.Width, windowsize.Height);
+			thingstex = new Texture(windowsize.Width, windowsize.Height);
+			backtex = new Texture(windowsize.Width, windowsize.Height);
+			overlaytex = new Texture(windowsize.Width, windowsize.Height);
+			surfacetex = new Texture(windowsize.Width, windowsize.Height);
 			
 			// Get the real surface sizes
 			structsize.Width = plottertex.Width;

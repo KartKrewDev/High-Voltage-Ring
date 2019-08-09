@@ -326,16 +326,11 @@ namespace CodeImp.DoomBuilder.Rendering
 							texture = null;
 						}
 
-						// Create label image
-						Bitmap img = CreateLabelImage(text, font, color, backcolor, drawbg, textrect, bgrect, texturesize, textorigin);
-						//texturesize = img.Size;
-
-						// Create texture
-						MemoryStream memstream = new MemoryStream((img.Size.Width * img.Size.Height * 4) + 4096);
-						img.Save(memstream, ImageFormat.Bmp);
-						memstream.Seek(0, SeekOrigin.Begin);
-
-						texture = Texture.FromStream(memstream, (int)memstream.Length, img.Size.Width, img.Size.Height, 1, Format.Unknown);
+                        // Create label image
+                        using (Bitmap img = CreateLabelImage(text, font, color, backcolor, drawbg, textrect, bgrect, texturesize, textorigin))
+                        {
+                            texture = new Texture(img);
+                        }
 					}
 
 					//mxd. Create the buffer

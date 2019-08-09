@@ -1160,16 +1160,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			// Calculate model radius
 			mde.Model.Radius = Math.Max(Math.Max(Math.Abs(minY), Math.Abs(maxY)), Math.Max(Math.Abs(minX), Math.Abs(maxX)));
 
-			// Create texture
-			MemoryStream memstream = new MemoryStream((4096 * 4) + 4096);
-			using(Bitmap bmp = CreateVoxelTexture(palette)) bmp.Save(memstream, ImageFormat.Bmp);
-			memstream.Seek(0, SeekOrigin.Begin);
-
-			Texture texture = Texture.FromStream(memstream, (int)memstream.Length, 64, 64, 0, Format.Unknown);
-			memstream.Dispose();
-
-			// Add texture
-			mde.Model.Textures.Add(texture);
+			// Create texture new Texture(bmp.Width)
+            using(Bitmap bmp = CreateVoxelTexture(palette))
+            {
+                mde.Model.Textures.Add(new Texture(bmp));
+            }
 
 			// Create mesh
 			Mesh mesh = new Mesh(vertexElements, verts.ToArray(), indices.ToArray());
@@ -1666,23 +1661,13 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			Texture texture = null;
 
 			//create texture
-			if(Path.GetExtension(path) == ".pcx") //pcx format requires special handling...
+			FileImageReader fir = new FileImageReader();
+			Bitmap bitmap = fir.ReadAsBitmap(ms);
+			ms.Close();
+
+			if(bitmap != null)
 			{
-				FileImageReader fir = new FileImageReader();
-				Bitmap bitmap = fir.ReadAsBitmap(ms);
-
-				ms.Close();
-
-				if(bitmap != null)
-				{
-                    texture.SetPixels(bitmap);
-				}
-			}
-			else
-			{
-				texture = Texture.FromStream(ms);
-
-				ms.Close();
+                texture = new Texture(bitmap);
 			}
 
 			return texture;

@@ -14,3 +14,9 @@ EXPORTS
 	IndexBuffer_SetBufferData
 	Texture_New
 	Texture_Delete
+	Texture_Set2DImage
+	Texture_SetPixels
+	Texture_Lock
+	Texture_Unlock
+	Texture_SetCubeImage
+	Texture_SetCubePixels

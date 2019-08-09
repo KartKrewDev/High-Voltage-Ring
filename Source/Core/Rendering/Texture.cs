@@ -32,19 +32,59 @@ namespace CodeImp.DoomBuilder.Rendering
             }
         }
 
-        IntPtr Handle;
+        protected IntPtr Handle;
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr Texture_New();
+        protected static extern IntPtr Texture_New();
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void Texture_Delete(IntPtr handle);
+        protected static extern void Texture_Delete(IntPtr handle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void Texture_Set2DImage(IntPtr handle, int width, int height);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void Texture_SetPixels(IntPtr handle, IntPtr data);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern IntPtr Texture_Lock(IntPtr handle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void Texture_Unlock(IntPtr handle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void Texture_SetCubeImage(IntPtr handle, int size);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void Texture_SetCubePixels(IntPtr handle, CubeMapFace face, IntPtr data);
     }
 
     public class Texture : BaseTexture
     {
-        public Texture(int width, int height, int levels, Format format)
+        public Texture(int width, int height)
         {
+            Width = width;
+            Height = height;
+            Texture_Set2DImage(Handle, Width, Height);
+        }
+
+        public Texture(System.Drawing.Bitmap bitmap)
+        {
+            Width = bitmap.Width;
+            Height = bitmap.Height;
+            Texture_Set2DImage(Handle, Width, Height);
+            SetPixels(bitmap);
+        }
+
+        public Texture(System.Drawing.Image image)
+        {
+            using (var bitmap = new System.Drawing.Bitmap(image))
+            {
+                Width = bitmap.Width;
+                Height = bitmap.Height;
+                Texture_Set2DImage(Handle, Width, Height);
+                SetPixels(bitmap);
+            }
         }
 
         public int Width { get; private set; }
@@ -54,48 +94,50 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetPixels(System.Drawing.Bitmap bitmap)
         {
-            /*
-            BitmapData bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            System.Drawing.Imaging.BitmapData bmpdata = bitmap.LockBits(
+                new System.Drawing.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            DataRectangle textureLock = texture.LockRectangle(0, LockFlags.None);
-            textureLock.Data.WriteRange(bmlock.Scan0, bmlock.Height * bmlock.Stride);
-            texture.UnlockRectangle(0);
+            Texture_SetPixels(Handle, bmpdata.Scan0);
 
             bitmap.UnlockBits(bmpdata);
-            */
         }
 
         internal Plotter LockPlotter(int visibleWidth, int visibleHeight)
         {
-            //return new Plotter((PixelColor*)plotlocked.Data.DataPointer.ToPointer(), plotlocked.Pitch / sizeof(PixelColor), Height, visibleWidth, visibleHeight);
-            return null;
+            unsafe
+            {
+                IntPtr data = Texture_Lock(Handle);
+                return new Plotter((PixelColor*)data.ToPointer(), Width, Height, Math.Min(Width, visibleWidth), Math.Min(Height, visibleHeight));
+            }
         }
 
         public void UnlockPlotter()
         {
-        }
-
-        public static Texture FromStream(System.IO.Stream stream)
-        {
-            return null;
-        }
-
-        public static Texture FromStream(System.IO.Stream stream, int length, int width, int height, int levels, Format format)
-        {
-            return null;
+            Texture_Unlock(Handle);
         }
     }
 
     public class CubeTexture : BaseTexture
     {
-        public CubeTexture(int size, int levels, Format format)
+        public CubeTexture(int size)
         {
+            Texture_SetCubeImage(Handle, size);
         }
 
         public void SetPixels(CubeMapFace face, System.Drawing.Bitmap bitmap)
         {
+            System.Drawing.Imaging.BitmapData bmpdata = bitmap.LockBits(
+                new System.Drawing.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            Texture_SetCubePixels(Handle, face, bmpdata.Scan0);
+
+            bitmap.UnlockBits(bmpdata);
         }
     }
 
-    public enum CubeMapFace { PositiveX, PositiveY, PositiveZ, NegativeX, NegativeY, NegativeZ }
+    public enum CubeMapFace : int { PositiveX, PositiveY, PositiveZ, NegativeX, NegativeY, NegativeZ }
 }

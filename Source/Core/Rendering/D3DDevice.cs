@@ -264,7 +264,6 @@ namespace CodeImp.DoomBuilder.Rendering
     public enum TransformState { World, View, Projection }
     public enum SamplerState { AddressU, AddressV, AddressW }
     public enum TextureAddress { Wrap, Clamp }
-    public enum Format { Unknown, A8R8G8B8 }
     public enum ShaderFlags { None, Debug }
     public enum PrimitiveType { LineList, TriangleList, TriangleStrip }
     public enum TextureFilter { None, Point, Linear, Anisotropic }

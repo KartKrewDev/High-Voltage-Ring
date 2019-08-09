@@ -464,22 +464,10 @@ namespace CodeImp.DoomBuilder.Data
 				// Only do this when texture is not created yet
 				if(((texture == null) || (texture.Disposed)) && this.IsImageLoaded && !loadfailed)
 				{
-					Image img = bitmap;
+					Bitmap img = bitmap;
 					if(loadfailed) img = Properties.Resources.Failed;
-					
-					// Write to memory stream and read from memory
-					MemoryStream memstream = new MemoryStream((img.Size.Width * img.Size.Height * 4) + 4096);
-					img.Save(memstream, ImageFormat.Bmp);
-					memstream.Seek(0, SeekOrigin.Begin);
-					if(dynamictexture)
-					{
-						texture = Texture.FromStream(memstream, (int)memstream.Length, img.Size.Width, img.Size.Height, mipmaplevels, Format.A8R8G8B8);
-					}
-					else
-					{
-						texture = Texture.FromStream(memstream, (int)memstream.Length, img.Size.Width, img.Size.Height, mipmaplevels, Format.Unknown);
-					}
-					memstream.Dispose();
+
+                    texture = new Texture(img);
 					
 					if(dynamictexture)
 					{
