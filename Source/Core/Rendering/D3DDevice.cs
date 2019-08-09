@@ -22,210 +22,133 @@ using System.Drawing;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Geometry;
+using System.Runtime.InteropServices;
 
 #endregion
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-    #region High level mesh rendering
-    public class Mesh
-    {
-        public Mesh(VertexElement[] vertexDecl, Array vertexData, Array indexData) { }
-
-        public void DrawSubset(int index) { }
-
-        public void Dispose() { }
-    }
-
-    public class Effect
-    {
-        public static Effect FromStream(System.IO.Stream stream, ShaderFlags flags, out string errors) { errors = ""; return null; }
-
-        public void SetTexture(EffectHandle handle, BaseTexture texture) { }
-        public void SetValue<T>(EffectHandle handle, T value) where T : struct { }
-        public EffectHandle GetParameter(EffectHandle parameter, string name) { return null; }
-        public void CommitChanges() { }
-
-        public void Begin() { }
-        public void BeginPass(int index) { }
-        public void EndPass() { }
-        public void End() { }
-
-        public void Dispose() { }
-    }
-
-    public class EffectHandle
-    {
-        public void Dispose() { }
-    }
-    #endregion
-
-    #region Vertex buffer format / Input assembly
-    public class VertexDeclaration
-    {
-        public VertexDeclaration(VertexElement[] elements) { }
-        public void Dispose() { }
-    }
-
-    public struct VertexElement
-    {
-        public VertexElement(short stream, short offset, DeclarationType type, DeclarationUsage usage) { }
-    }
-    #endregion
-
-    #region Buffer objects
-    public class VertexBuffer
-    {
-        public VertexBuffer(int sizeInBytes) { }
-
-        public void SetBufferData(Array data) { }
-        public void SetBufferSubdata(long destOffset, Array data) { }
-        public void SetBufferSubdata(long destOffset, Array data, long offset, long size) { }
-
-        public bool Disposed { get; private set; }
-        public void Dispose() { Disposed = true; }
-    }
-    #endregion
-
-    #region Textures
-    public class BaseTexture
-    {
-        public bool Disposed { get; private set; }
-        public void Dispose() { Disposed = true; }
-    }
-
-    public class Texture : BaseTexture
-    {
-        public Texture(int width, int height, int levels, Format format) { }
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-
-        public object Tag { get; set; }
-
-        public void SetPixels(System.Drawing.Bitmap bitmap)
-        {
-            /*
-            BitmapData bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-
-            DataRectangle textureLock = texture.LockRectangle(0, LockFlags.None);
-            textureLock.Data.WriteRange(bmlock.Scan0, bmlock.Height * bmlock.Stride);
-            texture.UnlockRectangle(0);
-
-            bitmap.UnlockBits(bmpdata);
-            */
-        }
-
-        internal Plotter LockPlotter(int visibleWidth, int visibleHeight)
-        {
-            //return new Plotter((PixelColor*)plotlocked.Data.DataPointer.ToPointer(), plotlocked.Pitch / sizeof(PixelColor), Height, visibleWidth, visibleHeight);
-            return null;
-        }
-
-        public void UnlockPlotter() { }
-
-        public static Texture FromStream(System.IO.Stream stream) { return null; }
-        public static Texture FromStream(System.IO.Stream stream, int length, int width, int height, int levels, Format format) { return null; }
-    }
-
-    public class CubeTexture : BaseTexture
-    {
-        public CubeTexture(int size, int levels, Format format) { }
-
-        public void SetPixels(CubeMapFace face, System.Drawing.Bitmap bitmap) { }
-    }
-    #endregion
-
-    #region Enumerations
-    public enum RenderState
-    {
-        AlphaBlendEnable,
-        AlphaRef,
-        AlphaTestEnable,
-        CullMode,
-        BlendOperation,
-        SourceBlend,
-        DestinationBlend,
-        FillMode,
-        FogEnable,
-        FogColor,
-        FogStart,
-        FogEnd,
-        MultisampleAntialias,
-        TextureFactor,
-        ZEnable,
-        ZWriteEnable
-    }
-
-    public enum Cull { None, Counterclockwise }
-    public enum Blend { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
-    public enum BlendOperation { Add, ReverseSubtract }
-    public enum FillMode { Solid, Wireframe }
-    public enum TransformState { World, View, Projection }
-    public enum SamplerState { AddressU, AddressV, AddressW }
-    public enum TextureAddress { Wrap, Clamp }
-    public enum Format { Unknown, A8R8G8B8 }
-    public enum ShaderFlags { None, Debug }
-    public enum PrimitiveType { LineList, TriangleList, TriangleStrip }
-    public enum CubeMapFace { PositiveX, PositiveY, PositiveZ, NegativeX, NegativeY, NegativeZ }
-    public enum TextureFilter { None, Point, Linear, Anisotropic }
-    public enum DeclarationType { Float2, Float3, Color }
-    public enum DeclarationUsage { Position, Color, TextureCoordinate, Normal }
-    #endregion
-
-    #region Device context
     internal class D3DDevice : IDisposable
     {
 		internal D3DDevice(RenderTargetControl rendertarget)
 		{
-			RenderTarget = rendertarget;
+            Handle = RenderDevice_New();
+            if (Handle == IntPtr.Zero)
+                throw new Exception("RenderDevice_New failed");
+
+            RenderTarget = rendertarget;
             Shaders = new ShaderManager(this);
             SetupSettings();
         }
 
-        public void SetStreamSource(int index, VertexBuffer buffer, long offset, long stride) { }
-        public void SetRenderState(RenderState state, float v) { }
-        public void SetRenderState(RenderState state, bool v) { }
-        public void SetRenderState(RenderState state, int v) { }
-        public void SetRenderState(RenderState state, Cull v) { }
-        public void SetRenderState(RenderState state, Blend v) { }
-        public void SetRenderState(RenderState state, BlendOperation v) { }
-        public void SetRenderState(RenderState state, FillMode v) { }
-        public Matrix GetTransform(TransformState state) { return Matrix.Identity; }
-        public void SetTransform(TransformState state, Matrix matrix) { }
-        public void SetSamplerState(int unit, SamplerState state, TextureAddress address) { }
-        public void DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount) { }
-        public void DrawUserPrimitives<T>(PrimitiveType type, int startIndex, int primitiveCount, T[] data) where T : struct { }
-        public void SetVertexDeclaration(VertexDeclaration decl) { }
+        ~D3DDevice()
+        {
+            Dispose();
+        }
 
-        public void Dispose() { }
+        public bool Disposed { get { return Handle == IntPtr.Zero; } }
 
-		internal void RegisterResource(ID3DResource res) { }
-		internal void UnregisterResource(ID3DResource res) { }
+        public void Dispose()
+        {
+            if (!Disposed)
+            {
+                RenderDevice_Delete(Handle);
+                Handle = IntPtr.Zero;
+            }
+        }
+
+        public void SetStreamSource(int index, VertexBuffer buffer, long offset, long stride)
+        {
+        }
+
+        public void SetRenderState(RenderState state, float v)
+        {
+        }
+
+        public void SetRenderState(RenderState state, bool v)
+        {
+        }
+
+        public void SetRenderState(RenderState state, int v)
+        {
+        }
+
+        public void SetRenderState(RenderState state, Cull v)
+        {
+        }
+
+        public void SetRenderState(RenderState state, Blend v)
+        {
+        }
+
+        public void SetRenderState(RenderState state, BlendOperation v)
+        {
+        }
+
+        public void SetRenderState(RenderState state, FillMode v)
+        {
+        }
+
+        public Matrix GetTransform(TransformState state)
+        {
+            return Matrix.Identity;
+        }
+
+        public void SetTransform(TransformState state, Matrix matrix)
+        {
+        }
+
+        public void SetSamplerState(int unit, SamplerState state, TextureAddress address)
+        {
+        }
+
+        public void DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount)
+        {
+        }
+
+        public void DrawUserPrimitives<T>(PrimitiveType type, int startIndex, int primitiveCount, T[] data) where T : struct
+        {
+        }
+
+        public void SetVertexDeclaration(VertexDeclaration decl)
+        {
+        }
+
+		internal void RegisterResource(ID3DResource res)
+        {
+        }
+
+		internal void UnregisterResource(ID3DResource res)
+        {
+        }
 
         public void StartRendering(bool clear, Color4 backcolor)
         {
             //if (clear)
             //    Clear(ClearFlags.Target | ClearFlags.ZBuffer, backcolor, 1f, 0);
         }
+
         public void StartRendering(bool clear, Color4 backcolor, Texture target, bool usedepthbuffer)
         {
             //if (clear)
             //    Clear(ClearFlags.Target, backcolor, 1f, 0);
         }
-        public void FinishRendering() { }
-        public void Present() { }
-        public void ClearTexture(Color4 backcolor, Texture texture) { }
-        public void CopyTexture(Texture src, CubeTexture dst, CubeMapFace face) { }
 
-        //mxd. Anisotropic filtering steps
-        public static readonly List<float> AF_STEPS = new List<float> { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f }; 
-		
-		//mxd. Antialiasing steps
-		public static readonly List<int> AA_STEPS = new List<int> { 0, 2, 4, 8 };
+        public void FinishRendering()
+        {
+        }
 
-		internal RenderTargetControl RenderTarget { get; private set; }
-		internal ShaderManager Shaders { get; private set; }
+        public void Present()
+        {
+        }
+
+        public void ClearTexture(Color4 backcolor, Texture texture)
+        {
+        }
+
+        public void CopyTexture(Texture src, CubeTexture dst, CubeMapFace face)
+        {
+        }
 
 		public void SetupSettings()
 		{
@@ -260,8 +183,25 @@ namespace CodeImp.DoomBuilder.Rendering
 			Presentation.Initialize();
 		}
 
-		// Make a color from ARGB
-		public static int ARGB(float a, float r, float g, float b)
+        IntPtr Handle;
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr RenderDevice_New();
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_Delete(IntPtr handle);
+
+        //mxd. Anisotropic filtering steps
+        public static readonly List<float> AF_STEPS = new List<float> { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
+
+        //mxd. Antialiasing steps
+        public static readonly List<int> AA_STEPS = new List<int> { 0, 2, 4, 8 };
+
+        internal RenderTargetControl RenderTarget { get; private set; }
+        internal ShaderManager Shaders { get; private set; }
+
+        // Make a color from ARGB
+        public static int ARGB(float a, float r, float g, float b)
 		{
 			return Color.FromArgb((int)(a * 255f), (int)(r * 255f), (int)(g * 255f), (int)(b * 255f)).ToArgb();
 		}
@@ -296,5 +236,36 @@ namespace CodeImp.DoomBuilder.Rendering
 			return new Vector2D(v2.X, v2.Y);
 		}
     }
-    #endregion
+
+    public enum RenderState
+    {
+        AlphaBlendEnable,
+        AlphaRef,
+        AlphaTestEnable,
+        CullMode,
+        BlendOperation,
+        SourceBlend,
+        DestinationBlend,
+        FillMode,
+        FogEnable,
+        FogColor,
+        FogStart,
+        FogEnd,
+        MultisampleAntialias,
+        TextureFactor,
+        ZEnable,
+        ZWriteEnable
+    }
+
+    public enum Cull { None, Counterclockwise }
+    public enum Blend { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
+    public enum BlendOperation { Add, ReverseSubtract }
+    public enum FillMode { Solid, Wireframe }
+    public enum TransformState { World, View, Projection }
+    public enum SamplerState { AddressU, AddressV, AddressW }
+    public enum TextureAddress { Wrap, Clamp }
+    public enum Format { Unknown, A8R8G8B8 }
+    public enum ShaderFlags { None, Debug }
+    public enum PrimitiveType { LineList, TriangleList, TriangleStrip }
+    public enum TextureFilter { None, Point, Linear, Anisotropic }
 }

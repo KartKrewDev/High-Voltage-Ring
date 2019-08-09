@@ -1,0 +1,16 @@
+
+EXPORTS
+	
+	RenderDevice_New
+	RenderDevice_Delete
+	VertexBuffer_New
+	VertexBuffer_Delete
+	VertexBuffer_SetBufferData
+	VertexBuffer_SetBufferSubdata
+	VertexDeclaration_New
+	VertexDeclaration_Delete
+	IndexBuffer_New
+	IndexBuffer_Delete
+	IndexBuffer_SetBufferData
+	Texture_New
+	Texture_Delete

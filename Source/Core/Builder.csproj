@@ -222,10 +222,16 @@
     </Compile>
     <Compile Include="Rendering\Color3.cs" />
     <Compile Include="Rendering\Color4.cs" />
+    <Compile Include="Rendering\Effect.cs" />
+    <Compile Include="Rendering\IndexBuffer.cs" />
     <Compile Include="Rendering\Matrix.cs" />
+    <Compile Include="Rendering\Mesh.cs" />
+    <Compile Include="Rendering\Texture.cs" />
     <Compile Include="Rendering\Vector2.cs" />
     <Compile Include="Rendering\Vector3.cs" />
     <Compile Include="Rendering\Vector4.cs" />
+    <Compile Include="Rendering\VertexBuffer.cs" />
+    <Compile Include="Rendering\VertexDeclaration.cs" />
     <Compile Include="Windows\ThingStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>

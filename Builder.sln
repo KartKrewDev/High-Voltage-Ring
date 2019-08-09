@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Builder", "Source\Core\Builder.csproj", "{818B3D10-F791-4C3F-9AF5-BB2D0079B63C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{78938655-9807-485E-9D4B-46226DC7AD27} = {78938655-9807-485E-9D4B-46226DC7AD27}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuilderModes", "Source\Plugins\BuilderModes\BuilderModes.csproj", "{B42D5AA0-F9A6-4234-9C4B-A05B11A64851}"
 EndProject
@@ -34,6 +37,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomapMode", "Source\Plugins\AutomapMode\AutomapMode.csproj", "{B33F68D5-1335-400C-A1D7-7F5602A030EF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vpo_dll", "Source\Plugins\vpo_dll\vpo_dll.vcxproj", "{29C8D76F-DE3D-482D-AD7D-B86BBD0824DE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuilderNative", "Source\Native\BuilderNative.vcxproj", "{78938655-9807-485E-9D4B-46226DC7AD27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -255,6 +260,22 @@ Global
 		{29C8D76F-DE3D-482D-AD7D-B86BBD0824DE}.Release|x64.Build.0 = Release|x64
 		{29C8D76F-DE3D-482D-AD7D-B86BBD0824DE}.Release|x86.ActiveCfg = Release|Win32
 		{29C8D76F-DE3D-482D-AD7D-B86BBD0824DE}.Release|x86.Build.0 = Release|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Debug + Profiler|x64.ActiveCfg = Debug|x64
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Debug + Profiler|x64.Build.0 = Debug|x64
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Debug + Profiler|x86.ActiveCfg = Debug|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Debug + Profiler|x86.Build.0 = Debug|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Debug|x64.ActiveCfg = Debug|x64
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Debug|x64.Build.0 = Debug|x64
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Debug|x86.ActiveCfg = Debug|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Debug|x86.Build.0 = Debug|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Release + Profiler|x64.ActiveCfg = Release|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Release + Profiler|x64.Build.0 = Release|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Release + Profiler|x86.ActiveCfg = Release|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Release + Profiler|x86.Build.0 = Release|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Release|x64.ActiveCfg = Release|x64
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Release|x64.Build.0 = Release|x64
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Release|x86.ActiveCfg = Release|Win32
+		{78938655-9807-485E-9D4B-46226DC7AD27}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

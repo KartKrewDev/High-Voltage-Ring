@@ -16,3 +16,9 @@ obj
 /Source/Plugins/VisplaneExplorer/Resources/*.pdb
 /Source/Plugins/vpo_dll/Debug
 /Source/Plugins/vpo_dll/*.user
+/Build/BuilderNative.dll
+/Build/BuilderNative.exp
+/Build/BuilderNative.ilk
+/Build/BuilderNative.lib
+/Build/BuilderNative.pdb
+/Source/Native/Debug
