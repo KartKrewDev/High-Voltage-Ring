@@ -13,7 +13,6 @@ enum class Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor };
 enum class BlendOperation : int { Add, ReverseSubtract };
 enum class FillMode : int { Solid, Wireframe };
 enum class TransformState : int { World, View, Projection };
-enum class SamplerState : int { AddressU, AddressV, AddressW };
 enum class TextureAddress : int { Wrap, Clamp };
 enum class ShaderFlags : int { None, Debug };
 enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };
@@ -53,5 +52,47 @@ public:
 	void ClearTexture(int backcolor, Texture* texture);
 	void CopyTexture(Texture* src, Texture* dst, CubeMapFace face);
 
+	void ApplyChanges();
+	void ApplyVertexBuffers();
+	void ApplyIndexBuffer();
+	void ApplyMatrices();
+	void ApplyTextures();
+	void ApplyRenderTarget(Texture* target, bool usedepthbuffer);
+
 	OpenGLContext Context;
+
+	struct VertexBinding
+	{
+		VertexBinding() = default;
+		VertexBinding(VertexBuffer* buffer, long offset, long stride) : Buffer(buffer), Offset(offset), Stride(stride) { }
+
+		VertexBuffer* Buffer = nullptr;
+		long Offset = 0;
+		long Stride = 0;
+	};
+
+	struct Mat4f
+	{
+		Mat4f() { Values[0] = 1.0f; Values[5] = 1.0f; Values[10] = 1.0f; Values[15] = 1.0f; }
+		float Values[16] = { 0.0f };
+	};
+
+	struct SamplerState
+	{
+		SamplerState() = default;
+		SamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW) : AddressU(addressU), AddressV(addressV), AddressW(addressW) { }
+
+		TextureAddress AddressU = TextureAddress::Wrap;
+		TextureAddress AddressV = TextureAddress::Wrap;
+		TextureAddress AddressW = TextureAddress::Wrap;
+	};
+
+	enum { NumTransforms = 3, NumSlots = 16 };
+	Mat4f mTransforms[NumTransforms];
+	VertexDeclaration *mVertexDeclaration = nullptr;
+	int mEnabledVertexAttributes[NumSlots] = { 0 };
+	VertexBinding mVertexBindings[NumSlots];
+	SamplerState mSamplerStates[NumSlots];
+	IndexBuffer* mIndexBuffer = nullptr;
+	bool mNeedApply = true;
 };
