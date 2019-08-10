@@ -1,4 +1,5 @@
 
+#include "Precomp.h"
 #include "IndexBuffer.h"
 
 IndexBuffer::IndexBuffer(int sizeInBytes) : mData(sizeInBytes)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdint>
+#include "OpenGLContext.h"
 
 class VertexBuffer;
 class IndexBuffer;
@@ -22,7 +22,7 @@ enum class TextureFilter : int { None, Point, Linear, Anisotropic };
 class RenderDevice
 {
 public:
-	RenderDevice();
+	RenderDevice(HWND hwnd);
 
 	void SetVertexBuffer(int index, VertexBuffer* buffer, long offset, long stride);
 	void SetIndexBuffer(IndexBuffer* buffer);
@@ -52,4 +52,6 @@ public:
 	void Present();
 	void ClearTexture(int backcolor, Texture* texture);
 	void CopyTexture(Texture* src, Texture* dst, CubeMapFace face);
+
+	OpenGLContext Context;
 };

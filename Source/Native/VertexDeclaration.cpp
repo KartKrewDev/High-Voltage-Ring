@@ -1,4 +1,5 @@
 
+#include "Precomp.h"
 #include "VertexDeclaration.h"
 
 VertexDeclaration::VertexDeclaration(const VertexElement* elements, int count) : Elements(elements, elements + count)

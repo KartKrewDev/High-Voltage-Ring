@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cstdint>
-#include <vector>
-
 enum class DeclarationType : int32_t { Float2, Float3, Color };
 enum class DeclarationUsage : int32_t { Position, Color, TextureCoordinate, Normal };
 

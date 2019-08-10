@@ -1,4 +1,5 @@
 
+#include "Precomp.h"
 #include "VertexBuffer.h"
 
 VertexBuffer::VertexBuffer(int sizeInBytes) : mData(sizeInBytes)

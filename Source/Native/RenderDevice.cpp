@@ -1,11 +1,12 @@
 
+#include "Precomp.h"
 #include "RenderDevice.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexDeclaration.h"
 #include "Texture.h"
 
-RenderDevice::RenderDevice()
+RenderDevice::RenderDevice(HWND hwnd) : Context(hwnd)
 {
 }
 
@@ -103,10 +104,19 @@ void RenderDevice::SetVertexDeclaration(VertexDeclaration* decl)
 
 void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer)
 {
-	//if (clear && usedepthbuffer)
-	//    Clear(ClearFlags.Target | ClearFlags.ZBuffer, backcolor, 1f, 0);
-	//else if (clear)
-	//    Clear(ClearFlags.Target, backcolor, 1f, 0);
+	Context.Begin();
+	if (clear && usedepthbuffer)
+	{
+		glClearColor(RPART(backcolor) / 255.0f, GPART(backcolor) / 255.0f, BPART(backcolor) / 255.0f, APART(backcolor) / 255.0f);
+		glClearDepthf(1.0f);
+		glClear(GL_COLOR | GL_DEPTH);
+	}
+	else if (clear)
+	{
+		glClearColor(RPART(backcolor) / 255.0f, GPART(backcolor) / 255.0f, BPART(backcolor) / 255.0f, APART(backcolor) / 255.0f);
+		glClear(GL_COLOR);
+	}
+	Context.End();
 }
 
 void RenderDevice::FinishRendering()
@@ -115,6 +125,7 @@ void RenderDevice::FinishRendering()
 
 void RenderDevice::Present()
 {
+	Context.SwapBuffers();
 }
 
 void RenderDevice::ClearTexture(int backcolor, Texture* texture)
@@ -127,9 +138,18 @@ void RenderDevice::CopyTexture(Texture* src, Texture* dst, CubeMapFace face)
 
 /////////////////////////////////////////////////////////////////////////////
 
-RenderDevice* RenderDevice_New()
+RenderDevice* RenderDevice_New(HWND hwnd)
 {
-	return new RenderDevice();
+	RenderDevice *device = new RenderDevice(hwnd);
+	if (!device->Context)
+	{
+		delete device;
+		return nullptr;
+	}
+	else
+	{
+		return device;
+	}
 }
 
 void RenderDevice_Delete(RenderDevice* device)

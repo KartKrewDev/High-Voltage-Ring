@@ -1,4 +1,5 @@
 
+#include "Precomp.h"
 #include "Texture.h"
 
 Texture::Texture()

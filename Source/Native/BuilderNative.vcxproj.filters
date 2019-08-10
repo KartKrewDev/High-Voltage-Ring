@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="RenderDevice.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="VertexDeclaration.cpp" />
+    <ClCompile Include="gl_load\gl_load.c">
+      <Filter>gl_load</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLContext.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="RenderDevice.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="VertexBuffer.h" />
+    <ClInclude Include="VertexDeclaration.h" />
+    <ClInclude Include="gl_load\gl_load.h">
+      <Filter>gl_load</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_load\gl_system.h">
+      <Filter>gl_load</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLContext.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="exports.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="gl_load">
+      <UniqueIdentifier>{6455e9b5-8f21-4621-8d8d-c16489a2b548}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="gl_load\gl_extlist.txt">
+      <Filter>gl_load</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

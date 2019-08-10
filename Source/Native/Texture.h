@@ -1,9 +1,5 @@
 #pragma once
 
-#include <cstdint>
-#include <vector>
-#include <map>
-
 enum class CubeMapFace : int
 {
 	PositiveX,
