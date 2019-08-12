@@ -13,7 +13,7 @@ IndexBuffer::~IndexBuffer()
 
 void IndexBuffer::SetBufferData(const void* data, int64_t size)
 {
-	if (size > 0 && size < (int64_t)mData.size())
+	if (size > 0 && size <= (int64_t)mData.size())
 		memcpy(mData.data(), data, size);
 }
 

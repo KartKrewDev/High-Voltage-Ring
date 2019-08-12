@@ -10,6 +10,9 @@ public:
 	void End();
 	void SwapBuffers();
 
+	int GetWidth() const;
+	int GetHeight() const;
+
 	explicit operator bool() const { return context != 0; }
 
 private:

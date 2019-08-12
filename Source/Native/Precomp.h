@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include <Windows.h>
 #include "gl_load/gl_system.h"

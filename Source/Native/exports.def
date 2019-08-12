@@ -6,7 +6,6 @@ EXPORTS
 	RenderDevice_SetVertexBuffer
 	RenderDevice_SetIndexBuffer
 	RenderDevice_SetAlphaBlendEnable
-	RenderDevice_SetAlphaRef
 	RenderDevice_SetAlphaTestEnable
 	RenderDevice_SetCullMode
 	RenderDevice_SetBlendOperation

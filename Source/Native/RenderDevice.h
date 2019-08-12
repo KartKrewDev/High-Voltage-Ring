@@ -6,13 +6,14 @@ class VertexBuffer;
 class IndexBuffer;
 class VertexDeclaration;
 class Texture;
+class Shader;
 enum class CubeMapFace;
 
 enum class Cull : int { None, Counterclockwise };
 enum class Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor };
 enum class BlendOperation : int { Add, ReverseSubtract };
 enum class FillMode : int { Solid, Wireframe };
-enum class TransformState : int { World, View, Projection };
+enum class TransformState : int { World, View, Projection, NumTransforms };
 enum class TextureAddress : int { Wrap, Clamp };
 enum class ShaderFlags : int { None, Debug };
 enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };
@@ -22,11 +23,11 @@ class RenderDevice
 {
 public:
 	RenderDevice(HWND hwnd);
+	~RenderDevice();
 
 	void SetVertexBuffer(int index, VertexBuffer* buffer, long offset, long stride);
 	void SetIndexBuffer(IndexBuffer* buffer);
 	void SetAlphaBlendEnable(bool value);
-	void SetAlphaRef(int value);
 	void SetAlphaTestEnable(bool value);
 	void SetCullMode(Cull mode);
 	void SetBlendOperation(BlendOperation op);
@@ -55,9 +56,15 @@ public:
 	void ApplyChanges();
 	void ApplyVertexBuffers();
 	void ApplyIndexBuffer();
+	void ApplyShader();
 	void ApplyMatrices();
 	void ApplyTextures();
+	void ApplyRasterizerState();
+	void ApplyBlendState();
+	void ApplyDepthState();
 	void ApplyRenderTarget(Texture* target, bool usedepthbuffer);
+
+	void CheckError();
 
 	OpenGLContext Context;
 
@@ -87,12 +94,31 @@ public:
 		TextureAddress AddressW = TextureAddress::Wrap;
 	};
 
-	enum { NumTransforms = 3, NumSlots = 16 };
-	Mat4f mTransforms[NumTransforms];
+	enum { NumSlots = 16 };
+	Mat4f mTransforms[(int)TransformState::NumTransforms];
+
 	VertexDeclaration *mVertexDeclaration = nullptr;
+	GLuint mVAO = 0;
 	int mEnabledVertexAttributes[NumSlots] = { 0 };
 	VertexBinding mVertexBindings[NumSlots];
+
 	SamplerState mSamplerStates[NumSlots];
+
 	IndexBuffer* mIndexBuffer = nullptr;
+
+	std::unique_ptr<Shader> mShader;
+
+	Cull mCullMode = Cull::None;
+	FillMode mFillMode = FillMode::Solid;
+	bool mAlphaTest = false;
+
+	bool mAlphaBlend = false;
+	BlendOperation mBlendOperation = BlendOperation::Add;
+	Blend mSourceBlend = Blend::SourceAlpha;
+	Blend mDestinationBlend = Blend::InverseSourceAlpha;
+
+	bool mDepthTest = false;
+	bool mDepthWrite = false;
+
 	bool mNeedApply = true;
 };

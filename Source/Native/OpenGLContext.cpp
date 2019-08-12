@@ -111,6 +111,20 @@ void OpenGLContext::SwapBuffers()
 	End();
 }
 
+int OpenGLContext::GetWidth() const
+{
+	RECT box = { 0 };
+	GetClientRect(window, &box);
+	return box.right;
+}
+
+int OpenGLContext::GetHeight() const
+{
+	RECT box = { 0 };
+	GetClientRect(window, &box);
+	return box.bottom;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 OpenGLCreationHelper::OpenGLCreationHelper(HWND window) : window(window)

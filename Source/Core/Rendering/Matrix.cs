@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
     public struct Matrix
     {
         public float M11, M12, M13, M14;
@@ -189,7 +190,7 @@ namespace CodeImp.DoomBuilder.Rendering
             result.M11 = xScale;
             result.M22 = yScale;
             result.M33 = zfar / (znear - zfar);
-            result.M43 = -znear * zfar / (znear - zfar);
+            result.M43 = -2.0f * znear * zfar / (znear - zfar);
             result.M34 = 1.0f;
             return result;
         }
@@ -203,7 +204,7 @@ namespace CodeImp.DoomBuilder.Rendering
             result.M11 = xScale;
             result.M22 = yScale;
             result.M33 = zfar / (znear - zfar);
-            result.M43 = znear * zfar / (znear - zfar);
+            result.M43 = 2.0f * znear * zfar / (znear - zfar);
             result.M34 = -1.0f;
             return result;
         }

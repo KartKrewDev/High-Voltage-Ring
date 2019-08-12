@@ -13,13 +13,13 @@ VertexBuffer::~VertexBuffer()
 
 void VertexBuffer::SetBufferData(const void* data, int64_t size)
 {
-	if (size > 0 && size < (int64_t)mData.size())
+	if (size > 0 && size <= (int64_t)mData.size())
 		memcpy(mData.data(), data, size);
 }
 
 void VertexBuffer::SetBufferSubdata(int64_t destOffset, const void* data, int64_t size)
 {
-	if (destOffset >= 0 && size > 0 && size < (int64_t)mData.size() - destOffset)
+	if (destOffset >= 0 && size > 0 && size <= (int64_t)mData.size() - destOffset)
 		memcpy(mData.data() + destOffset, data, size);
 }
 
@@ -30,7 +30,6 @@ GLuint VertexBuffer::GetBuffer()
 		glGenBuffers(1, &mBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
 		glBufferData(GL_ARRAY_BUFFER, mData.size(), mData.data(), GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	return mBuffer;
 }

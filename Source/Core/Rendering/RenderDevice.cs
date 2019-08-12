@@ -72,11 +72,6 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetAlphaBlendEnable(Handle, value);
         }
 
-        public void SetAlphaRef(int value)
-        {
-            RenderDevice_SetAlphaRef(Handle, value);
-        }
-
         public void SetAlphaTestEnable(bool value)
         {
             RenderDevice_SetAlphaTestEnable(Handle, value);
@@ -232,7 +227,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			// Setup renderstates
 			SetAlphaBlendEnable(false);
-			SetAlphaRef(0x0000007E);
 			SetAlphaTestEnable(false);
 			SetCullMode(Cull.None);
 			SetDestinationBlend(Blend.InverseSourceAlpha);
@@ -275,9 +269,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetAlphaBlendEnable(IntPtr handle, bool value);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetAlphaRef(IntPtr handle, int value);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetAlphaTestEnable(IntPtr handle, bool value);

@@ -5,8 +5,64 @@
 #include "IndexBuffer.h"
 #include "VertexDeclaration.h"
 #include "Texture.h"
+#include "Shader.h"
+#include <stdexcept>
+
+const char* mainVertexShader = R"(
+	#version 150
+
+	in vec4 AttrPosition;
+	in vec4 AttrColor;
+	in vec2 AttrUV;
+	in vec3 AttrNormal;
+
+	out vec4 Color;
+	out vec2 UV;
+	out vec3 Normal;
+
+	uniform mat4 World;
+	uniform mat4 View;
+	uniform mat4 Projection;
+
+	void main()
+	{
+		Color = AttrColor;
+		UV = AttrUV;
+		Normal = AttrNormal;
+		gl_Position = Projection * View * World * AttrPosition;
+	}
+)";
+
+const char* mainFragmentShader = R"(
+	#version 150
+
+	in vec4 Color;
+	in vec2 UV;
+	in vec3 Normal;
+
+	out vec4 FragColor;
+
+	void main()
+	{
+		FragColor = vec4(UV, 1.0, 1.0);
+	}
+)";
 
 RenderDevice::RenderDevice(HWND hwnd) : Context(hwnd)
+{
+	if (Context)
+	{
+		Context.Begin();
+		mShader = std::make_unique<Shader>();
+		if (!mShader->Compile(mainVertexShader, mainFragmentShader))
+		{
+			throw std::runtime_error(mShader->GetErrors());
+		}
+		Context.End();
+	}
+}
+
+RenderDevice::~RenderDevice()
 {
 }
 
@@ -24,34 +80,44 @@ void RenderDevice::SetIndexBuffer(IndexBuffer* buffer)
 
 void RenderDevice::SetAlphaBlendEnable(bool value)
 {
-}
-
-void RenderDevice::SetAlphaRef(int value)
-{
+	mAlphaBlend = value;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetAlphaTestEnable(bool value)
 {
+	mAlphaTest = value;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetCullMode(Cull mode)
 {
+	mCullMode = mode;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetBlendOperation(BlendOperation op)
 {
+	mBlendOperation = op;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetSourceBlend(Blend blend)
 {
+	mSourceBlend = blend;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetDestinationBlend(Blend blend)
 {
+	mDestinationBlend = blend;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetFillMode(FillMode mode)
 {
+	mFillMode = mode;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetFogEnable(bool value)
@@ -80,10 +146,14 @@ void RenderDevice::SetTextureFactor(int factor)
 
 void RenderDevice::SetZEnable(bool value)
 {
+	mDepthTest = value;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetZWriteEnable(bool value)
 {
+	mDepthWrite = value;
+	mNeedApply = true;
 }
 
 void RenderDevice::SetTransform(TransformState state, float* matrix)
@@ -128,12 +198,12 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 	{
 		glClearColor(RPART(backcolor) / 255.0f, GPART(backcolor) / 255.0f, BPART(backcolor) / 255.0f, APART(backcolor) / 255.0f);
 		glClearDepthf(1.0f);
-		glClear(GL_COLOR | GL_DEPTH);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	else if (clear)
 	{
 		glClearColor(RPART(backcolor) / 255.0f, GPART(backcolor) / 255.0f, BPART(backcolor) / 255.0f, APART(backcolor) / 255.0f);
-		glClear(GL_COLOR);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 	Context.End();
 }
@@ -155,14 +225,78 @@ void RenderDevice::CopyTexture(Texture* src, Texture* dst, CubeMapFace face)
 {
 }
 
+void RenderDevice::CheckError()
+{
+	GLenum error = glGetError();
+	if (error != GL_NO_ERROR)
+		throw std::runtime_error("OpenGL error!");
+}
+
 void RenderDevice::ApplyChanges()
 {
+	ApplyShader();
 	ApplyVertexBuffers();
 	ApplyIndexBuffer();
 	ApplyMatrices();
 	ApplyTextures();
+	ApplyRasterizerState();
+	ApplyBlendState();
+	ApplyDepthState();
+
+	CheckError();
 
 	mNeedApply = false;
+}
+
+void RenderDevice::ApplyShader()
+{
+	glUseProgram(mShader->GetProgram());
+}
+
+void RenderDevice::ApplyRasterizerState()
+{
+	if (mCullMode == Cull::None)
+	{
+		glDisable(GL_CULL_FACE);
+	}
+	else
+	{
+		glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CCW);
+	}
+
+	GLenum fillMode2GL[] = { GL_FILL, GL_LINE };
+	glPolygonMode(GL_FRONT_AND_BACK, fillMode2GL[(int)mFillMode]);
+}
+
+void RenderDevice::ApplyBlendState()
+{
+	if (mAlphaBlend)
+	{
+		static const GLenum blendOp2GL[] = { GL_FUNC_ADD, GL_FUNC_REVERSE_SUBTRACT };
+		static const GLenum blendFunc2GL[] = { GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE, GL_CONSTANT_COLOR };
+
+		glEnable(GL_BLEND);
+		glBlendEquation(blendOp2GL[(int)mBlendOperation]);
+		glBlendFunc(blendFunc2GL[(int)mSourceBlend], blendFunc2GL[(int)mDestinationBlend]);
+	}
+	else
+	{
+		glDisable(GL_BLEND);
+	}
+}
+
+void RenderDevice::ApplyDepthState()
+{
+	if (mDepthTest)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(mDepthWrite ? GL_TRUE : GL_FALSE);
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
 }
 
 void RenderDevice::ApplyIndexBuffer()
@@ -180,11 +314,17 @@ void RenderDevice::ApplyIndexBuffer()
 void RenderDevice::ApplyVertexBuffers()
 {
 	static const int typeSize[] = { 2, 3, 4 };
-	static const int type[] = { GL_FLOAT, GL_FLOAT, GL_UNSIGNED_BYTE };
+	static const int type[] = { GL_FLOAT, GL_FLOAT, GL_BGRA };
 	static const int typeNormalized[] = { GL_FALSE, GL_FALSE, GL_TRUE };
 
 	if (mVertexDeclaration)
 	{
+		if (!mVAO)
+		{
+			glGenVertexArrays(1, &mVAO);
+			glBindVertexArray(mVAO);
+		}
+
 		for (size_t i = 0; i < mVertexDeclaration->Elements.size(); i++)
 		{
 			const auto& element = mVertexDeclaration->Elements[i];
@@ -193,11 +333,12 @@ void RenderDevice::ApplyVertexBuffers()
 			if (vertBinding.Buffer)
 			{
 				GLuint vertexbuffer = vertBinding.Buffer->GetBuffer();
-				glEnableVertexAttribArray(location);
 				glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+				glEnableVertexAttribArray(location);
 				glVertexAttribPointer(location, typeSize[(int)element.Type], type[(int)element.Type], typeNormalized[(int)element.Type], vertBinding.Stride, (const void*)(element.Offset + (ptrdiff_t)vertBinding.Offset));
 
 				mEnabledVertexAttributes[location] = 2;
+				break;
 			}
 		}
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -207,7 +348,7 @@ void RenderDevice::ApplyVertexBuffers()
 	{
 		if (mEnabledVertexAttributes[i] == 2)
 		{
-			mEnabledVertexAttributes[i]--;
+			mEnabledVertexAttributes[i] = 1;
 		}
 		else if (mEnabledVertexAttributes[i] == 1)
 		{
@@ -219,10 +360,10 @@ void RenderDevice::ApplyVertexBuffers()
 
 void RenderDevice::ApplyMatrices()
 {
-	for (size_t i = 0; i < NumTransforms; i++)
+	for (size_t i = 0; i < (size_t)TransformState::NumTransforms; i++)
 	{
 		auto& binding = mTransforms[i];
-		glUniformMatrix4fv((GLuint)i, 1, GL_FALSE, binding.Values);
+		glUniformMatrix4fv(mShader->TransformLocations[i], 1, GL_FALSE, binding.Values);
 	}
 }
 
@@ -244,6 +385,7 @@ void RenderDevice::ApplyTextures()
 
 void RenderDevice::ApplyRenderTarget(Texture* target, bool usedepthbuffer)
 {
+	glViewport(0, 0, Context.GetWidth(), Context.GetHeight());
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -280,11 +422,6 @@ void RenderDevice_SetIndexBuffer(RenderDevice* device, IndexBuffer* buffer)
 void RenderDevice_SetAlphaBlendEnable(RenderDevice* device, bool value)
 {
 	device->SetAlphaBlendEnable(value);
-}
-
-void RenderDevice_SetAlphaRef(RenderDevice* device, int value)
-{
-	device->SetAlphaRef(value);
 }
 
 void RenderDevice_SetAlphaTestEnable(RenderDevice* device, bool value)

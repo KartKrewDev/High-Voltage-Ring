@@ -10,6 +10,8 @@
       <Filter>gl_load</Filter>
     </ClCompile>
     <ClCompile Include="OpenGLContext.cpp" />
+    <ClCompile Include="Precomp.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IndexBuffer.h" />
@@ -24,6 +26,8 @@
       <Filter>gl_load</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLContext.h" />
+    <ClInclude Include="Precomp.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
