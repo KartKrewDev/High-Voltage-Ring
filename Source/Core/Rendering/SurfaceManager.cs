@@ -632,7 +632,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.DrawPrimitives(PrimitiveType.TriangleList, entry.vertexoffset + (entry.numvertices * surfacevertexoffsetmul), entry.numvertices / 3);
 					}
 				}
-                graphics.SetUniform(Uniform.desaturation, 0);
+                graphics.SetUniform(Uniform.desaturation, 0.0f);
             }
 		}
 		

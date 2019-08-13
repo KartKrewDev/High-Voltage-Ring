@@ -247,7 +247,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			SetSamplerState(0, TextureAddress.Wrap);
 			
 			// Shader settings
-			Shaders.World3D.SetConstants(General.Settings.VisualBilinear, General.Settings.FilterAnisotropy);
+			Shaders.SetWorld3DConstants(General.Settings.VisualBilinear, General.Settings.FilterAnisotropy);
 			
 			// Initialize presentations
 			Presentation.Initialize();
@@ -391,12 +391,15 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 
         public void SetShader(Shader shader) { }
+        public void SetUniform(Uniform uniform, bool value) { }
         public void SetUniform(Uniform uniform, float value) { }
         public void SetUniform(Uniform uniform, Vector2 value) { }
         public void SetUniform(Uniform uniform, Vector3 value) { }
         public void SetUniform(Uniform uniform, Vector4 value) { }
+        public void SetUniform(Uniform uniform, Color4 value) { }
         public void SetUniform(Uniform uniform, Matrix value) { }
-        public void SetUniform(Uniform uniform, Texture value) { }
+        public void SetUniform(Uniform uniform, BaseTexture value) { }
+        public void SetUniform(Uniform uniform, TextureFilter value) { }
     }
 
     public enum Shader : int
@@ -408,20 +411,24 @@ namespace CodeImp.DoomBuilder.Rendering
         things2d_thing,
         things2d_sprite,
         things2d_fill,
-        world3d_main,
-        world3d_fullbright,
-        world3d_main_highlight,
-        world3d_fullbright_highlight,
-        world3d_main_vertexcolor,
-        world3d_skybox,
-        world3d_main_highlight_vertexcolor,
-        world3d_main_fog,
-        world3d_main_highlight_fog,
-        world3d_main_fog_vertexcolor,
-        world3d_main_highlight_fog_vertexcolor,
-        world3d_vertex_color,
-        world3d_constant_color,
-        world3d_lightpass // AlphaBlendEnable = true
+        world3d_main, // 0
+        world3d_fullbright, // 1
+        world3d_main_highlight, // 2
+        world3d_fullbright_highlight, // 3
+        world3d_main_vertexcolor, // 4
+        world3d_skybox, // 5
+        world3d_main_highlight_vertexcolor, // 6
+        world3d_p7,
+        world3d_main_fog, // 8
+        world3d_p9,
+        world3d_main_highlight_fog, // 10
+        world3d_p11,
+        world3d_main_fog_vertexcolor, // 12
+        world3d_p13,
+        world3d_main_highlight_fog_vertexcolor, // 14
+        world3d_vertex_color, // 15
+        world3d_constant_color, // 16
+        world3d_lightpass // 17 // AlphaBlendEnable = true
     }
 
     public enum Uniform : int
@@ -435,6 +442,7 @@ namespace CodeImp.DoomBuilder.Rendering
         worldviewproj,
         world,
         modelnormal,
+        FillColor,
         vertexColor,
         stencilColor,
         lightPosAndRadius,
@@ -444,6 +452,10 @@ namespace CodeImp.DoomBuilder.Rendering
         ignoreNormals,
         spotLight,
         campos,
+        magfiltersettings,
+        minfiltersettings,
+        mipfiltersettings,
+        maxanisotropysetting
     }
 
     public enum Cull : int { None, Counterclockwise }

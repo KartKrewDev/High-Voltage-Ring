@@ -1209,14 +1209,12 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetVertexBuffer(0, thingsvertices, 0, FlatVertex.Stride);
 				
 				// Set things texture
-				graphics.Shaders.Things2D.Texture1 = General.Map.Data.ThingTexture.Texture; //mxd
+				graphics.SetUniform(Uniform.texture1, General.Map.Data.ThingTexture.Texture); //mxd
 				SetWorldTransformation(false);
-				graphics.Shaders.Things2D.SetSettings(alpha);
+                graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
+                graphics.SetShader(Shader.things2d_thing);
+				graphics.Shaders.SetThings2DSettings(alpha);
 				
-				// Begin drawing
-				graphics.Shaders.Things2D.Begin();
-				graphics.Shaders.Things2D.BeginPass(0);
-
 				// Determine next lock size
 				int locksize = (things.Count > THING_BUFFER_SIZE) ? THING_BUFFER_SIZE : things.Count;
 				FlatVertex[] verts = new FlatVertex[THING_BUFFER_SIZE * 6];
@@ -1278,12 +1276,9 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(buffercount > 0)
 					graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
 
-				// Done
-				graphics.Shaders.Things2D.EndPass();
-
 				//mxd. Render sprites
 				int selectionColor = General.Colors.Selection.ToInt();
-				graphics.Shaders.Things2D.BeginPass(1);
+                graphics.SetShader(Shader.things2d_sprite);
 
 				foreach(KeyValuePair<int, List<Thing>> group in thingsByType)
 				{
@@ -1328,8 +1323,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 						if(sprite.Texture == null) sprite.CreateTexture();
 
-						graphics.Shaders.Things2D.Texture1 = sprite.Texture;
-						graphics.Shaders.Things2D.ApplySettings();
+						graphics.SetUniform(Uniform.texture1, sprite.Texture);
 
 						// Determine next lock size
 						locksize = (framegroup.Value.Count > THING_BUFFER_SIZE) ? THING_BUFFER_SIZE : framegroup.Value.Count;
@@ -1423,12 +1417,9 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 				}
 
-				// Done
-				graphics.Shaders.Things2D.EndPass();
-
 				//mxd. Render thing arrows
-				graphics.Shaders.Things2D.Texture1 = General.Map.Data.ThingTexture.Texture;
-				graphics.Shaders.Things2D.BeginPass(0);
+				graphics.SetUniform(Uniform.texture1, General.Map.Data.ThingTexture.Texture);
+                graphics.SetShader(Shader.things2d_thing);
 
 				// Determine next lock size
 				locksize = (thingsByPosition.Count > THING_BUFFER_SIZE) ? THING_BUFFER_SIZE : thingsByPosition.Count;
@@ -1468,9 +1459,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(buffercount > 0) 
 					graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
 
-				//Done with this pass
-				graphics.Shaders.Things2D.EndPass();
-
 				//mxd. Render models
 				if(General.Settings.GZDrawModelsMode != ModelRenderMode.NONE) 
 				{
@@ -1479,7 +1467,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					graphics.SetTextureFactor(-1);
 					graphics.SetFillMode(FillMode.Wireframe);
 
-					graphics.Shaders.Things2D.BeginPass(2);
+                    graphics.SetShader(Shader.things2d_fill);
 
 					Color4 cSelection = General.Colors.Selection.ToColorValue();
 					Color4 cWire = ((c.ToInt() == General.Colors.Highlight.ToInt()) ? General.Colors.Highlight.ToColorValue() : General.Colors.ModelWireframe.ToColorValue());
@@ -1503,7 +1491,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							((screenpos.y + mde.Model.Radius * modelScale) <= 0.0f) || ((screenpos.y - mde.Model.Radius * modelScale) >= windowsize.Height))
 								continue;
 
-							graphics.Shaders.Things2D.FillColor = (t.Selected ? cSelection : cWire);
+							graphics.SetUniform(Uniform.FillColor, (t.Selected ? cSelection : cWire));
 
 							// Set transform settings
 							float sx = t.ScaleX * t.ActorScale.Width;
@@ -1514,20 +1502,16 @@ namespace CodeImp.DoomBuilder.Rendering
 							Matrix position = Matrix.Translation(screenpos.x, screenpos.y, 0.0f);
 							Matrix world = General.Map.Data.ModeldefEntries[t.Type].Transform * modelscale * rotation * viewscale * position;
 
-							graphics.Shaders.Things2D.SetTransformSettings(world);
-							graphics.Shaders.Things2D.ApplySettings();
+							graphics.Shaders.SetThings2DTransformSettings(world);
 
 							// Draw
-							foreach(Mesh mesh in mde.Model.Meshes) mesh.DrawSubset(0);
+							foreach(Mesh mesh in mde.Model.Meshes) mesh.Draw(graphics);
 						}
 					}
 
 					//Done with this pass
-					graphics.Shaders.Things2D.EndPass();
 					graphics.SetFillMode(FillMode.Solid);
 				}
-
-				graphics.Shaders.Things2D.End();
 
 				//mxd. Render thing boxes
 				RenderArrows(bboxes, false);
@@ -1661,15 +1645,13 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetFogEnable(false);
 
 			SetWorldTransformation(true);
-			graphics.Shaders.Things2D.FillColor = new Color4(color);
-			graphics.Shaders.Things2D.SetSettings(1.0f);
+			graphics.SetUniform(Uniform.FillColor, new Color4(color));
+			graphics.Shaders.SetThings2DSettings(1.0f);
 
-			// Draw
-			graphics.Shaders.Things2D.Begin();
-			graphics.Shaders.Things2D.BeginPass(2);
+            // Draw
+            graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
+            graphics.SetShader(Shader.things2d_fill);
 			graphics.DrawUserPrimitives(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
-			graphics.Shaders.Things2D.EndPass();
-			graphics.Shaders.Things2D.End();
 		}
 
 		//mxd. This renders text (DB2 compatibility)

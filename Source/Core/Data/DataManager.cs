@@ -3419,9 +3419,6 @@ namespace CodeImp.DoomBuilder.Data
 				skyimage = ResizeImage(skyimage, (int)Math.Round(skyimage.Width * scaler), (int)Math.Round(skyimage.Height * scaler));
 			}
 
-			// Get Device and shader...
-			World3DShader effect = General.Map.Graphics.Shaders.World3D;
-
 			// Make custom rendertarget
 			const int cubemaptexsize = 1024;
 			Texture rendertarget = new Texture(cubemaptexsize, cubemaptexsize);
@@ -3464,18 +3461,18 @@ namespace CodeImp.DoomBuilder.Data
 			Matrix mworld = Matrix.Multiply(Matrix.Identity, Matrix.Translation(offset) * Matrix.Scaling(1.0f, 1.0f, yscale));
 			Matrix mprojection = Matrix.PerspectiveFovLH(Angle2D.PIHALF, 1.0f, 0.5f, 100.0f);
 
-			// Place camera at origin
-			effect.CameraPosition = new Vector4();
+            // Place camera at origin
+            General.Map.Graphics.SetUniform(Uniform.campos, new Vector4());
 
-			// Begin fullbright shaderpass
-			effect.Begin();
-			effect.BeginPass(1);
+            // Begin fullbright shaderpass
+            General.Map.Graphics.SetVertexDeclaration(General.Map.Graphics.Shaders.WorldVertexDecl);
+            General.Map.Graphics.SetShader(Shader.world3d_fullbright);
 
 			// Render to the six faces of the cube map
 			for(int i = 0; i < 6; i++)
 			{
 				Matrix faceview = GetCubeMapViewMatrix((CubeMapFace)i);
-				effect.WorldViewProj = mworld * faceview * mprojection;
+                General.Map.Graphics.SetUniform(Uniform.worldviewproj, mworld * faceview * mprojection);
 
 				// Render the skysphere meshes
 				for(int j = 0; j < meshes.Meshes.Count; j++)
@@ -3483,25 +3480,20 @@ namespace CodeImp.DoomBuilder.Data
 					// Set appropriate texture
 					switch(meshes.Skins[j])
 					{
-						case "top.png": effect.Texture1 = textop; break;
-						case "bottom.png": effect.Texture1 = texbottom; break;
-						case "side.png": effect.Texture1 = texside; break;
+						case "top.png": General.Map.Graphics.SetUniform(Uniform.texture1, textop); break;
+						case "bottom.png": General.Map.Graphics.SetUniform(Uniform.texture1, texbottom); break;
+						case "side.png": General.Map.Graphics.SetUniform(Uniform.texture1, texside); break;
 						default: throw new Exception("Unexpected skin!");
 					}
 
-					// Commit changes
-					effect.ApplySettings();
-
 					// Render mesh
-					meshes.Meshes[j].DrawSubset(0);
+					meshes.Meshes[j].Draw(General.Map.Graphics);
 				}
 
                 General.Map.Graphics.CopyTexture(rendertarget, cubemap, (CubeMapFace)i);
 			}
 
 			// End rendering
-			effect.EndPass();
-			effect.End();
 			General.Map.Graphics.FinishRendering();
 
 			// Dispose unneeded stuff

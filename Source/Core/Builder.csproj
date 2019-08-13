@@ -222,8 +222,6 @@
     </Compile>
     <Compile Include="Rendering\Color3.cs" />
     <Compile Include="Rendering\Color4.cs" />
-    <Compile Include="Rendering\Effect.cs" />
-    <Compile Include="Rendering\EffectShader.cs" />
     <Compile Include="Rendering\IndexBuffer.cs" />
     <Compile Include="Rendering\IRenderResource.cs" />
     <Compile Include="Rendering\Matrix.cs" />
@@ -576,9 +574,7 @@
     <Compile Include="Rendering\Renderer2D.cs" />
     <Compile Include="Rendering\Renderer3D.cs" />
     <Compile Include="Rendering\ShaderManager.cs" />
-    <Compile Include="Rendering\Things2DShader.cs" />
     <Compile Include="VisualModes\VisualSector.cs" />
-    <Compile Include="Rendering\World3DShader.cs" />
     <Compile Include="Rendering\WorldVertex.cs" />
     <Compile Include="ZDoom\DecorateActorStructure.cs" />
     <Compile Include="ZDoom\DecorateStateGoto.cs" />

@@ -32,8 +32,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		// Shaders
 		private VertexDeclaration flatvertexdecl;
-		private Things2DShader things2dshader;
-		private World3DShader world3dshader;
+        private VertexDeclaration worldvertexdecl;
 		
 		// Device
 		private RenderDevice device;
@@ -46,8 +45,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Properties
 
 		public VertexDeclaration FlatVertexDecl { get { return flatvertexdecl; } }
-		public Things2DShader Things2D { get { return things2dshader; } }
-		public World3DShader World3D { get { return world3dshader; } }
+		public VertexDeclaration WorldVertexDecl { get { return worldvertexdecl; } }
 		public bool IsDisposed { get { return isdisposed; } }
 		internal RenderDevice D3DDevice { get { return device; } }
 
@@ -97,8 +95,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public void UnloadResource()
 		{
             flatvertexdecl.Dispose();
-			things2dshader.Dispose();
-			world3dshader.Dispose();
+			worldvertexdecl.Dispose();
 		}
 
 		// Load resources
@@ -110,9 +107,13 @@ namespace CodeImp.DoomBuilder.Rendering
                 new VertexElement(0, 16, DeclarationType.Float2, DeclarationUsage.TextureCoordinate)
             });
 
-            things2dshader = new Things2DShader(this);
-			world3dshader = new World3DShader(this);
-		}
+            worldvertexdecl = new VertexDeclaration(new VertexElement[] {
+                new VertexElement(0, 0, DeclarationType.Float3, DeclarationUsage.Position),
+                new VertexElement(0, 12, DeclarationType.Color, DeclarationUsage.Color),
+                new VertexElement(0, 16, DeclarationType.Float2, DeclarationUsage.TextureCoordinate),
+                new VertexElement(0, 24, DeclarationType.Float3, DeclarationUsage.Normal)
+            });
+        }
 
         #endregion
 
@@ -127,5 +128,30 @@ namespace CodeImp.DoomBuilder.Rendering
             D3DDevice.SetUniform(Uniform.filtersettings, (int)filter);
         }
 
+        public void SetThings2DSettings(float alpha)
+        {
+            Vector4 values = new Vector4(0.0f, 0.0f, 1.0f, alpha);
+            D3DDevice.SetUniform(Uniform.rendersettings, values);
+            Matrix world = D3DDevice.GetTransform(TransformState.World);
+            Matrix view = D3DDevice.GetTransform(TransformState.View);
+            D3DDevice.SetUniform(Uniform.transformsettings, world * view);
+        }
+
+        //mxd. Used to render models
+        public void SetThings2DTransformSettings(Matrix world)
+        {
+            Matrix view = D3DDevice.GetTransform(TransformState.View);
+            D3DDevice.SetUniform(Uniform.transformsettings, world * view);
+        }
+
+        public void SetWorld3DConstants(bool bilinear, float maxanisotropy)
+        {
+            //mxd. It's still nice to have anisotropic filtering when texture filtering is disabled
+            TextureFilter magminfilter = (bilinear ? TextureFilter.Linear : TextureFilter.Point);
+            D3DDevice.SetUniform(Uniform.magfiltersettings, magminfilter);
+            D3DDevice.SetUniform(Uniform.minfiltersettings, (maxanisotropy > 1.0f ? TextureFilter.Anisotropic : magminfilter));
+            D3DDevice.SetUniform(Uniform.mipfiltersettings, (bilinear ? TextureFilter.Linear : TextureFilter.None)); // [SB] use None, otherwise textures are still filtered
+            D3DDevice.SetUniform(Uniform.maxanisotropysetting, maxanisotropy);
+        }
     }
 }

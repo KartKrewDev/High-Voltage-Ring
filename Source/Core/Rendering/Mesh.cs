@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-    public class Mesh : IDisposable
+    internal class Mesh : IDisposable
     {
         public Mesh(VertexElement[] vertexDecl, WorldVertex[] vertexData, int[] indexData)
         {
@@ -15,6 +15,7 @@ namespace CodeImp.DoomBuilder.Rendering
             Vertices.SetBufferData(vertexData);
             Indices = new IndexBuffer(sizeof(int) * indexData.Length);
             Indices.SetBufferData(indexData);
+            Count = indexData.Length;
         }
 
         ~Mesh()
@@ -22,8 +23,17 @@ namespace CodeImp.DoomBuilder.Rendering
             Dispose();
         }
 
-        public void DrawSubset(int index)
+        internal void Draw(RenderDevice device)
         {
+            /*
+            device.SetVertexDeclaration(VertexDecl);
+            device.SetVertexBuffer(0, Vertices, 0, WorldVertex.Stride);
+            device.SetIndexBuffer(Indices);
+            device.DrawElements(0, Count);
+            device.SetIndexBuffer(null);
+            device.SetVertexBuffer(0, null, 0, 0);
+            device.SetVertexDeclaration(null);
+            */
         }
 
         public void Dispose()
@@ -35,5 +45,6 @@ namespace CodeImp.DoomBuilder.Rendering
         VertexDeclaration VertexDecl;
         VertexBuffer Vertices;
         IndexBuffer Indices;
+        int Count;
     }
 }
