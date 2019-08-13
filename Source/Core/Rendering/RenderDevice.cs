@@ -389,6 +389,61 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			return new Vector2D(v2.X, v2.Y);
 		}
+
+        public void SetShader(Shader shader) { }
+        public void SetUniform(Uniform uniform, float value) { }
+        public void SetUniform(Uniform uniform, Vector2 value) { }
+        public void SetUniform(Uniform uniform, Vector3 value) { }
+        public void SetUniform(Uniform uniform, Vector4 value) { }
+        public void SetUniform(Uniform uniform, Matrix value) { }
+        public void SetUniform(Uniform uniform, Texture value) { }
+    }
+
+    public enum Shader : int
+    {
+        basic,
+        display2d_fsaa,
+        display2d_normal,
+        display2d_fullbright,
+        things2d_thing,
+        things2d_sprite,
+        things2d_fill,
+        world3d_main,
+        world3d_fullbright,
+        world3d_main_highlight,
+        world3d_fullbright_highlight,
+        world3d_main_vertexcolor,
+        world3d_skybox,
+        world3d_main_highlight_vertexcolor,
+        world3d_main_fog,
+        world3d_main_highlight_fog,
+        world3d_main_fog_vertexcolor,
+        world3d_main_highlight_fog_vertexcolor,
+        world3d_vertex_color,
+        world3d_constant_color,
+        world3d_lightpass // AlphaBlendEnable = true
+    }
+
+    public enum Uniform : int
+    {
+        rendersettings,
+        transformsettings,
+        filtersettings,
+        desaturation,
+        texture1,
+        highlightcolor,
+        worldviewproj,
+        world,
+        modelnormal,
+        vertexColor,
+        stencilColor,
+        lightPosAndRadius,
+        lightOrientation,
+        light2Radius,
+        lightColor,
+        ignoreNormals,
+        spotLight,
+        campos,
     }
 
     public enum Cull : int { None, Counterclockwise }

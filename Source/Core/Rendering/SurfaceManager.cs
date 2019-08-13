@@ -607,21 +607,18 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			if(!resourcesunloaded)
 			{
-				int pass = Renderer.FullBrightness ? 2 : 1; //mxd
-				graphics.Shaders.Display2D.Begin();
+				Shader pass = Renderer.FullBrightness ? Shader.display2d_fullbright : Shader.display2d_normal; //mxd
+                graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
 				foreach(KeyValuePair<ImageData, List<SurfaceEntry>> imgsurfaces in surfaces)
 				{
-					// Set texture
-					graphics.Shaders.Display2D.Texture1 = imgsurfaces.Key.Texture;
-
-					graphics.Shaders.Display2D.BeginPass(pass);
+                    graphics.SetShader(pass);
+                    graphics.SetUniform(Uniform.texture1, imgsurfaces.Key.Texture);
 					
 					// Go for all surfaces
 					VertexBuffer lastbuffer = null;
 					foreach(SurfaceEntry entry in imgsurfaces.Value)
 					{
-                        graphics.Shaders.Display2D.Desaturation = entry.desaturation;
-                        graphics.Shaders.Display2D.ApplySettings();
+                        graphics.SetUniform(Uniform.desaturation, entry.desaturation);
                         
 						// Set the vertex buffer
 						SurfaceBufferSet set = sets[entry.numvertices];
@@ -634,12 +631,8 @@ namespace CodeImp.DoomBuilder.Rendering
 						// Draw
 						graphics.DrawPrimitives(PrimitiveType.TriangleList, entry.vertexoffset + (entry.numvertices * surfacevertexoffsetmul), entry.numvertices / 3);
 					}
-					
-					graphics.Shaders.Display2D.EndPass();
 				}
-				graphics.Shaders.Display2D.End();
-                graphics.Shaders.Display2D.Desaturation = 0;
-                graphics.Shaders.Display2D.ApplySettings();
+                graphics.SetUniform(Uniform.desaturation, 0);
             }
 		}
 		

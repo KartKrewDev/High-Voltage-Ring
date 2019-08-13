@@ -2057,26 +2057,25 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetTransform(TransformState.World, Matrix.Identity);
 			graphics.SetTransform(TransformState.Projection, Matrix.Identity);
 			ApplyMatrices2D();
+
+            graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
+            graphics.SetShader(Shader.display2d_normal);
 			
 			// Texture
 			if(crosshairbusy)
 			{
 				if(General.Map.Data.CrosshairBusy3D.Texture == null) General.Map.Data.CrosshairBusy3D.CreateTexture();
-				graphics.Shaders.Display2D.Texture1 = General.Map.Data.CrosshairBusy3D.Texture;
+				graphics.SetUniform(Uniform.texture1, General.Map.Data.CrosshairBusy3D.Texture);
 			}
 			else
 			{
 				if(General.Map.Data.Crosshair3D.Texture == null) General.Map.Data.Crosshair3D.CreateTexture();
-				graphics.Shaders.Display2D.Texture1 = General.Map.Data.Crosshair3D.Texture;
+				graphics.SetUniform(Uniform.texture1, General.Map.Data.Crosshair3D.Texture);
 			}
 			
 			// Draw
-			graphics.Shaders.Display2D.Begin();
-			graphics.Shaders.Display2D.SetSettings(1.0f, 1.0f, 0.0f, 1.0f, true);
-			graphics.Shaders.Display2D.BeginPass(1);
+			graphics.Shaders.SetDisplay2DSettings(1.0f, 1.0f, 0.0f, 1.0f, true);
 			graphics.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
-			graphics.Shaders.Display2D.EndPass();
-			graphics.Shaders.Display2D.End();
 		}
 
 		// This switches fog on and off

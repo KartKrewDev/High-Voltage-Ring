@@ -31,7 +31,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Variables
 
 		// Shaders
-		private Display2DShader display2dshader;
+		private VertexDeclaration flatvertexdecl;
 		private Things2DShader things2dshader;
 		private World3DShader world3dshader;
 		
@@ -45,7 +45,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		#region ================== Properties
 
-		public Display2DShader Display2D { get { return display2dshader; } }
+		public VertexDeclaration FlatVertexDecl { get { return flatvertexdecl; } }
 		public Things2DShader Things2D { get { return things2dshader; } }
 		public World3DShader World3D { get { return world3dshader; } }
 		public bool IsDisposed { get { return isdisposed; } }
@@ -96,7 +96,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		// Clean up resources
 		public void UnloadResource()
 		{
-			display2dshader.Dispose();
+            flatvertexdecl.Dispose();
 			things2dshader.Dispose();
 			world3dshader.Dispose();
 		}
@@ -104,12 +104,28 @@ namespace CodeImp.DoomBuilder.Rendering
 		// Load resources
 		public void ReloadResource()
 		{
-			// Initialize effects
-			display2dshader = new Display2DShader(this);
-			things2dshader = new Things2DShader(this);
+            flatvertexdecl = new VertexDeclaration(new VertexElement[] {
+                new VertexElement(0, 0, DeclarationType.Float3, DeclarationUsage.Position),
+                new VertexElement(0, 12, DeclarationType.Color, DeclarationUsage.Color),
+                new VertexElement(0, 16, DeclarationType.Float2, DeclarationUsage.TextureCoordinate)
+            });
+
+            things2dshader = new Things2DShader(this);
 			world3dshader = new World3DShader(this);
 		}
-		
-		#endregion
-	}
+
+        #endregion
+
+        public void SetDisplay2DSettings(float texelx, float texely, float fsaafactor, float alpha, bool bilinear)
+        {
+            Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
+            D3DDevice.SetUniform(Uniform.rendersettings, values);
+            Matrix world = D3DDevice.GetTransform(TransformState.World);
+            Matrix view = D3DDevice.GetTransform(TransformState.View);
+            D3DDevice.SetUniform(Uniform.transformsettings, world * view);
+            TextureFilter filter = (bilinear ? TextureFilter.Linear : TextureFilter.Point);
+            D3DDevice.SetUniform(Uniform.filtersettings, (int)filter);
+        }
+
+    }
 }
