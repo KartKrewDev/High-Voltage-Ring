@@ -51,7 +51,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		private Matrix world;
 		private Vector3D cameraposition;
         private Vector3D cameravector;
-		private Shader shaderpass;
+		private ShaderName shaderpass;
 		
 		// Window size
 		private Size windowsize;
@@ -281,7 +281,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This applies the matrices
 		private void ApplyMatrices3D()
 		{
-			graphics.SetUniform(Uniform.worldviewproj, world * viewproj); //mxd. Multiplication is ~2x faster than "world * view3d * projection";
+			graphics.SetUniform(UniformName.worldviewproj, world * viewproj); //mxd. Multiplication is ~2x faster than "world * view3d * projection";
 		}
 
 		// This sets the appropriate view matrix
@@ -314,7 +314,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetFogStart(General.Settings.ViewDistance * FOG_RANGE);
 			graphics.SetFogEnd(General.Settings.ViewDistance);
 			graphics.SetTextureFactor(-1);
-			graphics.SetUniform(Uniform.highlightcolor, new Color4()); //mxd
+			graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
 
 			// Texture addressing
 			graphics.SetSamplerState(0, TextureAddress.Wrap);
@@ -336,7 +336,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 				
 			// Determine shader pass to use
-			shaderpass = (fullbrightness ? Shader.world3d_fullbright : Shader.world3d_main);
+			shaderpass = (fullbrightness ? ShaderName.world3d_fullbright : ShaderName.world3d_main);
 
 			// Create crosshair vertices
 			if(crosshairverts == null)
@@ -432,9 +432,9 @@ namespace CodeImp.DoomBuilder.Rendering
                 {
                     graphics.SetAlphaTestEnable(true);
                     graphics.SetCullMode(Cull.None);
-                    graphics.SetUniform(Uniform.ignoreNormals, true);
+                    graphics.SetUniform(UniformName.ignoreNormals, true);
                     RenderModels(true, false);
-                    graphics.SetUniform(Uniform.ignoreNormals, false);
+                    graphics.SetUniform(UniformName.ignoreNormals, false);
                     graphics.SetCullMode(Cull.Counterclockwise);
                 }
             }
@@ -477,9 +477,9 @@ namespace CodeImp.DoomBuilder.Rendering
             if (General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0 && translucentmodelthings.Count > 0)
             {
                 graphics.SetAlphaTestEnable(true);
-                graphics.SetUniform(Uniform.ignoreNormals, true);
+                graphics.SetUniform(UniformName.ignoreNormals, true);
                 RenderModels(true, true);
-                graphics.SetUniform(Uniform.ignoreNormals, false);
+                graphics.SetUniform(UniformName.ignoreNormals, false);
             }
 
             // THING CAGES
@@ -497,7 +497,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(General.Settings.GZShowEventLines) RenderArrows(eventlines);
 			
 			// Remove references
-			graphics.SetUniform(Uniform.texture1, null);
+			graphics.SetUniform(UniformName.texture1, null);
 			
 			//mxd. Trash collections
 			solidgeo = null;
@@ -586,7 +586,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetSourceBlend(Blend.SourceAlpha);
 			graphics.SetDestinationBlend(Blend.SourceAlpha);
 
-			graphics.SetShader(Shader.world3d_constant_color);
+			graphics.SetShader(ShaderName.world3d_constant_color);
 
 			foreach(VisualThing t in allthings)
 			{
@@ -601,7 +601,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					thingcolor = t.CageColor;
 					if(t != highlighted) thingcolor.Alpha = 0.6f;
 				}
-				graphics.SetUniform(Uniform.vertexColor, thingcolor);
+				graphics.SetUniform(UniformName.vertexColor, thingcolor);
 
 				//Render cage
 				graphics.SetVertexBuffer(0, t.CageBuffer, 0, WorldVertex.Stride);
@@ -623,7 +623,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetSourceBlend(Blend.SourceAlpha);
 			graphics.SetDestinationBlend(Blend.SourceAlpha);
 
-            graphics.SetShader(Shader.world3d_constant_color);
+            graphics.SetShader(ShaderName.world3d_constant_color);
 
 			foreach(VisualVertex v in visualvertices) 
 			{
@@ -641,7 +641,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					color = v.HaveHeightOffset ? General.Colors.InfoLine.ToColorValue() : General.Colors.Vertices.ToColorValue();
 					if(v != highlighted) color.Alpha = 0.6f;
 				}
-                graphics.SetUniform(Uniform.vertexColor, color);
+                graphics.SetUniform(UniformName.vertexColor, color);
 
 				//Commence drawing!!11
 				graphics.SetVertexBuffer(0, v.CeilingVertex ? vertexhandle.Upper : vertexhandle.Lower, 0, WorldVertex.Stride);
@@ -717,7 +717,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetSourceBlend(Blend.SourceAlpha);
 			graphics.SetDestinationBlend(Blend.SourceAlpha);
 
-            graphics.SetShader(Shader.world3d_vertex_color);
+            graphics.SetShader(ShaderName.world3d_vertex_color);
 
 			world = Matrix.Identity;
 			ApplyMatrices3D();
@@ -735,8 +735,8 @@ namespace CodeImp.DoomBuilder.Rendering
 		private void RenderSinglePass(Dictionary<ImageData, List<VisualGeometry>> geopass, Dictionary<ImageData, List<VisualThing>> thingspass)
 		{
 			ImageData curtexture;
-			Shader currentshaderpass = shaderpass;
-			Shader highshaderpass = (Shader)(shaderpass + 2);
+			ShaderName currentshaderpass = shaderpass;
+			ShaderName highshaderpass = (ShaderName)(shaderpass + 2);
 
 			// Begin rendering with this shader
 			graphics.SetShader(shaderpass);
@@ -757,7 +757,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					curtexture.CreateTexture();
 
                 // Apply texture
-                graphics.SetUniform(Uniform.texture1, curtexture.Texture);
+                graphics.SetUniform(UniformName.texture1, curtexture.Texture);
 				
 				//mxd. Sort geometry by sector index
 				group.Value.Sort((g1, g2) => g1.Sector.Sector.FixedIndex - g2.Sector.Sector.FixedIndex);
@@ -789,11 +789,11 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 					}
 
-                    graphics.SetUniform(Uniform.desaturation, 0.0f);
+                    graphics.SetUniform(UniformName.desaturation, 0.0f);
                     if (sector != null) 
 					{
 						// Determine the shader pass we want to use for this object
-						Shader wantedshaderpass = (((g == highlighted) && showhighlight) || (g.Selected && showselection)) ? highshaderpass : shaderpass;
+						ShaderName wantedshaderpass = (((g == highlighted) && showhighlight) || (g.Selected && showselection)) ? highshaderpass : shaderpass;
 
 						//mxd. Render fog?
 						if(General.Settings.GZDrawFog && !fullbrightness && sector.Sector.FogMode != SectorFogMode.NONE)
@@ -806,25 +806,25 @@ namespace CodeImp.DoomBuilder.Rendering
 							currentshaderpass = wantedshaderpass;
 
 							//mxd. Set variables for fog rendering?
-							if(wantedshaderpass > Shader.world3d_p7)
+							if(wantedshaderpass > ShaderName.world3d_p7)
 							{
-								graphics.SetUniform(Uniform.world, world);
-                                graphics.SetUniform(Uniform.modelnormal, Matrix.Identity);
+								graphics.SetUniform(UniformName.world, world);
+                                graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                             }
 						}
 
 						//mxd. Set variables for fog rendering?
-						if(wantedshaderpass > Shader.world3d_p7)
+						if(wantedshaderpass > ShaderName.world3d_p7)
 						{
-							graphics.SetUniform(Uniform.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
-							graphics.SetUniform(Uniform.lightColor, sector.Sector.FogColor);
+							graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
+							graphics.SetUniform(UniformName.lightColor, sector.Sector.FogColor);
 						}
                         
 						// Set the colors to use
-						graphics.SetUniform(Uniform.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
+						graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
 
                         // [ZZ] include desaturation factor
-                        graphics.SetUniform(Uniform.desaturation, sector.Sector.Desaturation);
+                        graphics.SetUniform(UniformName.desaturation, sector.Sector.Desaturation);
 
 						// Render!
 						graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
@@ -857,7 +857,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						curtexture.CreateTexture();
 
                     // Apply texture
-                    graphics.SetUniform(Uniform.texture1, curtexture.Texture);
+                    graphics.SetUniform(UniformName.texture1, curtexture.Texture);
 
 					// Render all things with this texture
 					foreach(VisualThing t in group.Value)
@@ -873,7 +873,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						if(t.GeometryBuffer != null) 
 						{
 							// Determine the shader pass we want to use for this object
-							Shader wantedshaderpass = (((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass;
+							ShaderName wantedshaderpass = (((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass;
 
 							//mxd. If fog is enagled, switch to shader, which calculates it
 							if(General.Settings.GZDrawFog && !fullbrightness && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
@@ -911,25 +911,25 @@ namespace CodeImp.DoomBuilder.Rendering
 							}
 
 							//mxd. Set variables for fog rendering?
-							if(wantedshaderpass > Shader.world3d_p7)
+							if(wantedshaderpass > ShaderName.world3d_p7)
 							{
-                                graphics.SetUniform(Uniform.world, world);
-                                graphics.SetUniform(Uniform.modelnormal, Matrix.Identity);
-                                graphics.SetUniform(Uniform.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                                graphics.SetUniform(UniformName.world, world);
+                                graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
+                                graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
 							}
 
 							// Set the colors to use
-							if(t.Thing.Sector != null) graphics.SetUniform(Uniform.lightColor, t.Thing.Sector.FogColor);
-                            graphics.SetUniform(Uniform.vertexColor, vertexcolor);
-                            graphics.SetUniform(Uniform.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
+							if(t.Thing.Sector != null) graphics.SetUniform(UniformName.lightColor, t.Thing.Sector.FogColor);
+                            graphics.SetUniform(UniformName.vertexColor, vertexcolor);
+                            graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
 
                             // [ZZ] check if we want stencil
-                            graphics.SetUniform(Uniform.stencilColor, t.StencilColor.ToColorValue());
+                            graphics.SetUniform(UniformName.stencilColor, t.StencilColor.ToColorValue());
 
                             // [ZZ] apply desaturation
                             if (t.Thing.Sector != null)
-                                graphics.SetUniform(Uniform.desaturation, t.Thing.Sector.Desaturation);
-                            else graphics.SetUniform(Uniform.desaturation, 0.0f);
+                                graphics.SetUniform(UniformName.desaturation, t.Thing.Sector.Desaturation);
+                            else graphics.SetUniform(UniformName.desaturation, 0.0f);
 
                             // Apply changes
                             ApplyMatrices3D();
@@ -943,7 +943,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 
                     // [ZZ]
-                    graphics.SetUniform(Uniform.stencilColor, new Color4(0f, 1f, 1f, 1f));
+                    graphics.SetUniform(UniformName.stencilColor, new Color4(0f, 1f, 1f, 1f));
                 }
 
                 // Texture addressing
@@ -955,8 +955,8 @@ namespace CodeImp.DoomBuilder.Rendering
 		//mxd
 		private void RenderTranslucentPass(List<VisualGeometry> geopass, List<VisualThing> thingspass)
 		{
-			Shader currentshaderpass = shaderpass;
-			Shader highshaderpass = (Shader)(shaderpass + 2);
+			ShaderName currentshaderpass = shaderpass;
+			ShaderName highshaderpass = (ShaderName)(shaderpass + 2);
 
 			// Sort geometry by camera distance. First vertex of the BoundingBox is it's center
             geopass.Sort(delegate(VisualGeometry vg1, VisualGeometry vg2)
@@ -1037,7 +1037,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						curtexture.CreateTexture();
 
                     // Apply texture
-                    graphics.SetUniform(Uniform.texture1, curtexture.Texture);
+                    graphics.SetUniform(UniformName.texture1, curtexture.Texture);
 					curtexturename = g.Texture.LongName;
 				}
 
@@ -1066,7 +1066,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 if (sector != null)
                 {
                     // Determine the shader pass we want to use for this object
-                    Shader wantedshaderpass = (((g == highlighted) && showhighlight) || (g.Selected && showselection)) ? highshaderpass : shaderpass;
+                    ShaderName wantedshaderpass = (((g == highlighted) && showhighlight) || (g.Selected && showselection)) ? highshaderpass : shaderpass;
 
                     //mxd. Render fog?
                     if (General.Settings.GZDrawFog && !fullbrightness && sector.Sector.FogMode != SectorFogMode.NONE)
@@ -1079,31 +1079,31 @@ namespace CodeImp.DoomBuilder.Rendering
                         currentshaderpass = wantedshaderpass;
 
                         //mxd. Set variables for fog rendering?
-                        if (wantedshaderpass > Shader.world3d_p7)
+                        if (wantedshaderpass > ShaderName.world3d_p7)
                         {
-                            graphics.SetUniform(Uniform.world, world);
-                            graphics.SetUniform(Uniform.modelnormal, Matrix.Identity);
+                            graphics.SetUniform(UniformName.world, world);
+                            graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                         }
                     }
 
                     // Set variables for fog rendering?
-                    if (wantedshaderpass > Shader.world3d_p7 && g.FogFactor != fogfactor)
+                    if (wantedshaderpass > ShaderName.world3d_p7 && g.FogFactor != fogfactor)
                     {
-                        graphics.SetUniform(Uniform.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
+                        graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
                         fogfactor = g.FogFactor;
                     }
 
                     //
-                    graphics.SetUniform(Uniform.desaturation, sector.Sector.Desaturation);
+                    graphics.SetUniform(UniformName.desaturation, sector.Sector.Desaturation);
 
                     // Set the colors to use
-                    graphics.SetUniform(Uniform.lightColor, sector.Sector.FogColor);
-                    graphics.SetUniform(Uniform.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
+                    graphics.SetUniform(UniformName.lightColor, sector.Sector.FogColor);
+                    graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
 
                     // Render!
                     graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                 }
-                else graphics.SetUniform(Uniform.desaturation, 0.0f);
+                else graphics.SetUniform(UniformName.desaturation, 0.0f);
             }
 
 			// Get things for this pass
@@ -1171,7 +1171,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							curtexture.CreateTexture();
 
                         // Apply texture
-                        graphics.SetUniform(Uniform.texture1, curtexture.Texture);
+                        graphics.SetUniform(UniformName.texture1, curtexture.Texture);
 						curtexturename = t.Texture.LongName;
 					}
 
@@ -1179,7 +1179,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(t.GeometryBuffer != null)
 					{
 						// Determine the shader pass we want to use for this object
-						Shader wantedshaderpass = (((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass;
+						ShaderName wantedshaderpass = (((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass;
 
 						//mxd. if fog is enagled, switch to shader, which calculates it
 						if(General.Settings.GZDrawFog && !fullbrightness && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
@@ -1217,27 +1217,27 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 
 						//mxd. Set variables for fog rendering?
-						if(wantedshaderpass > Shader.world3d_p7)
+						if(wantedshaderpass > ShaderName.world3d_p7)
 						{
-                            graphics.SetUniform(Uniform.world, world);
-                            graphics.SetUniform(Uniform.modelnormal, Matrix.Identity);
+                            graphics.SetUniform(UniformName.world, world);
+                            graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                             if (t.FogFactor != fogfactor)
 							{
-                                graphics.SetUniform(Uniform.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                                graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
 								fogfactor = t.FogFactor;
 							}
 						}
 
                         // Set the colors to use
-                        graphics.SetUniform(Uniform.lightColor, t.Thing.Sector.FogColor);
-                        graphics.SetUniform(Uniform.vertexColor, vertexcolor);
-                        graphics.SetUniform(Uniform.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
+                        graphics.SetUniform(UniformName.lightColor, t.Thing.Sector.FogColor);
+                        graphics.SetUniform(UniformName.vertexColor, vertexcolor);
+                        graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
 
                         // [ZZ] check if we want stencil
-                        graphics.SetUniform(Uniform.stencilColor, t.StencilColor.ToColorValue());
+                        graphics.SetUniform(UniformName.stencilColor, t.StencilColor.ToColorValue());
 
                         //
-                        graphics.SetUniform(Uniform.desaturation, t.Thing.Sector.Desaturation);
+                        graphics.SetUniform(UniformName.desaturation, t.Thing.Sector.Desaturation);
 
                         // Apply changes
                         ApplyMatrices3D();
@@ -1251,7 +1251,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
                 // [ZZ] check if we want stencil
-                graphics.SetUniform(Uniform.stencilColor, new Color4(0f, 1f, 1f, 1f));
+                graphics.SetUniform(UniformName.stencilColor, new Color4(0f, 1f, 1f, 1f));
 
                 // Texture addressing
                 graphics.SetSamplerState(0, TextureAddress.Wrap);
@@ -1326,14 +1326,14 @@ namespace CodeImp.DoomBuilder.Rendering
 
                 if (sector == null) continue;
 
-                graphics.SetUniform(Uniform.desaturation, sector.Sector.Desaturation);
+                graphics.SetUniform(UniformName.desaturation, sector.Sector.Desaturation);
 
                 // note: additive geometry doesn't receive lighting
                 if (g.RenderPass == RenderPass.Additive)
                     continue;
 
                 if (settexture)
-                    graphics.SetUniform(Uniform.texture1, g.Texture.Texture);
+                    graphics.SetUniform(UniformName.texture1, g.Texture.Texture);
 
                 //normal lights
                 int count = lightOffsets[0];
@@ -1348,16 +1348,16 @@ namespace CodeImp.DoomBuilder.Rendering
                         {
                             lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                             if (lpr.W == 0) continue;
-                            graphics.SetUniform(Uniform.lightColor, lights[i].LightColor);
-                            graphics.SetUniform(Uniform.lightPosAndRadius, lpr);
+                            graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
+                            graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                             GZGeneral.LightData ld = lights[i].LightType;
                             if (ld.LightType == GZGeneral.LightType.SPOT)
                             {
-                                graphics.SetUniform(Uniform.spotLight, true);
-                                graphics.SetUniform(Uniform.lightOrientation, lights[i].VectorLookAt);
-                                graphics.SetUniform(Uniform.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
+                                graphics.SetUniform(UniformName.spotLight, true);
+                                graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
+                                graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                             }
-                            else graphics.SetUniform(Uniform.spotLight, false);
+                            else graphics.SetUniform(UniformName.spotLight, false);
                             graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
                     }
@@ -1375,16 +1375,16 @@ namespace CodeImp.DoomBuilder.Rendering
                         {
                             lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                             if (lpr.W == 0) continue;
-                            graphics.SetUniform(Uniform.lightColor, lights[i].LightColor);
-                            graphics.SetUniform(Uniform.lightPosAndRadius, lpr);
+                            graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
+                            graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                             GZGeneral.LightData ld = lights[i].LightType;
                             if (ld.LightType == GZGeneral.LightType.SPOT)
                             {
-                                graphics.SetUniform(Uniform.spotLight, true);
-                                graphics.SetUniform(Uniform.lightOrientation, lights[i].VectorLookAt);
-                                graphics.SetUniform(Uniform.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
+                                graphics.SetUniform(UniformName.spotLight, true);
+                                graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
+                                graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                             }
-                            else graphics.SetUniform(Uniform.spotLight, false);
+                            else graphics.SetUniform(UniformName.spotLight, false);
                             graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
                     }
@@ -1402,16 +1402,16 @@ namespace CodeImp.DoomBuilder.Rendering
                         {
                             lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                             if (lpr.W == 0) continue;
-                            graphics.SetUniform(Uniform.lightColor, lights[i].LightColor);
-                            graphics.SetUniform(Uniform.lightPosAndRadius, lpr);
+                            graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
+                            graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                             GZGeneral.LightData ld = lights[i].LightType;
                             if (ld.LightType == GZGeneral.LightType.SPOT)
                             {
-                                graphics.SetUniform(Uniform.spotLight, true);
-                                graphics.SetUniform(Uniform.lightOrientation, lights[i].VectorLookAt);
-                                graphics.SetUniform(Uniform.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
+                                graphics.SetUniform(UniformName.spotLight, true);
+                                graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
+                                graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                             }
-                            else graphics.SetUniform(Uniform.spotLight, false);
+                            else graphics.SetUniform(UniformName.spotLight, false);
                             graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
                     }
@@ -1430,16 +1430,16 @@ namespace CodeImp.DoomBuilder.Rendering
                             lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                             if (lpr.W == 0) continue;
                             Color4 lc = lights[i].LightColor;
-                            graphics.SetUniform(Uniform.lightColor, new Color4(lc.Alpha, (lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2));
-                            graphics.SetUniform(Uniform.lightPosAndRadius, lpr);
+                            graphics.SetUniform(UniformName.lightColor, new Color4(lc.Alpha, (lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2));
+                            graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                             GZGeneral.LightData ld = lights[i].LightType;
                             if (ld.LightType == GZGeneral.LightType.SPOT)
                             {
-                                graphics.SetUniform(Uniform.spotLight, true);
-                                graphics.SetUniform(Uniform.lightOrientation, lights[i].VectorLookAt);
-                                graphics.SetUniform(Uniform.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
+                                graphics.SetUniform(UniformName.spotLight, true);
+                                graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
+                                graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                             }
-                            else graphics.SetUniform(Uniform.spotLight, false);
+                            else graphics.SetUniform(UniformName.spotLight, false);
                             graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
                     }
@@ -1454,9 +1454,9 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             if (geometrytolit.Count == 0) return;
 
-            graphics.SetUniform(Uniform.world, Matrix.Identity);
-            graphics.SetUniform(Uniform.modelnormal, Matrix.Identity);
-            graphics.SetShader(Shader.world3d_lightpass);
+            graphics.SetUniform(UniformName.world, Matrix.Identity);
+            graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
+            graphics.SetShader(ShaderName.world3d_lightpass);
 
             VisualSector sector = null;
 
@@ -1476,9 +1476,9 @@ namespace CodeImp.DoomBuilder.Rendering
             // Anything to do?
             if (geometrytolit.Count == 0) return;
 
-            graphics.SetUniform(Uniform.world, Matrix.Identity);
-            graphics.SetUniform(Uniform.modelnormal, Matrix.Identity);
-            graphics.SetShader(Shader.world3d_lightpass);
+            graphics.SetUniform(UniformName.world, Matrix.Identity);
+            graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
+            graphics.SetShader(ShaderName.world3d_lightpass);
 
             VisualSector sector = null;
 
@@ -1488,7 +1488,7 @@ namespace CodeImp.DoomBuilder.Rendering
             foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geometrytolit)
             {
                 if (group.Key.Texture == null) continue;
-                graphics.SetUniform(Uniform.texture1, group.Key.Texture);
+                graphics.SetUniform(UniformName.texture1, group.Key.Texture);
 
                 sector = RenderLightsFromGeometryList(group.Value, lights, sector, false);
             }
@@ -1499,9 +1499,9 @@ namespace CodeImp.DoomBuilder.Rendering
         //mxd. Render models
         private void RenderModels(bool lightpass, bool trans) 
 		{
-			Shader shaderpass = (fullbrightness ? Shader.world3d_fullbright : Shader.world3d_main_vertexcolor);
-			Shader currentshaderpass = shaderpass;
-			Shader highshaderpass = (Shader)(shaderpass + 2);
+			ShaderName shaderpass = (fullbrightness ? ShaderName.world3d_fullbright : ShaderName.world3d_main_vertexcolor);
+			ShaderName currentshaderpass = shaderpass;
+			ShaderName highshaderpass = (ShaderName)(shaderpass + 2);
 
             RenderPass currentpass = RenderPass.Solid;
 
@@ -1512,7 +1512,7 @@ namespace CodeImp.DoomBuilder.Rendering
             }
             else
             {
-                graphics.SetShader(Shader.world3d_lightpass);
+                graphics.SetShader(ShaderName.world3d_lightpass);
             }
 
             List<VisualThing> things;
@@ -1563,10 +1563,10 @@ namespace CodeImp.DoomBuilder.Rendering
 				Color4 vertexcolor = new Color4(t.VertexColor);
 
                 // Check if model is affected by dynamic lights and set color accordingly
-                graphics.SetUniform(Uniform.vertexColor, vertexcolor);
+                graphics.SetUniform(UniformName.vertexColor, vertexcolor);
 
 				// Determine the shader pass we want to use for this object
-				Shader wantedshaderpass = ((((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass);
+				ShaderName wantedshaderpass = ((((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass);
 
 				// If fog is enagled, switch to shader, which calculates it
 				if (General.Settings.GZDrawFog && !fullbrightness && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
@@ -1580,7 +1580,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
                 // Set the colors to use
-                graphics.SetUniform(Uniform.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
+                graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
 
 				// Create the matrix for positioning / rotation
 				float sx = t.Thing.ScaleX * t.Thing.ActorScale.Width;
@@ -1593,23 +1593,23 @@ namespace CodeImp.DoomBuilder.Rendering
 				ApplyMatrices3D();
 
 				// Set variables for fog rendering
-				if(wantedshaderpass > Shader.world3d_p7)
+				if(wantedshaderpass > ShaderName.world3d_p7)
 				{
-                    graphics.SetUniform(Uniform.world, world);
+                    graphics.SetUniform(UniformName.world, world);
                     // this is not right...
-                    graphics.SetUniform(Uniform.modelnormal, General.Map.Data.ModeldefEntries[t.Thing.Type].TransformRotation * modelrotation);
-                    if (t.Thing.Sector != null) graphics.SetUniform(Uniform.lightColor, t.Thing.Sector.FogColor);
-                    graphics.SetUniform(Uniform.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                    graphics.SetUniform(UniformName.modelnormal, General.Map.Data.ModeldefEntries[t.Thing.Type].TransformRotation * modelrotation);
+                    if (t.Thing.Sector != null) graphics.SetUniform(UniformName.lightColor, t.Thing.Sector.FogColor);
+                    graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
 				}
 
                 if (t.Thing.Sector != null)
-                    graphics.SetUniform(Uniform.desaturation, t.Thing.Sector.Desaturation);
-                else graphics.SetUniform(Uniform.desaturation, 0.0f);
+                    graphics.SetUniform(UniformName.desaturation, t.Thing.Sector.Desaturation);
+                else graphics.SetUniform(UniformName.desaturation, 0.0f);
 
                 GZModel model = General.Map.Data.ModeldefEntries[t.Thing.Type].Model;
                 for (int j = 0; j < model.Meshes.Count; j++)
                 {
-                    graphics.SetUniform(Uniform.texture1, model.Textures[j]);
+                    graphics.SetUniform(UniformName.texture1, model.Textures[j]);
 
                     if (!lightpass)
                     {
@@ -1634,16 +1634,16 @@ namespace CodeImp.DoomBuilder.Rendering
                                 {
                                     lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                                     if (lpr.W == 0) continue;
-                                    graphics.SetUniform(Uniform.lightColor, lights[i].LightColor);
-                                    graphics.SetUniform(Uniform.lightPosAndRadius, lpr);
+                                    graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
+                                    graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                                     GZGeneral.LightData ld = lights[i].LightType;
                                     if (ld.LightType == GZGeneral.LightType.SPOT)
                                     {
-                                        graphics.SetUniform(Uniform.spotLight, true);
-                                        graphics.SetUniform(Uniform.lightOrientation, lights[i].VectorLookAt);
-                                        graphics.SetUniform(Uniform.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
+                                        graphics.SetUniform(UniformName.spotLight, true);
+                                        graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
+                                        graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                                     }
-                                    else graphics.SetUniform(Uniform.spotLight, false);
+                                    else graphics.SetUniform(UniformName.spotLight, false);
                                     model.Meshes[j].Draw(graphics);
                                 }
                             }
@@ -1661,16 +1661,16 @@ namespace CodeImp.DoomBuilder.Rendering
                                 {
                                     lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                                     if (lpr.W == 0) continue;
-                                    graphics.SetUniform(Uniform.lightColor, lights[i].LightColor);
-                                    graphics.SetUniform(Uniform.lightPosAndRadius, lpr);
+                                    graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
+                                    graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                                     GZGeneral.LightData ld = lights[i].LightType;
                                     if (ld.LightType == GZGeneral.LightType.SPOT)
                                     {
-                                        graphics.SetUniform(Uniform.spotLight, true);
-                                        graphics.SetUniform(Uniform.lightOrientation, lights[i].VectorLookAt);
-                                        graphics.SetUniform(Uniform.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
+                                        graphics.SetUniform(UniformName.spotLight, true);
+                                        graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
+                                        graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                                     }
-                                    else graphics.SetUniform(Uniform.spotLight, false);
+                                    else graphics.SetUniform(UniformName.spotLight, false);
                                     model.Meshes[j].Draw(graphics);
                                 }
                             }
@@ -1688,16 +1688,16 @@ namespace CodeImp.DoomBuilder.Rendering
                                 {
                                     lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                                     if (lpr.W == 0) continue;
-                                    graphics.SetUniform(Uniform.lightColor, lights[i].LightColor);
-                                    graphics.SetUniform(Uniform.lightPosAndRadius, lpr);
+                                    graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
+                                    graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                                     GZGeneral.LightData ld = lights[i].LightType;
                                     if (ld.LightType == GZGeneral.LightType.SPOT)
                                     {
-                                        graphics.SetUniform(Uniform.spotLight, true);
-                                        graphics.SetUniform(Uniform.lightOrientation, lights[i].VectorLookAt);
-                                        graphics.SetUniform(Uniform.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
+                                        graphics.SetUniform(UniformName.spotLight, true);
+                                        graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
+                                        graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                                     }
-                                    else graphics.SetUniform(Uniform.spotLight, false);
+                                    else graphics.SetUniform(UniformName.spotLight, false);
                                     model.Meshes[j].Draw(graphics);
                                 }
                             }
@@ -1716,16 +1716,16 @@ namespace CodeImp.DoomBuilder.Rendering
                                     lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                                     if (lpr.W == 0) continue;
                                     Color4 lc = lights[i].LightColor;
-                                    graphics.SetUniform(Uniform.lightColor, new Color4(lc.Alpha, (lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2));
-                                    graphics.SetUniform(Uniform.lightPosAndRadius, lpr);
+                                    graphics.SetUniform(UniformName.lightColor, new Color4(lc.Alpha, (lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2));
+                                    graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                                     GZGeneral.LightData ld = lights[i].LightType;
                                     if (ld.LightType == GZGeneral.LightType.SPOT)
                                     {
-                                        graphics.SetUniform(Uniform.spotLight, true);
-                                        graphics.SetUniform(Uniform.lightOrientation, lights[i].VectorLookAt);
-                                        graphics.SetUniform(Uniform.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
+                                        graphics.SetUniform(UniformName.spotLight, true);
+                                        graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
+                                        graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                                     }
-                                    else graphics.SetUniform(Uniform.spotLight, false);
+                                    else graphics.SetUniform(UniformName.spotLight, false);
                                     model.Meshes[j].Draw(graphics);
                                 }
                             }
@@ -1743,10 +1743,10 @@ namespace CodeImp.DoomBuilder.Rendering
 			VisualSector sector = null;
 			
 			// Set render settings
-			graphics.SetShader(Shader.world3d_skybox);
-            graphics.SetUniform(Uniform.texture1, General.Map.Data.SkyBox);
-			graphics.SetUniform(Uniform.world, world);
-			graphics.SetUniform(Uniform.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, 0f));
+			graphics.SetShader(ShaderName.world3d_skybox);
+            graphics.SetUniform(UniformName.texture1, General.Map.Data.SkyBox);
+			graphics.SetUniform(UniformName.world, world);
+			graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, 0f));
 
 			foreach(VisualGeometry g in geo)
 			{
@@ -1774,7 +1774,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				if(sector != null)
 				{
-					graphics.SetUniform(Uniform.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
+					graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
 					graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
 				}
 			}
@@ -2008,18 +2008,18 @@ namespace CodeImp.DoomBuilder.Rendering
 			ApplyMatrices2D();
 
             graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
-            graphics.SetShader(Shader.display2d_normal);
+            graphics.SetShader(ShaderName.display2d_normal);
 			
 			// Texture
 			if(crosshairbusy)
 			{
 				if(General.Map.Data.CrosshairBusy3D.Texture == null) General.Map.Data.CrosshairBusy3D.CreateTexture();
-				graphics.SetUniform(Uniform.texture1, General.Map.Data.CrosshairBusy3D.Texture);
+				graphics.SetUniform(UniformName.texture1, General.Map.Data.CrosshairBusy3D.Texture);
 			}
 			else
 			{
 				if(General.Map.Data.Crosshair3D.Texture == null) General.Map.Data.Crosshair3D.CreateTexture();
-				graphics.SetUniform(Uniform.texture1, General.Map.Data.Crosshair3D.Texture);
+				graphics.SetUniform(UniformName.texture1, General.Map.Data.Crosshair3D.Texture);
 			}
 			
 			// Draw

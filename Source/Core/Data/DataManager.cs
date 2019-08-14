@@ -3462,17 +3462,17 @@ namespace CodeImp.DoomBuilder.Data
 			Matrix mprojection = Matrix.PerspectiveFovLH(Angle2D.PIHALF, 1.0f, 0.5f, 100.0f);
 
             // Place camera at origin
-            General.Map.Graphics.SetUniform(Uniform.campos, new Vector4());
+            General.Map.Graphics.SetUniform(UniformName.campos, new Vector4());
 
             // Begin fullbright shaderpass
             General.Map.Graphics.SetVertexDeclaration(General.Map.Graphics.Shaders.WorldVertexDecl);
-            General.Map.Graphics.SetShader(Shader.world3d_fullbright);
+            General.Map.Graphics.SetShader(ShaderName.world3d_fullbright);
 
 			// Render to the six faces of the cube map
 			for(int i = 0; i < 6; i++)
 			{
 				Matrix faceview = GetCubeMapViewMatrix((CubeMapFace)i);
-                General.Map.Graphics.SetUniform(Uniform.worldviewproj, mworld * faceview * mprojection);
+                General.Map.Graphics.SetUniform(UniformName.worldviewproj, mworld * faceview * mprojection);
 
 				// Render the skysphere meshes
 				for(int j = 0; j < meshes.Meshes.Count; j++)
@@ -3480,9 +3480,9 @@ namespace CodeImp.DoomBuilder.Data
 					// Set appropriate texture
 					switch(meshes.Skins[j])
 					{
-						case "top.png": General.Map.Graphics.SetUniform(Uniform.texture1, textop); break;
-						case "bottom.png": General.Map.Graphics.SetUniform(Uniform.texture1, texbottom); break;
-						case "side.png": General.Map.Graphics.SetUniform(Uniform.texture1, texside); break;
+						case "top.png": General.Map.Graphics.SetUniform(UniformName.texture1, textop); break;
+						case "bottom.png": General.Map.Graphics.SetUniform(UniformName.texture1, texbottom); break;
+						case "side.png": General.Map.Graphics.SetUniform(UniformName.texture1, texside); break;
 						default: throw new Exception("Unexpected skin!");
 					}
 

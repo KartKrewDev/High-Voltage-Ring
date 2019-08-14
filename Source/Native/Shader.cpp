@@ -60,6 +60,32 @@ bool Shader::Compile(const std::string& vertexShader, const std::string& fragmen
 	TransformLocations[(int)TransformState::View] = glGetUniformLocation(mProgram, "View");
 	TransformLocations[(int)TransformState::Projection] = glGetUniformLocation(mProgram, "Projection");
 
+	static const char* names[(int)UniformName::NumUniforms] = {
+		"rendersettings",
+		"transformsettings",
+		"desaturation",
+		"texture1",
+		"highlightcolor",
+		"worldviewproj",
+		"world",
+		"modelnormal",
+		"fillColor",
+		"vertexColor",
+		"stencilColor",
+		"lightPosAndRadius",
+		"lightOrientation",
+		"light2Radius",
+		"lightColor",
+		"ignoreNormals",
+		"spotLight",
+		"campos"
+	};
+
+	for (int i = 0; i < (int)UniformName::NumUniforms; i++)
+	{
+		UniformLocations[i] = glGetUniformLocation(mProgram, names[i]);
+	}
+
 	return mProgram;
 }
 

@@ -57,6 +57,59 @@ namespace CodeImp.DoomBuilder.Rendering
             }
         }
 
+        public void SetShader(ShaderName shader)
+        {
+            RenderDevice_SetShader(Handle, shader);
+        }
+
+        public void SetUniform(UniformName uniform, bool value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value ? 1.0f : 0.0f }, 1);
+        }
+
+        public void SetUniform(UniformName uniform, float value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value }, 1);
+        }
+
+        public void SetUniform(UniformName uniform, Vector2 value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y }, 2);
+        }
+
+        public void SetUniform(UniformName uniform, Vector3 value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z }, 3);
+        }
+
+        public void SetUniform(UniformName uniform, Vector4 value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z, value.W }, 4);
+        }
+
+        public void SetUniform(UniformName uniform, Color4 value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.Red, value.Green, value.Blue, value.Alpha }, 4);
+        }
+
+        public void SetUniform(UniformName uniform, BaseTexture value)
+        {
+        }
+
+        public void SetUniform(UniformName uniform, TextureFilter value)
+        {
+        }
+
+        public void SetUniform(UniformName uniform, Matrix matrix)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new float[] {
+                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
+                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
+                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
+                matrix.M41, matrix.M42, matrix.M43, matrix.M44
+            }, 16);
+        }
+
         public void SetVertexBuffer(int index, VertexBuffer buffer, long offset, long stride)
         {
             RenderDevice_SetVertexBuffer(Handle, index, buffer != null ? buffer.Handle : IntPtr.Zero, offset, stride);
@@ -262,6 +315,12 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_Delete(IntPtr handle);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr RenderDevice_SetShader(IntPtr hwnd, ShaderName name);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr RenderDevice_SetUniform(IntPtr hwnd, UniformName name, float[] data, int count);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBuffer(IntPtr handle, int index, IntPtr buffer, long offset, long stride);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -389,20 +448,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			return new Vector2D(v2.X, v2.Y);
 		}
-
-        public void SetShader(Shader shader) { }
-        public void SetUniform(Uniform uniform, bool value) { }
-        public void SetUniform(Uniform uniform, float value) { }
-        public void SetUniform(Uniform uniform, Vector2 value) { }
-        public void SetUniform(Uniform uniform, Vector3 value) { }
-        public void SetUniform(Uniform uniform, Vector4 value) { }
-        public void SetUniform(Uniform uniform, Color4 value) { }
-        public void SetUniform(Uniform uniform, Matrix value) { }
-        public void SetUniform(Uniform uniform, BaseTexture value) { }
-        public void SetUniform(Uniform uniform, TextureFilter value) { }
     }
 
-    public enum Shader : int
+    public enum ShaderName : int
     {
         basic,
         display2d_fsaa,
@@ -431,11 +479,10 @@ namespace CodeImp.DoomBuilder.Rendering
         world3d_lightpass // AlphaBlendEnable = true
     }
 
-    public enum Uniform : int
+    public enum UniformName : int
     {
         rendersettings,
         transformsettings,
-        filtersettings,
         desaturation,
         texture1,
         highlightcolor,
@@ -452,6 +499,7 @@ namespace CodeImp.DoomBuilder.Rendering
         ignoreNormals,
         spotLight,
         campos,
+        filtersettings,
         magfiltersettings,
         minfiltersettings,
         mipfiltersettings,

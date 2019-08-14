@@ -3,6 +3,8 @@ EXPORTS
 	
 	RenderDevice_New
 	RenderDevice_Delete
+	RenderDevice_SetShader
+	RenderDevice_SetUniform
 	RenderDevice_SetVertexBuffer
 	RenderDevice_SetIndexBuffer
 	RenderDevice_SetAlphaBlendEnable

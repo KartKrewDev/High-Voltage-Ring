@@ -43,10 +43,10 @@ ShaderManager::ShaderManager()
 	{
 		if (ShaderSources[i].vs && ShaderSources[i].ps)
 		{
-			if (!mShaders[i].Compile(ShaderSources[i].vs, ShaderSources[i].ps))
+			if (!Shaders[i].Compile(ShaderSources[i].vs, ShaderSources[i].ps))
 			{
 				CompileErrors += "Could not compile " + std::to_string(i) + "\r\n";
-				CompileErrors += mShaders[i].GetErrors();
+				CompileErrors += Shaders[i].GetErrors();
 			}
 		}
 	}

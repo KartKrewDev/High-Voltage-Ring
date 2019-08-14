@@ -10,10 +10,13 @@
 
 RenderDevice::RenderDevice(HWND hwnd) : Context(hwnd)
 {
+	memset(mUniforms, 0, sizeof(mUniforms));
+
 	if (Context)
 	{
 		Context.Begin();
 		mShaderManager = std::make_unique<ShaderManager>();
+		mShader = &mShaderManager->Shaders[(int)ShaderName::basic];
 		Context.End();
 	}
 }
@@ -200,6 +203,7 @@ void RenderDevice::ApplyChanges()
 	ApplyVertexBuffers();
 	ApplyIndexBuffer();
 	ApplyMatrices();
+	ApplyUniforms();
 	ApplyTextures();
 	ApplyRasterizerState();
 	ApplyBlendState();
@@ -212,7 +216,7 @@ void RenderDevice::ApplyChanges()
 
 void RenderDevice::ApplyShader()
 {
-	//glUseProgram(mShader->GetProgram());
+	glUseProgram(mShader->GetProgram());
 }
 
 void RenderDevice::ApplyRasterizerState()
@@ -325,8 +329,69 @@ void RenderDevice::ApplyMatrices()
 	for (size_t i = 0; i < (size_t)TransformState::NumTransforms; i++)
 	{
 		auto& binding = mTransforms[i];
-		//glUniformMatrix4fv(mShader->TransformLocations[i], 1, GL_FALSE, binding.Values);
+		glUniformMatrix4fv(mShader->TransformLocations[i], 1, GL_FALSE, binding.Values);
 	}
+}
+
+void RenderDevice::SetShader(ShaderName name)
+{
+	mShader = &mShaderManager->Shaders[(int)name];
+	mNeedApply = true;
+}
+
+static const int uniformLocations[(int)UniformName::NumUniforms] = {
+	64, // rendersettings
+	0, // transformsettings
+	108, // desaturation
+	-1, // texture1,
+	80, // highlightcolor
+	16, // worldviewproj
+	32, // world
+	48, // modelnormal
+	68, // FillColor
+	72, // vertexColor
+	84, // stencilColor
+	92, // lightPosAndRadius
+	96, // lightOrientation
+	100, // light2Radius
+	104, // lightColor
+	109, // ignoreNormals
+	110, // spotLight
+	76, // campos
+};
+
+void RenderDevice::SetUniform(UniformName name, const void* values, int count)
+{
+	memcpy(&mUniforms[uniformLocations[(int)name]], values, sizeof(float) * count);
+	mNeedApply = true;
+}
+
+void RenderDevice::ApplyUniforms()
+{
+	auto& locations = mShader->UniformLocations;
+
+	glUniformMatrix4fv(locations[(int)UniformName::transformsettings], 1, GL_FALSE, &mUniforms[0].valuef);
+	glUniformMatrix4fv(locations[(int)UniformName::worldviewproj], 1, GL_FALSE, &mUniforms[16].valuef);
+	glUniformMatrix4fv(locations[(int)UniformName::world], 1, GL_FALSE, &mUniforms[32].valuef);
+	glUniformMatrix4fv(locations[(int)UniformName::modelnormal], 1, GL_FALSE, &mUniforms[48].valuef);
+
+	glUniform4fv(locations[(int)UniformName::rendersettings], 1, &mUniforms[64].valuef);
+	glUniform4fv(locations[(int)UniformName::FillColor], 1, &mUniforms[68].valuef);
+	glUniform4fv(locations[(int)UniformName::vertexColor], 1, &mUniforms[72].valuef);
+	glUniform4fv(locations[(int)UniformName::campos], 1, &mUniforms[76].valuef);
+	glUniform4fv(locations[(int)UniformName::highlightcolor], 1, &mUniforms[80].valuef);
+	glUniform4fv(locations[(int)UniformName::stencilColor], 1, &mUniforms[84].valuef);
+	glUniform4fv(locations[(int)UniformName::lightColor], 1, &mUniforms[88].valuef);
+	glUniform4fv(locations[(int)UniformName::lightPosAndRadius], 1, &mUniforms[92].valuef);
+	glUniform3fv(locations[(int)UniformName::lightOrientation], 1, &mUniforms[96].valuef);
+	glUniform2fv(locations[(int)UniformName::light2Radius], 1, &mUniforms[100].valuef);
+	glUniform4fv(locations[(int)UniformName::lightColor], 1, &mUniforms[104].valuef);
+
+	glUniform1fv(locations[(int)UniformName::desaturation], 1, &mUniforms[108].valuef);
+	glUniform1fv(locations[(int)UniformName::ignoreNormals], 1, &mUniforms[109].valuef);
+	glUniform1fv(locations[(int)UniformName::spotLight], 1, &mUniforms[110].valuef);
+
+	glUniform1i(locations[(int)UniformName::texture1], 0);
 }
 
 void RenderDevice::ApplyTextures()
@@ -369,6 +434,16 @@ RenderDevice* RenderDevice_New(HWND hwnd)
 void RenderDevice_Delete(RenderDevice* device)
 {
 	delete device;
+}
+
+void RenderDevice_SetShader(RenderDevice* device, ShaderName name)
+{
+	device->SetShader(name);
+}
+
+void RenderDevice_SetUniform(RenderDevice* device, UniformName name, const void* values, int count)
+{
+	device->SetUniform(name, values, count);
 }
 
 void RenderDevice_SetVertexBuffer(RenderDevice* device, int index, VertexBuffer* buffer, long offset, long stride)
