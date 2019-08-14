@@ -6,6 +6,11 @@ Texture::Texture()
 {
 }
 
+Texture::~Texture()
+{
+	// To do: move mTexture to a delete list as this might be called by a finalizer in a different thread
+}
+
 void Texture::Set2DImage(int width, int height)
 {
 	mCubeTexture = false;
@@ -40,6 +45,47 @@ void* Texture::Lock()
 
 void Texture::Unlock()
 {
+}
+
+GLuint Texture::GetTexture()
+{
+	if (mTexture == 0)
+	{
+		if (!IsCubeTexture())
+		{
+			GLint oldBinding = 0;
+			glActiveTexture(GL_TEXTURE0);
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+
+			glGenTextures(1, &mTexture);
+			glBindTexture(GL_TEXTURE_2D, mTexture);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, !mPixels[0].empty() ? mPixels[0].data() : nullptr);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, oldBinding);
+		}
+		else
+		{
+			GLint oldBinding = 0;
+			glActiveTexture(GL_TEXTURE0);
+			glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldBinding);
+
+			glGenTextures(1, &mTexture);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[0].empty() ? mPixels[0].data() : nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[1].empty() ? mPixels[1].data() : nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[2].empty() ? mPixels[2].data() : nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[3].empty() ? mPixels[3].data() : nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[4].empty() ? mPixels[4].data() : nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[5].empty() ? mPixels[5].data() : nullptr);
+			glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, oldBinding);
+		}
+	}
+	return mTexture;
 }
 
 /////////////////////////////////////////////////////////////////////////////

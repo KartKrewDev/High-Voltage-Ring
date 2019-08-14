@@ -612,7 +612,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				foreach(KeyValuePair<ImageData, List<SurfaceEntry>> imgsurfaces in surfaces)
 				{
                     graphics.SetShader(pass);
-                    graphics.SetUniform(UniformName.texture1, imgsurfaces.Key.Texture);
+                    graphics.SetTexture(0, imgsurfaces.Key.Texture);
 					
 					// Go for all surfaces
 					VertexBuffer lastbuffer = null;

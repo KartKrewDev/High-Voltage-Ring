@@ -127,9 +127,50 @@ void RenderDevice::SetTransform(TransformState state, float* matrix)
 	mNeedApply = true;
 }
 
+void RenderDevice::SetTexture(int index, Texture* texture)
+{
+	mTextureUnits[index].Tex = texture;
+	mNeedApply = true;
+}
+
+void RenderDevice::SetSamplerFilter(int index, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+{
+	mTextureUnits[index].MinFilter = GetGLMinFilter(minfilter, mipfilter);
+	mTextureUnits[index].MagFilter = (magfilter == TextureFilter::Point || magfilter == TextureFilter::None) ? GL_NEAREST : GL_LINEAR;
+	mTextureUnits[index].MaxAnisotropy = maxanisotropy;
+	mNeedApply = true;
+}
+
+GLint RenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter)
+{
+	if (mipfilter == TextureFilter::Linear)
+	{
+		if (filter == TextureFilter::Point || filter == TextureFilter::None)
+			return GL_LINEAR_MIPMAP_NEAREST;
+		else
+			return GL_LINEAR_MIPMAP_LINEAR;
+	}
+	else if (mipfilter == TextureFilter::Point)
+	{
+		if (filter == TextureFilter::Point || filter == TextureFilter::None)
+			return GL_NEAREST_MIPMAP_NEAREST;
+		else
+			return GL_NEAREST_MIPMAP_LINEAR;
+	}
+	else
+	{
+		if (filter == TextureFilter::Point || filter == TextureFilter::None)
+			return GL_NEAREST;
+		else
+			return GL_LINEAR;
+	}
+}
+
 void RenderDevice::SetSamplerState(int index, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
 {
-	mSamplerStates[index] = { addressU, addressV, addressW };
+	mTextureUnits[index].AddressU = addressU;
+	mTextureUnits[index].AddressV = addressV;
+	mTextureUnits[index].AddressW = addressW;
 	mNeedApply = true;
 }
 
@@ -343,7 +384,6 @@ static const int uniformLocations[(int)UniformName::NumUniforms] = {
 	64, // rendersettings
 	0, // transformsettings
 	108, // desaturation
-	-1, // texture1,
 	80, // highlightcolor
 	16, // worldviewproj
 	32, // world
@@ -390,8 +430,6 @@ void RenderDevice::ApplyUniforms()
 	glUniform1fv(locations[(int)UniformName::desaturation], 1, &mUniforms[108].valuef);
 	glUniform1fv(locations[(int)UniformName::ignoreNormals], 1, &mUniforms[109].valuef);
 	glUniform1fv(locations[(int)UniformName::spotLight], 1, &mUniforms[110].valuef);
-
-	glUniform1i(locations[(int)UniformName::texture1], 0);
 }
 
 void RenderDevice::ApplyTextures()
@@ -400,13 +438,23 @@ void RenderDevice::ApplyTextures()
 
 	for (size_t i = 0; i < NumSlots; i++)
 	{
-		auto& binding = mSamplerStates[i];
+		auto& binding = mTextureUnits[i];
 		glActiveTexture(GL_TEXTURE0 + (GLenum)i);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode[(int)binding.AddressU]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode[(int)binding.AddressV]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, wrapMode[(int)binding.AddressW]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		if (binding.Tex)
+		{
+			GLenum target = binding.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+
+			glBindTexture(target, binding.Tex->GetTexture());
+			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, binding.MinFilter);
+			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, binding.MagFilter);
+			glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapMode[(int)binding.AddressU]);
+			glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapMode[(int)binding.AddressV]);
+			glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapMode[(int)binding.AddressW]);
+		}
+		else
+		{
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 	}
 }
 
@@ -534,6 +582,16 @@ void RenderDevice_SetZWriteEnable(RenderDevice* device, bool value)
 void RenderDevice_SetTransform(RenderDevice* device, TransformState state, float* matrix)
 {
 	device->SetTransform(state, matrix);
+}
+
+void RenderDevice_SetTexture(RenderDevice* device, int unit, Texture* texture)
+{
+	device->SetTexture(unit, texture);
+}
+
+void RenderDevice_SetSamplerFilter(RenderDevice* device, int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+{
+	device->SetSamplerFilter(unit, minfilter, magfilter, mipfilter, maxanisotropy);
 }
 
 void RenderDevice_SetSamplerState(RenderDevice* device, int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)

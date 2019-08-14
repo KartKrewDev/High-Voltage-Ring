@@ -55,7 +55,6 @@ enum class UniformName : int
 	rendersettings,
 	transformsettings,
 	desaturation,
-	texture1,
 	highlightcolor,
 	worldviewproj,
 	world,
@@ -99,6 +98,8 @@ public:
 	void SetZEnable(bool value);
 	void SetZWriteEnable(bool value);
 	void SetTransform(TransformState state, float* matrix);
+	void SetTexture(int unit, Texture* texture);
+	void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
 	void SetSamplerState(int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 	void DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount);
 	void DrawUserPrimitives(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
@@ -123,6 +124,8 @@ public:
 
 	void CheckError();
 
+	GLint GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter);
+
 	OpenGLContext Context;
 
 	struct VertexBinding
@@ -135,11 +138,12 @@ public:
 		long Stride = 0;
 	};
 
-	struct SamplerState
+	struct TextureUnit
 	{
-		SamplerState() = default;
-		SamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW) : AddressU(addressU), AddressV(addressV), AddressW(addressW) { }
-
+		Texture* Tex = nullptr;
+		GLuint MinFilter = GL_NEAREST;
+		GLuint MagFilter = GL_NEAREST;
+		float MaxAnisotropy = 0.0f;
 		TextureAddress AddressU = TextureAddress::Wrap;
 		TextureAddress AddressV = TextureAddress::Wrap;
 		TextureAddress AddressW = TextureAddress::Wrap;
@@ -152,7 +156,7 @@ public:
 	int mEnabledVertexAttributes[NumSlots] = { 0 };
 	VertexBinding mVertexBindings[NumSlots];
 
-	SamplerState mSamplerStates[NumSlots];
+	TextureUnit mTextureUnits[NumSlots];
 
 	IndexBuffer* mIndexBuffer = nullptr;
 

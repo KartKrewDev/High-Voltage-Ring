@@ -23,6 +23,8 @@ EXPORTS
 	RenderDevice_SetZEnable
 	RenderDevice_SetZWriteEnable
 	RenderDevice_SetTransform
+	RenderDevice_SetTexture
+	RenderDevice_SetSamplerFilter
 	RenderDevice_SetSamplerState
 	RenderDevice_DrawPrimitives
 	RenderDevice_DrawUserPrimitives

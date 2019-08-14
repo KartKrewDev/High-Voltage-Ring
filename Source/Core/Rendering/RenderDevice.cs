@@ -92,14 +92,6 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetUniform(Handle, uniform, new float[] { value.Red, value.Green, value.Blue, value.Alpha }, 4);
         }
 
-        public void SetUniform(UniformName uniform, BaseTexture value)
-        {
-        }
-
-        public void SetUniform(UniformName uniform, TextureFilter value)
-        {
-        }
-
         public void SetUniform(UniformName uniform, Matrix matrix)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] {
@@ -211,6 +203,21 @@ namespace CodeImp.DoomBuilder.Rendering
                 matrix.M31, matrix.M32, matrix.M33, matrix.M34,
                 matrix.M41, matrix.M42, matrix.M43, matrix.M44
             });
+        }
+
+        public void SetTexture(int unit, BaseTexture value)
+        {
+            RenderDevice_SetTexture(Handle, unit, value != null ? value.Handle : IntPtr.Zero);
+        }
+
+        public void SetSamplerFilter(int unit, TextureFilter filter)
+        {
+            SetSamplerFilter(unit, filter, filter, filter, 0.0f);
+        }
+
+        public void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+        {
+            RenderDevice_SetSamplerFilter(Handle, unit, minfilter, magfilter, mipfilter, maxanisotropy);
         }
 
         public void SetSamplerState(int unit, TextureAddress address)
@@ -375,6 +382,12 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_SetTransform(IntPtr handle, TransformState state, float[] matrix);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetTexture(IntPtr handle, int unit, IntPtr texture);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetSamplerFilter(IntPtr handle, int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetSamplerState(IntPtr handle, int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -484,7 +497,6 @@ namespace CodeImp.DoomBuilder.Rendering
         rendersettings,
         transformsettings,
         desaturation,
-        texture1,
         highlightcolor,
         worldviewproj,
         world,
@@ -498,12 +510,7 @@ namespace CodeImp.DoomBuilder.Rendering
         lightColor,
         ignoreNormals,
         spotLight,
-        campos,
-        filtersettings,
-        magfiltersettings,
-        minfiltersettings,
-        mipfiltersettings,
-        maxanisotropysetting
+        campos
     }
 
     public enum Cull : int { None, Counterclockwise }

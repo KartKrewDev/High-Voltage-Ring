@@ -124,8 +124,7 @@ namespace CodeImp.DoomBuilder.Rendering
             Matrix world = D3DDevice.GetTransform(TransformState.World);
             Matrix view = D3DDevice.GetTransform(TransformState.View);
             D3DDevice.SetUniform(UniformName.transformsettings, world * view);
-            TextureFilter filter = (bilinear ? TextureFilter.Linear : TextureFilter.Point);
-            D3DDevice.SetUniform(UniformName.filtersettings, filter);
+            D3DDevice.SetSamplerFilter(0, bilinear ? TextureFilter.Linear : TextureFilter.Point);
         }
 
         public void SetThings2DSettings(float alpha)
@@ -148,10 +147,11 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             //mxd. It's still nice to have anisotropic filtering when texture filtering is disabled
             TextureFilter magminfilter = (bilinear ? TextureFilter.Linear : TextureFilter.Point);
-            D3DDevice.SetUniform(UniformName.magfiltersettings, magminfilter);
-            D3DDevice.SetUniform(UniformName.minfiltersettings, (maxanisotropy > 1.0f ? TextureFilter.Anisotropic : magminfilter));
-            D3DDevice.SetUniform(UniformName.mipfiltersettings, (bilinear ? TextureFilter.Linear : TextureFilter.None)); // [SB] use None, otherwise textures are still filtered
-            D3DDevice.SetUniform(UniformName.maxanisotropysetting, maxanisotropy);
+            D3DDevice.SetSamplerFilter(0,
+                maxanisotropy > 1.0f ? TextureFilter.Anisotropic : magminfilter,
+                magminfilter,
+                bilinear ? TextureFilter.Linear : TextureFilter.None, // [SB] use None, otherwise textures are still filtered
+                maxanisotropy);
         }
     }
 }

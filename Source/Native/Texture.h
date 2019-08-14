@@ -14,6 +14,7 @@ class Texture
 {
 public:
 	Texture();
+	~Texture();
 
 	void Set2DImage(int width, int height);
 	void SetCubeImage(int size);
@@ -24,9 +25,14 @@ public:
 	void* Lock();
 	void Unlock();
 
+	bool IsCubeTexture() const { return mCubeTexture; }
+
+	GLuint GetTexture();
+
 private:
 	int mWidth = 0;
 	int mHeight = 0;
 	bool mCubeTexture = false;
 	std::map<int, std::vector<uint32_t>> mPixels;
+	GLuint mTexture = 0;
 };

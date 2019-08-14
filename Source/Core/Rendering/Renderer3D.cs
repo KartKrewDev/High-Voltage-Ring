@@ -497,7 +497,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(General.Settings.GZShowEventLines) RenderArrows(eventlines);
 			
 			// Remove references
-			graphics.SetUniform(UniformName.texture1, null);
+			graphics.SetTexture(0, null);
 			
 			//mxd. Trash collections
 			solidgeo = null;
@@ -757,7 +757,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					curtexture.CreateTexture();
 
                 // Apply texture
-                graphics.SetUniform(UniformName.texture1, curtexture.Texture);
+                graphics.SetTexture(0, curtexture.Texture);
 				
 				//mxd. Sort geometry by sector index
 				group.Value.Sort((g1, g2) => g1.Sector.Sector.FixedIndex - g2.Sector.Sector.FixedIndex);
@@ -857,7 +857,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						curtexture.CreateTexture();
 
                     // Apply texture
-                    graphics.SetUniform(UniformName.texture1, curtexture.Texture);
+                    graphics.SetTexture(0, curtexture.Texture);
 
 					// Render all things with this texture
 					foreach(VisualThing t in group.Value)
@@ -1037,7 +1037,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						curtexture.CreateTexture();
 
                     // Apply texture
-                    graphics.SetUniform(UniformName.texture1, curtexture.Texture);
+                    graphics.SetTexture(0, curtexture.Texture);
 					curtexturename = g.Texture.LongName;
 				}
 
@@ -1171,7 +1171,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							curtexture.CreateTexture();
 
                         // Apply texture
-                        graphics.SetUniform(UniformName.texture1, curtexture.Texture);
+                        graphics.SetTexture(0, curtexture.Texture);
 						curtexturename = t.Texture.LongName;
 					}
 
@@ -1333,7 +1333,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     continue;
 
                 if (settexture)
-                    graphics.SetUniform(UniformName.texture1, g.Texture.Texture);
+                    graphics.SetTexture(0, g.Texture.Texture);
 
                 //normal lights
                 int count = lightOffsets[0];
@@ -1488,7 +1488,7 @@ namespace CodeImp.DoomBuilder.Rendering
             foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geometrytolit)
             {
                 if (group.Key.Texture == null) continue;
-                graphics.SetUniform(UniformName.texture1, group.Key.Texture);
+                graphics.SetTexture(0, group.Key.Texture);
 
                 sector = RenderLightsFromGeometryList(group.Value, lights, sector, false);
             }
@@ -1609,7 +1609,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 GZModel model = General.Map.Data.ModeldefEntries[t.Thing.Type].Model;
                 for (int j = 0; j < model.Meshes.Count; j++)
                 {
-                    graphics.SetUniform(UniformName.texture1, model.Textures[j]);
+                    graphics.SetTexture(0, model.Textures[j]);
 
                     if (!lightpass)
                     {
@@ -1744,7 +1744,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			// Set render settings
 			graphics.SetShader(ShaderName.world3d_skybox);
-            graphics.SetUniform(UniformName.texture1, General.Map.Data.SkyBox);
+            graphics.SetTexture(0, General.Map.Data.SkyBox);
 			graphics.SetUniform(UniformName.world, world);
 			graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, 0f));
 
@@ -2014,12 +2014,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(crosshairbusy)
 			{
 				if(General.Map.Data.CrosshairBusy3D.Texture == null) General.Map.Data.CrosshairBusy3D.CreateTexture();
-				graphics.SetUniform(UniformName.texture1, General.Map.Data.CrosshairBusy3D.Texture);
+				graphics.SetTexture(0, General.Map.Data.CrosshairBusy3D.Texture);
 			}
 			else
 			{
 				if(General.Map.Data.Crosshair3D.Texture == null) General.Map.Data.Crosshair3D.CreateTexture();
-				graphics.SetUniform(UniformName.texture1, General.Map.Data.Crosshair3D.Texture);
+				graphics.SetTexture(0, General.Map.Data.Crosshair3D.Texture);
 			}
 			
 			// Draw

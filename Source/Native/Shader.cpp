@@ -64,7 +64,6 @@ bool Shader::Compile(const std::string& vertexShader, const std::string& fragmen
 		"rendersettings",
 		"transformsettings",
 		"desaturation",
-		"texture1",
 		"highlightcolor",
 		"worldviewproj",
 		"world",

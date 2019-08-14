@@ -3480,9 +3480,9 @@ namespace CodeImp.DoomBuilder.Data
 					// Set appropriate texture
 					switch(meshes.Skins[j])
 					{
-						case "top.png": General.Map.Graphics.SetUniform(UniformName.texture1, textop); break;
-						case "bottom.png": General.Map.Graphics.SetUniform(UniformName.texture1, texbottom); break;
-						case "side.png": General.Map.Graphics.SetUniform(UniformName.texture1, texside); break;
+						case "top.png": General.Map.Graphics.SetTexture(0, textop); break;
+						case "bottom.png": General.Map.Graphics.SetTexture(0, texbottom); break;
+						case "side.png": General.Map.Graphics.SetTexture(0, texside); break;
 						default: throw new Exception("Unexpected skin!");
 					}
 
