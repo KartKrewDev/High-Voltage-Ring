@@ -6,7 +6,7 @@ class VertexBuffer;
 class IndexBuffer;
 class VertexDeclaration;
 class Texture;
-class Shader;
+class ShaderManager;
 enum class CubeMapFace;
 
 enum class Cull : int { None, Counterclockwise };
@@ -106,7 +106,7 @@ public:
 
 	IndexBuffer* mIndexBuffer = nullptr;
 
-	std::unique_ptr<Shader> mShader;
+	std::unique_ptr<ShaderManager> mShaderManager;
 
 	Cull mCullMode = Cull::None;
 	FillMode mFillMode = FillMode::Solid;

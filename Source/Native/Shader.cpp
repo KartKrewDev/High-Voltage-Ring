@@ -5,13 +5,17 @@
 #include "RenderDevice.h"
 #include <stdexcept>
 
-Shader::Shader()
+void Shader::ReleaseResources()
 {
-}
-
-Shader::~Shader()
-{
-	// To do: move to delete list
+	if (mProgram)
+		glDeleteProgram(mProgram);
+	if (mVertexShader)
+		glDeleteShader(mVertexShader);
+	if (mFragmentShader)
+		glDeleteShader(mFragmentShader);
+	mProgram = 0;
+	mVertexShader = 0;
+	mFragmentShader = 0;
 }
 
 bool Shader::Compile(const std::string& vertexShader, const std::string& fragmentShader)

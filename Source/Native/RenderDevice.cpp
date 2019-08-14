@@ -5,65 +5,27 @@
 #include "IndexBuffer.h"
 #include "VertexDeclaration.h"
 #include "Texture.h"
-#include "Shader.h"
+#include "ShaderManager.h"
 #include <stdexcept>
-
-const char* mainVertexShader = R"(
-	#version 150
-
-	in vec4 AttrPosition;
-	in vec4 AttrColor;
-	in vec2 AttrUV;
-	in vec3 AttrNormal;
-
-	out vec4 Color;
-	out vec2 UV;
-	out vec3 Normal;
-
-	uniform mat4 World;
-	uniform mat4 View;
-	uniform mat4 Projection;
-
-	void main()
-	{
-		Color = AttrColor;
-		UV = AttrUV;
-		Normal = AttrNormal;
-		gl_Position = Projection * View * World * AttrPosition;
-	}
-)";
-
-const char* mainFragmentShader = R"(
-	#version 150
-
-	in vec4 Color;
-	in vec2 UV;
-	in vec3 Normal;
-
-	out vec4 FragColor;
-
-	void main()
-	{
-		FragColor = vec4(UV, 1.0, 1.0);
-	}
-)";
 
 RenderDevice::RenderDevice(HWND hwnd) : Context(hwnd)
 {
 	if (Context)
 	{
 		Context.Begin();
-		mShader = std::make_unique<Shader>();
-		if (!mShader->Compile(mainVertexShader, mainFragmentShader))
-		{
-			throw std::runtime_error(mShader->GetErrors());
-		}
+		mShaderManager = std::make_unique<ShaderManager>();
 		Context.End();
 	}
 }
 
 RenderDevice::~RenderDevice()
 {
+	if (Context)
+	{
+		Context.Begin();
+		mShaderManager->ReleaseResources();
+		Context.End();
+	}
 }
 
 void RenderDevice::SetVertexBuffer(int index, VertexBuffer* buffer, long offset, long stride)
@@ -250,7 +212,7 @@ void RenderDevice::ApplyChanges()
 
 void RenderDevice::ApplyShader()
 {
-	glUseProgram(mShader->GetProgram());
+	//glUseProgram(mShader->GetProgram());
 }
 
 void RenderDevice::ApplyRasterizerState()
@@ -363,7 +325,7 @@ void RenderDevice::ApplyMatrices()
 	for (size_t i = 0; i < (size_t)TransformState::NumTransforms; i++)
 	{
 		auto& binding = mTransforms[i];
-		glUniformMatrix4fv(mShader->TransformLocations[i], 1, GL_FALSE, binding.Values);
+		//glUniformMatrix4fv(mShader->TransformLocations[i], 1, GL_FALSE, binding.Values);
 	}
 }
 

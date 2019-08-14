@@ -6,8 +6,8 @@
 class Shader
 {
 public:
-	Shader();
-	~Shader();
+	Shader() = default;
+	void ReleaseResources();
 
 	bool Compile(const std::string& vertexShader, const std::string& fragmentShader);
 	const char* GetErrors() const { return mErrors.c_str(); }

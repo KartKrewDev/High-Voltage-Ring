@@ -12,6 +12,7 @@
     <ClCompile Include="OpenGLContext.cpp" />
     <ClCompile Include="Precomp.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IndexBuffer.h" />
@@ -28,6 +29,11 @@
     <ClInclude Include="OpenGLContext.h" />
     <ClInclude Include="Precomp.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderThings2D.h" />
+    <ClInclude Include="ShaderWorld3D.h" />
+    <ClInclude Include="ShaderDefault.h" />
+    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShaderDisplay2D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

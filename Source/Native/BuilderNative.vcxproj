@@ -208,6 +208,7 @@
     </ClCompile>
     <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexDeclaration.cpp" />
@@ -220,6 +221,11 @@
     <ClInclude Include="Precomp.h" />
     <ClInclude Include="RenderDevice.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderDefault.h" />
+    <ClInclude Include="ShaderDisplay2D.h" />
+    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShaderThings2D.h" />
+    <ClInclude Include="ShaderWorld3D.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexDeclaration.h" />
