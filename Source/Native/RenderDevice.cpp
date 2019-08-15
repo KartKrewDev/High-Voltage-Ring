@@ -174,7 +174,7 @@ void RenderDevice::SetSamplerState(int index, TextureAddress addressU, TextureAd
 	mNeedApply = true;
 }
 
-void RenderDevice::DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount)
+void RenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount)
 {
 	static const int modes[] = { GL_LINES, GL_TRIANGLES, GL_TRIANGLE_STRIP };
 	static const int toVertexCount[] = { 2, 3, 1 };
@@ -186,7 +186,19 @@ void RenderDevice::DrawPrimitives(PrimitiveType type, int startIndex, int primit
 	Context.End();
 }
 
-void RenderDevice::DrawUserPrimitives(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
+void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount)
+{
+	static const int modes[] = { GL_LINES, GL_TRIANGLES, GL_TRIANGLE_STRIP };
+	static const int toVertexCount[] = { 2, 3, 1 };
+	static const int toVertexStart[] = { 0, 0, 2 };
+
+	Context.Begin();
+	if (mNeedApply) ApplyChanges();
+	glDrawElements(modes[(int)type], toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type], GL_UNSIGNED_INT, (const void*)(startIndex * sizeof(uint32_t)));
+	Context.End();
+}
+
+void RenderDevice::DrawStreamed(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
 {
 }
 
@@ -225,10 +237,88 @@ void RenderDevice::Present()
 
 void RenderDevice::ClearTexture(int backcolor, Texture* texture)
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, texture->GetFramebuffer(false));
+	glViewport(0, 0, texture->GetWidth(), texture->GetHeight());
+	glClearColor(RPART(backcolor) / 255.0f, GPART(backcolor) / 255.0f, BPART(backcolor) / 255.0f, APART(backcolor) / 255.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void RenderDevice::CopyTexture(Texture* src, Texture* dst, CubeMapFace face)
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, src->GetFramebuffer(false));
+
+	GLint oldTexture = 0;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTexture);
+	glBindTexture(GL_TEXTURE_2D, dst->GetTexture());
+	glCopyTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, 0, 0, dst->GetWidth(), dst->GetHeight(), 0);
+	glBindTexture(GL_TEXTURE_2D, oldTexture);
+}
+
+void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size)
+{
+	Context.Begin();
+	GLint oldbinding = 0;
+	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
+	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
+	Context.End();
+}
+
+void RenderDevice::SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size)
+{
+	Context.Begin();
+	GLint oldbinding = 0;
+	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
+	glBufferSubData(GL_ARRAY_BUFFER, destOffset, size, data);
+	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
+	Context.End();
+}
+
+void RenderDevice::SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size)
+{
+	Context.Begin();
+	GLint oldbinding = 0;
+	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &oldbinding);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->GetBuffer());
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oldbinding);
+	Context.End();
+}
+
+void RenderDevice::SetPixels(Texture* texture, const void* data)
+{
+	texture->SetPixels(data);
+	InvalidateTexture(texture);
+}
+
+void RenderDevice::SetCubePixels(Texture* texture, CubeMapFace face, const void* data)
+{
+	texture->SetCubePixels(face, data);
+	InvalidateTexture(texture);
+}
+
+void* RenderDevice::LockTexture(Texture* texture)
+{
+	return texture->Lock();
+}
+
+void RenderDevice::UnlockTexture(Texture* texture)
+{
+	texture->Unlock();
+	InvalidateTexture(texture);
+}
+
+void RenderDevice::InvalidateTexture(Texture* texture)
+{
+	if (texture->IsTextureCreated())
+	{
+		Context.Begin();
+		texture->Invalidate();
+		Context.End();
+		mNeedApply = true;
+	}
 }
 
 void RenderDevice::CheckError()
@@ -460,7 +550,16 @@ void RenderDevice::ApplyTextures()
 
 void RenderDevice::ApplyRenderTarget(Texture* target, bool usedepthbuffer)
 {
-	glViewport(0, 0, Context.GetWidth(), Context.GetHeight());
+	if (target)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, target->GetFramebuffer(usedepthbuffer));
+		glViewport(0, 0, target->GetWidth(), target->GetHeight());
+	}
+	else
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, Context.GetWidth(), Context.GetHeight());
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -599,14 +698,19 @@ void RenderDevice_SetSamplerState(RenderDevice* device, int unit, TextureAddress
 	device->SetSamplerState(unit, addressU, addressV, addressW);
 }
 
-void RenderDevice_DrawPrimitives(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount)
+void RenderDevice_Draw(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount)
 {
-	device->DrawPrimitives(type, startIndex, primitiveCount);
+	device->Draw(type, startIndex, primitiveCount);
 }
 
-void RenderDevice_DrawUserPrimitives(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount, const void* data)
+void RenderDevice_DrawIndexed(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount)
 {
-	device->DrawUserPrimitives(type, startIndex, primitiveCount, data);
+	device->DrawIndexed(type, startIndex, primitiveCount);
+}
+
+void RenderDevice_DrawStreamed(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount, const void* data)
+{
+	device->DrawStreamed(type, startIndex, primitiveCount, data);
 }
 
 void RenderDevice_SetVertexDeclaration(RenderDevice* device, VertexDeclaration* decl)
@@ -637,4 +741,39 @@ void RenderDevice_ClearTexture(RenderDevice* device, int backcolor, Texture* tex
 void RenderDevice_CopyTexture(RenderDevice* device, Texture* src, Texture* dst, CubeMapFace face)
 {
 	device->CopyTexture(src, dst, face);
+}
+
+void RenderDevice_SetVertexBufferData(RenderDevice* device, VertexBuffer* buffer, void* data, int64_t size)
+{
+	device->SetVertexBufferData(buffer, data, size);
+}
+
+void RenderDevice_SetVertexBufferSubdata(RenderDevice* device, VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size)
+{
+	device->SetVertexBufferSubdata(buffer, destOffset, data, size);
+}
+
+void RenderDevice_SetIndexBufferData(RenderDevice* device, IndexBuffer* buffer, void* data, int64_t size)
+{
+	device->SetIndexBufferData(buffer, data, size);
+}
+
+void RenderDevice_SetPixels(RenderDevice* device, Texture* texture, const void* data)
+{
+	device->SetPixels(texture, data);
+}
+
+void RenderDevice_SetCubePixels(RenderDevice* device, Texture* texture, CubeMapFace face, const void* data)
+{
+	device->SetCubePixels(texture, face, data);
+}
+
+void* RenderDevice_LockTexture(RenderDevice* device, Texture* texture)
+{
+	return device->LockTexture(texture);
+}
+
+void RenderDevice_UnlockTexture(RenderDevice* device, Texture* texture)
+{
+	device->UnlockTexture(texture);
 }

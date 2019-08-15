@@ -385,7 +385,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Make screen vertices
 			FlatVertex[] verts = CreateScreenVerts(structsize);
-            screenverts.SetBufferData(verts);
+            graphics.SetBufferData(screenverts, verts);
 			
 			// Force update of view
 			lastgridscale = -1f;
@@ -623,7 +623,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(plottertex != null)
 			{
 				// Create structures plotter
-				plotter = plottertex.LockPlotter(structsize.Width, structsize.Height);
+				plotter = graphics.LockPlotter(plottertex, structsize.Width, structsize.Height);
 
 				// Redraw grid when structures image was cleared
 				if(clear)
@@ -709,7 +709,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Clean up plotter
 			if(renderlayer == RenderLayers.Plotter)
 			{
-				if(plottertex != null) plottertex.UnlockPlotter();
+				if(plottertex != null) graphics.UnlockPlotter(plottertex);
 				plotter = null;
 			}
 			
@@ -778,7 +778,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			   lastgridx != offsetx || lastgridy != offsety || drawmapcenter != lastdrawmapcenter)
 			{
 				// Create a plotter
-				Plotter gridplotter = backtex.LockPlotter(backsize.Width, backsize.Height);
+				Plotter gridplotter = graphics.LockPlotter(backtex, backsize.Width, backsize.Height);
 				gridplotter.Clear();
 
 				if(General.Settings.RenderGrid) //mxd
@@ -831,8 +831,8 @@ namespace CodeImp.DoomBuilder.Rendering
 					gridplotter.DrawLineSolid(cx - MAP_CENTER_SIZE, cy, cx + MAP_CENTER_SIZE, cy, ref c);
 				}
 
-				// Done
-				backtex.UnlockPlotter();
+                // Done
+                graphics.UnlockPlotter(backtex);
 				lastgridscale = scale;
 				lastgridsize = General.Map.Grid.GridSizeF;
 				lastgridx = offsetx;
@@ -1258,7 +1258,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(buffercount == locksize)
 					{
 						// Write to buffer
-                        thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
+                        graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 						
 						// Draw!
 						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1270,7 +1270,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Write to buffer
-				if(buffercount > 0) thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
+				if(buffercount > 0) graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 				
 				// Draw what's still remaining
 				if(buffercount > 0)
@@ -1397,7 +1397,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							if(buffercount == locksize)
 							{
 								// Write to buffer
-                                thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
+                                graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 
 								// Draw!
 								graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1410,7 +1410,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 
 						// Write to buffer
-                        thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
+                        graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 
 						// Draw what's still remaining
 						if(buffercount > 0) graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1441,7 +1441,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(buffercount == locksize) 
 					{
 						// Write to buffer
-                        thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
+                        graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 
 						// Draw!
 						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1453,7 +1453,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Write to buffer
-				if(buffercount > 0) thingsvertices.SetBufferSubdata(0, verts, 0, buffercount * 6);
+				if(buffercount > 0) graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 
 				// Draw what's still remaining
 				if(buffercount > 0) 
@@ -1662,7 +1662,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public void RenderText(ITextLabel label)
 		{
 			//mxd. Update the text if needed
-			label.Update(translatex, translatey, scale, -scale);
+			label.Update(graphics, translatex, translatey, scale, -scale);
 			if(label.SkipRendering) return;
 			
 			// Set renderstates for rendering
@@ -1691,7 +1691,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			foreach(ITextLabel label in labels)
 			{
 				// Update the text if needed
-				label.Update(translatex, translatey, scale, -scale);
+				label.Update(graphics, translatex, translatey, scale, -scale);
 				if(label.SkipRendering) skipped++;
 			}
 
@@ -1932,7 +1932,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Write to buffer
 			VertexBuffer vb = new VertexBuffer(FlatVertex.Stride * verts.Length);
-			vb.SetBufferData(verts);
+			graphics.SetBufferData(vb, verts);
 
 			// Set renderstates for rendering
 			graphics.SetCullMode(Cull.None);

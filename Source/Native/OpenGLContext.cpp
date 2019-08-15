@@ -96,12 +96,16 @@ OpenGLContext::~OpenGLContext()
 
 void OpenGLContext::Begin()
 {
-	wglMakeCurrent(dc, context);
+	refcount++;
+	if (refcount == 1)
+		wglMakeCurrent(dc, context);
 }
 
 void OpenGLContext::End()
 {
-	wglMakeCurrent(0, 0);
+	refcount--;
+	if (refcount == 0)
+		wglMakeCurrent(0, 0);
 }
 
 void OpenGLContext::SwapBuffers()

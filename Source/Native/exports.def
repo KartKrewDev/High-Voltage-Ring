@@ -26,28 +26,29 @@ EXPORTS
 	RenderDevice_SetTexture
 	RenderDevice_SetSamplerFilter
 	RenderDevice_SetSamplerState
-	RenderDevice_DrawPrimitives
-	RenderDevice_DrawUserPrimitives
+	RenderDevice_Draw
+	RenderDevice_DrawIndexed
+	RenderDevice_DrawStreamed
 	RenderDevice_SetVertexDeclaration
 	RenderDevice_StartRendering
 	RenderDevice_FinishRendering
 	RenderDevice_Present
 	RenderDevice_ClearTexture
 	RenderDevice_CopyTexture
+	RenderDevice_SetVertexBufferData
+	RenderDevice_SetVertexBufferSubdata
+	RenderDevice_SetIndexBufferData
+	RenderDevice_SetPixels
+	RenderDevice_SetCubePixels
+	RenderDevice_LockTexture
+	RenderDevice_UnlockTexture
 	VertexBuffer_New
 	VertexBuffer_Delete
-	VertexBuffer_SetBufferData
-	VertexBuffer_SetBufferSubdata
 	VertexDeclaration_New
 	VertexDeclaration_Delete
 	IndexBuffer_New
 	IndexBuffer_Delete
-	IndexBuffer_SetBufferData
 	Texture_New
 	Texture_Delete
 	Texture_Set2DImage
-	Texture_SetPixels
-	Texture_Lock
-	Texture_Unlock
 	Texture_SetCubeImage
-	Texture_SetCubePixels

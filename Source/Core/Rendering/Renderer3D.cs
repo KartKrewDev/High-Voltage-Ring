@@ -708,7 +708,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			VertexBuffer vb = new VertexBuffer(WorldVertex.Stride * verts.Length);
-			vb.SetBufferData(verts);
+			graphics.SetBufferData(vb, verts);
 			
 			//begin rendering
 			graphics.SetAlphaBlendEnable(true);
@@ -771,7 +771,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!object.ReferenceEquals(g.Sector, sector))
 					{
 						// Update the sector if needed
-						if(g.Sector.NeedsUpdateGeo) g.Sector.Update();
+						if(g.Sector.NeedsUpdateGeo) g.Sector.Update(graphics);
 
 						// Only do this sector when a vertexbuffer is created
 						//mxd. No Map means that sector was deleted recently, I suppose
@@ -1045,7 +1045,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(!object.ReferenceEquals(g.Sector, sector))
 				{
 					// Update the sector if needed
-					if(g.Sector.NeedsUpdateGeo) g.Sector.Update();
+					if(g.Sector.NeedsUpdateGeo) g.Sector.Update(graphics);
 
 					// Only do this sector when a vertexbuffer is created
 					//mxd. No Map means that sector was deleted recently, I suppose
@@ -1754,7 +1754,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(!object.ReferenceEquals(g.Sector, sector))
 				{
 					// Update the sector if needed
-					if(g.Sector.NeedsUpdateGeo) g.Sector.Update();
+					if(g.Sector.NeedsUpdateGeo) g.Sector.Update(graphics);
 
 					// Only do this sector when a vertexbuffer is created
 					//mxd. No Map means that sector was deleted recently, I suppose

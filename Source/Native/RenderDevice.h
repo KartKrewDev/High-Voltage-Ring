@@ -101,14 +101,26 @@ public:
 	void SetTexture(int unit, Texture* texture);
 	void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
 	void SetSamplerState(int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
-	void DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount);
-	void DrawUserPrimitives(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
+	void Draw(PrimitiveType type, int startIndex, int primitiveCount);
+	void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
+	void DrawStreamed(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
 	void SetVertexDeclaration(VertexDeclaration* decl);
 	void StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer);
 	void FinishRendering();
 	void Present();
 	void ClearTexture(int backcolor, Texture* texture);
 	void CopyTexture(Texture* src, Texture* dst, CubeMapFace face);
+
+	void SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size);
+	void SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size);
+	void SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size);
+
+	void SetPixels(Texture* texture, const void* data);
+	void SetCubePixels(Texture* texture, CubeMapFace face, const void* data);
+	void* LockTexture(Texture* texture);
+	void UnlockTexture(Texture* texture);
+
+	void InvalidateTexture(Texture* texture);
 
 	void ApplyChanges();
 	void ApplyVertexBuffers();

@@ -26,8 +26,14 @@ public:
 	void Unlock();
 
 	bool IsCubeTexture() const { return mCubeTexture; }
+	int GetWidth() const { return mWidth; }
+	int GetHeight() const { return mHeight; }
+
+	bool IsTextureCreated() const { return mTexture; }
+	void Invalidate();
 
 	GLuint GetTexture();
+	GLuint GetFramebuffer(bool usedepthbuffer);
 
 private:
 	int mWidth = 0;
@@ -35,4 +41,7 @@ private:
 	bool mCubeTexture = false;
 	std::map<int, std::vector<uint32_t>> mPixels;
 	GLuint mTexture = 0;
+	GLuint mFramebuffer = 0;
+	GLuint mFramebufferDepth = 0;
+	GLuint mDepthRenderbuffer = 0;
 };

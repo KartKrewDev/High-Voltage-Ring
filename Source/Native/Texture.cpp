@@ -47,6 +47,18 @@ void Texture::Unlock()
 {
 }
 
+void Texture::Invalidate()
+{
+	if (mDepthRenderbuffer) glDeleteRenderbuffers(1, &mDepthRenderbuffer);
+	if (mFramebuffer) glDeleteFramebuffers(1, &mFramebuffer);
+	if (mFramebufferDepth) glDeleteFramebuffers(1, &mFramebufferDepth);
+	if (mTexture) glDeleteTextures(1, &mTexture);
+	mTexture = 0;
+	mFramebuffer = 0;
+	mFramebufferDepth = 0;
+	mTexture = 0;
+}
+
 GLuint Texture::GetTexture()
 {
 	if (mTexture == 0)
@@ -88,6 +100,41 @@ GLuint Texture::GetTexture()
 	return mTexture;
 }
 
+GLuint Texture::GetFramebuffer(bool usedepthbuffer)
+{
+	if (!usedepthbuffer)
+	{
+		if (mFramebuffer == 0)
+		{
+			GLuint texture = GetTexture();
+			glGenFramebuffers(1, &mFramebuffer);
+			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
+		}
+		return mFramebuffer;
+	}
+	else
+	{
+		if (mFramebuffer == mFramebufferDepth)
+		{
+			if (mDepthRenderbuffer == 0)
+			{
+				glGenRenderbuffers(1, &mDepthRenderbuffer);
+				glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderbuffer);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWidth, mHeight);
+				glBindRenderbuffer(GL_RENDERBUFFER, 0);
+			}
+
+			GLuint texture = GetTexture();
+			glGenFramebuffers(1, &mFramebuffer);
+			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer);
+		}
+		return mFramebufferDepth;
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 Texture* Texture_New()
@@ -105,27 +152,7 @@ void Texture_Set2DImage(Texture* handle, int width, int height)
 	handle->Set2DImage(width, height);
 }
 
-void Texture_SetPixels(Texture* handle, const void* data)
-{
-	handle->SetPixels(data);
-}
-
-void* Texture_Lock(Texture* handle)
-{
-	return handle->Lock();
-}
-
-void Texture_Unlock(Texture* handle)
-{
-	handle->Unlock();
-}
-
 void Texture_SetCubeImage(Texture* handle, int size)
 {
 	handle->SetCubeImage(size);
-}
-
-void Texture_SetCubePixels(Texture* handle, CubeMapFace face, const void *data)
-{
-	handle->SetCubePixels(face, data);
 }

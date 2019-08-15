@@ -3449,7 +3449,7 @@ namespace CodeImp.DoomBuilder.Data
 			yscale *= 1.65f;
 
 			// Make cubemap texture
-			CubeTexture cubemap = new CubeTexture(cubemaptexsize);
+			CubeTexture cubemap = new CubeTexture(General.Map.Graphics, cubemaptexsize);
 
             // Set render settings...
             General.Map.Graphics.SetZEnable(false);
@@ -3643,7 +3643,7 @@ namespace CodeImp.DoomBuilder.Data
 		// sides[] must contain 6 square Po2 images in this order: North, East, South, West, Top, Bottom
 		private static CubeTexture MakeSkyBox(Bitmap[] sides, int targetsize, bool fliptop)
 		{
-			CubeTexture cubemap = new CubeTexture(targetsize);
+			CubeTexture cubemap = new CubeTexture(General.Map.Graphics, targetsize);
 
 			// Draw faces
 			sides[3].RotateFlip(RotateFlipType.Rotate90FlipNone);
@@ -3669,7 +3669,7 @@ namespace CodeImp.DoomBuilder.Data
 
 		private static void DrawCubemapFace(CubeTexture texture, CubeMapFace face, Bitmap image)
 		{
-            texture.SetPixels(face, image);
+            General.Map.Graphics.SetPixels(texture, face, image);
 		}
 
 		private static Bitmap ResizeImage(Image image, int width, int height)
@@ -3745,7 +3745,7 @@ namespace CodeImp.DoomBuilder.Data
 		{
             using (var bitmap = new Bitmap(image))
             {
-                return new Texture(bitmap);
+                return new Texture(General.Map.Graphics, bitmap);
             }
 		}
 		

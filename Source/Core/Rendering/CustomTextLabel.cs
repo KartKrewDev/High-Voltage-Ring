@@ -21,9 +21,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		public PixelColor BackColor { get { return label.BackColor; } set { label.BackColor = value; } }
 		public SizeF TextSize { get { return label.TextSize; } }
 
-		public void Update(float translatex, float translatey, float scalex, float scaley)
+		public void Update(RenderDevice graphics, float translatex, float translatey, float scalex, float scaley)
 		{
-			label.Update(translatex, translatey, scalex, scaley);
+			label.Update(graphics, translatex, translatey, scalex, scaley);
 		}
 	}
 }

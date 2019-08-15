@@ -28,9 +28,9 @@ using System.Runtime.InteropServices;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-    internal class RenderDevice : IDisposable
+    public class RenderDevice : IDisposable
     {
-		internal RenderDevice(RenderTargetControl rendertarget)
+		public RenderDevice(RenderTargetControl rendertarget)
 		{
             Handle = RenderDevice_New(rendertarget.Handle);
             if (Handle == IntPtr.Zero)
@@ -230,19 +230,24 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetSamplerState(Handle, unit, addressU, addressV, addressW);
         }
 
+        public void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount)
+        {
+            RenderDevice_DrawIndexed(Handle, type, startIndex, primitiveCount);
+        }
+
         public void DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount)
         {
-            RenderDevice_DrawPrimitives(Handle, type, startIndex, primitiveCount);
+            RenderDevice_Draw(Handle, type, startIndex, primitiveCount);
         }
 
         public void DrawUserPrimitives(PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data)
         {
-            RenderDevice_DrawUserPrimitives(Handle, type, startIndex, primitiveCount, data);
+            RenderDevice_DrawStreamed(Handle, type, startIndex, primitiveCount, data);
         }
 
         public void SetVertexDeclaration(VertexDeclaration decl)
         {
-            RenderDevice_SetVertexDeclaration(Handle, decl.Handle);
+            RenderDevice_SetVertexDeclaration(Handle, decl != null ? decl.Handle : IntPtr.Zero);
         }
 
         public void StartRendering(bool clear, Color4 backcolor)
@@ -273,6 +278,75 @@ namespace CodeImp.DoomBuilder.Rendering
         public void CopyTexture(Texture src, CubeTexture dst, CubeMapFace face)
         {
             RenderDevice_CopyTexture(Handle, src.Handle, dst.Handle, face);
+        }
+
+        public void SetBufferData(IndexBuffer buffer, int[] data)
+        {
+            RenderDevice_SetIndexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<int>());
+        }
+
+        public void SetBufferData(VertexBuffer buffer, FlatVertex[] data)
+        {
+            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<FlatVertex>());
+        }
+
+        public void SetBufferData(VertexBuffer buffer, WorldVertex[] data)
+        {
+            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<WorldVertex>());
+        }
+
+        public void SetBufferSubdata(VertexBuffer buffer, long destOffset, FlatVertex[] data)
+        {
+            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset, data, data.Length * Marshal.SizeOf<FlatVertex>());
+        }
+
+        public void SetBufferSubdata(VertexBuffer buffer, long destOffset, WorldVertex[] data)
+        {
+            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset, data, data.Length * Marshal.SizeOf<WorldVertex>());
+        }
+
+        public void SetBufferSubdata(VertexBuffer buffer, long destOffset, FlatVertex[] data, long offset, long size)
+        {
+            if (data.Length < size || size < 0) throw new ArgumentOutOfRangeException("size");
+            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset, data, size * Marshal.SizeOf<FlatVertex>());
+        }
+
+        public void SetPixels(Texture texture, System.Drawing.Bitmap bitmap)
+        {
+            System.Drawing.Imaging.BitmapData bmpdata = bitmap.LockBits(
+                new System.Drawing.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            RenderDevice_SetPixels(Handle, texture.Handle, bmpdata.Scan0);
+
+            bitmap.UnlockBits(bmpdata);
+        }
+
+        public void SetPixels(CubeTexture texture, CubeMapFace face, System.Drawing.Bitmap bitmap)
+        {
+            System.Drawing.Imaging.BitmapData bmpdata = bitmap.LockBits(
+                new System.Drawing.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            RenderDevice_SetCubePixels(Handle, texture.Handle, face, bmpdata.Scan0);
+
+            bitmap.UnlockBits(bmpdata);
+        }
+
+        internal Plotter LockPlotter(Texture texture, int visibleWidth, int visibleHeight)
+        {
+            unsafe
+            {
+                IntPtr data = RenderDevice_LockTexture(Handle, texture.Handle);
+                return new Plotter((PixelColor*)data.ToPointer(), texture.Width, texture.Height, Math.Min(texture.Width, visibleWidth), Math.Min(texture.Height, visibleHeight));
+            }
+        }
+
+        public void UnlockPlotter(Texture texture)
+        {
+            RenderDevice_UnlockTexture(Handle, texture.Handle);
         }
 
         internal void RegisterResource(IRenderResource res)
@@ -391,10 +465,13 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_SetSamplerState(IntPtr handle, int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_DrawPrimitives(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
+        static extern void RenderDevice_Draw(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_DrawUserPrimitives(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data);
+        static extern void RenderDevice_DrawIndexed(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_DrawStreamed(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexDeclaration(IntPtr handle, IntPtr decl);
@@ -416,6 +493,33 @@ namespace CodeImp.DoomBuilder.Rendering
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_CopyTexture(IntPtr handle, IntPtr src, IntPtr dst, CubeMapFace face);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetIndexBufferData(IntPtr handle, IntPtr buffer, int[] data, long size);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, FlatVertex[] data, long size);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, WorldVertex[] data, long size);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetVertexBufferSubdata(IntPtr handle, IntPtr buffer, long destOffset, FlatVertex[] data, long sizeInBytes);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetVertexBufferSubdata(IntPtr handle, IntPtr buffer, long destOffset, WorldVertex[] data, long sizeInBytes);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void RenderDevice_SetPixels(IntPtr handle, IntPtr texture, IntPtr data);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void RenderDevice_SetCubePixels(IntPtr handle, IntPtr texture, CubeMapFace face, IntPtr data);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern IntPtr RenderDevice_LockTexture(IntPtr handle, IntPtr texture);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void RenderDevice_UnlockTexture(IntPtr handle, IntPtr texture);
 
         //mxd. Anisotropic filtering steps
         public static readonly List<float> AF_STEPS = new List<float> { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };

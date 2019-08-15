@@ -511,6 +511,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// This updates the visual thing
 		public virtual void Update()
 		{
+            RenderDevice graphics = General.Map.Graphics;
+
 			// Do we need to update the geometry buffer?
 			if(updategeo)
 			{
@@ -528,7 +530,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 						geobuffers[i] = new VertexBuffer(WorldVertex.Stride * vertices[i].Length);
 
                         // Fill the buffer
-                        geobuffers[i].SetBufferData(vertices[i]);
+                        graphics.SetBufferData(geobuffers[i], vertices[i]);
 					}
 				}
 				
@@ -613,7 +615,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				WorldVertex[] cv = cageverts.ToArray();
 				cagelength = cv.Length / 2;
 				cagebuffer = new VertexBuffer(WorldVertex.Stride * cv.Length);
-                cagebuffer.SetBufferData(cv);
+                graphics.SetBufferData(cagebuffer, cv);
 
 				// Done
 				updatecage = false;

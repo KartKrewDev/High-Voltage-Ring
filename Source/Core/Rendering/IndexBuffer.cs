@@ -21,11 +21,6 @@ namespace CodeImp.DoomBuilder.Rendering
             Dispose();
         }
 
-        public void SetBufferData(int[] data)
-        {
-            IndexBuffer_SetBufferData(Handle, data, data.Length * Marshal.SizeOf<int>());
-        }
-
         public bool Disposed { get { return Handle == IntPtr.Zero; } }
 
         public void Dispose()
@@ -44,8 +39,5 @@ namespace CodeImp.DoomBuilder.Rendering
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void IndexBuffer_Delete(IntPtr handle);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void IndexBuffer_SetBufferData(IntPtr handle, int[] data, long size);
     }
 }

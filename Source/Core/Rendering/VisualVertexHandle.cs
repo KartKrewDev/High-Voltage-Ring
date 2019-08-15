@@ -85,7 +85,7 @@ namespace CodeImp.DoomBuilder.Rendering
 									   v3, v0 };
 
 			upper = new VertexBuffer(WorldVertex.Stride * vu.Length);
-			upper.SetBufferData(vu);
+            General.Map.Graphics.SetBufferData(upper, vu);
 
 			WorldVertex[] vl = new[]{ c, v4,
 									  c, v5,
@@ -98,7 +98,7 @@ namespace CodeImp.DoomBuilder.Rendering
 									  v7, v4 };
 
 			lower = new VertexBuffer(WorldVertex.Stride * vl.Length);
-			lower.SetBufferData(vl);
+            General.Map.Graphics.SetBufferData(lower, vl);
 		}
 
 		// This is called before a device is reset

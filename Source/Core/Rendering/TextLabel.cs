@@ -42,7 +42,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		PixelColor Color { get; set; }
 		PixelColor BackColor { get; set; }
 
-		void Update(float translatex, float translatey, float scalex, float scaley);
+		void Update(RenderDevice graphics, float translatex, float translatey, float scalex, float scaley);
 	}
 	
 	public class TextLabel : IDisposable, IRenderResource, ITextLabel
@@ -106,7 +106,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public string Text { get { return text; } set { if(text != value) { text = value; textsize = Size.Empty; textureupdateneeded = true; } } }
 		public Font Font { get { return font; } set { font.Dispose(); font = value; textsize = Size.Empty; textureupdateneeded = true; } } //mxd
 		public bool TransformCoords { get { return transformcoords; } set { transformcoords = value; updateneeded = true; } }
-		public SizeF TextSize { get { if(textureupdateneeded) Update(General.Map.Renderer2D.TranslateX, General.Map.Renderer2D.TranslateY, General.Map.Renderer2D.Scale, -General.Map.Renderer2D.Scale); return textsize; } }
+		public SizeF TextSize { get { if(textureupdateneeded) Update(General.Map.Graphics, General.Map.Renderer2D.TranslateX, General.Map.Renderer2D.TranslateY, General.Map.Renderer2D.Scale, -General.Map.Renderer2D.Scale); return textsize; } }
 		public TextAlignmentX AlignX { get { return alignx; } set { alignx = value; updateneeded = true; } }
 		public TextAlignmentY AlignY { get { return aligny; } set { aligny = value; updateneeded = true; } }
 		public PixelColor Color { get { return color; } set { if(!color.Equals(value)) { color = value; textureupdateneeded = true; } } }
@@ -239,7 +239,7 @@ namespace CodeImp.DoomBuilder.Rendering
         }
 
 		// This updates the text if needed
-		public void Update(float translatex, float translatey, float scalex, float scaley)
+		public void Update(RenderDevice graphics, float translatex, float translatey, float scalex, float scaley)
 		{
 			// Check if transformation changed and needs to be updated
 			if(transformcoords && (translatex != lasttranslatex || translatey != lasttranslatey ||
@@ -329,7 +329,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         // Create label image
                         using (Bitmap img = CreateLabelImage(text, font, color, backcolor, drawbg, textrect, bgrect, texturesize, textorigin))
                         {
-                            texture = new Texture(img);
+                            texture = new Texture(graphics, img);
                         }
 					}
 
@@ -340,7 +340,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 
 					FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, beginx, beginy, beginx + texturesize.Width, beginy + texturesize.Height);
-                    textbuffer.SetBufferData(quad.Vertices);
+                    graphics.SetBufferData(textbuffer, quad.Vertices);
 				}
 				else
 				{

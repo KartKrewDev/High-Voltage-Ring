@@ -19,6 +19,7 @@ private:
 	HWND window;
 	HDC dc;
 	HGLRC context;
+	int refcount = 0;
 };
 
 class OpenGLCreationHelper

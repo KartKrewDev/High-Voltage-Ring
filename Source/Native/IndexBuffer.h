@@ -6,11 +6,9 @@ public:
 	IndexBuffer(int sizeInBytes);
 	~IndexBuffer();
 
-	void SetBufferData(const void* data, int64_t size);
-
 	GLuint GetBuffer();
 
 private:
-	std::vector<uint8_t> mData;
+	int64_t mSize = 0;
 	GLuint mBuffer = 0;
 };

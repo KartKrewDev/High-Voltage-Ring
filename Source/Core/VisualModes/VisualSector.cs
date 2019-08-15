@@ -121,7 +121,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public virtual void UpdateSectorGeometry(bool includeneighbours) { }
 		
 		// This updates the visual sector
-		public void Update()
+		public void Update(RenderDevice graphics)
 		{
 			int numverts = 0;
 			int v = 0;
@@ -144,7 +144,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				{
 					if((g.Vertices != null) && (g.Vertices.Length > 0))
 					{
-                        geobuffer.SetBufferSubdata(v * WorldVertex.Stride, g.Vertices);
+                        graphics.SetBufferSubdata(geobuffer, v * WorldVertex.Stride, g.Vertices);
 						g.VertexOffset = v;
 						v += g.Vertices.Length;
 					}

@@ -8,13 +8,13 @@ namespace CodeImp.DoomBuilder.Rendering
 {
     internal class Mesh : IDisposable
     {
-        public Mesh(VertexElement[] vertexDecl, WorldVertex[] vertexData, int[] indexData)
+        public Mesh(RenderDevice graphics, VertexElement[] vertexDecl, WorldVertex[] vertexData, int[] indexData)
         {
             VertexDecl = new VertexDeclaration(vertexDecl);
             unsafe { Vertices = new VertexBuffer(sizeof(WorldVertex)); }
-            Vertices.SetBufferData(vertexData);
+            graphics.SetBufferData(Vertices, vertexData);
             Indices = new IndexBuffer(sizeof(int) * indexData.Length);
-            Indices.SetBufferData(indexData);
+            graphics.SetBufferData(Indices, indexData);
             Count = indexData.Length;
         }
 
@@ -25,15 +25,13 @@ namespace CodeImp.DoomBuilder.Rendering
 
         internal void Draw(RenderDevice device)
         {
-            /*
             device.SetVertexDeclaration(VertexDecl);
             device.SetVertexBuffer(0, Vertices, 0, WorldVertex.Stride);
             device.SetIndexBuffer(Indices);
-            device.DrawElements(0, Count);
+            device.DrawIndexed(PrimitiveType.TriangleList, 0, Count);
             device.SetIndexBuffer(null);
             device.SetVertexBuffer(0, null, 0, 0);
             device.SetVertexDeclaration(null);
-            */
         }
 
         public void Dispose()

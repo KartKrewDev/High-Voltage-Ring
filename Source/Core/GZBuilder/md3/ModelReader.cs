@@ -989,7 +989,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				}
 
 				//mesh
-				Mesh mesh = new Mesh(vertexElements, vertList.ToArray(), polyIndecesList.ToArray());
+				Mesh mesh = new Mesh(General.Map.Graphics, vertexElements, vertList.ToArray(), polyIndecesList.ToArray());
 
 				//store in result
 				result.Meshes.Add(mesh);
@@ -1163,11 +1163,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			// Create texture new Texture(bmp.Width)
             using(Bitmap bmp = CreateVoxelTexture(palette))
             {
-                mde.Model.Textures.Add(new Texture(bmp));
+                mde.Model.Textures.Add(new Texture(General.Map.Graphics, bmp));
             }
 
 			// Create mesh
-			Mesh mesh = new Mesh(vertexElements, verts.ToArray(), indices.ToArray());
+			Mesh mesh = new Mesh(General.Map.Graphics, vertexElements, verts.ToArray(), indices.ToArray());
 
 			// Add mesh
 			mde.Model.Meshes.Add(mesh);
@@ -1667,7 +1667,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 			if(bitmap != null)
 			{
-                texture = new Texture(bitmap);
+                texture = new Texture(General.Map.Graphics, bitmap);
 			}
 
 			return texture;
@@ -1676,7 +1676,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 		private static void CreateMesh(ref MD3LoadResult result, List<WorldVertex> verts, List<int> indices)
 		{
 			//create mesh
-			Mesh mesh = new Mesh(vertexElements, verts.ToArray(), indices.ToArray());
+			Mesh mesh = new Mesh(General.Map.Graphics, vertexElements, verts.ToArray(), indices.ToArray());
 
 			//store in result
 			result.Meshes.Add(mesh);

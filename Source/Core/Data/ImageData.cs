@@ -467,7 +467,7 @@ namespace CodeImp.DoomBuilder.Data
 					Bitmap img = bitmap;
 					if(loadfailed) img = Properties.Resources.Failed;
 
-                    texture = new Texture(img);
+                    texture = new Texture(General.Map.Graphics, img);
 					
 					if(dynamictexture)
 					{
@@ -492,7 +492,7 @@ namespace CodeImp.DoomBuilder.Data
             {
 				if((texture != null) && !texture.Disposed)
 				{
-                    texture.SetPixels(bitmap);
+                    General.Map.Graphics.SetPixels(texture, bitmap);
 				}
 			}
 		}
