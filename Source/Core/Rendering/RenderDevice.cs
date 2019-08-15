@@ -617,7 +617,7 @@ namespace CodeImp.DoomBuilder.Rendering
         campos
     }
 
-    public enum Cull : int { None, Counterclockwise }
+    public enum Cull : int { None, Clockwise }
     public enum Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
     public enum BlendOperation : int { Add, ReverseSubtract }
     public enum FillMode : int { Solid, Wireframe }

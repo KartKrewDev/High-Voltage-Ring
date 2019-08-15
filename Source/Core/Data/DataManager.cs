@@ -3459,7 +3459,7 @@ namespace CodeImp.DoomBuilder.Data
 			// Setup matrices
 			Vector3 offset = new Vector3(0f, 0f, -1.8f); // Sphere size is 10 mu
 			Matrix mworld = Matrix.Multiply(Matrix.Identity, Matrix.Translation(offset) * Matrix.Scaling(1.0f, 1.0f, yscale));
-			Matrix mprojection = Matrix.PerspectiveFovLH(Angle2D.PIHALF, 1.0f, 0.5f, 100.0f);
+			Matrix mprojection = Matrix.PerspectiveFov(Angle2D.PIHALF, 1.0f, 0.5f, 100.0f);
 
             // Place camera at origin
             General.Map.Graphics.SetUniform(UniformName.campos, new Vector4());
@@ -3738,7 +3738,7 @@ namespace CodeImp.DoomBuilder.Data
 			}
 
 			Vector3 eye = new Vector3();
-			return Matrix.LookAtLH(eye, lookdir, updir);
+			return Matrix.LookAt(eye, lookdir, updir);
 		}
 
 		private static Texture TextureFromBitmap(Image image)

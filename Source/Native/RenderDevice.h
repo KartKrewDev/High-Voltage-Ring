@@ -10,7 +10,7 @@ class ShaderManager;
 class Shader;
 enum class CubeMapFace;
 
-enum class Cull : int { None, Counterclockwise };
+enum class Cull : int { None, Clockwise };
 enum class Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor };
 enum class BlendOperation : int { Add, ReverseSubtract };
 enum class FillMode : int { Solid, Wireframe };
@@ -132,7 +132,6 @@ public:
 	void ApplyRasterizerState();
 	void ApplyBlendState();
 	void ApplyDepthState();
-	void ApplyRenderTarget(Texture* target, bool usedepthbuffer);
 
 	void CheckError();
 

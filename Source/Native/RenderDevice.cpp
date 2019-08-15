@@ -211,9 +211,22 @@ void RenderDevice::SetVertexDeclaration(VertexDeclaration* decl)
 void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer)
 {
 	Context.Begin();
-	ApplyRenderTarget(target, usedepthbuffer);
+
+	if (target)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, target->GetFramebuffer(usedepthbuffer));
+		glViewport(0, 0, target->GetWidth(), target->GetHeight());
+	}
+	else
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, Context.GetWidth(), Context.GetHeight());
+	}
+
 	if (clear && usedepthbuffer)
 	{
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
 		glClearColor(RPART(backcolor) / 255.0f, GPART(backcolor) / 255.0f, BPART(backcolor) / 255.0f, APART(backcolor) / 255.0f);
 		glClearDepthf(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -223,6 +236,9 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 		glClearColor(RPART(backcolor) / 255.0f, GPART(backcolor) / 255.0f, BPART(backcolor) / 255.0f, APART(backcolor) / 255.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
+
+	mNeedApply = true;
+
 	Context.End();
 }
 
@@ -359,7 +375,7 @@ void RenderDevice::ApplyRasterizerState()
 	else
 	{
 		glEnable(GL_CULL_FACE);
-		glFrontFace(GL_CCW);
+		glFrontFace(GL_CW);
 	}
 
 	GLenum fillMode2GL[] = { GL_FILL, GL_LINE };
@@ -544,20 +560,6 @@ void RenderDevice::ApplyTextures()
 		{
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-	}
-}
-
-void RenderDevice::ApplyRenderTarget(Texture* target, bool usedepthbuffer)
-{
-	if (target)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, target->GetFramebuffer(usedepthbuffer));
-		glViewport(0, 0, target->GetWidth(), target->GetHeight());
-	}
-	else
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, Context.GetWidth(), Context.GetHeight());
 	}
 }
 

@@ -243,7 +243,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			float fovy = (float)Math.Atan(1.0f / reversefovy) * 2.0f;
 			
 			// Make the projection matrix
-			projection = Matrix.PerspectiveFovRH(fovy, aspect, PROJ_NEAR_PLANE, General.Settings.ViewDistance);
+			projection = Matrix.PerspectiveFov(fovy, aspect, PROJ_NEAR_PLANE, General.Settings.ViewDistance);
 			viewproj = view3d * projection; //mxd
 		}
 		
@@ -260,9 +260,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Create frustum
 			frustum = new ProjectedFrustum2D(pos, anglexy, anglez, PROJ_NEAR_PLANE,
 				General.Settings.ViewDistance, Angle2D.DegToRad(General.Settings.VisualFOV));
-			
-			// Make the view matrix
-			view3d = Matrix.LookAtRH(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3(0f, 0f, 1f));
+
+            // Make the view matrix
+            view3d = Matrix.LookAt(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3(0f, 0f, 1f));
 			viewproj = view3d * projection; //mxd
 			
 			// Make the billboard matrix
@@ -376,7 +376,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				UpdateLights();
 
 			// Initial renderstates
-			graphics.SetCullMode(Cull.Counterclockwise);
+			graphics.SetCullMode(Cull.Clockwise);
 			graphics.SetZEnable(true);
 			graphics.SetZWriteEnable(true);
 			graphics.SetAlphaBlendEnable(false);
@@ -403,7 +403,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetAlphaTestEnable(true);
 				graphics.SetCullMode(Cull.None);
 				RenderModels(false, false);
-                graphics.SetCullMode(Cull.Counterclockwise);
+                graphics.SetCullMode(Cull.Clockwise);
 			}
 
 			// MASK PASS
@@ -435,7 +435,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     graphics.SetUniform(UniformName.ignoreNormals, true);
                     RenderModels(true, false);
                     graphics.SetUniform(UniformName.ignoreNormals, false);
-                    graphics.SetCullMode(Cull.Counterclockwise);
+                    graphics.SetCullMode(Cull.Clockwise);
                 }
             }
 
@@ -948,7 +948,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
                 // Texture addressing
                 graphics.SetSamplerState(0, TextureAddress.Wrap);
-				graphics.SetCullMode(Cull.Counterclockwise); //mxd
+				graphics.SetCullMode(Cull.Clockwise); //mxd
 			}
 		}
 
@@ -1255,7 +1255,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
                 // Texture addressing
                 graphics.SetSamplerState(0, TextureAddress.Wrap);
-				graphics.SetCullMode(Cull.Counterclockwise); //mxd
+				graphics.SetCullMode(Cull.Clockwise); //mxd
 			}
 		}
 

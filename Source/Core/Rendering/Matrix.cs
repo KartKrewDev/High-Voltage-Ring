@@ -135,77 +135,36 @@ namespace CodeImp.DoomBuilder.Rendering
             return result;
         }
 
-        public static Matrix LookAtLH(Vector3 eye, Vector3 target, Vector3 up)
+        public static Matrix LookAt(Vector3 eye, Vector3 target, Vector3 up)
         {
             Vector3 zaxis = Vector3.Normalize(target - eye);
-            Vector3 xaxis = Vector3.Cross(up, zaxis);
+            Vector3 xaxis = Vector3.Normalize(Vector3.Cross(up, zaxis));
             Vector3 yaxis = Vector3.Cross(zaxis, xaxis);
 
             Matrix result = Null;
-            result.M11 = xaxis.X;
+            result.M11 = -xaxis.X;
             result.M12 = yaxis.X;
-            result.M13 = zaxis.X;
-            result.M21 = xaxis.Y;
+            result.M13 = -zaxis.X;
+            result.M21 = -xaxis.Y;
             result.M22 = yaxis.Y;
-            result.M23 = zaxis.Y;
-            result.M31 = xaxis.Z;
+            result.M23 = -zaxis.Y;
+            result.M31 = -xaxis.Z;
             result.M32 = yaxis.Z;
-            result.M33 = zaxis.Z;
-            result.M41 = -Vector3.Dot(xaxis, eye);
-            result.M42 = -Vector3.Dot(yaxis, eye);
-            result.M43 = -Vector3.Dot(zaxis, eye);
+            result.M33 = -zaxis.Z;
             result.M44 = 1.0f;
-            return result;
+            return Matrix.Translation(-eye) * result;
         }
 
-        public static Matrix LookAtRH(Vector3 eye, Vector3 target, Vector3 up)
+        public static Matrix PerspectiveFov(float fov, float aspect, float znear, float zfar)
         {
-            Vector3 zaxis = Vector3.Normalize(target - eye);
-            Vector3 xaxis = Vector3.Cross(up, zaxis);
-            Vector3 yaxis = Vector3.Cross(zaxis, xaxis);
+            float f = (float)(1.0 / Math.Tan(fov * 0.5f));
 
             Matrix result = Null;
-            result.M11 = xaxis.X;
-            result.M12 = yaxis.X;
-            result.M13 = zaxis.X;
-            result.M21 = xaxis.Y;
-            result.M22 = yaxis.Y;
-            result.M23 = zaxis.Y;
-            result.M31 = xaxis.Z;
-            result.M32 = yaxis.Z;
-            result.M33 = zaxis.Z;
-            result.M41 = Vector3.Dot(xaxis, eye);
-            result.M42 = Vector3.Dot(yaxis, eye);
-            result.M43 = Vector3.Dot(zaxis, eye);
-            result.M44 = 1.0f;
-            return result;
-        }
-
-        public static Matrix PerspectiveFovLH(float fov, float aspect, float znear, float zfar)
-        {
-            float yScale = (float)(1.0 / Math.Tan(fov * 0.5f));
-            float xScale = yScale / aspect;
-
-            Matrix result = Null;
-            result.M11 = xScale;
-            result.M22 = yScale;
-            result.M33 = zfar / (znear - zfar);
-            result.M43 = -2.0f * znear * zfar / (znear - zfar);
-            result.M34 = 1.0f;
-            return result;
-        }
-
-        public static Matrix PerspectiveFovRH(float fov, float aspect, float znear, float zfar)
-        {
-            float yScale = (float)(1.0 / Math.Tan(fov * 0.5f));
-            float xScale = yScale / aspect;
-
-            Matrix result = Null;
-            result.M11 = xScale;
-            result.M22 = yScale;
-            result.M33 = zfar / (znear - zfar);
-            result.M43 = 2.0f * znear * zfar / (znear - zfar);
-            result.M34 = -1.0f;
+            result.M11 = f / aspect;
+            result.M22 = f;
+            result.M33 = (zfar + znear) / (znear - zfar);
+            result.M34 = 2.0f * zfar * znear / (znear - zfar);
+            result.M43 = -1.0f;
             return result;
         }
 

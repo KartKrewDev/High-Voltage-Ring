@@ -3,7 +3,7 @@
 static const char* display2D_vs = R"(
 	#version 150
 
-	in vec3 AttrPos;
+	in vec3 AttrPosition;
 	in vec4 AttrColor;
 	in vec2 AttrUV;
 
@@ -14,7 +14,7 @@ static const char* display2D_vs = R"(
 
 	void main()
 	{
-		gl_Position = transformsettings * vec4(AttrPos, 1.0f);
+		gl_Position = transformsettings * vec4(AttrPosition, 1.0f);
 		Color = AttrColor;
 		UV = AttrUV;
 	}
