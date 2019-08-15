@@ -53,7 +53,7 @@ void Texture::Invalidate()
 	if (mFramebuffer) glDeleteFramebuffers(1, &mFramebuffer);
 	if (mFramebufferDepth) glDeleteFramebuffers(1, &mFramebufferDepth);
 	if (mTexture) glDeleteTextures(1, &mTexture);
-	mTexture = 0;
+	mDepthRenderbuffer = 0;
 	mFramebuffer = 0;
 	mFramebufferDepth = 0;
 	mTexture = 0;
@@ -129,7 +129,7 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 			glGenFramebuffers(1, &mFramebuffer);
 			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer);
 		}
 		return mFramebufferDepth;
 	}
