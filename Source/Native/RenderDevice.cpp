@@ -410,8 +410,8 @@ void RenderDevice::ApplyIndexBuffer()
 
 void RenderDevice::ApplyVertexBuffers()
 {
-	static const int typeSize[] = { 2, 3, 4 };
-	static const int type[] = { GL_FLOAT, GL_FLOAT, GL_BGRA };
+	static const int typeSize[] = { 2, 3, GL_BGRA };
+	static const int type[] = { GL_FLOAT, GL_FLOAT,  GL_UNSIGNED_BYTE };
 	static const int typeNormalized[] = { GL_FALSE, GL_FALSE, GL_TRUE };
 
 	if (mVertexDeclaration)
@@ -435,7 +435,6 @@ void RenderDevice::ApplyVertexBuffers()
 				glVertexAttribPointer(location, typeSize[(int)element.Type], type[(int)element.Type], typeNormalized[(int)element.Type], vertBinding.Stride, (const void*)(element.Offset + (ptrdiff_t)vertBinding.Offset));
 
 				mEnabledVertexAttributes[location] = 2;
-				break;
 			}
 		}
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
