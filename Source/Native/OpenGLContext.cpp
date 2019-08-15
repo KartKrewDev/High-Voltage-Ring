@@ -200,12 +200,12 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, int major_version, int minor_
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.dwFlags |= PFD_DOUBLEBUFFER;
 	pfd.cColorBits = 24;
-	pfd.cRedBits = 4;
-	pfd.cGreenBits = 4;
-	pfd.cBlueBits = 4;
-	pfd.cAlphaBits = 4;
+	pfd.cRedBits = 8;
+	pfd.cGreenBits = 8;
+	pfd.cBlueBits = 8;
+	pfd.cAlphaBits = 8;
 	pfd.cDepthBits = 24;
-	pfd.cStencilBits = 0;
+	pfd.cStencilBits = 8;
 	int pixelformat = ChoosePixelFormat(hdc, &pfd);
 	SetPixelFormat(hdc, pixelformat, &pfd);
 
