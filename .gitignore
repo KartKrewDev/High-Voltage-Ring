@@ -22,3 +22,7 @@ obj
 /Build/BuilderNative.lib
 /Build/BuilderNative.pdb
 /Source/Native/Debug
+/Source/Native/Release
+*.iobj
+*.ipdb
+/Source/Plugins/vpo_dll/Release
