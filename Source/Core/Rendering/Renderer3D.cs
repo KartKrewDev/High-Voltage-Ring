@@ -605,7 +605,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				//Render cage
 				graphics.SetVertexBuffer(0, t.CageBuffer, 0, WorldVertex.Stride);
-				graphics.DrawPrimitives(PrimitiveType.LineList, 0, t.CageLength);
+				graphics.Draw(PrimitiveType.LineList, 0, t.CageLength);
 			}
 
 			// Done
@@ -645,7 +645,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				//Commence drawing!!11
 				graphics.SetVertexBuffer(0, v.CeilingVertex ? vertexhandle.Upper : vertexhandle.Lower, 0, WorldVertex.Stride);
-				graphics.DrawPrimitives(PrimitiveType.LineList, 0, 8);
+				graphics.Draw(PrimitiveType.LineList, 0, 8);
 			}
 
 			// Done
@@ -724,7 +724,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			//render
 			graphics.SetVertexBuffer(0, vb, 0, WorldVertex.Stride);
-			graphics.DrawPrimitives(PrimitiveType.LineList, 0, pointscount / 2);
+			graphics.Draw(PrimitiveType.LineList, 0, pointscount / 2);
 
 			// Done
 			graphics.SetTextureFactor(-1);
@@ -827,7 +827,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetUniform(UniformName.desaturation, sector.Sector.Desaturation);
 
 						// Render!
-						graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
+						graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
 					}
 				}
 			}
@@ -938,7 +938,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							graphics.SetVertexBuffer(0, t.GeometryBuffer, 0, WorldVertex.Stride);
 
 							// Render!
-							graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, t.Triangles);
+							graphics.Draw(PrimitiveType.TriangleList, 0, t.Triangles);
                         }
 					}
 
@@ -1101,7 +1101,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
 
                     // Render!
-                    graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
+                    graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                 }
                 else graphics.SetUniform(UniformName.desaturation, 0.0f);
             }
@@ -1246,7 +1246,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.SetVertexBuffer(0, t.GeometryBuffer, 0, WorldVertex.Stride);
 
 						// Render!
-						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, t.Triangles);
+						graphics.Draw(PrimitiveType.TriangleList, 0, t.Triangles);
 					}
 				}
 
@@ -1358,7 +1358,7 @@ namespace CodeImp.DoomBuilder.Rendering
                                 graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                             }
                             else graphics.SetUniform(UniformName.spotLight, false);
-                            graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
+                            graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
                     }
                 }
@@ -1385,7 +1385,7 @@ namespace CodeImp.DoomBuilder.Rendering
                                 graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                             }
                             else graphics.SetUniform(UniformName.spotLight, false);
-                            graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
+                            graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
                     }
                 }
@@ -1412,7 +1412,7 @@ namespace CodeImp.DoomBuilder.Rendering
                                 graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                             }
                             else graphics.SetUniform(UniformName.spotLight, false);
-                            graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
+                            graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
                     }
                 }
@@ -1440,7 +1440,7 @@ namespace CodeImp.DoomBuilder.Rendering
                                 graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
                             }
                             else graphics.SetUniform(UniformName.spotLight, false);
-                            graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
+                            graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
                         }
                     }
                 }
@@ -1784,7 +1784,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(sector != null)
 				{
 					graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
-					graphics.DrawPrimitives(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
+					graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
 				}
 			}
 		}
@@ -2033,7 +2033,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			// Draw
 			graphics.Shaders.SetDisplay2DSettings(1.0f, 1.0f, 0.0f, 1.0f, true);
-			graphics.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
+			graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
 		}
 
 		// This switches fog on and off

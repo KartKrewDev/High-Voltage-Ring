@@ -629,7 +629,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 
 						// Draw
-						graphics.DrawPrimitives(PrimitiveType.TriangleList, entry.vertexoffset + (entry.numvertices * surfacevertexoffsetmul), entry.numvertices / 3);
+						graphics.Draw(PrimitiveType.TriangleList, entry.vertexoffset + (entry.numvertices * surfacevertexoffsetmul), entry.numvertices / 3);
 					}
 				}
                 graphics.SetUniform(UniformName.desaturation, 0.0f);

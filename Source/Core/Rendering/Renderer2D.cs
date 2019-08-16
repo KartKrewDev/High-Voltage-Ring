@@ -237,7 +237,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, General.Map.Grid.Background.Texture);
 						graphics.Shaders.SetDisplay2DSettings(1f / windowsize.Width, 1f / windowsize.Height, FSAA_FACTOR, layer.alpha, false);
-						graphics.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
+						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
 						graphics.SetVertexBuffer(0, screenverts, 0, sizeof(FlatVertex));
 						break;
 
@@ -246,7 +246,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, backtex);
 						graphics.Shaders.SetDisplay2DSettings(1f / backsize.Width, 1f / backsize.Height, FSAA_FACTOR, layer.alpha, false);
-						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
 					// GEOMETRY
@@ -254,7 +254,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, plottertex);
 						graphics.Shaders.SetDisplay2DSettings(1f / structsize.Width, 1f / structsize.Height, FSAA_FACTOR, layer.alpha, false);
-						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
 					// THINGS
@@ -262,7 +262,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, thingstex);
 						graphics.Shaders.SetDisplay2DSettings(1f / thingssize.Width, 1f / thingssize.Height, FSAA_FACTOR, layer.alpha, false);
-						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
 					// OVERLAY
@@ -270,7 +270,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, overlaytex);
 						graphics.Shaders.SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false);
-						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
 					// SURFACE
@@ -278,7 +278,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, surfacetex);
 						graphics.Shaders.SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false);
-						graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 				}
 			}
@@ -1261,7 +1261,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 						
 						// Draw!
-						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+						graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
 						buffercount = 0;
 						
 						// Determine next lock size
@@ -1274,7 +1274,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				
 				// Draw what's still remaining
 				if(buffercount > 0)
-					graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+					graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
 
 				//mxd. Render sprites
 				int selectionColor = General.Colors.Selection.ToInt();
@@ -1400,7 +1400,7 @@ namespace CodeImp.DoomBuilder.Rendering
                                 graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 
 								// Draw!
-								graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+								graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
 
 								buffercount = 0;
 
@@ -1413,7 +1413,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 
 						// Draw what's still remaining
-						if(buffercount > 0) graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+						if(buffercount > 0) graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
 					}
 				}
 
@@ -1444,7 +1444,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
 
 						// Draw!
-						graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+						graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
 						buffercount = 0;
 
 						// Determine next lock size
@@ -1457,7 +1457,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				// Draw what's still remaining
 				if(buffercount > 0) 
-					graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, buffercount * 2);
+					graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
 
 				//mxd. Render models
 				if(General.Settings.GZDrawModelsMode != ModelRenderMode.NONE) 
@@ -1627,7 +1627,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.Shaders.SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 				
 				// Draw
-				graphics.DrawUserPrimitives(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
+				graphics.Draw(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
 			}
 		}
 
@@ -1651,7 +1651,7 @@ namespace CodeImp.DoomBuilder.Rendering
             // Draw
             graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
             graphics.SetShader(ShaderName.things2d_fill);
-			graphics.DrawUserPrimitives(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
+			graphics.Draw(PrimitiveType.TriangleList, 0, vertices.Length / 3, vertices);
 		}
 
 		//mxd. This renders text (DB2 compatibility)
@@ -1680,7 +1680,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetVertexBuffer(0, label.VertexBuffer, 0, FlatVertex.Stride);
 
 			// Draw
-			graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+			graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 		}
 
 		//mxd. This renders text
@@ -1718,7 +1718,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					graphics.SetVertexBuffer(0, label.VertexBuffer, 0, FlatVertex.Stride);
 
 					// Draw
-					graphics.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+					graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 				}
 			}
 		}
@@ -1949,7 +1949,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Draw
 			graphics.SetVertexBuffer(0, vb, 0, FlatVertex.Stride);
-			graphics.DrawPrimitives(PrimitiveType.LineList, 0, pointscount / 2);
+			graphics.Draw(PrimitiveType.LineList, 0, pointscount / 2);
 			vb.Dispose();
 		}
 
@@ -2001,7 +2001,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.Shaders.SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 
 			// Draw
-			graphics.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, verts);
+			graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, verts);
 		}
 
 		#endregion

@@ -229,12 +229,12 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_DrawIndexed(Handle, type, startIndex, primitiveCount);
         }
 
-        public void DrawPrimitives(PrimitiveType type, int startIndex, int primitiveCount)
+        public void Draw(PrimitiveType type, int startIndex, int primitiveCount)
         {
             RenderDevice_Draw(Handle, type, startIndex, primitiveCount);
         }
 
-        public void DrawUserPrimitives(PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data)
+        public void Draw(PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data)
         {
             RenderDevice_DrawData(Handle, type, startIndex, primitiveCount, data);
         }
