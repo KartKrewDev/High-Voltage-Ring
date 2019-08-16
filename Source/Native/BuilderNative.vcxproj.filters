@@ -32,7 +32,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderThings2D.h" />
     <ClInclude Include="ShaderWorld3D.h" />
-    <ClInclude Include="ShaderDefault.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShaderDisplay2D.h" />
     <ClInclude Include="RawMouse.h" />

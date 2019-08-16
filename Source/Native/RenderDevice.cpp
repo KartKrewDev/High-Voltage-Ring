@@ -84,27 +84,7 @@ void RenderDevice::SetFillMode(FillMode mode)
 	mNeedApply = true;
 }
 
-void RenderDevice::SetFogEnable(bool value)
-{
-}
-
-void RenderDevice::SetFogColor(int value)
-{
-}
-
-void RenderDevice::SetFogStart(float value)
-{
-}
-
-void RenderDevice::SetFogEnd(float value)
-{
-}
-
 void RenderDevice::SetMultisampleAntialias(bool value)
-{
-}
-
-void RenderDevice::SetTextureFactor(int factor)
 {
 }
 
@@ -117,12 +97,6 @@ void RenderDevice::SetZEnable(bool value)
 void RenderDevice::SetZWriteEnable(bool value)
 {
 	mDepthWrite = value;
-	mNeedApply = true;
-}
-
-void RenderDevice::SetTransform(TransformState state, float* matrix)
-{
-	memcpy(mTransforms[(int)state].Values, matrix, 16 * sizeof(float));
 	mNeedApply = true;
 }
 
@@ -197,7 +171,7 @@ void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitive
 	Context.End();
 }
 
-void RenderDevice::DrawStreamed(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
+void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
 {
 }
 
@@ -356,7 +330,6 @@ void RenderDevice::ApplyChanges()
 	ApplyShader();
 	ApplyVertexBuffers();
 	ApplyIndexBuffer();
-	ApplyMatrices();
 	ApplyUniforms();
 	ApplyTextures();
 	ApplyRasterizerState();
@@ -474,16 +447,6 @@ void RenderDevice::ApplyVertexBuffers()
 			glDisableVertexAttribArray((GLuint)i);
 			mEnabledVertexAttributes[i] = 0;
 		}
-	}
-}
-
-void RenderDevice::ApplyMatrices()
-{
-	Shader* shader = GetActiveShader();
-	for (size_t i = 0; i < (size_t)TransformState::NumTransforms; i++)
-	{
-		auto& binding = mTransforms[i];
-		glUniformMatrix4fv(shader->TransformLocations[i], 1, GL_FALSE, binding.Values);
 	}
 }
 
@@ -651,34 +614,9 @@ void RenderDevice_SetFillMode(RenderDevice* device, FillMode mode)
 	device->SetFillMode(mode);
 }
 
-void RenderDevice_SetFogEnable(RenderDevice* device, bool value)
-{
-	device->SetFogEnable(value);
-}
-
-void RenderDevice_SetFogColor(RenderDevice* device, int value)
-{
-	device->SetFogColor(value);
-}
-
-void RenderDevice_SetFogStart(RenderDevice* device, float value)
-{
-	device->SetFogStart(value);
-}
-
-void RenderDevice_SetFogEnd(RenderDevice* device, float value)
-{
-	device->SetFogEnd(value);
-}
-
 void RenderDevice_SetMultisampleAntialias(RenderDevice* device, bool value)
 {
 	device->SetMultisampleAntialias(value);
-}
-
-void RenderDevice_SetTextureFactor(RenderDevice* device, int factor)
-{
-	device->SetTextureFactor(factor);
 }
 
 void RenderDevice_SetZEnable(RenderDevice* device, bool value)
@@ -689,11 +627,6 @@ void RenderDevice_SetZEnable(RenderDevice* device, bool value)
 void RenderDevice_SetZWriteEnable(RenderDevice* device, bool value)
 {
 	device->SetZWriteEnable(value);
-}
-
-void RenderDevice_SetTransform(RenderDevice* device, TransformState state, float* matrix)
-{
-	device->SetTransform(state, matrix);
 }
 
 void RenderDevice_SetTexture(RenderDevice* device, int unit, Texture* texture)
@@ -721,9 +654,9 @@ void RenderDevice_DrawIndexed(RenderDevice* device, PrimitiveType type, int star
 	device->DrawIndexed(type, startIndex, primitiveCount);
 }
 
-void RenderDevice_DrawStreamed(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount, const void* data)
+void RenderDevice_DrawData(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount, const void* data)
 {
-	device->DrawStreamed(type, startIndex, primitiveCount, data);
+	device->DrawData(type, startIndex, primitiveCount, data);
 }
 
 void RenderDevice_SetVertexDeclaration(RenderDevice* device, VertexDeclaration* decl)

@@ -149,22 +149,22 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetFogEnable(bool value)
         {
-            RenderDevice_SetFogEnable(Handle, value);
+            // To do: move to shaders as an uniform
         }
 
         public void SetFogColor(int value)
         {
-            RenderDevice_SetFogColor(Handle, value);
+            // To do: move to shaders as an uniform
         }
 
         public void SetFogStart(float value)
         {
-            RenderDevice_SetFogStart(Handle, value);
+            // To do: move to shaders as an uniform
         }
 
         public void SetFogEnd(float value)
         {
-            RenderDevice_SetFogEnd(Handle, value);
+            // To do: move to shaders as an uniform
         }
 
         public void SetMultisampleAntialias(bool value)
@@ -174,7 +174,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetTextureFactor(int factor)
         {
-            RenderDevice_SetTextureFactor(Handle, factor);
+            // To do: is this even applied to fragment shaders? if not, delete - if it is, convert to uniform
         }
 
         public void SetZEnable(bool value)
@@ -197,12 +197,6 @@ namespace CodeImp.DoomBuilder.Rendering
         public void SetTransform(TransformState state, Matrix matrix)
         {
             Transforms[(int)state] = matrix;
-            RenderDevice_SetTransform(Handle, state, new float[] {
-                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
-                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
-                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
-                matrix.M41, matrix.M42, matrix.M43, matrix.M44
-            });
         }
 
         public void SetTexture(int unit, BaseTexture value)
@@ -242,7 +236,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void DrawUserPrimitives(PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data)
         {
-            RenderDevice_DrawStreamed(Handle, type, startIndex, primitiveCount, data);
+            RenderDevice_DrawData(Handle, type, startIndex, primitiveCount, data);
         }
 
         public void SetVertexDeclaration(VertexDeclaration decl)
@@ -429,31 +423,13 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_SetFillMode(IntPtr handle, FillMode mode);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetFogEnable(IntPtr handle, bool value);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetFogColor(IntPtr handle, int value);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetFogStart(IntPtr handle, float value);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetFogEnd(IntPtr handle, float value);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetMultisampleAntialias(IntPtr handle, bool value);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetTextureFactor(IntPtr handle, int factor);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetZEnable(IntPtr handle, bool value);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetZWriteEnable(IntPtr handle, bool value);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetTransform(IntPtr handle, TransformState state, float[] matrix);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetTexture(IntPtr handle, int unit, IntPtr texture);
@@ -471,7 +447,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_DrawIndexed(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_DrawStreamed(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data);
+        static extern void RenderDevice_DrawData(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexDeclaration(IntPtr handle, IntPtr decl);
@@ -569,7 +545,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
     public enum ShaderName : int
     {
-        basic,
         display2d_fsaa,
         display2d_normal,
         display2d_fullbright,

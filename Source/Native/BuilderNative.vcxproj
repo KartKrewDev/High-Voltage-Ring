@@ -223,7 +223,6 @@
     <ClInclude Include="RawMouse.h" />
     <ClInclude Include="RenderDevice.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderDefault.h" />
     <ClInclude Include="ShaderDisplay2D.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShaderThings2D.h" />

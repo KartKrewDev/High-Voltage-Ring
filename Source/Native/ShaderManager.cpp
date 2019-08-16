@@ -1,7 +1,6 @@
 
 #include "Precomp.h"
 #include "ShaderManager.h"
-#include "ShaderDefault.h"
 #include "ShaderDisplay2D.h"
 #include "ShaderThings2D.h"
 #include "ShaderWorld3D.h"
@@ -10,7 +9,6 @@
 struct ShaderPair { const char* vs; const char* ps; };
 
 static const ShaderPair ShaderSources[(int)ShaderName::count] = {
-	{ default_vs, default_ps },
 	{ display2D_vs, display2D_ps_fsaa },
 	{ display2D_vs, display2D_ps_normal },
 	{ display2D_vs, display2D_ps_fullbright },

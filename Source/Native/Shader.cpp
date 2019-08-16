@@ -68,10 +68,6 @@ bool Shader::Compile(const std::string& vertexShader, const std::string& fragmen
 		return false;
 	}
 
-	TransformLocations[(int)TransformState::World] = glGetUniformLocation(mProgram, "World");
-	TransformLocations[(int)TransformState::View] = glGetUniformLocation(mProgram, "View");
-	TransformLocations[(int)TransformState::Projection] = glGetUniformLocation(mProgram, "Projection");
-
 	static const char* names[(int)UniformName::NumUniforms] = {
 		"rendersettings",
 		"transformsettings",

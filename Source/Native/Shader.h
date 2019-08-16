@@ -14,7 +14,6 @@ public:
 
 	GLuint GetProgram() const { return mProgram; }
 
-	GLuint TransformLocations[(int)TransformState::NumTransforms] = { 0 };
 	GLuint UniformLocations[(int)UniformName::NumUniforms] = { 0 };
 
 	enum { MaxSamplers = 4 };

@@ -22,7 +22,6 @@ enum class TextureFilter : int { None, Point, Linear, Anisotropic };
 
 enum class ShaderName
 {
-	basic,
 	display2d_fsaa,
 	display2d_normal,
 	display2d_fullbright,
@@ -46,7 +45,7 @@ enum class ShaderName
 	world3d_main_highlight_fog_vertexcolor,
 	world3d_vertex_color,
 	world3d_constant_color,
-	world3d_lightpass, // AlphaBlendEnable = true
+	world3d_lightpass,
 	count
 };
 
@@ -89,21 +88,15 @@ public:
 	void SetSourceBlend(Blend blend);
 	void SetDestinationBlend(Blend blend);
 	void SetFillMode(FillMode mode);
-	void SetFogEnable(bool value);
-	void SetFogColor(int value);
-	void SetFogStart(float value);
-	void SetFogEnd(float value);
 	void SetMultisampleAntialias(bool value);
-	void SetTextureFactor(int factor);
 	void SetZEnable(bool value);
 	void SetZWriteEnable(bool value);
-	void SetTransform(TransformState state, float* matrix);
 	void SetTexture(int unit, Texture* texture);
 	void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
 	void SetSamplerState(int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 	void Draw(PrimitiveType type, int startIndex, int primitiveCount);
 	void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
-	void DrawStreamed(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
+	void DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
 	void SetVertexDeclaration(VertexDeclaration* decl);
 	void StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer);
 	void FinishRendering();
@@ -126,7 +119,6 @@ public:
 	void ApplyVertexBuffers();
 	void ApplyIndexBuffer();
 	void ApplyShader();
-	void ApplyMatrices();
 	void ApplyUniforms();
 	void ApplyTextures();
 	void ApplyRasterizerState();
@@ -174,13 +166,7 @@ public:
 	IndexBuffer* mIndexBuffer = nullptr;
 
 	std::unique_ptr<ShaderManager> mShaderManager;
-	ShaderName mShaderName = ShaderName::basic;
-
-	struct Mat4f
-	{
-		Mat4f() { Values[0] = 1.0f; Values[5] = 1.0f; Values[10] = 1.0f; Values[15] = 1.0f; }
-		float Values[16] = { 0.0f };
-	};
+	ShaderName mShaderName = ShaderName::display2d_normal;
 
 	union UniformEntry
 	{
@@ -188,7 +174,6 @@ public:
 		int32_t valuei;
 	};
 
-	Mat4f mTransforms[(int)TransformState::NumTransforms];
 	UniformEntry mUniforms[4 * 16 + 12 * 4];
 
 	Cull mCullMode = Cull::None;

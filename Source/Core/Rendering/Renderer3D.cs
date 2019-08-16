@@ -1457,6 +1457,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetUniform(UniformName.world, Matrix.Identity);
             graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
             graphics.SetShader(ShaderName.world3d_lightpass);
+            graphics.SetAlphaBlendEnable(true);
 
             VisualSector sector = null;
 
@@ -1468,6 +1469,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
             //
             graphics.SetBlendOperation(BlendOperation.Add);
+            graphics.SetAlphaBlendEnable(false);
         }
 
         //
@@ -1479,6 +1481,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetUniform(UniformName.world, Matrix.Identity);
             graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
             graphics.SetShader(ShaderName.world3d_lightpass);
+            graphics.SetAlphaBlendEnable(true);
 
             VisualSector sector = null;
 
@@ -1494,6 +1497,7 @@ namespace CodeImp.DoomBuilder.Rendering
             }
 
             graphics.SetBlendOperation(BlendOperation.Add);
+            graphics.SetAlphaBlendEnable(false);
         }
 
         //mxd. Render models
@@ -1513,6 +1517,7 @@ namespace CodeImp.DoomBuilder.Rendering
             else
             {
                 graphics.SetShader(ShaderName.world3d_lightpass);
+                graphics.SetAlphaBlendEnable(true);
             }
 
             List<VisualThing> things;
@@ -1734,7 +1739,11 @@ namespace CodeImp.DoomBuilder.Rendering
                 }
 			}
 
-            if (lightpass) graphics.SetBlendOperation(BlendOperation.Add);
+            if (lightpass)
+            {
+                graphics.SetBlendOperation(BlendOperation.Add);
+                graphics.SetAlphaBlendEnable(false);
+            }
         }
 
 		//mxd

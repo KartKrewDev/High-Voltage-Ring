@@ -14,21 +14,15 @@ EXPORTS
 	RenderDevice_SetSourceBlend
 	RenderDevice_SetDestinationBlend
 	RenderDevice_SetFillMode
-	RenderDevice_SetFogEnable
-	RenderDevice_SetFogColor
-	RenderDevice_SetFogStart
-	RenderDevice_SetFogEnd
 	RenderDevice_SetMultisampleAntialias
-	RenderDevice_SetTextureFactor
 	RenderDevice_SetZEnable
 	RenderDevice_SetZWriteEnable
-	RenderDevice_SetTransform
 	RenderDevice_SetTexture
 	RenderDevice_SetSamplerFilter
 	RenderDevice_SetSamplerState
 	RenderDevice_Draw
 	RenderDevice_DrawIndexed
-	RenderDevice_DrawStreamed
+	RenderDevice_DrawData
 	RenderDevice_SetVertexDeclaration
 	RenderDevice_StartRendering
 	RenderDevice_FinishRendering
