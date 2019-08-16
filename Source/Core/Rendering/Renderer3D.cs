@@ -52,9 +52,13 @@ namespace CodeImp.DoomBuilder.Rendering
 		private Vector3D cameraposition;
         private Vector3D cameravector;
 		private ShaderName shaderpass;
-		
-		// Window size
-		private Size windowsize;
+
+        // Spaghetti
+        Matrix viewmatrix = Matrix.Identity;
+        Matrix worldmatrix = Matrix.Identity;
+
+        // Window size
+        private Size windowsize;
 		
 		// Frustum
 		private ProjectedFrustum2D frustum;
@@ -287,9 +291,8 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This sets the appropriate view matrix
 		public void ApplyMatrices2D()
 		{
-			graphics.SetTransform(TransformState.World, world);
-			graphics.SetTransform(TransformState.Projection, Matrix.Identity);
-			graphics.SetTransform(TransformState.View, view2d);
+			worldmatrix = world;
+			viewmatrix = view2d;
 		}
 		
 		#endregion
@@ -2011,8 +2014,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetSourceBlend(Blend.SourceAlpha);
 			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
 			graphics.SetTextureFactor(-1);
-			graphics.SetTransform(TransformState.World, Matrix.Identity);
-			graphics.SetTransform(TransformState.Projection, Matrix.Identity);
+			worldmatrix = Matrix.Identity;
 			ApplyMatrices2D();
 
             graphics.SetShader(ShaderName.display2d_normal);
@@ -2038,9 +2040,7 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
-            Matrix world = graphics.GetTransform(TransformState.World);
-            Matrix view = graphics.GetTransform(TransformState.View);
-            graphics.SetUniform(UniformName.transformsettings, world * view);
+            graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
             graphics.SetSamplerFilter(0, bilinear ? TextureFilter.Linear : TextureFilter.Point);
         }
 

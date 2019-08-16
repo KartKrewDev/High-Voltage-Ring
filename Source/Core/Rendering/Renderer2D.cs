@@ -110,8 +110,12 @@ namespace CodeImp.DoomBuilder.Rendering
 		private RectangleF viewport;
 		private RectangleF yviewport;
 
-		// Presentation
-		private Presentation present;
+        // Spaghetti
+        Matrix viewmatrix = Matrix.Identity;
+        Matrix worldmatrix = Matrix.Identity;
+
+        // Presentation
+        private Presentation present;
 		
 		#endregion
 
@@ -185,7 +189,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetZEnable(false);
 			graphics.SetFogEnable(false);
 			graphics.SetVertexBuffer(screenverts);
-			graphics.SetTransform(TransformState.World, Matrix.Identity);
+			worldmatrix = Matrix.Identity;
 
 			// Go for all layers
 			foreach(PresentLayer layer in present.layers)
@@ -468,8 +472,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			Matrix scaling = Matrix.Scaling((1f / windowsize.Width) * 2f, (1f / windowsize.Height) * -2f, 1f);
 			Matrix translate = Matrix.Translation(-(float)windowsize.Width * 0.5f, -(float)windowsize.Height * 0.5f, 0f);
-			graphics.SetTransform(TransformState.View, translate * scaling);
-			graphics.SetTransform(TransformState.Projection, Matrix.Identity);
+			viewmatrix = translate * scaling;
 			Vector2D lt = DisplayToMap(new Vector2D(0.0f, 0.0f));
 			Vector2D rb = DisplayToMap(new Vector2D(windowsize.Width, windowsize.Height));
 			viewport = new RectangleF(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
@@ -483,11 +486,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				Matrix translate = Matrix.Translation(translatex, translatey, 0f);
 				Matrix scaling = Matrix.Scaling(scale, -scale, 1f);
-				graphics.SetTransform(TransformState.World, translate * scaling);
+				worldmatrix = translate * scaling;
 			}
 			else
 			{
-				graphics.SetTransform(TransformState.World, Matrix.Identity);
+				worldmatrix = Matrix.Identity;
 			}
 		}
 
@@ -495,9 +498,7 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
-            Matrix world = graphics.GetTransform(TransformState.World);
-            Matrix view = graphics.GetTransform(TransformState.View);
-            graphics.SetUniform(UniformName.transformsettings, world * view);
+            graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
             graphics.SetSamplerFilter(0, bilinear ? TextureFilter.Linear : TextureFilter.Point);
         }
 
@@ -505,16 +506,13 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             Vector4 values = new Vector4(0.0f, 0.0f, 1.0f, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
-            Matrix world = graphics.GetTransform(TransformState.World);
-            Matrix view = graphics.GetTransform(TransformState.View);
-            graphics.SetUniform(UniformName.transformsettings, world * view);
+            graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
         }
 
         //mxd. Used to render models
         private void SetThings2DTransformSettings(Matrix world)
         {
-            Matrix view = graphics.GetTransform(TransformState.View);
-            graphics.SetUniform(UniformName.transformsettings, world * view);
+            graphics.SetUniform(UniformName.transformsettings, world * viewmatrix);
         }
 
         /// <summary>

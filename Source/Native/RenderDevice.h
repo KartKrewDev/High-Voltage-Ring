@@ -14,7 +14,6 @@ enum class Cull : int { None, Clockwise };
 enum class Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor };
 enum class BlendOperation : int { Add, ReverseSubtract };
 enum class FillMode : int { Solid, Wireframe };
-enum class TransformState : int { World, View, Projection, NumTransforms };
 enum class TextureAddress : int { Wrap, Clamp };
 enum class ShaderFlags : int { None, Debug };
 enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };

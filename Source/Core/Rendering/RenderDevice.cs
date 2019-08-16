@@ -187,18 +187,6 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetZWriteEnable(Handle, value);
         }
 
-        Matrix[] Transforms = new Matrix[] { Matrix.Identity, Matrix.Identity, Matrix.Identity };
-
-        public Matrix GetTransform(TransformState state)
-        {
-            return Transforms[(int)state];
-        }
-
-        public void SetTransform(TransformState state, Matrix matrix)
-        {
-            Transforms[(int)state] = matrix;
-        }
-
         public void SetTexture(int unit, BaseTexture value)
         {
             RenderDevice_SetTexture(Handle, unit, value != null ? value.Handle : IntPtr.Zero);
@@ -366,11 +354,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			SetTextureFactor(-1);
 			SetZEnable(false);
 			SetZWriteEnable(false);
-
-			// Matrices
-			SetTransform(TransformState.World, Matrix.Identity);
-			SetTransform(TransformState.View, Matrix.Identity);
-			SetTransform(TransformState.Projection, Matrix.Identity);
 			
 			// Texture addressing
 			SetSamplerState(0, TextureAddress.Wrap);
@@ -602,7 +585,7 @@ namespace CodeImp.DoomBuilder.Rendering
     public enum Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
     public enum BlendOperation : int { Add, ReverseSubtract }
     public enum FillMode : int { Solid, Wireframe }
-    public enum TransformState : int { World, View, Projection }
+    public enum TransformState : int { World, View }
     public enum TextureAddress : int { Wrap, Clamp }
     public enum PrimitiveType : int { LineList, TriangleList, TriangleStrip }
     public enum TextureFilter : int { None, Point, Linear, Anisotropic }
