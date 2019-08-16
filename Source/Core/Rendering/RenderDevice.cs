@@ -276,7 +276,8 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetBufferData(VertexBuffer buffer, int length, VertexFormat format)
         {
-            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, IntPtr.Zero, length * (format == VertexFormat.Flat ? FlatVertex.Stride : WorldVertex.Stride), format);
+            int stride = (format == VertexFormat.Flat) ? FlatVertex.Stride : WorldVertex.Stride;
+            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, IntPtr.Zero, length * stride, format);
         }
 
         public void SetBufferData(VertexBuffer buffer, FlatVertex[] data)
@@ -291,18 +292,18 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetBufferSubdata(VertexBuffer buffer, long destOffset, FlatVertex[] data)
         {
-            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset, data, data.Length * Marshal.SizeOf<FlatVertex>());
+            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset * FlatVertex.Stride, data, data.Length * FlatVertex.Stride);
         }
 
         public void SetBufferSubdata(VertexBuffer buffer, long destOffset, WorldVertex[] data)
         {
-            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset, data, data.Length * Marshal.SizeOf<WorldVertex>());
+            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset * WorldVertex.Stride, data, data.Length * WorldVertex.Stride);
         }
 
-        public void SetBufferSubdata(VertexBuffer buffer, long destOffset, FlatVertex[] data, long offset, long size)
+        public void SetBufferSubdata(VertexBuffer buffer, FlatVertex[] data, long size)
         {
-            if (data.Length < size || size < 0) throw new ArgumentOutOfRangeException("size");
-            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset, data, size * Marshal.SizeOf<FlatVertex>());
+            if (size < 0 || size > data.Length) throw new ArgumentOutOfRangeException("size");
+            RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, 0, data, size * FlatVertex.Stride);
         }
 
         public void SetPixels(Texture texture, System.Drawing.Bitmap bitmap)

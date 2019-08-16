@@ -1283,7 +1283,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(buffercount == locksize)
 					{
 						// Write to buffer
-                        graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
+                        graphics.SetBufferSubdata(thingsvertices, verts, buffercount * 6);
 						
 						// Draw!
 						graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1295,7 +1295,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Write to buffer
-				if(buffercount > 0) graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
+				if(buffercount > 0) graphics.SetBufferSubdata(thingsvertices, verts, buffercount * 6);
 				
 				// Draw what's still remaining
 				if(buffercount > 0)
@@ -1422,7 +1422,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							if(buffercount == locksize)
 							{
 								// Write to buffer
-                                graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
+                                graphics.SetBufferSubdata(thingsvertices, verts, buffercount * 6);
 
 								// Draw!
 								graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1435,7 +1435,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 
 						// Write to buffer
-                        graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
+                        graphics.SetBufferSubdata(thingsvertices, verts, buffercount * 6);
 
 						// Draw what's still remaining
 						if(buffercount > 0) graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1466,7 +1466,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(buffercount == locksize) 
 					{
 						// Write to buffer
-                        graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
+                        graphics.SetBufferSubdata(thingsvertices, verts, buffercount * 6);
 
 						// Draw!
 						graphics.Draw(PrimitiveType.TriangleList, 0, buffercount * 2);
@@ -1478,7 +1478,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Write to buffer
-				if(buffercount > 0) graphics.SetBufferSubdata(thingsvertices, 0, verts, 0, buffercount * 6);
+				if(buffercount > 0) graphics.SetBufferSubdata(thingsvertices, verts, buffercount * 6);
 
 				// Draw what's still remaining
 				if(buffercount > 0) 

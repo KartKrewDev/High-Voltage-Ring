@@ -147,8 +147,8 @@ namespace CodeImp.DoomBuilder.Rendering
 					{
 						if(e.bufferindex == i)
 						{
-                            General.Map.Graphics.SetBufferSubdata(b, e.vertexoffset * FlatVertex.Stride, e.floorvertices);
-                            General.Map.Graphics.SetBufferSubdata(b, (e.vertexoffset + e.floorvertices.Length) * FlatVertex.Stride, e.ceilvertices);
+                            General.Map.Graphics.SetBufferSubdata(b, e.vertexoffset, e.floorvertices);
+                            General.Map.Graphics.SetBufferSubdata(b, e.vertexoffset + e.floorvertices.Length, e.ceilvertices);
 						}
 					}
 
@@ -326,8 +326,8 @@ namespace CodeImp.DoomBuilder.Rendering
 						if(!resourcesunloaded)
 						{
                             // Fill buffer
-                            General.Map.Graphics.SetBufferSubdata(set.buffers[bufferindex], vertexoffset * FlatVertex.Stride, e.floorvertices);
-                            General.Map.Graphics.SetBufferSubdata(set.buffers[bufferindex], (vertexoffset + e.floorvertices.Length) * FlatVertex.Stride, e.ceilvertices);
+                            General.Map.Graphics.SetBufferSubdata(set.buffers[bufferindex], vertexoffset, e.floorvertices);
+                            General.Map.Graphics.SetBufferSubdata(set.buffers[bufferindex], vertexoffset + e.floorvertices.Length, e.ceilvertices);
 						}
 
 						// Set the new location in the buffer
@@ -448,8 +448,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(!resourcesunloaded)
 				{
 					VertexBuffer vb = set.buffers[e.bufferindex];
-                    General.Map.Graphics.SetBufferSubdata(vb, e.vertexoffset * FlatVertex.Stride, e.floorvertices);
-                    General.Map.Graphics.SetBufferSubdata(vb, (e.vertexoffset + e.floorvertices.Length) * FlatVertex.Stride, e.ceilvertices);
+                    General.Map.Graphics.SetBufferSubdata(vb, e.vertexoffset, e.floorvertices);
+                    General.Map.Graphics.SetBufferSubdata(vb, e.vertexoffset + e.floorvertices.Length, e.ceilvertices);
 				}
 			}
 		}

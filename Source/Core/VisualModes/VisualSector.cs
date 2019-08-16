@@ -145,7 +145,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				{
 					if((g.Vertices != null) && (g.Vertices.Length > 0))
 					{
-                        graphics.SetBufferSubdata(geobuffer, v * WorldVertex.Stride, g.Vertices);
+                        graphics.SetBufferSubdata(geobuffer, v, g.Vertices);
 						g.VertexOffset = v;
 						v += g.Vertices.Length;
 					}
