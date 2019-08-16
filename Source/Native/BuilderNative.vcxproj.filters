@@ -5,7 +5,6 @@
     <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
-    <ClCompile Include="VertexDeclaration.cpp" />
     <ClCompile Include="gl_load\gl_load.c">
       <Filter>gl_load</Filter>
     </ClCompile>
@@ -20,7 +19,6 @@
     <ClInclude Include="RenderDevice.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexBuffer.h" />
-    <ClInclude Include="VertexDeclaration.h" />
     <ClInclude Include="gl_load\gl_load.h">
       <Filter>gl_load</Filter>
     </ClInclude>

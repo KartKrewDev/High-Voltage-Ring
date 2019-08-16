@@ -3,6 +3,8 @@
 #include <string>
 #include "RenderDevice.h"
 
+enum class DeclarationUsage : int32_t { Position, Color, TextureCoordinate, Normal };
+
 class Shader
 {
 public:

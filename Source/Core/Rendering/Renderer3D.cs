@@ -382,7 +382,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(false);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetTextureFactor(-1);
-            graphics.SetVertexDeclaration(graphics.Shaders.WorldVertexDecl);
 
 			//mxd. SKY PASS
 			if(skygeo.Count > 0)
@@ -604,7 +603,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetUniform(UniformName.vertexColor, thingcolor);
 
 				//Render cage
-				graphics.SetVertexBuffer(0, t.CageBuffer, 0, WorldVertex.Stride);
+				graphics.SetVertexBuffer(t.CageBuffer);
 				graphics.Draw(PrimitiveType.LineList, 0, t.CageLength);
 			}
 
@@ -644,7 +643,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 graphics.SetUniform(UniformName.vertexColor, color);
 
 				//Commence drawing!!11
-				graphics.SetVertexBuffer(0, v.CeilingVertex ? vertexhandle.Upper : vertexhandle.Lower, 0, WorldVertex.Stride);
+				graphics.SetVertexBuffer(v.CeilingVertex ? vertexhandle.Upper : vertexhandle.Lower);
 				graphics.Draw(PrimitiveType.LineList, 0, 8);
 			}
 
@@ -723,7 +722,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			ApplyMatrices3D();
 
 			//render
-			graphics.SetVertexBuffer(0, vb, 0, WorldVertex.Stride);
+			graphics.SetVertexBuffer(vb);
 			graphics.Draw(PrimitiveType.LineList, 0, pointscount / 2);
 
 			// Done
@@ -781,7 +780,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							sector = g.Sector;
 
 							// Set stream source
-							graphics.SetVertexBuffer(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
+							graphics.SetVertexBuffer(sector.GeometryBuffer);
 						}
 						else
 						{
@@ -935,7 +934,7 @@ namespace CodeImp.DoomBuilder.Rendering
                             ApplyMatrices3D();
 
 							// Apply buffer
-							graphics.SetVertexBuffer(0, t.GeometryBuffer, 0, WorldVertex.Stride);
+							graphics.SetVertexBuffer(t.GeometryBuffer);
 
 							// Render!
 							graphics.Draw(PrimitiveType.TriangleList, 0, t.Triangles);
@@ -1055,7 +1054,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						sector = g.Sector;
 
 						// Set stream source
-						graphics.SetVertexBuffer(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
+						graphics.SetVertexBuffer(sector.GeometryBuffer);
 					}
 					else
 					{
@@ -1243,7 +1242,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         ApplyMatrices3D();
 
 						// Apply buffer
-						graphics.SetVertexBuffer(0, t.GeometryBuffer, 0, WorldVertex.Stride);
+						graphics.SetVertexBuffer(t.GeometryBuffer);
 
 						// Render!
 						graphics.Draw(PrimitiveType.TriangleList, 0, t.Triangles);
@@ -1316,7 +1315,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         sector = g.Sector;
 
                         // Set stream source
-                        graphics.SetVertexBuffer(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
+                        graphics.SetVertexBuffer(sector.GeometryBuffer);
                     }
                     else
                     {
@@ -1773,7 +1772,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						sector = g.Sector;
 
 						// Set stream source
-						graphics.SetVertexBuffer(0, sector.GeometryBuffer, 0, WorldVertex.Stride);
+						graphics.SetVertexBuffer(sector.GeometryBuffer);
 					}
 					else
 					{
@@ -2016,7 +2015,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetTransform(TransformState.Projection, Matrix.Identity);
 			ApplyMatrices2D();
 
-            graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
             graphics.SetShader(ShaderName.display2d_normal);
 			
 			// Texture
@@ -2032,12 +2030,22 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 			
 			// Draw
-			graphics.Shaders.SetDisplay2DSettings(1.0f, 1.0f, 0.0f, 1.0f, true);
+			SetDisplay2DSettings(1.0f, 1.0f, 0.0f, 1.0f, true);
 			graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
 		}
 
-		// This switches fog on and off
-		public void SetFogMode(bool usefog)
+        private void SetDisplay2DSettings(float texelx, float texely, float fsaafactor, float alpha, bool bilinear)
+        {
+            Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
+            graphics.SetUniform(UniformName.rendersettings, values);
+            Matrix world = graphics.GetTransform(TransformState.World);
+            Matrix view = graphics.GetTransform(TransformState.View);
+            graphics.SetUniform(UniformName.transformsettings, world * view);
+            graphics.SetSamplerFilter(0, bilinear ? TextureFilter.Linear : TextureFilter.Point);
+        }
+
+        // This switches fog on and off
+        public void SetFogMode(bool usefog)
 		{
 			graphics.SetFogEnable(usefog);
 		}

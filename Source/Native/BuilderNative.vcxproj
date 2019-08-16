@@ -212,7 +212,6 @@
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
-    <ClCompile Include="VertexDeclaration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_load\gl_load.h" />
@@ -229,7 +228,6 @@
     <ClInclude Include="ShaderWorld3D.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexBuffer.h" />
-    <ClInclude Include="VertexDeclaration.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="gl_load\gl_extlist.txt" />

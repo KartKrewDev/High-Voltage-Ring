@@ -4,11 +4,11 @@
 
 class VertexBuffer;
 class IndexBuffer;
-class VertexDeclaration;
 class Texture;
 class ShaderManager;
 class Shader;
 enum class CubeMapFace;
+enum class VertexFormat;
 
 enum class Cull : int { None, Clockwise };
 enum class Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor };
@@ -79,7 +79,7 @@ public:
 
 	void SetShader(ShaderName name);
 	void SetUniform(UniformName name, const void* values, int count);
-	void SetVertexBuffer(int index, VertexBuffer* buffer, long offset, long stride);
+	void SetVertexBuffer(VertexBuffer* buffer);
 	void SetIndexBuffer(IndexBuffer* buffer);
 	void SetAlphaBlendEnable(bool value);
 	void SetAlphaTestEnable(bool value);
@@ -96,15 +96,14 @@ public:
 	void SetSamplerState(int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 	void Draw(PrimitiveType type, int startIndex, int primitiveCount);
 	void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
-	void DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data, int stride);
-	void SetVertexDeclaration(VertexDeclaration* decl);
+	void DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
 	void StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer);
 	void FinishRendering();
 	void Present();
 	void ClearTexture(int backcolor, Texture* texture);
 	void CopyTexture(Texture* src, Texture* dst, CubeMapFace face);
 
-	void SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size);
+	void SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format);
 	void SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size);
 	void SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size);
 
@@ -116,7 +115,7 @@ public:
 	void InvalidateTexture(Texture* texture);
 
 	void ApplyChanges();
-	void ApplyVertexBuffers();
+	void ApplyVertexBuffer();
 	void ApplyIndexBuffer();
 	void ApplyShader();
 	void ApplyUniforms();
@@ -133,16 +132,6 @@ public:
 
 	OpenGLContext Context;
 
-	struct VertexBinding
-	{
-		VertexBinding() = default;
-		VertexBinding(VertexBuffer* buffer, long offset, long stride) : Buffer(buffer), Offset(offset), Stride(stride) { }
-
-		VertexBuffer* Buffer = nullptr;
-		long Offset = 0;
-		long Stride = 0;
-	};
-
 	struct TextureUnit
 	{
 		Texture* Tex = nullptr;
@@ -156,13 +145,9 @@ public:
 
 	enum { NumSlots = 16 };
 
-	VertexDeclaration *mVertexDeclaration = nullptr;
-	GLuint mVAO = 0;
-	int mEnabledVertexAttributes[NumSlots] = { 0 };
-	VertexBinding mVertexBindings[NumSlots];
-
 	TextureUnit mTextureUnits[NumSlots];
 
+	VertexBuffer* mVertexBuffer = nullptr;
 	IndexBuffer* mIndexBuffer = nullptr;
 
 	std::unique_ptr<ShaderManager> mShaderManager;
@@ -177,7 +162,7 @@ public:
 	UniformEntry mUniforms[4 * 16 + 12 * 4];
 
 	GLuint mStreamVertexBuffer = 0;
-	int mStreamBufferStride = 0;
+	GLuint mStreamVAO = 0;
 
 	Cull mCullMode = Cull::None;
 	FillMode mFillMode = FillMode::Solid;

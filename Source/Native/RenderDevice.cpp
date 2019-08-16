@@ -3,7 +3,6 @@
 #include "RenderDevice.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
-#include "VertexDeclaration.h"
 #include "Texture.h"
 #include "ShaderManager.h"
 #include <stdexcept>
@@ -15,8 +14,17 @@ RenderDevice::RenderDevice(HWND hwnd) : Context(hwnd)
 	if (Context)
 	{
 		Context.Begin();
+
+		glGenVertexArrays(1, &mStreamVAO);
 		glGenBuffers(1, &mStreamVertexBuffer);
+		glBindVertexArray(mStreamVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
+		VertexBuffer::SetupFlatVAO();
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 		mShaderManager = std::make_unique<ShaderManager>();
+
+		CheckError();
 		Context.End();
 	}
 }
@@ -27,14 +35,15 @@ RenderDevice::~RenderDevice()
 	{
 		Context.Begin();
 		glDeleteBuffers(1, &mStreamVertexBuffer);
+		glDeleteVertexArrays(1, &mStreamVAO);
 		mShaderManager->ReleaseResources();
 		Context.End();
 	}
 }
 
-void RenderDevice::SetVertexBuffer(int index, VertexBuffer* buffer, long offset, long stride)
+void RenderDevice::SetVertexBuffer(VertexBuffer* buffer)
 {
-	mVertexBindings[index] = { buffer, offset, stride };
+	mVertexBuffer = buffer;
 	mNeedApply = true;
 }
 
@@ -173,7 +182,7 @@ void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitive
 	Context.End();
 }
 
-void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data, int stride)
+void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
 {
 	static const int modes[] = { GL_LINES, GL_TRIANGLES, GL_TRIANGLE_STRIP };
 	static const int toVertexCount[] = { 2, 3, 1 };
@@ -182,19 +191,14 @@ void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCou
 	int vertcount = toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type];
 
 	Context.Begin();
-	mStreamBufferStride = stride;
-	glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertcount * (size_t)stride, static_cast<const uint8_t*>(data) + startIndex * (size_t)stride, GL_STREAM_DRAW);
-	ApplyChanges();
-	glDrawArrays(modes[(int)type], 0, vertcount);
-	mStreamBufferStride = 0;
-	Context.End();
-}
+	if (mNeedApply) ApplyChanges();
 
-void RenderDevice::SetVertexDeclaration(VertexDeclaration* decl)
-{
-	mVertexDeclaration = decl;
-	mNeedApply = true;
+	glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertcount * (size_t)VertexBuffer::FlatStride, static_cast<const uint8_t*>(data) + startIndex * (size_t)VertexBuffer::FlatStride, GL_STREAM_DRAW);
+	glBindVertexArray(mStreamVAO);
+	glDrawArrays(modes[(int)type], 0, vertcount);
+	ApplyVertexBuffer();
+	Context.End();
 }
 
 void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer)
@@ -274,9 +278,10 @@ void RenderDevice::CopyTexture(Texture* src, Texture* dst, CubeMapFace face)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, oldFramebuffer);
 }
 
-void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size)
+void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format)
 {
 	Context.Begin();
+	buffer->Format = format;
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
@@ -359,7 +364,7 @@ Shader* RenderDevice::GetActiveShader()
 void RenderDevice::ApplyChanges()
 {
 	ApplyShader();
-	ApplyVertexBuffers();
+	ApplyVertexBuffer();
 	ApplyIndexBuffer();
 	ApplyUniforms();
 	ApplyTextures();
@@ -435,67 +440,10 @@ void RenderDevice::ApplyIndexBuffer()
 	}
 }
 
-void RenderDevice::ApplyVertexBuffers()
+void RenderDevice::ApplyVertexBuffer()
 {
-	static const int typeSize[] = { 2, 3, GL_BGRA };
-	static const int type[] = { GL_FLOAT, GL_FLOAT,  GL_UNSIGNED_BYTE };
-	static const int typeNormalized[] = { GL_FALSE, GL_FALSE, GL_TRUE };
-
-	if (mVertexDeclaration)
-	{
-		if (!mVAO)
-		{
-			glGenVertexArrays(1, &mVAO);
-			glBindVertexArray(mVAO);
-		}
-
-		if (mStreamBufferStride)
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
-			for (size_t i = 0; i < mVertexDeclaration->Elements.size(); i++)
-			{
-				const auto& element = mVertexDeclaration->Elements[i];
-				GLuint location = (int)element.Usage;
-
-				glEnableVertexAttribArray(location);
-				glVertexAttribPointer(location, typeSize[(int)element.Type], type[(int)element.Type], typeNormalized[(int)element.Type], mStreamBufferStride, (const void*)element.Offset);
-
-				mEnabledVertexAttributes[location] = 2;
-			}
-		}
-		else
-		{
-			for (size_t i = 0; i < mVertexDeclaration->Elements.size(); i++)
-			{
-				const auto& element = mVertexDeclaration->Elements[i];
-				auto& vertBinding = mVertexBindings[element.Stream];
-				GLuint location = (int)element.Usage;
-				if (vertBinding.Buffer)
-				{
-					GLuint vertexbuffer = vertBinding.Buffer->GetBuffer();
-					glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-					glEnableVertexAttribArray(location);
-					glVertexAttribPointer(location, typeSize[(int)element.Type], type[(int)element.Type], typeNormalized[(int)element.Type], vertBinding.Stride, (const void*)(element.Offset + (ptrdiff_t)vertBinding.Offset));
-
-					mEnabledVertexAttributes[location] = 2;
-				}
-			}
-		}
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
-	for (size_t i = 0; i < NumSlots; i++)
-	{
-		if (mEnabledVertexAttributes[i] == 2)
-		{
-			mEnabledVertexAttributes[i] = 1;
-		}
-		else if (mEnabledVertexAttributes[i] == 1)
-		{
-			glDisableVertexAttribArray((GLuint)i);
-			mEnabledVertexAttributes[i] = 0;
-		}
-	}
+	if (mVertexBuffer)
+		glBindVertexArray(mVertexBuffer->GetVAO());
 }
 
 void RenderDevice::SetShader(ShaderName name)
@@ -617,9 +565,9 @@ void RenderDevice_SetUniform(RenderDevice* device, UniformName name, const void*
 	device->SetUniform(name, values, count);
 }
 
-void RenderDevice_SetVertexBuffer(RenderDevice* device, int index, VertexBuffer* buffer, long offset, long stride)
+void RenderDevice_SetVertexBuffer(RenderDevice* device, VertexBuffer* buffer)
 {
-	device->SetVertexBuffer(index, buffer, offset, stride);
+	device->SetVertexBuffer(buffer);
 }
 
 void RenderDevice_SetIndexBuffer(RenderDevice* device, IndexBuffer* buffer)
@@ -702,14 +650,9 @@ void RenderDevice_DrawIndexed(RenderDevice* device, PrimitiveType type, int star
 	device->DrawIndexed(type, startIndex, primitiveCount);
 }
 
-void RenderDevice_DrawData(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount, const void* data, int stride)
+void RenderDevice_DrawData(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount, const void* data)
 {
-	device->DrawData(type, startIndex, primitiveCount, data, stride);
-}
-
-void RenderDevice_SetVertexDeclaration(RenderDevice* device, VertexDeclaration* decl)
-{
-	device->SetVertexDeclaration(decl);
+	device->DrawData(type, startIndex, primitiveCount, data);
 }
 
 void RenderDevice_StartRendering(RenderDevice* device, bool clear, int backcolor, Texture* target, bool usedepthbuffer)
@@ -737,9 +680,9 @@ void RenderDevice_CopyTexture(RenderDevice* device, Texture* src, Texture* dst, 
 	device->CopyTexture(src, dst, face);
 }
 
-void RenderDevice_SetVertexBufferData(RenderDevice* device, VertexBuffer* buffer, void* data, int64_t size)
+void RenderDevice_SetVertexBufferData(RenderDevice* device, VertexBuffer* buffer, void* data, int64_t size, VertexFormat format)
 {
-	device->SetVertexBufferData(buffer, data, size);
+	device->SetVertexBufferData(buffer, data, size, format);
 }
 
 void RenderDevice_SetVertexBufferSubdata(RenderDevice* device, VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size)

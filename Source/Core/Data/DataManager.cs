@@ -3465,7 +3465,6 @@ namespace CodeImp.DoomBuilder.Data
             General.Map.Graphics.SetUniform(UniformName.campos, new Vector4());
 
             // Begin fullbright shaderpass
-            General.Map.Graphics.SetVertexDeclaration(General.Map.Graphics.Shaders.WorldVertexDecl);
             General.Map.Graphics.SetShader(ShaderName.world3d_fullbright);
 
 			// Render to the six faces of the cube map

@@ -22,7 +22,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         internal void Draw(RenderDevice device)
         {
-            device.SetVertexBuffer(0, Vertices, 0, WorldVertex.Stride);
+            device.SetVertexBuffer(Vertices);
             device.SetIndexBuffer(Indices);
             device.DrawIndexed(PrimitiveType.TriangleList, 0, Count / 3);
         }

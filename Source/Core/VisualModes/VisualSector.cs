@@ -138,7 +138,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			{
 				// Make a new buffer
 				geobuffer = new VertexBuffer();
-                graphics.SetBufferData(geobuffer, WorldVertex.Stride * numverts);
+                graphics.SetBufferData(geobuffer, numverts, VertexFormat.World);
 
 				// Fill the buffer
 				foreach(VisualGeometry g in allgeometry)

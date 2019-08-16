@@ -23,7 +23,6 @@ EXPORTS
 	RenderDevice_Draw
 	RenderDevice_DrawIndexed
 	RenderDevice_DrawData
-	RenderDevice_SetVertexDeclaration
 	RenderDevice_StartRendering
 	RenderDevice_FinishRendering
 	RenderDevice_Present
@@ -38,8 +37,6 @@ EXPORTS
 	RenderDevice_UnlockTexture
 	VertexBuffer_New
 	VertexBuffer_Delete
-	VertexDeclaration_New
-	VertexDeclaration_Delete
 	IndexBuffer_New
 	IndexBuffer_Delete
 	Texture_New

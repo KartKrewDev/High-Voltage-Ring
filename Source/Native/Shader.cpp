@@ -1,7 +1,6 @@
 
 #include "Precomp.h"
 #include "Shader.h"
-#include "VertexDeclaration.h"
 #include "RenderDevice.h"
 #include <stdexcept>
 

@@ -140,7 +140,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				{
 					// Make the new buffer!
 					VertexBuffer b = new VertexBuffer();
-                    General.Map.Graphics.SetBufferData(b, FlatVertex.Stride * set.Value.buffersizes[i]);
+                    General.Map.Graphics.SetBufferData(b, set.Value.buffersizes[i], VertexFormat.Flat);
 
                     // Start refilling the buffer with sector geometry
                     foreach (SurfaceEntry e in set.Value.entries)
@@ -273,7 +273,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					{
 						// Make the new buffer!
 						vb = new VertexBuffer();
-                        General.Map.Graphics.SetBufferData(vb, FlatVertex.Stride * buffernumvertices);
+                        General.Map.Graphics.SetBufferData(vb, buffernumvertices, VertexFormat.Flat);
 
 						// Add it.
 						set.buffers.Add(vb);
@@ -316,7 +316,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					{
 						// Make the new buffer and lock it
 						vb = new VertexBuffer();
-                        General.Map.Graphics.SetBufferData(vb, FlatVertex.Stride * buffernumvertices);
+                        General.Map.Graphics.SetBufferData(vb, buffernumvertices, VertexFormat.Flat);
                     }
 
                     // Start refilling the buffer with sector geometry
@@ -611,7 +611,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(!resourcesunloaded)
 			{
 				ShaderName pass = Renderer.FullBrightness ? ShaderName.display2d_fullbright : ShaderName.display2d_normal; //mxd
-                graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
 				foreach(KeyValuePair<ImageData, List<SurfaceEntry>> imgsurfaces in surfaces)
 				{
                     graphics.SetShader(pass);
@@ -628,7 +627,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						if(set.buffers[entry.bufferindex] != lastbuffer)
 						{
 							lastbuffer = set.buffers[entry.bufferindex];
-							graphics.SetVertexBuffer(0, lastbuffer, 0, FlatVertex.Stride);
+							graphics.SetVertexBuffer(lastbuffer);
 						}
 
 						// Draw

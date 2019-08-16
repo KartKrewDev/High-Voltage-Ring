@@ -37,7 +37,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 throw new Exception("RenderDevice_New failed");
 
             RenderTarget = rendertarget;
-            Shaders = new ShaderManager(this);
+
             SetupSettings();
         }
 
@@ -102,9 +102,9 @@ namespace CodeImp.DoomBuilder.Rendering
             }, 16);
         }
 
-        public void SetVertexBuffer(int index, VertexBuffer buffer, long offset, long stride)
+        public void SetVertexBuffer(VertexBuffer buffer)
         {
-            RenderDevice_SetVertexBuffer(Handle, index, buffer != null ? buffer.Handle : IntPtr.Zero, offset, stride);
+            RenderDevice_SetVertexBuffer(Handle, buffer != null ? buffer.Handle : IntPtr.Zero);
         }
 
         public void SetIndexBuffer(IndexBuffer buffer)
@@ -236,12 +236,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void Draw(PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data)
         {
-            RenderDevice_DrawData(Handle, type, startIndex, primitiveCount, data, Marshal.SizeOf<FlatVertex>());
-        }
-
-        public void SetVertexDeclaration(VertexDeclaration decl)
-        {
-            RenderDevice_SetVertexDeclaration(Handle, decl != null ? decl.Handle : IntPtr.Zero);
+            RenderDevice_DrawData(Handle, type, startIndex, primitiveCount, data);
         }
 
         public void StartRendering(bool clear, Color4 backcolor)
@@ -279,19 +274,19 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetIndexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<int>());
         }
 
-        public void SetBufferData(VertexBuffer buffer, int size)
+        public void SetBufferData(VertexBuffer buffer, int length, VertexFormat format)
         {
-            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, IntPtr.Zero, size);
+            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, IntPtr.Zero, length * (format == VertexFormat.Flat ? FlatVertex.Stride : WorldVertex.Stride), format);
         }
 
         public void SetBufferData(VertexBuffer buffer, FlatVertex[] data)
         {
-            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<FlatVertex>());
+            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<FlatVertex>(), VertexFormat.Flat);
         }
 
         public void SetBufferData(VertexBuffer buffer, WorldVertex[] data)
         {
-            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<WorldVertex>());
+            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<WorldVertex>(), VertexFormat.World);
         }
 
         public void SetBufferSubdata(VertexBuffer buffer, long destOffset, FlatVertex[] data)
@@ -379,11 +374,16 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Texture addressing
 			SetSamplerState(0, TextureAddress.Wrap);
 			
-			// Shader settings
-			Shaders.SetWorld3DConstants(General.Settings.VisualBilinear, General.Settings.FilterAnisotropy);
-			
-			// Initialize presentations
-			Presentation.Initialize();
+            //mxd. It's still nice to have anisotropic filtering when texture filtering is disabled
+            TextureFilter magminfilter = (General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point);
+            SetSamplerFilter(0,
+                General.Settings.FilterAnisotropy > 1.0f ? TextureFilter.Anisotropic : magminfilter,
+                magminfilter,
+                General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.None, // [SB] use None, otherwise textures are still filtered
+                General.Settings.FilterAnisotropy);
+
+            // Initialize presentations
+            Presentation.Initialize();
 		}
 
         IntPtr Handle;
@@ -401,7 +401,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern IntPtr RenderDevice_SetUniform(IntPtr hwnd, UniformName name, float[] data, int count);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetVertexBuffer(IntPtr handle, int index, IntPtr buffer, long offset, long stride);
+        static extern void RenderDevice_SetVertexBuffer(IntPtr handle, IntPtr buffer);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetIndexBuffer(IntPtr handle, IntPtr buffer);
@@ -452,10 +452,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_DrawIndexed(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_DrawData(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data, int stride);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetVertexDeclaration(IntPtr handle, IntPtr decl);
+        static extern void RenderDevice_DrawData(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_StartRendering(IntPtr handle, bool clear, int backcolor);
@@ -479,13 +476,13 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_SetIndexBufferData(IntPtr handle, IntPtr buffer, int[] data, long size);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, IntPtr data, long size);
+        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, IntPtr data, long size, VertexFormat format);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, FlatVertex[] data, long size);
+        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, FlatVertex[] data, long size, VertexFormat format);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, WorldVertex[] data, long size);
+        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, WorldVertex[] data, long size, VertexFormat format);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBufferSubdata(IntPtr handle, IntPtr buffer, long destOffset, FlatVertex[] data, long sizeInBytes);
@@ -512,7 +509,6 @@ namespace CodeImp.DoomBuilder.Rendering
         public static readonly List<int> AA_STEPS = new List<int> { 0, 2, 4, 8 };
 
         internal RenderTargetControl RenderTarget { get; private set; }
-        internal ShaderManager Shaders { get; private set; }
 
         // Make a color from ARGB
         public static int ARGB(float a, float r, float g, float b)
@@ -600,6 +596,7 @@ namespace CodeImp.DoomBuilder.Rendering
         campos
     }
 
+    public enum VertexFormat : int { Flat, World }
     public enum Cull : int { None, Clockwise }
     public enum Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
     public enum BlendOperation : int { Add, ReverseSubtract }

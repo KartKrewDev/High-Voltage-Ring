@@ -92,7 +92,7 @@ namespace CodeImp.DoomBuilder.Actions
         {
             Handle = RawMouse_New(control.Handle);
             if (Handle == IntPtr.Zero)
-                throw new Exception("VertexDeclaration_New failed");
+                throw new Exception("RawMouse_New failed");
         }
 
         ~RawMouse()
