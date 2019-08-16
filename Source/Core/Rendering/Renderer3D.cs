@@ -943,7 +943,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 
                     // [ZZ]
-                    graphics.SetUniform(UniformName.stencilColor, new Color4(0f, 1f, 1f, 1f));
+                    graphics.SetUniform(UniformName.stencilColor, new Color4(1f, 1f, 1f, 0f));
                 }
 
                 // Texture addressing
@@ -1251,7 +1251,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
                 // [ZZ] check if we want stencil
-                graphics.SetUniform(UniformName.stencilColor, new Color4(0f, 1f, 1f, 1f));
+                graphics.SetUniform(UniformName.stencilColor, new Color4(1f, 1f, 1f, 0f));
 
                 // Texture addressing
                 graphics.SetSamplerState(0, TextureAddress.Wrap);
@@ -1430,7 +1430,7 @@ namespace CodeImp.DoomBuilder.Rendering
                             lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                             if (lpr.W == 0) continue;
                             Color4 lc = lights[i].LightColor;
-                            graphics.SetUniform(UniformName.lightColor, new Color4(lc.Alpha, (lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2));
+                            graphics.SetUniform(UniformName.lightColor, new Color4((lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2, lc.Alpha));
                             graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                             GZGeneral.LightData ld = lights[i].LightType;
                             if (ld.LightType == GZGeneral.LightType.SPOT)
@@ -1716,7 +1716,7 @@ namespace CodeImp.DoomBuilder.Rendering
                                     lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
                                     if (lpr.W == 0) continue;
                                     Color4 lc = lights[i].LightColor;
-                                    graphics.SetUniform(UniformName.lightColor, new Color4(lc.Alpha, (lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2));
+                                    graphics.SetUniform(UniformName.lightColor, new Color4((lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2, lc.Alpha));
                                     graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
                                     GZGeneral.LightData ld = lights[i].LightType;
                                     if (ld.LightType == GZGeneral.LightType.SPOT)

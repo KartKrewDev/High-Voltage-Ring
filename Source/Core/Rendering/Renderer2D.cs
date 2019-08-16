@@ -213,7 +213,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.SetAlphaTestEnable(false);
 						graphics.SetSourceBlend(Blend.SourceAlpha);
 						graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
-						graphics.SetTextureFactor((new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
+						graphics.SetTextureFactor((new Color4(1f, 1f, 1f, layer.alpha)).ToArgb());
 						break;
 
 					case BlendingMode.Additive:
@@ -221,7 +221,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.SetAlphaTestEnable(false);
 						graphics.SetSourceBlend(Blend.SourceAlpha);
 						graphics.SetDestinationBlend(Blend.One);
-						graphics.SetTextureFactor((new Color4(layer.alpha, 1f, 1f, 1f)).ToArgb());
+						graphics.SetTextureFactor((new Color4(1f, 1f, 1f, layer.alpha)).ToArgb());
 						break;
 				}
 
@@ -1194,7 +1194,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(things.Count > 0)
 			{
 				// Make alpha color
-				Color4 alphacolor = new Color4(alpha, 1.0f, 1.0f, 1.0f);
+				Color4 alphacolor = new Color4(1.0f, 1.0f, 1.0f, alpha);
 				bool isthingsmode = (General.Editing.Mode.GetType().Name == "ThingsMode");
 				
 				// Set renderstates for things rendering

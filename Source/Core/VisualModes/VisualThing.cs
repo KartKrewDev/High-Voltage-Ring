@@ -668,17 +668,19 @@ namespace CodeImp.DoomBuilder.VisualModes
                     if (ld.LightDef != GZGeneral.LightDef.POINT_SUBTRACTIVE) // normal, additive, attenuated
                     {
                         //lightColor.Alpha used in shader to perform some calculations based on light type
-                        lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
+                        lightColor = new Color4(
                             thing.Args[0] / DYNLIGHT_INTENSITY_SCALER,
                             thing.Args[1] / DYNLIGHT_INTENSITY_SCALER,
-                            thing.Args[2] / DYNLIGHT_INTENSITY_SCALER);
+                            thing.Args[2] / DYNLIGHT_INTENSITY_SCALER,
+                            (float)ld.LightRenderStyle / 100.0f);
                     }
                     else // negative
                     {
-                        lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
+                        lightColor = new Color4(
                             thing.Args[0] / SUBLIGHT_INTENSITY_SCALER,
                             thing.Args[1] / SUBLIGHT_INTENSITY_SCALER,
-                            thing.Args[2] / SUBLIGHT_INTENSITY_SCALER);
+                            thing.Args[2] / SUBLIGHT_INTENSITY_SCALER,
+                            (float)ld.LightRenderStyle / 100.0f);
                     }
                 }
                 else
@@ -701,17 +703,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 
                     if (ld.LightDef != GZGeneral.LightDef.SPOT_SUBTRACTIVE)
                     {
-                        lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
+                        lightColor = new Color4(
                             c1 / DYNLIGHT_INTENSITY_SCALER,
                             c2 / DYNLIGHT_INTENSITY_SCALER,
-                            c3 / DYNLIGHT_INTENSITY_SCALER);
+                            c3 / DYNLIGHT_INTENSITY_SCALER,
+                            (float)ld.LightRenderStyle / 100.0f);
                     }
                     else
                     {
-                        lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
+                        lightColor = new Color4(
                             c1 / SUBLIGHT_INTENSITY_SCALER,
                             c2 / SUBLIGHT_INTENSITY_SCALER,
-                            c3 / SUBLIGHT_INTENSITY_SCALER);
+                            c3 / SUBLIGHT_INTENSITY_SCALER,
+                            (float)ld.LightRenderStyle / 100.0f);
                     }
                 }
 
@@ -738,14 +742,15 @@ namespace CodeImp.DoomBuilder.VisualModes
 			{ 
 				if(lightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED)
 				{
-					lightColor = new Color4((float)ld.LightRenderStyle / 100.0f, 
+					lightColor = new Color4(
 						thing.Args[1] / DYNLIGHT_INTENSITY_SCALER,
 						thing.Args[2] / DYNLIGHT_INTENSITY_SCALER,
-						thing.Args[3] / DYNLIGHT_INTENSITY_SCALER);
+						thing.Args[3] / DYNLIGHT_INTENSITY_SCALER,
+                        (float)ld.LightRenderStyle / 100.0f);
 				}
 				else
 				{
-					lightColor = new Color4((float)ld.LightRenderStyle / 100.0f, 0.5f, 0.5f, 0.5f);
+					lightColor = new Color4(0.5f, 0.5f, 0.5f, (float)ld.LightRenderStyle / 100.0f);
 				}
 					
 				lightPrimaryRadius = (thing.Args[0] * 8);
@@ -762,7 +767,7 @@ namespace CodeImp.DoomBuilder.VisualModes
             GZGeneral.LightData ld = light.Type;
 
             //apply settings
-			lightColor = new Color4((float)ld.LightRenderStyle / 100.0f, light.Color.Red, light.Color.Green, light.Color.Blue);
+			lightColor = new Color4(light.Color.Red, light.Color.Green, light.Color.Blue, (float)ld.LightRenderStyle / 100.0f);
 			Vector2D o = new Vector2D(light.Offset.X, light.Offset.Y).GetRotated(thing.Angle - Angle2D.PIHALF);
 			lightOffset = new Vector3(o.x, o.y, light.Offset.Z);
 			lightType = light.Type;
