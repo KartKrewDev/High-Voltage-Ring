@@ -236,7 +236,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void Draw(PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data)
         {
-            RenderDevice_DrawData(Handle, type, startIndex, primitiveCount, data);
+            RenderDevice_DrawData(Handle, type, startIndex, primitiveCount, data, Marshal.SizeOf<FlatVertex>());
         }
 
         public void SetVertexDeclaration(VertexDeclaration decl)
@@ -447,7 +447,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_DrawIndexed(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_DrawData(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data);
+        static extern void RenderDevice_DrawData(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data, int stride);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexDeclaration(IntPtr handle, IntPtr decl);

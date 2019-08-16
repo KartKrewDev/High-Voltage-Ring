@@ -96,7 +96,7 @@ public:
 	void SetSamplerState(int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 	void Draw(PrimitiveType type, int startIndex, int primitiveCount);
 	void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
-	void DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
+	void DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data, int stride);
 	void SetVertexDeclaration(VertexDeclaration* decl);
 	void StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer);
 	void FinishRendering();
@@ -175,6 +175,9 @@ public:
 	};
 
 	UniformEntry mUniforms[4 * 16 + 12 * 4];
+
+	GLuint mStreamVertexBuffer = 0;
+	int mStreamBufferStride = 0;
 
 	Cull mCullMode = Cull::None;
 	FillMode mFillMode = FillMode::Solid;

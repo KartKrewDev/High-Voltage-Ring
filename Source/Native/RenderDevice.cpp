@@ -15,6 +15,7 @@ RenderDevice::RenderDevice(HWND hwnd) : Context(hwnd)
 	if (Context)
 	{
 		Context.Begin();
+		glGenBuffers(1, &mStreamVertexBuffer);
 		mShaderManager = std::make_unique<ShaderManager>();
 		Context.End();
 	}
@@ -25,6 +26,7 @@ RenderDevice::~RenderDevice()
 	if (Context)
 	{
 		Context.Begin();
+		glDeleteBuffers(1, &mStreamVertexBuffer);
 		mShaderManager->ReleaseResources();
 		Context.End();
 	}
@@ -171,8 +173,22 @@ void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitive
 	Context.End();
 }
 
-void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
+void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data, int stride)
 {
+	static const int modes[] = { GL_LINES, GL_TRIANGLES, GL_TRIANGLE_STRIP };
+	static const int toVertexCount[] = { 2, 3, 1 };
+	static const int toVertexStart[] = { 0, 0, 2 };
+
+	int vertcount = toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type];
+
+	Context.Begin();
+	mStreamBufferStride = stride;
+	glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertcount * (size_t)stride, static_cast<const uint8_t*>(data) + startIndex * (size_t)stride, GL_STREAM_DRAW);
+	ApplyChanges();
+	glDrawArrays(modes[(int)type], 0, vertcount);
+	mStreamBufferStride = 0;
+	Context.End();
 }
 
 void RenderDevice::SetVertexDeclaration(VertexDeclaration* decl)
@@ -418,19 +434,36 @@ void RenderDevice::ApplyVertexBuffers()
 			glBindVertexArray(mVAO);
 		}
 
-		for (size_t i = 0; i < mVertexDeclaration->Elements.size(); i++)
+		if (mStreamBufferStride)
 		{
-			const auto& element = mVertexDeclaration->Elements[i];
-			auto& vertBinding = mVertexBindings[element.Stream];
-			GLuint location = (int)element.Usage;
-			if (vertBinding.Buffer)
+			glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
+			for (size_t i = 0; i < mVertexDeclaration->Elements.size(); i++)
 			{
-				GLuint vertexbuffer = vertBinding.Buffer->GetBuffer();
-				glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+				const auto& element = mVertexDeclaration->Elements[i];
+				GLuint location = (int)element.Usage;
+
 				glEnableVertexAttribArray(location);
-				glVertexAttribPointer(location, typeSize[(int)element.Type], type[(int)element.Type], typeNormalized[(int)element.Type], vertBinding.Stride, (const void*)(element.Offset + (ptrdiff_t)vertBinding.Offset));
+				glVertexAttribPointer(location, typeSize[(int)element.Type], type[(int)element.Type], typeNormalized[(int)element.Type], mStreamBufferStride, (const void*)element.Offset);
 
 				mEnabledVertexAttributes[location] = 2;
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < mVertexDeclaration->Elements.size(); i++)
+			{
+				const auto& element = mVertexDeclaration->Elements[i];
+				auto& vertBinding = mVertexBindings[element.Stream];
+				GLuint location = (int)element.Usage;
+				if (vertBinding.Buffer)
+				{
+					GLuint vertexbuffer = vertBinding.Buffer->GetBuffer();
+					glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+					glEnableVertexAttribArray(location);
+					glVertexAttribPointer(location, typeSize[(int)element.Type], type[(int)element.Type], typeNormalized[(int)element.Type], vertBinding.Stride, (const void*)(element.Offset + (ptrdiff_t)vertBinding.Offset));
+
+					mEnabledVertexAttributes[location] = 2;
+				}
 			}
 		}
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -654,9 +687,9 @@ void RenderDevice_DrawIndexed(RenderDevice* device, PrimitiveType type, int star
 	device->DrawIndexed(type, startIndex, primitiveCount);
 }
 
-void RenderDevice_DrawData(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount, const void* data)
+void RenderDevice_DrawData(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount, const void* data, int stride)
 {
-	device->DrawData(type, startIndex, primitiveCount, data);
+	device->DrawData(type, startIndex, primitiveCount, data, stride);
 }
 
 void RenderDevice_SetVertexDeclaration(RenderDevice* device, VertexDeclaration* decl)
