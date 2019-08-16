@@ -581,7 +581,6 @@ namespace CodeImp.DoomBuilder.Rendering
     public enum Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
     public enum BlendOperation : int { Add, ReverseSubtract }
     public enum FillMode : int { Solid, Wireframe }
-    public enum TransformState : int { World, View }
     public enum TextureAddress : int { Wrap, Clamp }
     public enum PrimitiveType : int { LineList, TriangleList, TriangleStrip }
     public enum TextureFilter : int { None, Point, Linear, Anisotropic }
