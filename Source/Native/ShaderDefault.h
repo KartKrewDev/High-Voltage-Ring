@@ -1,8 +1,6 @@
 #pragma once
 
 static const char* default_vs = R"(
-	#version 150
-
 	in vec4 AttrPosition;
 	in vec4 AttrColor;
 	in vec2 AttrUV;
@@ -26,8 +24,6 @@ static const char* default_vs = R"(
 )";
 
 static const char* default_ps = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 	in vec3 Normal;
@@ -37,5 +33,9 @@ static const char* default_ps = R"(
 	void main()
 	{
 		FragColor = vec4(UV, 1.0, 1.0);
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";

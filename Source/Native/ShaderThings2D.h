@@ -1,8 +1,6 @@
 #pragma once
 
 static const char* things2D_vs = R"(
-	#version 150
-
 	in vec3 AttrPosition;
 	in vec4 AttrColor;
 	in vec2 AttrUV;
@@ -21,8 +19,6 @@ static const char* things2D_vs = R"(
 )";
 
 static const char* things2D_ps_sprite = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -57,12 +53,14 @@ static const char* things2D_ps_sprite = R"(
 			// Or leave it as it is
 			FragColor = vec4(desaturate(c.rgb), c.a * rendersettings.w);
 		}
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* things2D_ps_thing = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -85,12 +83,14 @@ static const char* things2D_ps_thing = R"(
 	{
 		vec4 c = texture(texture1, UV);
 		FragColor = vec4(desaturate(c.rgb), c.a * rendersettings.w) * Color;
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* things2D_ps_fill = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -101,5 +101,9 @@ static const char* things2D_ps_fill = R"(
 	void main()
 	{
 		FragColor = fillColor;
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";

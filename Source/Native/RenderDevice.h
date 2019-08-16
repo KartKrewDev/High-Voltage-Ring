@@ -135,6 +135,8 @@ public:
 
 	void CheckError();
 
+	Shader* GetActiveShader();
+
 	GLint GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter);
 
 	OpenGLContext Context;
@@ -172,7 +174,7 @@ public:
 	IndexBuffer* mIndexBuffer = nullptr;
 
 	std::unique_ptr<ShaderManager> mShaderManager;
-	Shader* mShader = nullptr;
+	ShaderName mShaderName = ShaderName::basic;
 
 	struct Mat4f
 	{

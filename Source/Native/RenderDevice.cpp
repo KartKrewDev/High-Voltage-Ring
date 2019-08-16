@@ -16,7 +16,6 @@ RenderDevice::RenderDevice(HWND hwnd) : Context(hwnd)
 	{
 		Context.Begin();
 		mShaderManager = std::make_unique<ShaderManager>();
-		mShader = &mShaderManager->Shaders[(int)ShaderName::basic];
 		Context.End();
 	}
 }
@@ -344,6 +343,14 @@ void RenderDevice::CheckError()
 		throw std::runtime_error("OpenGL error!");
 }
 
+Shader* RenderDevice::GetActiveShader()
+{
+	if (mAlphaTest)
+		return &mShaderManager->AlphaTestShaders[(int)mShaderName];
+	else
+		return &mShaderManager->Shaders[(int)mShaderName];
+}
+
 void RenderDevice::ApplyChanges()
 {
 	ApplyShader();
@@ -363,7 +370,7 @@ void RenderDevice::ApplyChanges()
 
 void RenderDevice::ApplyShader()
 {
-	glUseProgram(mShader->GetProgram());
+	glUseProgram(GetActiveShader()->GetProgram());
 }
 
 void RenderDevice::ApplyRasterizerState()
@@ -472,16 +479,17 @@ void RenderDevice::ApplyVertexBuffers()
 
 void RenderDevice::ApplyMatrices()
 {
+	Shader* shader = GetActiveShader();
 	for (size_t i = 0; i < (size_t)TransformState::NumTransforms; i++)
 	{
 		auto& binding = mTransforms[i];
-		glUniformMatrix4fv(mShader->TransformLocations[i], 1, GL_FALSE, binding.Values);
+		glUniformMatrix4fv(shader->TransformLocations[i], 1, GL_FALSE, binding.Values);
 	}
 }
 
 void RenderDevice::SetShader(ShaderName name)
 {
-	mShader = &mShaderManager->Shaders[(int)name];
+	mShaderName = name;
 	mNeedApply = true;
 }
 
@@ -513,7 +521,8 @@ void RenderDevice::SetUniform(UniformName name, const void* values, int count)
 
 void RenderDevice::ApplyUniforms()
 {
-	auto& locations = mShader->UniformLocations;
+	Shader* shader = GetActiveShader();
+	auto& locations = shader->UniformLocations;
 
 	glUniformMatrix4fv(locations[(int)UniformName::transformsettings], 1, GL_FALSE, &mUniforms[0].valuef);
 	glUniformMatrix4fv(locations[(int)UniformName::worldviewproj], 1, GL_FALSE, &mUniforms[16].valuef);
@@ -535,6 +544,9 @@ void RenderDevice::ApplyUniforms()
 	glUniform1fv(locations[(int)UniformName::desaturation], 1, &mUniforms[108].valuef);
 	glUniform1fv(locations[(int)UniformName::ignoreNormals], 1, &mUniforms[109].valuef);
 	glUniform1fv(locations[(int)UniformName::spotLight], 1, &mUniforms[110].valuef);
+
+	for (int i = 0; i < Shader::MaxSamplers; i++)
+		glUniform1i(shader->SamplerLocations[i], i);
 }
 
 void RenderDevice::ApplyTextures()

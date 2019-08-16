@@ -1,8 +1,6 @@
 #pragma once
 
 static const char* display2D_vs = R"(
-	#version 150
-
 	in vec3 AttrPosition;
 	in vec4 AttrColor;
 	in vec2 AttrUV;
@@ -21,8 +19,6 @@ static const char* display2D_vs = R"(
 )";
 
 static const char* display2D_ps_fsaa = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -74,12 +70,14 @@ static const char* display2D_ps_fsaa = R"(
 		{
 			FragColor = vec4(desaturate(c.rgb), c.a * rendersettings.w) * Color;
 		}
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 const char* display2D_ps_normal = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -105,12 +103,14 @@ const char* display2D_ps_normal = R"(
 	{
 		vec4 c = texture(texture1, UV);
 		FragColor = vec4(desaturate(c.rgb), c.a * rendersettings.w) * Color;
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 const char* display2D_ps_fullbright = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -129,5 +129,9 @@ const char* display2D_ps_fullbright = R"(
 	{
 		vec4 c = texture(texture1, UV);
 		FragColor = vec4(c.rgb, c.a * rendersettings.w);
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";

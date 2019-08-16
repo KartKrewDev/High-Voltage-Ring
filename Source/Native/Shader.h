@@ -9,13 +9,16 @@ public:
 	Shader() = default;
 	void ReleaseResources();
 
-	bool Compile(const std::string& vertexShader, const std::string& fragmentShader);
+	bool Compile(const std::string& vertexShader, const std::string& fragmentShader, bool alphatest);
 	const char* GetErrors() const { return mErrors.c_str(); }
 
 	GLuint GetProgram() const { return mProgram; }
 
 	GLuint TransformLocations[(int)TransformState::NumTransforms] = { 0 };
 	GLuint UniformLocations[(int)UniformName::NumUniforms] = { 0 };
+
+	enum { MaxSamplers = 4 };
+	GLuint SamplerLocations[MaxSamplers] = { };
 
 private:
 	GLuint CompileShader(const std::string& code, GLenum type);

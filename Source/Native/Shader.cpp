@@ -18,13 +18,25 @@ void Shader::ReleaseResources()
 	mFragmentShader = 0;
 }
 
-bool Shader::Compile(const std::string& vertexShader, const std::string& fragmentShader)
+bool Shader::Compile(const std::string& vertexShader, const std::string& fragmentShader, bool alphatest)
 {
-	mVertexShader = CompileShader(vertexShader, GL_VERTEX_SHADER);
+	const char* prefixNAT = R"(
+		#version 150
+		#line 1
+	)";
+	const char* prefixAT = R"(
+		#version 150
+		#define ALPHA_TEST
+		#line 1
+	)";
+
+	const char* prefix = alphatest ? prefixAT : prefixNAT;
+
+	mVertexShader = CompileShader(prefix + vertexShader, GL_VERTEX_SHADER);
 	if (!mVertexShader)
 		return false;
 
-	mFragmentShader = CompileShader(fragmentShader, GL_FRAGMENT_SHADER);
+	mFragmentShader = CompileShader(prefix + fragmentShader, GL_FRAGMENT_SHADER);
 	if (!mFragmentShader)
 		return false;
 
@@ -83,6 +95,11 @@ bool Shader::Compile(const std::string& vertexShader, const std::string& fragmen
 	for (int i = 0; i < (int)UniformName::NumUniforms; i++)
 	{
 		UniformLocations[i] = glGetUniformLocation(mProgram, names[i]);
+	}
+
+	for (int i = 0; i < MaxSamplers; i++)
+	{
+		SamplerLocations[i] = glGetUniformLocation(mProgram, ("texture" + std::to_string(i + 1)).c_str());
 	}
 
 	return mProgram;

@@ -1,8 +1,6 @@
 #pragma once
 
 static const char* world3D_vs_main = R"(
-	#version 150
-
 	in vec3 AttrPosition;
 	in vec4 AttrColor;
 	in vec2 AttrUV;
@@ -22,8 +20,6 @@ static const char* world3D_vs_main = R"(
 )";
 
 static const char* world3D_vs_customvertexcolor = R"(
-	#version 150
-
 	in vec3 AttrPosition;
 	in vec4 AttrColor;
 	in vec2 AttrUV;
@@ -44,8 +40,6 @@ static const char* world3D_vs_customvertexcolor = R"(
 )";
 
 static const char* world3D_vs_customvertexcolor_fog = R"(
-	#version 150
-
 	in vec3 AttrPosition;
 	in vec4 AttrColor;
 	in vec2 AttrUV;
@@ -72,8 +66,6 @@ static const char* world3D_vs_customvertexcolor_fog = R"(
 )";
 
 static const char* world3D_vs_lightpass = R"(
-	#version 150
-
 	in vec3 AttrPosition;
 	in vec4 AttrColor;
 	in vec2 AttrUV;
@@ -99,8 +91,6 @@ static const char* world3D_vs_lightpass = R"(
 )";
 
 static const char* world3D_vs_skybox = R"(
-	#version 150
-
 	in vec3 AttrPosition;
 	in vec2 AttrUV;
 
@@ -121,8 +111,6 @@ static const char* world3D_vs_skybox = R"(
 )";
 
 static const char* world3D_ps_main = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -144,12 +132,14 @@ static const char* world3D_ps_main = R"(
 		vec4 tcolor = texture(texture1, UV);
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		FragColor = desaturate(tcolor * Color);
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_fullbright = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -165,12 +155,14 @@ static const char* world3D_ps_fullbright = R"(
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor.a *= Color.a;
 		FragColor = tcolor;
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_main_highlight = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -203,12 +195,14 @@ static const char* world3D_ps_main_highlight = R"(
 
 			FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (ncolor.rgb - 0.4 * highlightcolor.a), max(Color.a + 0.25, 0.5));
 		}
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_fullbright_highlight = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -234,12 +228,14 @@ static const char* world3D_ps_fullbright_highlight = R"(
 
 			FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (tcolor.rgb - 0.4 * highlightcolor.a), max(Color.a + 0.25, 0.5));
 		}
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_main_fog = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 	in vec3 PosW;
@@ -282,12 +278,14 @@ static const char* world3D_ps_main_fog = R"(
 		{
 			FragColor = desaturate(getFogColor(tcolor * Color));
 		}
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_main_highlight_fog = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 	in vec3 PosW;
@@ -334,12 +332,14 @@ static const char* world3D_ps_main_highlight_fog = R"(
 
 			FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (ncolor.rgb - 0.4 * highlightcolor.a), max(ncolor.a + 0.25, 0.5));
 		}
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_constant_color = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -350,12 +350,14 @@ static const char* world3D_ps_constant_color = R"(
 	void main()
 	{
 		FragColor = vertexColor;
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_vertex_color = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 
@@ -364,12 +366,14 @@ static const char* world3D_ps_vertex_color = R"(
 	void main()
 	{
 		FragColor = Color;
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_lightpass = R"(
-	#version 150
-
 	in vec4 Color;
 	in vec2 UV;
 	in vec3 PosW;
@@ -438,12 +442,14 @@ static const char* world3D_ps_lightpass = R"(
 			lightColorMod *= tcolor;
 		
 		FragColor = desaturate(lightColorMod); //Additive light
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
 
 static const char* world3D_ps_skybox = R"(
-	#version 150
-
 	in vec3 Tex;
 
 	out vec4 FragColor;
@@ -456,5 +462,9 @@ static const char* world3D_ps_skybox = R"(
 	{
 		vec4 ncolor = texture(texture1, Tex);
 		FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (ncolor.rgb - 0.4 * highlightcolor.a), 1.0);
+
+		#if defined(ALPHA_TEST)
+		if (FragColor.a < 0.5) discard;
+		#endif
 	}
 )";
