@@ -19,6 +19,7 @@
 using System;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Geometry;
+using System.Runtime.InteropServices;
 
 #endregion
 
@@ -89,16 +90,44 @@ namespace CodeImp.DoomBuilder.Actions
     {
         public RawMouse(System.Windows.Forms.Control control)
         {
+            Handle = RawMouse_New(control.Handle);
+            if (Handle == IntPtr.Zero)
+                throw new Exception("VertexDeclaration_New failed");
+        }
+
+        ~RawMouse()
+        {
+            Dispose();
         }
 
         public MouseState Poll()
         {
-            // To do: use WM_RAWINPUT to get data
-            return new MouseState(0.0f, 0.0f);
+            return new MouseState(RawMouse_GetX(Handle), RawMouse_GetY(Handle));
         }
+
+        public bool Disposed { get { return Handle == IntPtr.Zero; } }
 
         public void Dispose()
         {
+            if (!Disposed)
+            {
+                RawMouse_Delete(Handle);
+                Handle = IntPtr.Zero;
+            }
         }
+
+        internal IntPtr Handle;
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr RawMouse_New(IntPtr windowHandle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RawMouse_Delete(IntPtr handle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern float RawMouse_GetX(IntPtr handle);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern float RawMouse_GetY(IntPtr handle);
     }
 }

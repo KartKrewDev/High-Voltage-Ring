@@ -52,3 +52,7 @@ EXPORTS
 	Texture_Delete
 	Texture_Set2DImage
 	Texture_SetCubeImage
+	RawMouse_New
+	RawMouse_Delete
+	RawMouse_GetX
+	RawMouse_GetY
