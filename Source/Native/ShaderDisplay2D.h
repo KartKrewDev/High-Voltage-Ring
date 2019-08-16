@@ -33,6 +33,7 @@ static const char* display2D_ps_fsaa = R"(
 	uniform float desaturation;
 
 	uniform sampler2D texture1;
+	uniform vec4 texturefactor;
 
 	// This blends the max of 2 pixels
 	vec4 addcolor(vec4 c1, vec4 c2)
@@ -71,6 +72,8 @@ static const char* display2D_ps_fsaa = R"(
 			FragColor = vec4(desaturate(c.rgb), c.a * rendersettings.w) * Color;
 		}
 
+		FragColor *= texturefactor;
+
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
@@ -92,6 +95,7 @@ const char* display2D_ps_normal = R"(
 	uniform float desaturation;
 
 	uniform sampler2D texture1;
+	uniform vec4 texturefactor;
 
 	vec3 desaturate(vec3 texel)
 	{
@@ -103,6 +107,7 @@ const char* display2D_ps_normal = R"(
 	{
 		vec4 c = texture(texture1, UV);
 		FragColor = vec4(desaturate(c.rgb), c.a * rendersettings.w) * Color;
+		FragColor *= texturefactor;
 
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
@@ -124,11 +129,13 @@ const char* display2D_ps_fullbright = R"(
 	uniform vec4 rendersettings;
 
 	uniform sampler2D texture1;
+	uniform vec4 texturefactor;
 
 	void main()
 	{
 		vec4 c = texture(texture1, UV);
 		FragColor = vec4(c.rgb, c.a * rendersettings.w);
+		FragColor *= texturefactor;
 
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;

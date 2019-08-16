@@ -469,7 +469,8 @@ static const int uniformLocations[(int)UniformName::NumUniforms] = {
 	104, // lightColor
 	109, // ignoreNormals
 	110, // spotLight
-	76, // campos
+	76, // campos,
+	112, // texturefactor
 };
 
 void RenderDevice::SetUniform(UniformName name, const void* values, int count)
@@ -503,6 +504,8 @@ void RenderDevice::ApplyUniforms()
 	glUniform1fv(locations[(int)UniformName::desaturation], 1, &mUniforms[108].valuef);
 	glUniform1fv(locations[(int)UniformName::ignoreNormals], 1, &mUniforms[109].valuef);
 	glUniform1fv(locations[(int)UniformName::spotLight], 1, &mUniforms[110].valuef);
+
+	glUniform4fv(locations[(int)UniformName::texturefactor], 1, &mUniforms[112].valuef);
 
 	for (int i = 0; i < Shader::MaxSamplers; i++)
 		glUniform1i(shader->SamplerLocations[i], i);

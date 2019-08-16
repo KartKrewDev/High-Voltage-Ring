@@ -316,8 +316,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetFogColor(General.Colors.Background.ToInt());
 			graphics.SetFogStart(General.Settings.ViewDistance * FOG_RANGE);
 			graphics.SetFogEnd(General.Settings.ViewDistance);
-			graphics.SetTextureFactor(-1);
-			graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
+			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
+            graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
 
 			// Texture addressing
 			graphics.SetSamplerState(0, TextureAddress.Wrap);
@@ -384,10 +384,10 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetZWriteEnable(true);
 			graphics.SetAlphaBlendEnable(false);
 			graphics.SetAlphaTestEnable(false);
-			graphics.SetTextureFactor(-1);
+			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
 
-			//mxd. SKY PASS
-			if(skygeo.Count > 0)
+            //mxd. SKY PASS
+            if (skygeo.Count > 0)
 			{
 				world = Matrix.Identity;
 				ApplyMatrices3D();
@@ -611,8 +611,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			// Done
-			graphics.SetTextureFactor(-1);
-		}
+			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
+        }
 
 		//mxd
 		private void RenderVertices() 
@@ -651,8 +651,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			// Done
-			graphics.SetTextureFactor(-1);
-		}
+			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
+        }
 
 		//mxd
 		private void RenderArrows(ICollection<Line3D> lines) 
@@ -729,8 +729,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.Draw(PrimitiveType.LineList, 0, pointscount / 2);
 
 			// Done
-			graphics.SetTextureFactor(-1);
-			vb.Dispose();
+			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
+            vb.Dispose();
 		}
 
 		// This performs a single render pass
@@ -2013,8 +2013,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetSourceBlend(Blend.SourceAlpha);
 			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
-			graphics.SetTextureFactor(-1);
-			worldmatrix = Matrix.Identity;
+			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
+            worldmatrix = Matrix.Identity;
 			ApplyMatrices2D();
 
             graphics.SetShader(ShaderName.display2d_normal);

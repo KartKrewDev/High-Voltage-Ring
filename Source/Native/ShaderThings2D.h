@@ -30,6 +30,7 @@ static const char* things2D_ps_sprite = R"(
 	uniform float desaturation;
 
 	uniform sampler2D texture1;
+	uniform vec4 texturefactor;
 
 	vec3 desaturate(vec3 texel)
 	{
@@ -54,6 +55,8 @@ static const char* things2D_ps_sprite = R"(
 			FragColor = vec4(desaturate(c.rgb), c.a * rendersettings.w);
 		}
 
+		FragColor *= texturefactor;
+
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
@@ -72,6 +75,7 @@ static const char* things2D_ps_thing = R"(
 	uniform float desaturation;
 
 	uniform sampler2D texture1;
+	uniform vec4 texturefactor;
 
 	vec3 desaturate(vec3 texel)
 	{
@@ -83,6 +87,8 @@ static const char* things2D_ps_thing = R"(
 	{
 		vec4 c = texture(texture1, UV);
 		FragColor = vec4(desaturate(c.rgb), c.a * rendersettings.w) * Color;
+
+		FragColor *= texturefactor;
 
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;

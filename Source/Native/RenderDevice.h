@@ -67,6 +67,7 @@ enum class UniformName : int
 	ignoreNormals,
 	spotLight,
 	campos,
+	texturefactor,
 	NumUniforms
 };
 
@@ -158,7 +159,7 @@ public:
 		int32_t valuei;
 	};
 
-	UniformEntry mUniforms[4 * 16 + 12 * 4];
+	UniformEntry mUniforms[4 * 16 + 13 * 4];
 
 	GLuint mStreamVertexBuffer = 0;
 	GLuint mStreamVAO = 0;

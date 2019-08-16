@@ -84,7 +84,8 @@ bool Shader::Compile(const std::string& vertexShader, const std::string& fragmen
 		"lightColor",
 		"ignoreNormals",
 		"spotLight",
-		"campos"
+		"campos",
+		"texturefactor"
 	};
 
 	for (int i = 0; i < (int)UniformName::NumUniforms; i++)

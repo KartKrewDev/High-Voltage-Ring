@@ -172,11 +172,6 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetMultisampleAntialias(Handle, value);
         }
 
-        public void SetTextureFactor(int factor)
-        {
-            // To do: is this even applied to fragment shaders? if not, delete - if it is, convert to uniform
-        }
-
         public void SetZEnable(bool value)
         {
             RenderDevice_SetZEnable(Handle, value);
@@ -351,7 +346,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			SetFogEnable(false);
 			SetMultisampleAntialias((General.Settings.AntiAliasingSamples > 0));
 			SetSourceBlend(Blend.SourceAlpha);
-			SetTextureFactor(-1);
+			SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
 			SetZEnable(false);
 			SetZWriteEnable(false);
 			
@@ -577,7 +572,8 @@ namespace CodeImp.DoomBuilder.Rendering
         lightColor,
         ignoreNormals,
         spotLight,
-        campos
+        campos,
+        texturefactor
     }
 
     public enum VertexFormat : int { Flat, World }
