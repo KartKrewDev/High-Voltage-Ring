@@ -707,7 +707,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 			}
 
-			VertexBuffer vb = new VertexBuffer(WorldVertex.Stride * verts.Length);
+			VertexBuffer vb = new VertexBuffer();
 			graphics.SetBufferData(vb, verts);
 			
 			//begin rendering

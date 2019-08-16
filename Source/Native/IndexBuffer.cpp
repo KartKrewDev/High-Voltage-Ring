@@ -2,7 +2,7 @@
 #include "Precomp.h"
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer(int sizeInBytes) : mSize(sizeInBytes)
+IndexBuffer::IndexBuffer()
 {
 }
 
@@ -14,19 +14,15 @@ IndexBuffer::~IndexBuffer()
 GLuint IndexBuffer::GetBuffer()
 {
 	if (mBuffer == 0)
-	{
 		glGenBuffers(1, &mBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSize, nullptr, GL_STREAM_DRAW);
-	}
 	return mBuffer;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
-IndexBuffer* IndexBuffer_New(int sizeInBytes)
+IndexBuffer* IndexBuffer_New()
 {
-	return new IndexBuffer(sizeInBytes);
+	return new IndexBuffer();
 }
 
 void IndexBuffer_Delete(IndexBuffer* buffer)

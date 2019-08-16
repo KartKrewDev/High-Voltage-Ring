@@ -173,7 +173,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 		
 		// This draws the image on screen
-		public unsafe void Present()
+		public void Present()
 		{
 			General.Plugins.OnPresentDisplayBegin();
 
@@ -184,7 +184,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetCullMode(Cull.None);
 			graphics.SetZEnable(false);
 			graphics.SetFogEnable(false);
-			graphics.SetVertexBuffer(0, screenverts, 0, sizeof(FlatVertex));
+			graphics.SetVertexBuffer(0, screenverts, 0, FlatVertex.Stride);
 			graphics.SetTransform(TransformState.World, Matrix.Identity);
             graphics.SetVertexDeclaration(graphics.Shaders.FlatVertexDecl);
 
@@ -238,7 +238,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetTexture(0, General.Map.Grid.Background.Texture);
 						graphics.Shaders.SetDisplay2DSettings(1f / windowsize.Width, 1f / windowsize.Height, FSAA_FACTOR, layer.alpha, false);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
-						graphics.SetVertexBuffer(0, screenverts, 0, sizeof(FlatVertex));
+						graphics.SetVertexBuffer(0, screenverts, 0, FlatVertex.Stride);
 						break;
 
 					// GRID
@@ -344,7 +344,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 		
 		// Allocates new image memory to render on
-		public unsafe void CreateRendertargets()
+		public void CreateRendertargets()
 		{
 			// Destroy rendertargets
 			DestroyRendertargets();
@@ -380,8 +380,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.ClearTexture(General.Colors.Background.WithAlpha(0).ToColorValue(), overlaytex);
 			
 			// Create vertex buffers
-			screenverts = new VertexBuffer(4 * sizeof(FlatVertex));
-			thingsvertices = new VertexBuffer(THING_BUFFER_SIZE * 12 * sizeof(FlatVertex));
+			screenverts = new VertexBuffer();
+			thingsvertices = new VertexBuffer();
+            graphics.SetBufferData(thingsvertices, THING_BUFFER_SIZE * 12 * FlatVertex.Stride);
 
 			// Make screen vertices
 			FlatVertex[] verts = CreateScreenVerts(structsize);
@@ -1504,7 +1505,8 @@ namespace CodeImp.DoomBuilder.Rendering
 
 							graphics.Shaders.SetThings2DTransformSettings(world);
 
-							// Draw
+                            // Draw
+                            graphics.SetVertexDeclaration(graphics.Shaders.WorldVertexDecl);
 							foreach(Mesh mesh in mde.Model.Meshes) mesh.Draw(graphics);
 						}
 					}
@@ -1931,7 +1933,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			// Write to buffer
-			VertexBuffer vb = new VertexBuffer(FlatVertex.Stride * verts.Length);
+			VertexBuffer vb = new VertexBuffer();
 			graphics.SetBufferData(vb, verts);
 
 			// Set renderstates for rendering

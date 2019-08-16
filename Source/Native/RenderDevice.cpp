@@ -250,13 +250,28 @@ void RenderDevice::ClearTexture(int backcolor, Texture* texture)
 
 void RenderDevice::CopyTexture(Texture* src, Texture* dst, CubeMapFace face)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, src->GetFramebuffer(false));
+	static const GLenum facegl[] = {
+		GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+	};
 
+	GLint oldFramebuffer = 0;
 	GLint oldTexture = 0;
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTexture);
-	glBindTexture(GL_TEXTURE_2D, dst->GetTexture());
-	glCopyTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, 0, 0, dst->GetWidth(), dst->GetHeight(), 0);
-	glBindTexture(GL_TEXTURE_2D, oldTexture);
+	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &oldFramebuffer);
+	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldTexture);
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, src->GetFramebuffer(false));
+	glBindTexture(GL_TEXTURE_CUBE_MAP, dst->GetTexture());
+	glCopyTexSubImage2D(facegl[(int)face], 0, 0, 0, 0, 0, dst->GetWidth(), dst->GetHeight());
+	if (face == CubeMapFace::NegativeZ)
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, oldTexture);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, oldFramebuffer);
 }
 
 void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size)

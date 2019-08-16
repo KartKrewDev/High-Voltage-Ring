@@ -279,6 +279,11 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetIndexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<int>());
         }
 
+        public void SetBufferData(VertexBuffer buffer, int size)
+        {
+            RenderDevice_SetVertexBufferData(Handle, buffer.Handle, IntPtr.Zero, size);
+        }
+
         public void SetBufferData(VertexBuffer buffer, FlatVertex[] data)
         {
             RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<FlatVertex>());
@@ -472,6 +477,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetIndexBufferData(IntPtr handle, IntPtr buffer, int[] data, long size);
+
+        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, IntPtr data, long size);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, FlatVertex[] data, long size);

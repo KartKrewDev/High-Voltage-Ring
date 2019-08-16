@@ -527,7 +527,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					for(int i = 0; i < vertices.Length; i++)
 					{
 						// Make a new buffer
-						geobuffers[i] = new VertexBuffer(WorldVertex.Stride * vertices[i].Length);
+						geobuffers[i] = new VertexBuffer();
 
                         // Fill the buffer
                         graphics.SetBufferData(geobuffers[i], vertices[i]);
@@ -614,7 +614,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				// Create buffer
 				WorldVertex[] cv = cageverts.ToArray();
 				cagelength = cv.Length / 2;
-				cagebuffer = new VertexBuffer(WorldVertex.Stride * cv.Length);
+				cagebuffer = new VertexBuffer();
                 graphics.SetBufferData(cagebuffer, cv);
 
 				// Done

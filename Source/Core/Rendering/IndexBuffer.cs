@@ -9,9 +9,9 @@ namespace CodeImp.DoomBuilder.Rendering
 {
     public class IndexBuffer : IDisposable
     {
-        public IndexBuffer(int sizeInBytes)
+        public IndexBuffer()
         {
-            Handle = IndexBuffer_New(sizeInBytes);
+            Handle = IndexBuffer_New();
             if (Handle == IntPtr.Zero)
                 throw new Exception("IndexBuffer_New failed");
         }
@@ -35,7 +35,7 @@ namespace CodeImp.DoomBuilder.Rendering
         internal IntPtr Handle;
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr IndexBuffer_New(int sizeInBytes);
+        static extern IntPtr IndexBuffer_New();
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void IndexBuffer_Delete(IntPtr handle);

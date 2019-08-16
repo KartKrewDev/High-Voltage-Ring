@@ -9,9 +9,9 @@ namespace CodeImp.DoomBuilder.Rendering
 {
     public class VertexBuffer : IDisposable
     {
-        public VertexBuffer(int sizeInBytes)
+        public VertexBuffer()
         {
-            Handle = VertexBuffer_New(sizeInBytes);
+            Handle = VertexBuffer_New();
             if (Handle == IntPtr.Zero)
                 throw new Exception("VertexBuffer_New failed");
         }
@@ -35,7 +35,7 @@ namespace CodeImp.DoomBuilder.Rendering
         internal IntPtr Handle;
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr VertexBuffer_New(int sizeInBytes);
+        static extern IntPtr VertexBuffer_New();
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void VertexBuffer_Delete(IntPtr handle);

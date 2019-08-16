@@ -36,14 +36,6 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			}
 		}
 
-		private static readonly VertexElement[] vertexElements = new[]
-		{
-			new VertexElement(0, 0, DeclarationType.Float3, DeclarationUsage.Position),
-			new VertexElement(0, 12, DeclarationType.Color, DeclarationUsage.Color),
-			new VertexElement(0, 16, DeclarationType.Float2, DeclarationUsage.TextureCoordinate),
-			new VertexElement(0, 24, DeclarationType.Float3, DeclarationUsage.Normal)
-		};
-
 		#endregion
 
 		#region ================== Load
@@ -989,7 +981,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				}
 
 				//mesh
-				Mesh mesh = new Mesh(General.Map.Graphics, vertexElements, vertList.ToArray(), polyIndecesList.ToArray());
+				Mesh mesh = new Mesh(General.Map.Graphics, vertList.ToArray(), polyIndecesList.ToArray());
 
 				//store in result
 				result.Meshes.Add(mesh);
@@ -1167,7 +1159,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
             }
 
 			// Create mesh
-			Mesh mesh = new Mesh(General.Map.Graphics, vertexElements, verts.ToArray(), indices.ToArray());
+			Mesh mesh = new Mesh(General.Map.Graphics, verts.ToArray(), indices.ToArray());
 
 			// Add mesh
 			mde.Model.Meshes.Add(mesh);
@@ -1676,7 +1668,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 		private static void CreateMesh(ref MD3LoadResult result, List<WorldVertex> verts, List<int> indices)
 		{
 			//create mesh
-			Mesh mesh = new Mesh(General.Map.Graphics, vertexElements, verts.ToArray(), indices.ToArray());
+			Mesh mesh = new Mesh(General.Map.Graphics, verts.ToArray(), indices.ToArray());
 
 			//store in result
 			result.Meshes.Add(mesh);

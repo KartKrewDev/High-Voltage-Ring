@@ -139,10 +139,11 @@ namespace CodeImp.DoomBuilder.Rendering
 				for(int i = 0; i < set.Value.buffersizes.Count; i++)
 				{
 					// Make the new buffer!
-					VertexBuffer b = new VertexBuffer(FlatVertex.Stride * set.Value.buffersizes[i]);
+					VertexBuffer b = new VertexBuffer();
+                    General.Map.Graphics.SetBufferData(b, FlatVertex.Stride * set.Value.buffersizes[i]);
 
-					// Start refilling the buffer with sector geometry
-					foreach(SurfaceEntry e in set.Value.entries)
+                    // Start refilling the buffer with sector geometry
+                    foreach (SurfaceEntry e in set.Value.entries)
 					{
 						if(e.bufferindex == i)
 						{
@@ -271,7 +272,8 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!resourcesunloaded)
 					{
 						// Make the new buffer!
-						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices);
+						vb = new VertexBuffer();
+                        General.Map.Graphics.SetBufferData(vb, FlatVertex.Stride * buffernumvertices);
 
 						// Add it.
 						set.buffers.Add(vb);
@@ -313,11 +315,12 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!resourcesunloaded)
 					{
 						// Make the new buffer and lock it
-						vb = new VertexBuffer(FlatVertex.Stride * buffernumvertices);
-					}
-					
-					// Start refilling the buffer with sector geometry
-					int vertexoffset = 0;
+						vb = new VertexBuffer();
+                        General.Map.Graphics.SetBufferData(vb, FlatVertex.Stride * buffernumvertices);
+                    }
+
+                    // Start refilling the buffer with sector geometry
+                    int vertexoffset = 0;
 					foreach(SurfaceEntry e in theseentries)
 					{
 						if(!resourcesunloaded)

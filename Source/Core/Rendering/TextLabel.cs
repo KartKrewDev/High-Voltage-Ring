@@ -336,7 +336,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					//mxd. Create the buffer
 					if(textbuffer == null || textbuffer.Disposed)
 					{
-						textbuffer = new VertexBuffer(4 * FlatVertex.Stride);
+						textbuffer = new VertexBuffer();
 					}
 
 					FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, beginx, beginy, beginx + texturesize.Width, beginy + texturesize.Height);

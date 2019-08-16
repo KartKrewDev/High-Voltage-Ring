@@ -67,12 +67,13 @@ GLuint Texture::GetTexture()
 		glGetIntegerv(GL_ACTIVE_TEXTURE, &oldActiveTex);
 		glActiveTexture(GL_TEXTURE0);
 
+		glGenTextures(1, &mTexture);
+
 		if (!IsCubeTexture())
 		{
 			GLint oldBinding = 0;
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 
-			glGenTextures(1, &mTexture);
 			glBindTexture(GL_TEXTURE_2D, mTexture);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[0].empty() ? mPixels[0].data() : nullptr);
 			glGenerateMipmap(GL_TEXTURE_2D);
@@ -84,7 +85,6 @@ GLuint Texture::GetTexture()
 			GLint oldBinding = 0;
 			glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldBinding);
 
-			glGenTextures(1, &mTexture);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[0].empty() ? mPixels[0].data() : nullptr);
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[1].empty() ? mPixels[1].data() : nullptr);
