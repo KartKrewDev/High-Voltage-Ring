@@ -27,5 +27,5 @@ IndexBuffer* IndexBuffer_New()
 
 void IndexBuffer_Delete(IndexBuffer* buffer)
 {
-	delete buffer;
+	//delete buffer;
 }

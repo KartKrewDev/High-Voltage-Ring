@@ -189,7 +189,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetSamplerFilter(int unit, TextureFilter filter)
         {
-            SetSamplerFilter(unit, filter, filter, filter, 0.0f);
+            SetSamplerFilter(unit, filter, filter, TextureFilter.None, 0.0f);
         }
 
         public void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
@@ -229,7 +229,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void StartRendering(bool clear, Color4 backcolor, Texture target, bool usedepthbuffer)
         {
-            RenderDevice_StartRendering(Handle, clear, backcolor.ToArgb(), target.Handle, true);
+            RenderDevice_StartRendering(Handle, clear, backcolor.ToArgb(), target.Handle, usedepthbuffer);
         }
 
         public void FinishRendering()
@@ -247,9 +247,9 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_ClearTexture(Handle, backcolor.ToArgb(), texture.Handle);
         }
 
-        public void CopyTexture(Texture src, CubeTexture dst, CubeMapFace face)
+        public void CopyTexture(CubeTexture dst, CubeMapFace face)
         {
-            RenderDevice_CopyTexture(Handle, src.Handle, dst.Handle, face);
+            RenderDevice_CopyTexture(Handle, dst.Handle, face);
         }
 
         public void SetBufferData(IndexBuffer buffer, int[] data)
@@ -449,7 +449,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_ClearTexture(IntPtr handle, int backcolor, IntPtr texture);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_CopyTexture(IntPtr handle, IntPtr src, IntPtr dst, CubeMapFace face);
+        static extern void RenderDevice_CopyTexture(IntPtr handle, IntPtr dst, CubeMapFace face);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetIndexBufferData(IntPtr handle, IntPtr buffer, int[] data, long size);
@@ -551,7 +551,7 @@ namespace CodeImp.DoomBuilder.Rendering
         world3d_main_highlight_fog_vertexcolor,
         world3d_vertex_color,
         world3d_constant_color,
-        world3d_lightpass // AlphaBlendEnable = true
+        world3d_lightpass
     }
 
     public enum UniformName : int

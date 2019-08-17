@@ -3458,7 +3458,7 @@ namespace CodeImp.DoomBuilder.Data
 			
 			// Setup matrices
 			Vector3 offset = new Vector3(0f, 0f, -1.8f); // Sphere size is 10 mu
-			Matrix mworld = Matrix.Multiply(Matrix.Identity, Matrix.Translation(offset) * Matrix.Scaling(1.0f, 1.0f, yscale));
+			Matrix mworld = Matrix.Translation(offset) * Matrix.Scaling(1.0f, 1.0f, yscale);
 			Matrix mprojection = Matrix.PerspectiveFov(Angle2D.PIHALF, 1.0f, 0.5f, 100.0f);
 
             // Place camera at origin
@@ -3489,7 +3489,7 @@ namespace CodeImp.DoomBuilder.Data
 					meshes.Meshes[j].Draw(General.Map.Graphics);
 				}
 
-                General.Map.Graphics.CopyTexture(rendertarget, cubemap, (CubeMapFace)i);
+                General.Map.Graphics.CopyTexture(cubemap, (CubeMapFace)i);
 			}
 
 			// End rendering
@@ -3703,23 +3703,23 @@ namespace CodeImp.DoomBuilder.Data
 			switch(face)
 			{
 				case CubeMapFace.PositiveX:
-					lookdir = new Vector3(1.0f, 0.0f, 0.0f);
+					lookdir = new Vector3(-1.0f, 0.0f, 0.0f);
 					updir = new Vector3(0.0f, 1.0f, 0.0f);
 					break;
 
 				case CubeMapFace.NegativeX:
-					lookdir = new Vector3(-1.0f, 0.0f, 0.0f);
+					lookdir = new Vector3(1.0f, 0.0f, 0.0f);
 					updir = new Vector3(0.0f, 1.0f, 0.0f);
 					break;
 
 				case CubeMapFace.PositiveY:
 					lookdir = new Vector3(0.0f, 1.0f, 0.0f);
-					updir = new Vector3(0.0f, 0.0f, -1.0f);
+					updir = new Vector3(0.0f, 0.0f, 1.0f);
 					break;
 
 				case CubeMapFace.NegativeY:
 					lookdir = new Vector3(0.0f, -1.0f, 0.0f);
-					updir = new Vector3(0.0f, 0.0f, 1.0f);
+					updir = new Vector3(0.0f, 0.0f, -1.0f);
 					break;
 
 				case CubeMapFace.PositiveZ:

@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "Texture.h"
+#include <stdexcept>
 
 Texture::Texture()
 {
@@ -76,7 +77,8 @@ GLuint Texture::GetTexture()
 
 			glBindTexture(GL_TEXTURE_2D, mTexture);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[0].empty() ? mPixels[0].data() : nullptr);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			if (!mPixels[0].empty())
+				glGenerateMipmap(GL_TEXTURE_2D);
 
 			glBindTexture(GL_TEXTURE_2D, oldBinding);
 		}
@@ -92,7 +94,8 @@ GLuint Texture::GetTexture()
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[3].empty() ? mPixels[3].data() : nullptr);
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[4].empty() ? mPixels[4].data() : nullptr);
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[5].empty() ? mPixels[5].data() : nullptr);
-			glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+			if (!mPixels[0].empty())
+				glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, oldBinding);
 		}
@@ -111,7 +114,9 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 			GLuint texture = GetTexture();
 			glGenFramebuffers(1, &mFramebuffer);
 			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				throw std::runtime_error("glCheckFramebufferStatus did not return GL_FRAMEBUFFER_COMPLETE");
 		}
 		return mFramebuffer;
 	}
@@ -130,8 +135,10 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 			GLuint texture = GetTexture();
 			glGenFramebuffers(1, &mFramebuffer);
 			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer);
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				throw std::runtime_error("glCheckFramebufferStatus did not return GL_FRAMEBUFFER_COMPLETE");
 		}
 		return mFramebufferDepth;
 	}
@@ -146,7 +153,7 @@ Texture* Texture_New()
 
 void Texture_Delete(Texture* tex)
 {
-	delete tex;
+	//delete tex;
 }
 
 void Texture_Set2DImage(Texture* handle, int width, int height)

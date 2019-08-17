@@ -101,7 +101,7 @@ public:
 	void FinishRendering();
 	void Present();
 	void ClearTexture(int backcolor, Texture* texture);
-	void CopyTexture(Texture* src, Texture* dst, CubeMapFace face);
+	void CopyTexture(Texture* dst, CubeMapFace face);
 
 	void SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format);
 	void SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size);

@@ -66,5 +66,5 @@ VertexBuffer* VertexBuffer_New()
 
 void VertexBuffer_Delete(VertexBuffer* buffer)
 {
-	delete buffer;
+	//delete buffer;
 }

@@ -25,6 +25,8 @@ namespace CodeImp.DoomBuilder.Rendering
             device.SetVertexBuffer(Vertices);
             device.SetIndexBuffer(Indices);
             device.DrawIndexed(PrimitiveType.TriangleList, 0, Count / 3);
+            device.SetIndexBuffer(null);
+            device.SetVertexBuffer(null);
         }
 
         public void Dispose()

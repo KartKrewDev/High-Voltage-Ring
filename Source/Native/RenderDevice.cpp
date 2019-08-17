@@ -167,6 +167,7 @@ void RenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount)
 	Context.Begin();
 	if (mNeedApply) ApplyChanges();
 	glDrawArrays(modes[(int)type], startIndex, toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type]);
+	CheckError();
 	Context.End();
 }
 
@@ -179,6 +180,7 @@ void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitive
 	Context.Begin();
 	if (mNeedApply) ApplyChanges();
 	glDrawElements(modes[(int)type], toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type], GL_UNSIGNED_INT, (const void*)(startIndex * sizeof(uint32_t)));
+	CheckError();
 	Context.End();
 }
 
@@ -197,7 +199,9 @@ void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCou
 	glBufferData(GL_ARRAY_BUFFER, vertcount * (size_t)VertexBuffer::FlatStride, static_cast<const uint8_t*>(data) + startIndex * (size_t)VertexBuffer::FlatStride, GL_STREAM_DRAW);
 	glBindVertexArray(mStreamVAO);
 	glDrawArrays(modes[(int)type], 0, vertcount);
+	CheckError();
 	ApplyVertexBuffer();
+	CheckError();
 	Context.End();
 }
 
@@ -246,13 +250,11 @@ void RenderDevice::Present()
 
 void RenderDevice::ClearTexture(int backcolor, Texture* texture)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, texture->GetFramebuffer(false));
-	glViewport(0, 0, texture->GetWidth(), texture->GetHeight());
-	glClearColor(RPART(backcolor) / 255.0f, GPART(backcolor) / 255.0f, BPART(backcolor) / 255.0f, APART(backcolor) / 255.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	StartRendering(true, backcolor, texture, false);
+	FinishRendering();
 }
 
-void RenderDevice::CopyTexture(Texture* src, Texture* dst, CubeMapFace face)
+void RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 {
 	static const GLenum facegl[] = {
 		GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -263,52 +265,56 @@ void RenderDevice::CopyTexture(Texture* src, Texture* dst, CubeMapFace face)
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 
-	GLint oldFramebuffer = 0;
+	Context.Begin();
 	GLint oldTexture = 0;
-	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &oldFramebuffer);
 	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldTexture);
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, src->GetFramebuffer(false));
 	glBindTexture(GL_TEXTURE_CUBE_MAP, dst->GetTexture());
 	glCopyTexSubImage2D(facegl[(int)face], 0, 0, 0, 0, 0, dst->GetWidth(), dst->GetHeight());
 	if (face == CubeMapFace::NegativeZ)
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, oldTexture);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, oldFramebuffer);
+	Context.End();
 }
 
 void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format)
 {
 	Context.Begin();
+	CheckError();
 	buffer->Format = format;
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
+	CheckError();
 	Context.End();
 }
 
 void RenderDevice::SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size)
 {
 	Context.Begin();
+	CheckError();
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferSubData(GL_ARRAY_BUFFER, destOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
+	CheckError();
 	Context.End();
 }
 
 void RenderDevice::SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size)
 {
 	Context.Begin();
+	CheckError();
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oldbinding);
+	CheckError();
 	Context.End();
 }
 
@@ -363,13 +369,21 @@ Shader* RenderDevice::GetActiveShader()
 
 void RenderDevice::ApplyChanges()
 {
+	CheckError();
 	ApplyShader();
+	CheckError();
 	ApplyVertexBuffer();
+	CheckError();
 	ApplyIndexBuffer();
+	CheckError();
 	ApplyUniforms();
+	CheckError();
 	ApplyTextures();
+	CheckError();
 	ApplyRasterizerState();
+	CheckError();
 	ApplyBlendState();
+	CheckError();
 	ApplyDepthState();
 
 	CheckError();
@@ -678,9 +692,9 @@ void RenderDevice_ClearTexture(RenderDevice* device, int backcolor, Texture* tex
 	device->ClearTexture(backcolor, texture);
 }
 
-void RenderDevice_CopyTexture(RenderDevice* device, Texture* src, Texture* dst, CubeMapFace face)
+void RenderDevice_CopyTexture(RenderDevice* device, Texture* dst, CubeMapFace face)
 {
-	device->CopyTexture(src, dst, face);
+	device->CopyTexture(dst, face);
 }
 
 void RenderDevice_SetVertexBufferData(RenderDevice* device, VertexBuffer* buffer, void* data, int64_t size, VertexFormat format)

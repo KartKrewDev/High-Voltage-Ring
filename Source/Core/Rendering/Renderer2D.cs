@@ -239,7 +239,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						if((backimageverts == null) || (General.Map.Grid.Background.Texture == null)) break;
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, General.Map.Grid.Background.Texture);
-						SetDisplay2DSettings(1f / windowsize.Width, 1f / windowsize.Height, FSAA_FACTOR, layer.alpha, false);
+						SetDisplay2DSettings(1f / windowsize.Width, 1f / windowsize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
 						graphics.SetVertexBuffer(screenverts);
 						break;
@@ -248,7 +248,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Grid:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, backtex);
-						SetDisplay2DSettings(1f / backsize.Width, 1f / backsize.Height, FSAA_FACTOR, layer.alpha, false);
+						SetDisplay2DSettings(1f / backsize.Width, 1f / backsize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
@@ -256,7 +256,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Geometry:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, plottertex);
-						SetDisplay2DSettings(1f / structsize.Width, 1f / structsize.Height, FSAA_FACTOR, layer.alpha, false);
+						SetDisplay2DSettings(1f / structsize.Width, 1f / structsize.Height, FSAA_FACTOR, layer.alpha, false, false);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
@@ -264,7 +264,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Things:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, thingstex);
-						SetDisplay2DSettings(1f / thingssize.Width, 1f / thingssize.Height, FSAA_FACTOR, layer.alpha, false);
+						SetDisplay2DSettings(1f / thingssize.Width, 1f / thingssize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
@@ -272,7 +272,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Overlay:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, overlaytex);
-						SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false);
+						SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
@@ -280,7 +280,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Surface:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(0, surfacetex);
-						SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false);
+						SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 				}
@@ -494,11 +494,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 		}
 
-        private void SetDisplay2DSettings(float texelx, float texely, float fsaafactor, float alpha, bool bilinear)
+        private void SetDisplay2DSettings(float texelx, float texely, float fsaafactor, float alpha, bool bilinear, bool flipY = false)
         {
             Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
-            graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
+            if (flipY)
+                graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix * Matrix.Scaling(1f, -1f, 1f));
+            else
+                graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
             graphics.SetSamplerFilter(0, bilinear ? TextureFilter.Linear : TextureFilter.Point);
         }
 
