@@ -238,7 +238,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Background:
 						if((backimageverts == null) || (General.Map.Grid.Background.Texture == null)) break;
                         graphics.SetShader(aapass);
-                        graphics.SetTexture(0, General.Map.Grid.Background.Texture);
+                        graphics.SetTexture(General.Map.Grid.Background.Texture);
 						SetDisplay2DSettings(1f / windowsize.Width, 1f / windowsize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
 						graphics.SetVertexBuffer(screenverts);
@@ -247,7 +247,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					// GRID
 					case RendererLayer.Grid:
                         graphics.SetShader(aapass);
-                        graphics.SetTexture(0, backtex);
+                        graphics.SetTexture(backtex);
 						SetDisplay2DSettings(1f / backsize.Width, 1f / backsize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -255,7 +255,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					// GEOMETRY
 					case RendererLayer.Geometry:
                         graphics.SetShader(aapass);
-                        graphics.SetTexture(0, plottertex);
+                        graphics.SetTexture(plottertex);
 						SetDisplay2DSettings(1f / structsize.Width, 1f / structsize.Height, FSAA_FACTOR, layer.alpha, false, false);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -263,7 +263,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					// THINGS
 					case RendererLayer.Things:
                         graphics.SetShader(aapass);
-                        graphics.SetTexture(0, thingstex);
+                        graphics.SetTexture(thingstex);
 						SetDisplay2DSettings(1f / thingssize.Width, 1f / thingssize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -271,7 +271,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					// OVERLAY
 					case RendererLayer.Overlay:
                         graphics.SetShader(aapass);
-                        graphics.SetTexture(0, overlaytex);
+                        graphics.SetTexture(overlaytex);
 						SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -279,7 +279,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					// SURFACE
 					case RendererLayer.Surface:
                         graphics.SetShader(aapass);
-                        graphics.SetTexture(0, surfacetex);
+                        graphics.SetTexture(surfacetex);
 						SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -291,7 +291,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.Present();
 
 			// Release binds
-			graphics.SetTexture(0, null);
+			graphics.SetTexture(null);
 			graphics.SetVertexBuffer(null);
 		}
 		
@@ -502,7 +502,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix * Matrix.Scaling(1f, -1f, 1f));
             else
                 graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
-            graphics.SetSamplerFilter(0, bilinear ? TextureFilter.Linear : TextureFilter.Point);
+            graphics.SetSamplerFilter(bilinear ? TextureFilter.Linear : TextureFilter.Point);
         }
 
         private void SetThings2DSettings(float alpha)
@@ -1236,7 +1236,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetVertexBuffer(thingsvertices);
 				
 				// Set things texture
-				graphics.SetTexture(0, General.Map.Data.ThingTexture.Texture); //mxd
+				graphics.SetTexture(General.Map.Data.ThingTexture.Texture); //mxd
 				SetWorldTransformation(false);
                 graphics.SetShader(ShaderName.things2d_thing);
 				SetThings2DSettings(alpha);
@@ -1349,7 +1349,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 						if(sprite.Texture == null) sprite.CreateTexture();
 
-						graphics.SetTexture(0, sprite.Texture);
+						graphics.SetTexture(sprite.Texture);
 
 						// Determine next lock size
 						locksize = (framegroup.Value.Count > THING_BUFFER_SIZE) ? THING_BUFFER_SIZE : framegroup.Value.Count;
@@ -1444,7 +1444,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				//mxd. Render thing arrows
-				graphics.SetTexture(0, General.Map.Data.ThingTexture.Texture);
+				graphics.SetTexture(General.Map.Data.ThingTexture.Texture);
                 graphics.SetShader(ShaderName.things2d_thing);
 
 				// Determine next lock size
@@ -1647,7 +1647,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
                 graphics.SetFogEnable(false);
                 graphics.SetShader(ShaderName.display2d_normal);
-				graphics.SetTexture(0, t);
+				graphics.SetTexture(t);
 				SetWorldTransformation(transformcoords);
 				SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 				
@@ -1697,7 +1697,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetFogEnable(false);
             graphics.SetShader(ShaderName.display2d_normal);
-			graphics.SetTexture(0, label.Texture);
+			graphics.SetTexture(label.Texture);
 			SetWorldTransformation(false);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, false);
 			graphics.SetVertexBuffer(label.VertexBuffer);
@@ -1736,7 +1736,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Text is created?
 				if(!label.SkipRendering)
 				{
-					graphics.SetTexture(0, label.Texture);
+					graphics.SetTexture(label.Texture);
 					graphics.SetVertexBuffer(label.VertexBuffer);
 
 					// Draw
@@ -1796,7 +1796,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
-			graphics.SetTexture(0, General.Map.Data.WhiteTexture.Texture);
+			graphics.SetTexture(General.Map.Data.WhiteTexture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 			
 			// Draw
@@ -1831,7 +1831,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
-			graphics.SetTexture(0, General.Map.Data.WhiteTexture.Texture);
+			graphics.SetTexture(General.Map.Data.WhiteTexture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 
 			// Draw
@@ -1863,7 +1863,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
-			graphics.SetTexture(0, texture.Texture);
+			graphics.SetTexture(texture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 
 			// Draw
@@ -1962,7 +1962,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
-			graphics.SetTexture(0, General.Map.Data.WhiteTexture.Texture);
+			graphics.SetTexture(General.Map.Data.WhiteTexture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 
 			// Draw
@@ -2014,7 +2014,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetFogEnable(false);
 			SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
-			graphics.SetTexture(0, General.Map.Data.WhiteTexture.Texture);
+			graphics.SetTexture(General.Map.Data.WhiteTexture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 
 			// Draw

@@ -3454,7 +3454,7 @@ namespace CodeImp.DoomBuilder.Data
             // Set render settings...
             General.Map.Graphics.SetZEnable(false);
             General.Map.Graphics.SetCullMode(Cull.None);
-            General.Map.Graphics.SetSamplerState(0, TextureAddress.Clamp);
+            General.Map.Graphics.SetSamplerState(TextureAddress.Clamp);
 			
 			// Setup matrices
 			Vector3 offset = new Vector3(0f, 0f, -1.8f); // Sphere size is 10 mu
@@ -3479,9 +3479,9 @@ namespace CodeImp.DoomBuilder.Data
 					// Set appropriate texture
 					switch(meshes.Skins[j])
 					{
-						case "top.png": General.Map.Graphics.SetTexture(0, textop); break;
-						case "bottom.png": General.Map.Graphics.SetTexture(0, texbottom); break;
-						case "side.png": General.Map.Graphics.SetTexture(0, texside); break;
+						case "top.png": General.Map.Graphics.SetTexture(textop); break;
+						case "bottom.png": General.Map.Graphics.SetTexture(texbottom); break;
+						case "side.png": General.Map.Graphics.SetTexture(texside); break;
 						default: throw new Exception("Unexpected skin!");
 					}
 

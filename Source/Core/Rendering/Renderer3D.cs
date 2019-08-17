@@ -320,7 +320,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
 
 			// Texture addressing
-			graphics.SetSamplerState(0, TextureAddress.Wrap);
+			graphics.SetSamplerState(TextureAddress.Wrap);
 
 			// Matrices
 			world = Matrix.Identity;
@@ -499,7 +499,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(General.Settings.GZShowEventLines) RenderArrows(eventlines);
 			
 			// Remove references
-			graphics.SetTexture(0, null);
+			graphics.SetTexture(null);
 			
 			//mxd. Trash collections
 			solidgeo = null;
@@ -759,7 +759,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					curtexture.CreateTexture();
 
                 // Apply texture
-                graphics.SetTexture(0, curtexture.Texture);
+                graphics.SetTexture(curtexture.Texture);
 				
 				//mxd. Sort geometry by sector index
 				group.Value.Sort((g1, g2) => g1.Sector.Sector.FixedIndex - g2.Sector.Sector.FixedIndex);
@@ -838,7 +838,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(thingspass.Count > 0)
 			{
 				// Texture addressing
-				graphics.SetSamplerState(0, TextureAddress.Clamp);
+				graphics.SetSamplerState(TextureAddress.Clamp);
 				graphics.SetCullMode(Cull.None); //mxd. Disable backside culling, because otherwise sprites with positive ScaleY and negative ScaleX will be facing away from the camera...
 
 				Color4 vertexcolor = new Color4(); //mxd
@@ -859,7 +859,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						curtexture.CreateTexture();
 
                     // Apply texture
-                    graphics.SetTexture(0, curtexture.Texture);
+                    graphics.SetTexture(curtexture.Texture);
 
 					// Render all things with this texture
 					foreach(VisualThing t in group.Value)
@@ -949,7 +949,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 }
 
                 // Texture addressing
-                graphics.SetSamplerState(0, TextureAddress.Wrap);
+                graphics.SetSamplerState(TextureAddress.Wrap);
 				graphics.SetCullMode(Cull.Clockwise); //mxd
 			}
 		}
@@ -1039,7 +1039,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						curtexture.CreateTexture();
 
                     // Apply texture
-                    graphics.SetTexture(0, curtexture.Texture);
+                    graphics.SetTexture(curtexture.Texture);
 					curtexturename = g.Texture.LongName;
 				}
 
@@ -1112,7 +1112,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(thingspass.Count > 0)
 			{
 				// Texture addressing
-				graphics.SetSamplerState(0, TextureAddress.Clamp);
+				graphics.SetSamplerState(TextureAddress.Clamp);
 				graphics.SetCullMode(Cull.None); //mxd. Disable backside culling, because otherwise sprites with positive ScaleY and negative ScaleX will be facing away from the camera...
 
 				// Sort geometry by camera distance. First vertex of the BoundingBox is it's center
@@ -1173,7 +1173,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							curtexture.CreateTexture();
 
                         // Apply texture
-                        graphics.SetTexture(0, curtexture.Texture);
+                        graphics.SetTexture(curtexture.Texture);
 						curtexturename = t.Texture.LongName;
 					}
 
@@ -1256,7 +1256,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 graphics.SetUniform(UniformName.stencilColor, new Color4(1f, 1f, 1f, 0f));
 
                 // Texture addressing
-                graphics.SetSamplerState(0, TextureAddress.Wrap);
+                graphics.SetSamplerState(TextureAddress.Wrap);
 				graphics.SetCullMode(Cull.Clockwise); //mxd
 			}
 		}
@@ -1335,7 +1335,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     continue;
 
                 if (settexture)
-                    graphics.SetTexture(0, g.Texture.Texture);
+                    graphics.SetTexture(g.Texture.Texture);
 
                 //normal lights
                 int count = lightOffsets[0];
@@ -1493,7 +1493,7 @@ namespace CodeImp.DoomBuilder.Rendering
             foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geometrytolit)
             {
                 if (group.Key.Texture == null) continue;
-                graphics.SetTexture(0, group.Key.Texture);
+                graphics.SetTexture(group.Key.Texture);
 
                 sector = RenderLightsFromGeometryList(group.Value, lights, sector, false);
             }
@@ -1616,7 +1616,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 GZModel model = General.Map.Data.ModeldefEntries[t.Thing.Type].Model;
                 for (int j = 0; j < model.Meshes.Count; j++)
                 {
-                    graphics.SetTexture(0, model.Textures[j]);
+                    graphics.SetTexture(model.Textures[j]);
 
                     if (!lightpass)
                     {
@@ -1755,7 +1755,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			// Set render settings
 			graphics.SetShader(ShaderName.world3d_skybox);
-            graphics.SetTexture(0, General.Map.Data.SkyBox);
+            graphics.SetTexture(General.Map.Data.SkyBox);
 			graphics.SetUniform(UniformName.world, world);
 			graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, 0f));
 
@@ -2023,12 +2023,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(crosshairbusy)
 			{
 				if(General.Map.Data.CrosshairBusy3D.Texture == null) General.Map.Data.CrosshairBusy3D.CreateTexture();
-				graphics.SetTexture(0, General.Map.Data.CrosshairBusy3D.Texture);
+				graphics.SetTexture(General.Map.Data.CrosshairBusy3D.Texture);
 			}
 			else
 			{
 				if(General.Map.Data.Crosshair3D.Texture == null) General.Map.Data.Crosshair3D.CreateTexture();
-				graphics.SetTexture(0, General.Map.Data.Crosshair3D.Texture);
+				graphics.SetTexture(General.Map.Data.Crosshair3D.Texture);
 			}
 			
 			// Draw
@@ -2041,7 +2041,7 @@ namespace CodeImp.DoomBuilder.Rendering
             Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
             graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
-            graphics.SetSamplerFilter(0, bilinear ? TextureFilter.Linear : TextureFilter.Point);
+            graphics.SetSamplerFilter(bilinear ? TextureFilter.Linear : TextureFilter.Point);
         }
 
         // This switches fog on and off

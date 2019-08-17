@@ -111,17 +111,17 @@ void RenderDevice::SetZWriteEnable(bool value)
 	mNeedApply = true;
 }
 
-void RenderDevice::SetTexture(int index, Texture* texture)
+void RenderDevice::SetTexture(Texture* texture)
 {
-	mTextureUnits[index].Tex = texture;
+	mTextureUnit.Tex = texture;
 	mNeedApply = true;
 }
 
-void RenderDevice::SetSamplerFilter(int index, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+void RenderDevice::SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
 {
-	mTextureUnits[index].MinFilter = GetGLMinFilter(minfilter, mipfilter);
-	mTextureUnits[index].MagFilter = (magfilter == TextureFilter::Point || magfilter == TextureFilter::None) ? GL_NEAREST : GL_LINEAR;
-	mTextureUnits[index].MaxAnisotropy = maxanisotropy;
+	mTextureUnit.MinFilter = GetGLMinFilter(minfilter, mipfilter);
+	mTextureUnit.MagFilter = (magfilter == TextureFilter::Point || magfilter == TextureFilter::None) ? GL_NEAREST : GL_LINEAR;
+	mTextureUnit.MaxAnisotropy = maxanisotropy;
 	mNeedApply = true;
 }
 
@@ -150,11 +150,11 @@ GLint RenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter
 	}
 }
 
-void RenderDevice::SetSamplerState(int index, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
+void RenderDevice::SetSamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
 {
-	mTextureUnits[index].AddressU = addressU;
-	mTextureUnits[index].AddressV = addressV;
-	mTextureUnits[index].AddressW = addressW;
+	mTextureUnit.AddressU = addressU;
+	mTextureUnit.AddressV = addressV;
+	mTextureUnit.AddressW = addressW;
 	mNeedApply = true;
 }
 
@@ -529,25 +529,21 @@ void RenderDevice::ApplyTextures()
 {
 	static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
 
-	for (size_t i = 0; i < NumSlots; i++)
+	glActiveTexture(GL_TEXTURE0);
+	if (mTextureUnit.Tex)
 	{
-		auto& binding = mTextureUnits[i];
-		glActiveTexture(GL_TEXTURE0 + (GLenum)i);
-		if (binding.Tex)
-		{
-			GLenum target = binding.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+		GLenum target = mTextureUnit.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
-			glBindTexture(target, binding.Tex->GetTexture());
-			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, binding.MinFilter);
-			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, binding.MagFilter);
-			glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapMode[(int)binding.AddressU]);
-			glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapMode[(int)binding.AddressV]);
-			glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapMode[(int)binding.AddressW]);
-		}
-		else
-		{
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
+		glBindTexture(target, mTextureUnit.Tex->GetTexture());
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, mTextureUnit.MinFilter);
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, mTextureUnit.MagFilter);
+		glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapMode[(int)mTextureUnit.AddressU]);
+		glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapMode[(int)mTextureUnit.AddressV]);
+		glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapMode[(int)mTextureUnit.AddressW]);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
 
@@ -642,19 +638,19 @@ void RenderDevice_SetZWriteEnable(RenderDevice* device, bool value)
 	device->SetZWriteEnable(value);
 }
 
-void RenderDevice_SetTexture(RenderDevice* device, int unit, Texture* texture)
+void RenderDevice_SetTexture(RenderDevice* device, Texture* texture)
 {
-	device->SetTexture(unit, texture);
+	device->SetTexture(texture);
 }
 
-void RenderDevice_SetSamplerFilter(RenderDevice* device, int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+void RenderDevice_SetSamplerFilter(RenderDevice* device, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
 {
-	device->SetSamplerFilter(unit, minfilter, magfilter, mipfilter, maxanisotropy);
+	device->SetSamplerFilter(minfilter, magfilter, mipfilter, maxanisotropy);
 }
 
-void RenderDevice_SetSamplerState(RenderDevice* device, int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
+void RenderDevice_SetSamplerState(RenderDevice* device, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
 {
-	device->SetSamplerState(unit, addressU, addressV, addressW);
+	device->SetSamplerState(addressU, addressV, addressW);
 }
 
 void RenderDevice_Draw(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount)

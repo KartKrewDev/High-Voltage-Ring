@@ -182,29 +182,29 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetZWriteEnable(Handle, value);
         }
 
-        public void SetTexture(int unit, BaseTexture value)
+        public void SetTexture(BaseTexture value)
         {
-            RenderDevice_SetTexture(Handle, unit, value != null ? value.Handle : IntPtr.Zero);
+            RenderDevice_SetTexture(Handle, value != null ? value.Handle : IntPtr.Zero);
         }
 
-        public void SetSamplerFilter(int unit, TextureFilter filter)
+        public void SetSamplerFilter(TextureFilter filter)
         {
-            SetSamplerFilter(unit, filter, filter, TextureFilter.None, 0.0f);
+            SetSamplerFilter(filter, filter, TextureFilter.None, 0.0f);
         }
 
-        public void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+        public void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
         {
-            RenderDevice_SetSamplerFilter(Handle, unit, minfilter, magfilter, mipfilter, maxanisotropy);
+            RenderDevice_SetSamplerFilter(Handle, minfilter, magfilter, mipfilter, maxanisotropy);
         }
 
-        public void SetSamplerState(int unit, TextureAddress address)
+        public void SetSamplerState(TextureAddress address)
         {
-            SetSamplerState(unit, address, address, address);
+            SetSamplerState(address, address, address);
         }
 
-        public void SetSamplerState(int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
+        public void SetSamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
         {
-            RenderDevice_SetSamplerState(Handle, unit, addressU, addressV, addressW);
+            RenderDevice_SetSamplerState(Handle, addressU, addressV, addressW);
         }
 
         public void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount)
@@ -351,11 +351,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			SetZWriteEnable(false);
 			
 			// Texture addressing
-			SetSamplerState(0, TextureAddress.Wrap);
+			SetSamplerState(TextureAddress.Wrap);
 			
             //mxd. It's still nice to have anisotropic filtering when texture filtering is disabled
             TextureFilter magminfilter = (General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point);
-            SetSamplerFilter(0,
+            SetSamplerFilter(
                 General.Settings.FilterAnisotropy > 1.0f ? TextureFilter.Anisotropic : magminfilter,
                 magminfilter,
                 General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.None, // [SB] use None, otherwise textures are still filtered
@@ -416,13 +416,13 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_SetZWriteEnable(IntPtr handle, bool value);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetTexture(IntPtr handle, int unit, IntPtr texture);
+        static extern void RenderDevice_SetTexture(IntPtr handle, IntPtr texture);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetSamplerFilter(IntPtr handle, int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
+        static extern void RenderDevice_SetSamplerFilter(IntPtr handle, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetSamplerState(IntPtr handle, int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
+        static extern void RenderDevice_SetSamplerState(IntPtr handle, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_Draw(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);

@@ -91,9 +91,9 @@ public:
 	void SetMultisampleAntialias(bool value);
 	void SetZEnable(bool value);
 	void SetZWriteEnable(bool value);
-	void SetTexture(int unit, Texture* texture);
-	void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
-	void SetSamplerState(int unit, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
+	void SetTexture(Texture* texture);
+	void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
+	void SetSamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 	void Draw(PrimitiveType type, int startIndex, int primitiveCount);
 	void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
 	void DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
@@ -141,11 +141,7 @@ public:
 		TextureAddress AddressU = TextureAddress::Wrap;
 		TextureAddress AddressV = TextureAddress::Wrap;
 		TextureAddress AddressW = TextureAddress::Wrap;
-	};
-
-	enum { NumSlots = 16 };
-
-	TextureUnit mTextureUnits[NumSlots];
+	} mTextureUnit;
 
 	VertexBuffer* mVertexBuffer = nullptr;
 	IndexBuffer* mIndexBuffer = nullptr;
