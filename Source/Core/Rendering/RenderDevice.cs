@@ -489,18 +489,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
         internal RenderTargetControl RenderTarget { get; private set; }
 
-        // Make a color from ARGB
-        public static int ARGB(float a, float r, float g, float b)
-		{
-			return Color.FromArgb((int)(a * 255f), (int)(r * 255f), (int)(g * 255f), (int)(b * 255f)).ToArgb();
-		}
-
-		// Make a color from RGB
-		public static int RGB(int r, int g, int b)
-		{
-			return Color.FromArgb(255, r, g, b).ToArgb();
-		}
-
 		// This makes a Vector3 from Vector3D
 		public static Vector3 V3(Vector3D v3d)
 		{
