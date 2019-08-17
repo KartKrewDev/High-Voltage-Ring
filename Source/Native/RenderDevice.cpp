@@ -417,7 +417,7 @@ void RenderDevice::ApplyBlendState()
 	if (mAlphaBlend)
 	{
 		static const GLenum blendOp2GL[] = { GL_FUNC_ADD, GL_FUNC_REVERSE_SUBTRACT };
-		static const GLenum blendFunc2GL[] = { GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE, GL_CONSTANT_COLOR };
+		static const GLenum blendFunc2GL[] = { GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE };
 
 		glEnable(GL_BLEND);
 		glBlendEquation(blendOp2GL[(int)mBlendOperation]);
@@ -434,6 +434,7 @@ void RenderDevice::ApplyDepthState()
 	if (mDepthTest)
 	{
 		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 		glDepthMask(mDepthWrite ? GL_TRUE : GL_FALSE);
 	}
 	else

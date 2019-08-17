@@ -11,7 +11,7 @@ enum class CubeMapFace;
 enum class VertexFormat;
 
 enum class Cull : int { None, Clockwise };
-enum class Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor };
+enum class Blend : int { InverseSourceAlpha, SourceAlpha, One };
 enum class BlendOperation : int { Add, ReverseSubtract };
 enum class FillMode : int { Solid, Wireframe };
 enum class TextureAddress : int { Wrap, Clamp };

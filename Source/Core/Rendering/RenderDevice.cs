@@ -566,7 +566,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
     public enum VertexFormat : int { Flat, World }
     public enum Cull : int { None, Clockwise }
-    public enum Blend : int { InverseSourceAlpha, SourceAlpha, One, BlendFactor }
+    public enum Blend : int { InverseSourceAlpha, SourceAlpha, One }
     public enum BlendOperation : int { Add, ReverseSubtract }
     public enum FillMode : int { Solid, Wireframe }
     public enum TextureAddress : int { Wrap, Clamp }

@@ -1464,7 +1464,7 @@ namespace CodeImp.DoomBuilder.Rendering
             VisualSector sector = null;
 
             graphics.SetSourceBlend(Blend.One);
-            graphics.SetDestinationBlend(Blend.BlendFactor);
+            graphics.SetDestinationBlend(Blend.One);
 
             //
             RenderLightsFromGeometryList(geometrytolit, lights, sector, true);
@@ -1488,7 +1488,7 @@ namespace CodeImp.DoomBuilder.Rendering
             VisualSector sector = null;
 
             graphics.SetSourceBlend(Blend.One);
-            graphics.SetDestinationBlend(Blend.BlendFactor);
+            graphics.SetDestinationBlend(Blend.One);
 
             foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geometrytolit)
             {
