@@ -42,6 +42,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void DrawContents(RenderDevice graphics)
         {
+            if (clear == false && commands.Count == 0)
+                return;
+
             pixels = (PixelColor*)graphics.LockTexture(Texture).ToPointer();
 
             if (clear)
