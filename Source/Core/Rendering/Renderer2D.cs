@@ -626,8 +626,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Rendertargets available?
 			if(plotter != null)
 			{
-                plotter.Begin(graphics);
-
 				// Redraw grid when structures image was cleared
 				if(clear)
 				{
@@ -779,8 +777,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(lastgridsize != General.Map.Grid.GridSizeF || lastgridscale != scale ||
 			   lastgridx != offsetx || lastgridy != offsety || drawmapcenter != lastdrawmapcenter)
 			{
-                // Create a plotter
-                gridplotter.Begin(graphics);
 				gridplotter.Clear();
 
 				if(General.Settings.RenderGrid) //mxd
@@ -816,10 +812,10 @@ namespace CodeImp.DoomBuilder.Rendering
 					Vector2D tl = new Vector2D(General.Map.Config.LeftBoundary, General.Map.Config.TopBoundary).GetTransformed(translatex, translatey, scale, -scale);
 					Vector2D rb = new Vector2D(General.Map.Config.RightBoundary, General.Map.Config.BottomBoundary).GetTransformed(translatex, translatey, scale, -scale);
 					PixelColor g = General.Colors.Grid64;
-					gridplotter.DrawGridLineH((int)tl.y, (int)tl.x, (int)rb.x, ref g);
-					gridplotter.DrawGridLineH((int)rb.y, (int)tl.x, (int)rb.x, ref g);
-					gridplotter.DrawGridLineV((int)tl.x, (int)tl.y, (int)rb.y, ref g);
-					gridplotter.DrawGridLineV((int)rb.x, (int)tl.y, (int)rb.y, ref g);
+					gridplotter.DrawGridLineH((int)tl.y, (int)tl.x, (int)rb.x, g);
+					gridplotter.DrawGridLineH((int)rb.y, (int)tl.x, (int)rb.x, g);
+					gridplotter.DrawGridLineV((int)tl.x, (int)tl.y, (int)rb.y, g);
+					gridplotter.DrawGridLineV((int)rb.x, (int)tl.y, (int)rb.y, g);
 				}
 
 				//mxd. Render center of map
@@ -829,8 +825,8 @@ namespace CodeImp.DoomBuilder.Rendering
 					int cx = (int)center.x;
 					int cy = (int)center.y;
 					PixelColor c = General.Colors.Highlight;
-					gridplotter.DrawLineSolid(cx, cy + MAP_CENTER_SIZE, cx, cy - MAP_CENTER_SIZE, ref c);
-					gridplotter.DrawLineSolid(cx - MAP_CENTER_SIZE, cy, cx + MAP_CENTER_SIZE, cy, ref c);
+					gridplotter.DrawLineSolid(cx, cy + MAP_CENTER_SIZE, cx, cy - MAP_CENTER_SIZE, c);
+					gridplotter.DrawLineSolid(cx - MAP_CENTER_SIZE, cy, cx + MAP_CENTER_SIZE, cy, c);
 				}
 
                 // Done
@@ -911,19 +907,19 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				if (xminintersect)
 				{
-					gridplotter.DrawLineSolid((int)xminplotline.v1.x, (int)xminplotline.v1.y, (int)xminplotline.v2.x, (int)xminplotline.v2.y, ref c, mask);
+					gridplotter.DrawLineSolid((int)xminplotline.v1.x, (int)xminplotline.v1.y, (int)xminplotline.v2.x, (int)xminplotline.v2.y, c, mask);
 				}
 				if (xmaxintersect)
 				{
-					gridplotter.DrawLineSolid((int)xmaxplotline.v1.x, (int)xmaxplotline.v1.y, (int)xmaxplotline.v2.x, (int)xmaxplotline.v2.y, ref c, mask);
+					gridplotter.DrawLineSolid((int)xmaxplotline.v1.x, (int)xmaxplotline.v1.y, (int)xmaxplotline.v2.x, (int)xmaxplotline.v2.y, c, mask);
 				}
 				if (yminintersect)
 				{
-					gridplotter.DrawLineSolid((int)yminplotline.v1.x, (int)yminplotline.v1.y, (int)yminplotline.v2.x, (int)yminplotline.v2.y, ref c, mask);
+					gridplotter.DrawLineSolid((int)yminplotline.v1.x, (int)yminplotline.v1.y, (int)yminplotline.v2.x, (int)yminplotline.v2.y, c, mask);
 				}
 				if (ymaxintersect)
 				{
-					gridplotter.DrawLineSolid((int)ymaxplotline.v1.x, (int)ymaxplotline.v1.y, (int)ymaxplotline.v2.x, (int)ymaxplotline.v2.y, ref c, mask);
+					gridplotter.DrawLineSolid((int)ymaxplotline.v1.x, (int)ymaxplotline.v1.y, (int)ymaxplotline.v2.x, (int)ymaxplotline.v2.y, c, mask);
 				}
 
 				num++;
@@ -968,7 +964,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
 
 				// Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
-				gridplotter.DrawGridLineH((int)pos.y, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), ref c);
+				gridplotter.DrawGridLineH((int)pos.y, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), c);
 			}
 
 			// Draw all vertical grid lines
@@ -987,7 +983,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
 
 				// Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
-				gridplotter.DrawGridLineV((int)pos.x, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), ref c);
+				gridplotter.DrawGridLineV((int)pos.x, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), c);
 			}
 		}
 
@@ -2042,7 +2038,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if((v2 - v1).GetLengthSq() < linenormalsize * lengthscaler) return;
 
 			// Draw line
-			plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, ref c);
+			plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, c);
 		}
 		
 		// This renders a single linedef
@@ -2058,9 +2054,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Draw line. mxd: added 3d-floor indication
 			if(l.ExtraFloorFlag && General.Settings.GZMarkExtraFloors)
-				plotter.DrawLine3DFloor(v1, v2, ref c, General.Colors.ThreeDFloor);
+				plotter.DrawLine3DFloor(v1, v2, c, General.Colors.ThreeDFloor);
 			else
-				plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, ref c);
+				plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, c);
 
 			//mxd. Should we bother?
 			if(lengthsq < minlinenormallength) return; //mxd
@@ -2072,7 +2068,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Draw normal indicator
 			plotter.DrawLineSolid((int)(v1.x + mx), (int)(v1.y + my),
 								  (int)((v1.x + mx) - (my * l.LengthInv) * linenormalsize),
-								  (int)((v1.y + my) + (mx * l.LengthInv) * linenormalsize), ref c);
+								  (int)((v1.y + my) + (mx * l.LengthInv) * linenormalsize), c);
 		}
 		
 		// This renders a set of linedefs
@@ -2094,9 +2090,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				// Draw line. mxd: added 3d-floor indication
 				if(l.ExtraFloorFlag && General.Settings.GZMarkExtraFloors)
-					plotter.DrawLine3DFloor(v1, v2, ref c, General.Colors.ThreeDFloor);
+					plotter.DrawLine3DFloor(v1, v2, c, General.Colors.ThreeDFloor);
 				else
-					plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, ref c);
+					plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, c);
 
 				//mxd. Should we bother?
 				if(lengthsq < minlinenormallength) continue; //mxd
@@ -2108,7 +2104,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Draw normal indicator
 				plotter.DrawLineSolid((int)(v1.x + mx), (int)(v1.y + my),
 									  (int)((v1.x + mx) - (my * l.LengthInv) * linenormalsize),
-									  (int)((v1.y + my) + (mx * l.LengthInv) * linenormalsize), ref c);
+									  (int)((v1.y + my) + (mx * l.LengthInv) * linenormalsize), c);
 			}
 		}
 
@@ -2119,7 +2115,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			Vector2D nv = v.Position.GetTransformed(translatex, translatey, scale, -scale);
 
 			// Draw pixel here
-			plotter.DrawVertexSolid((int)nv.x, (int)nv.y, vertexsize, ref General.Colors.Colors[colorindex], ref General.Colors.BrightColors[colorindex], ref General.Colors.DarkColors[colorindex]);
+			plotter.DrawVertexSolid((int)nv.x, (int)nv.y, vertexsize, General.Colors.Colors[colorindex], General.Colors.BrightColors[colorindex], General.Colors.DarkColors[colorindex]);
 		}
 
 		// This renders a single vertex at specified coordinates
@@ -2129,7 +2125,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			Vector2D nv = v.GetTransformed(translatex, translatey, scale, -scale);
 
 			// Draw pixel here
-			plotter.DrawVertexSolid((int)nv.x, (int)nv.y, vertexsize, ref General.Colors.Colors[colorindex], ref General.Colors.BrightColors[colorindex], ref General.Colors.DarkColors[colorindex]);
+			plotter.DrawVertexSolid((int)nv.x, (int)nv.y, vertexsize, General.Colors.Colors[colorindex], General.Colors.BrightColors[colorindex], General.Colors.DarkColors[colorindex]);
 		}
 		
 		// This renders a set of vertices
