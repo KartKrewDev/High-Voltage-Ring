@@ -52,6 +52,9 @@ namespace CodeImp.DoomBuilder.Rendering
                 command();
             }
 
+            commands.Clear();
+            clear = false;
+
             graphics.UnlockTexture(Texture);
         }
 
