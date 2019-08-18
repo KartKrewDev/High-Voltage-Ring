@@ -7,7 +7,11 @@
 #include "ShaderManager.h"
 #include <stdexcept>
 
+#ifdef WIN32
 RenderDevice::RenderDevice(void* hwnd) : Context(hwnd)
+#else
+RenderDevice::RenderDevice(void* disp, void* window) : Context(disp, window)
+#endif
 {
 	memset(mUniforms, 0, sizeof(mUniforms));
 

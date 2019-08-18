@@ -74,7 +74,11 @@ enum class UniformName : int
 class RenderDevice
 {
 public:
+#ifdef WIN32
 	RenderDevice(void* hwnd);
+#else
+	RenderDevice(void* disp, void* window);
+#endif
 	~RenderDevice();
 
 	void SetShader(ShaderName name);
