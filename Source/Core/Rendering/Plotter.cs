@@ -23,79 +23,60 @@ using CodeImp.DoomBuilder.Geometry;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal unsafe sealed class Plotter
+	internal unsafe sealed class Plotter : IDisposable
 	{
-		#region ================== Constants
-
 		private const int DASH_INTERVAL = 16; //mxd
 
-		#endregion
-
-		#region ================== Variables
-
-		// Memory
 		private PixelColor* pixels;
-		private int width;
-		private int height;
-		private int visiblewidth;
-		private int visibleheight;
 
-		#endregion
-
-		#region ================== Properties
-
-		public int VisibleWidth { get { return visiblewidth; } }
-		public int VisibleHeight { get { return visibleheight; } }
-		public int Width { get { return width; } }
-		public int Height { get { return height; } }
-
-		#endregion
-
-		#region ================== Constructor / Disposer
-
-		// Constructor
-		public Plotter(PixelColor* pixels, int width, int height, int visiblewidth, int visibleheight)
+		public Plotter(int width, int height)
 		{
-			// Initialize
-			this.pixels = pixels;
-			this.width = width;
-			this.height = height;
-			this.visiblewidth = width;
-			this.visibleheight = height;
-			
-			// We have no destructor
-			GC.SuppressFinalize(this);
-		}
+            this.Texture = new Texture(width, height);
+        }
 
-		#endregion
+        ~Plotter()
+        {
+            Dispose();
+        }
 
-		#region ================== Pixel Rendering
-		
+        public int Width { get { return Texture.Width; } }
+        public int Height { get { return Texture.Height; } }
+        public Texture Texture { get; set; }
+
+        public void Dispose()
+        {
+            if (Texture != null) Texture.Dispose();
+        }
+
+        public void Begin(RenderDevice graphics)
+        {
+            this.pixels = (PixelColor*)graphics.LockTexture(Texture).ToPointer();
+        }
+
+        public void DrawContents(RenderDevice graphics)
+        {
+            graphics.UnlockTexture(Texture);
+        }
+
 		// This clears all pixels black
 		public void Clear()
 		{
 			// Clear memory
-			General.ZeroMemory(new IntPtr(pixels), width * height * sizeof(PixelColor));
+			General.ZeroMemory(new IntPtr(pixels), Width * Height * sizeof(PixelColor));
 		}
 		
 		// This draws a pixel normally
-		public void DrawPixelSolid(int x, int y, ref PixelColor c)
-		{
-			// Draw pixel when within range
-			if((x >= 0) && (x < visiblewidth) && (y >= 0) && (y < visibleheight))
-				pixels[y * width + x] = c;
-		}
-
-		// This draws a pixel normally
 		public void DrawVertexSolid(int x, int y, int size, ref PixelColor c, ref PixelColor l, ref PixelColor d)
 		{
+            int width = Width;
+            int height = Height;
 			int x1 = x - size;
 			int x2 = x + size;
 			int y1 = y - size;
 			int y2 = y + size;
 
 			// Do unchecked?
-			if((x1 >= 0) && (x2 < visiblewidth) && (y1 >= 0) && (y2 < visibleheight))
+			if((x1 >= 0) && (x2 < width) && (y1 >= 0) && (y2 < height))
 			{
 				// Filled square
 				for(int yp = y1; yp <= y2; yp++)
@@ -152,7 +133,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This draws a dotted grid line horizontally
 		public void DrawGridLineH(int y, int x1, int x2, ref PixelColor c)
 		{
-			int numpixels = visiblewidth >> 1;
+            int width = Width;
+            int height = Height;
+            int numpixels = width >> 1;
 			int offset = y & 0x01;
 			int ywidth = y * width;
 			x1 = General.Clamp(x1 >> 1, 0, numpixels - 1);
@@ -168,7 +151,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This draws a dotted grid line vertically
 		public void DrawGridLineV(int x, int y1, int y2, ref PixelColor c)
 		{
-			int numpixels = visibleheight >> 1;
+            int width = Width;
+            int height = Height;
+            int numpixels = height >> 1;
 			int offset = x & 0x01;
 			y1 = General.Clamp(y1 >> 1, 0, numpixels - 1);
 			y2 = General.Clamp(y2 >> 1, 0, numpixels - 1);
@@ -180,44 +165,20 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 		}
 
-		// This draws a pixel alpha blended
-		public void DrawPixelAlpha(int x, int y, ref PixelColor c)
-		{
-			// Draw only when within range
-			if((x >= 0) && (x < visiblewidth) && (y >= 0) && (y < visibleheight))
-			{
-				// Get the target pixel
-				PixelColor* p = pixels + (y * width + x);
-
-				// Not drawn on target yet?
-				if(*(int*)p == 0)
-				{
-					// Simply apply color to pixel
-					*p = c;
-				}
-				else
-				{
-					// Blend with pixel
-					float a = c.a * 0.003921568627450980392156862745098f;
-					if(p->a + c.a > 255) p->a = 255; else p->a += c.a;
-					p->r = (byte)(p->r * (1f - a) + c.r * a);
-					p->g = (byte)(p->g * (1f - a) + c.g * a);
-					p->b = (byte)(p->b * (1f - a) + c.b * a);
-				}
-			}
-		}
-
 		// This draws a line normally
 		// See: http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 		public void DrawLineSolid(int x1, int y1, int x2, int y2, ref PixelColor c, uint mask = 0xffffffff)
 		{
-			// Check if the line is outside the screen for sure.
-			// This is quickly done by checking in which area both points are. When this
-			// is above, below, right or left of the screen, then skip drawing the line.
-			if(((x1 < 0) && (x2 < 0)) ||
-			   ((x1 > visiblewidth) && (x2 > visiblewidth)) ||
+            int width = Width;
+            int height = Height;
+
+            // Check if the line is outside the screen for sure.
+            // This is quickly done by checking in which area both points are. When this
+            // is above, below, right or left of the screen, then skip drawing the line.
+            if (((x1 < 0) && (x2 < 0)) ||
+			   ((x1 > width) && (x2 > width)) ||
 			   ((y1 < 0) && (y2 < 0)) ||
-			   ((y1 > visibleheight) && (y2 > visibleheight))) return;
+			   ((y1 > height) && (y2 > height))) return;
 
 			// Distance of the line
 			int dx = x2 - x1;
@@ -242,8 +203,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			// When the line is completely inside screen,
 			// then do an unchecked draw, because all of its pixels are
 			// guaranteed to be within the memory range
-			if((x1 >= 0) && (x2 >= 0) && (x1 < visiblewidth) && (x2 < visiblewidth) &&
-			   (y1 >= 0) && (y2 >= 0) && (y1 < visibleheight) && (y2 < visibleheight))
+			if((x1 >= 0) && (x2 >= 0) && (x1 < width) && (x2 < width) &&
+			   (y1 >= 0) && (y2 >= 0) && (y1 < height) && (y2 < height))
 			{
 				// Draw first pixel
 				pixels[py * width + px] = c;
@@ -290,7 +251,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			else
 			{
 				// Draw first pixel
-				if((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+				if((px >= 0) && (px < width) && (py >= 0) && (py < height))
 					pixels[py * width + px] = c;
 				
 				// Check if the line is more horizontal than vertical
@@ -308,7 +269,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						
 						// Draw pixel
 						if ((mask & (1 << (i & 0x7))) != 0) {
-							if((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+							if((px >= 0) && (px < width) && (py >= 0) && (py < height))
 								pixels[py * width + px] = c;
 						}
 					}
@@ -328,7 +289,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						
 						// Draw pixel
 						if ((mask & (1 << (i & 0x7))) != 0) {
-							if((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+							if((px >= 0) && (px < width) && (py >= 0) && (py < height))
 								pixels[py * width + px] = c;
 						}
 					}
@@ -359,7 +320,5 @@ namespace CodeImp.DoomBuilder.Rendering
 				DrawLineSolid((int)p2.x, (int)p2.y, (int)end.x, (int)end.y, ref c2);
 			}
 		}
-
-		#endregion
 	}
 }

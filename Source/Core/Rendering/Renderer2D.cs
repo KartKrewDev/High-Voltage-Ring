@@ -60,21 +60,14 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Variables
 
 		// Rendertargets
-		private Texture backtex;
-		private Texture plottertex;
-		private Texture thingstex;
+		private Plotter gridplotter;
+        private Plotter plotter;
+        private Texture thingstex;
 		private Texture overlaytex;
 		private Texture surfacetex;
 
 		// Rendertarget sizes
 		private Size windowsize;
-		private Size structsize;
-		private Size thingssize;
-		private Size overlaysize;
-		private Size backsize;
-
-		// Geometry plotter
-		private Plotter plotter;
 
 		// Vertices to present the textures
 		private VertexBuffer screenverts;
@@ -247,16 +240,16 @@ namespace CodeImp.DoomBuilder.Rendering
 					// GRID
 					case RendererLayer.Grid:
                         graphics.SetShader(aapass);
-                        graphics.SetTexture(backtex);
-						SetDisplay2DSettings(1f / backsize.Width, 1f / backsize.Height, FSAA_FACTOR, layer.alpha, false, true);
+                        graphics.SetTexture(gridplotter.Texture);
+						SetDisplay2DSettings(1f / gridplotter.Width, 1f / gridplotter.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
 					// GEOMETRY
 					case RendererLayer.Geometry:
                         graphics.SetShader(aapass);
-                        graphics.SetTexture(plottertex);
-						SetDisplay2DSettings(1f / structsize.Width, 1f / structsize.Height, FSAA_FACTOR, layer.alpha, false, false);
+                        graphics.SetTexture(plotter.Texture);
+						SetDisplay2DSettings(1f / plotter.Width, 1f / plotter.Height, FSAA_FACTOR, layer.alpha, false, false);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
@@ -264,7 +257,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Things:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(thingstex);
-						SetDisplay2DSettings(1f / thingssize.Width, 1f / thingssize.Height, FSAA_FACTOR, layer.alpha, false, true);
+						SetDisplay2DSettings(1f / thingstex.Width, 1f / thingstex.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
@@ -272,7 +265,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Overlay:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(overlaytex);
-						SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false, true);
+						SetDisplay2DSettings(1f / overlaytex.Width, 1f / overlaytex.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 
@@ -280,7 +273,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Surface:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(surfacetex);
-						SetDisplay2DSettings(1f / overlaysize.Width, 1f / overlaysize.Height, FSAA_FACTOR, layer.alpha, false, true);
+						SetDisplay2DSettings(1f / overlaytex.Width, 1f / overlaytex.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
 				}
@@ -326,15 +319,14 @@ namespace CodeImp.DoomBuilder.Rendering
 		public void DestroyRendertargets()
 		{
 			// Trash rendertargets
-			if(plottertex != null) plottertex.Dispose();
+			if(plotter != null) plotter.Dispose();
 			if(thingstex != null) thingstex.Dispose();
 			if(overlaytex != null) overlaytex.Dispose();
 			if(surfacetex != null) surfacetex.Dispose();
-			if(backtex != null) backtex.Dispose();
+			if(gridplotter != null) gridplotter.Dispose();
 			if(screenverts != null) screenverts.Dispose();
-			plottertex = null;
 			thingstex = null;
-			backtex = null;
+            gridplotter = null;
 			screenverts = null;
 			overlaytex = null;
 			surfacetex = null;
@@ -357,28 +349,13 @@ namespace CodeImp.DoomBuilder.Rendering
 			windowsize.Height = graphics.RenderTarget.ClientSize.Height;
 
 			// Create rendertargets textures
-			plottertex = new Texture(windowsize.Width, windowsize.Height);
-			thingstex = new Texture(windowsize.Width, windowsize.Height);
-			backtex = new Texture(windowsize.Width, windowsize.Height);
+			plotter = new Plotter(windowsize.Width, windowsize.Height);
+            gridplotter = new Plotter(windowsize.Width, windowsize.Height);
+            thingstex = new Texture(windowsize.Width, windowsize.Height);
 			overlaytex = new Texture(windowsize.Width, windowsize.Height);
 			surfacetex = new Texture(windowsize.Width, windowsize.Height);
 			
-			// Get the real surface sizes
-			structsize.Width = plottertex.Width;
-			structsize.Height = plottertex.Height;
-			thingssize.Width = thingstex.Width;
-			thingssize.Height = thingstex.Height;
-			backsize.Width = backtex.Width;
-			backsize.Height = backtex.Height;
-			overlaysize.Width = overlaytex.Width;
-			overlaysize.Height = overlaytex.Height;
-			
 			// Clear rendertargets
-			// This may cause a crash when resetting because it recursively
-			// calls Reset in the Start functions and doesn't get to Finish
-			//StartPlotter(true); Finish();
-			//StartThings(true); Finish();
-			//StartOverlay(true); Finish();
 			graphics.ClearTexture(General.Colors.Background.WithAlpha(0).ToColorValue(), thingstex);
 			graphics.ClearTexture(General.Colors.Background.WithAlpha(0).ToColorValue(), overlaytex);
 			
@@ -388,7 +365,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetBufferData(thingsvertices, THING_BUFFER_SIZE * 12, VertexFormat.Flat);
 
 			// Make screen vertices
-			FlatVertex[] verts = CreateScreenVerts(structsize);
+			FlatVertex[] verts = CreateScreenVerts(new Size(plotter.Width, plotter.Height));
             graphics.SetBufferData(screenverts, verts);
 			
 			// Force update of view
@@ -647,10 +624,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			renderlayer = RenderLayers.Plotter;
 			
 			// Rendertargets available?
-			if(plottertex != null)
+			if(plotter != null)
 			{
-				// Create structures plotter
-				plotter = graphics.LockPlotter(plottertex, structsize.Width, structsize.Height);
+                plotter.Begin(graphics);
 
 				// Redraw grid when structures image was cleared
 				if(clear)
@@ -733,11 +709,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This ends a drawing session
 		public void Finish()
 		{
-			// Clean up plotter
+			// Draw plotter contents
 			if(renderlayer == RenderLayers.Plotter)
 			{
-				if(plottertex != null) graphics.UnlockPlotter(plottertex);
-				plotter = null;
+				plotter.DrawContents(graphics);
 			}
 			
 			// Clean up things / overlay
@@ -804,8 +779,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(lastgridsize != General.Map.Grid.GridSizeF || lastgridscale != scale ||
 			   lastgridx != offsetx || lastgridy != offsety || drawmapcenter != lastdrawmapcenter)
 			{
-				// Create a plotter
-				Plotter gridplotter = graphics.LockPlotter(backtex, backsize.Width, backsize.Height);
+                // Create a plotter
+                gridplotter.Begin(graphics);
 				gridplotter.Clear();
 
 				if(General.Settings.RenderGrid) //mxd
@@ -859,7 +834,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
                 // Done
-                graphics.UnlockPlotter(backtex);
+                gridplotter.DrawContents(graphics);
 				lastgridscale = scale;
 				lastgridsize = General.Map.Grid.GridSizeF;
 				lastgridx = offsetx;

@@ -313,16 +313,12 @@ namespace CodeImp.DoomBuilder.Rendering
             bitmap.UnlockBits(bmpdata);
         }
 
-        internal Plotter LockPlotter(Texture texture, int visibleWidth, int visibleHeight)
+        internal IntPtr LockTexture(Texture texture)
         {
-            unsafe
-            {
-                IntPtr data = RenderDevice_LockTexture(Handle, texture.Handle);
-                return new Plotter((PixelColor*)data.ToPointer(), texture.Width, texture.Height, Math.Min(texture.Width, visibleWidth), Math.Min(texture.Height, visibleHeight));
-            }
+            return RenderDevice_LockTexture(Handle, texture.Handle);
         }
 
-        public void UnlockPlotter(Texture texture)
+        public void UnlockTexture(Texture texture)
         {
             RenderDevice_UnlockTexture(Handle, texture.Handle);
         }
