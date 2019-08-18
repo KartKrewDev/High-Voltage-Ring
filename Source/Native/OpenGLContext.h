@@ -1,9 +1,11 @@
 #pragma once
 
+#ifdef WIN32
+
 class OpenGLContext
 {
 public:
-	OpenGLContext(HWND window);
+	OpenGLContext(void* window);
 	~OpenGLContext();
 
 	void Begin();
@@ -43,3 +45,26 @@ private:
 	typedef BOOL(WINAPI* ptr_wglGetPixelFormatAttribfvEXT)(HDC, int, int, UINT, int*, FLOAT*);
 	typedef BOOL(WINAPI* ptr_wglChoosePixelFormatEXT)(HDC, const int*, const FLOAT*, UINT, int*, UINT*);
 };
+
+#else
+
+class OpenGLContext
+{
+public:
+	OpenGLContext(void* window);
+	~OpenGLContext();
+
+	void Begin();
+	void End();
+	void SwapBuffers();
+
+	int GetWidth() const;
+	int GetHeight() const;
+
+	explicit operator bool() const { return context != 0; }
+
+private:
+	void* context = nullptr;
+};
+
+#endif

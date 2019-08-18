@@ -2,6 +2,8 @@
 #include "Precomp.h"
 #include "RawMouse.h"
 
+#ifdef WIN32
+
 #ifndef HID_USAGE_PAGE_GENERIC
 #define HID_USAGE_PAGE_GENERIC		((USHORT) 0x01)
 #endif
@@ -39,7 +41,7 @@ public:
 	const TCHAR* ClassName = TEXT("RawMouseWindow");
 };
 
-RawMouse::RawMouse(HWND ownerWindow)
+RawMouse::RawMouse(void* ownerWindow)
 {
 	static RawMouseWindowClass win32class;
 	handle = CreateWindowEx(0, win32class.ClassName, TEXT(""), WS_POPUP, 0, 0, 100, 100, 0, 0, GetModuleHandle(nullptr), this);
@@ -121,9 +123,31 @@ LRESULT RawMouse::WindowProc(HWND handle, UINT message, WPARAM wparam, LPARAM lp
 	}
 }
 
+#else
+
+RawMouse::RawMouse(void* ownerWindow)
+{
+}
+
+RawMouse::~RawMouse()
+{
+}
+
+float RawMouse::GetX()
+{
+	return 0;
+}
+
+float RawMouse::GetY()
+{
+	return 0;
+}
+
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 
-RawMouse* RawMouse_New(HWND hwnd)
+RawMouse* RawMouse_New(void* hwnd)
 {
 	return new RawMouse(hwnd);
 }

@@ -74,7 +74,7 @@ enum class UniformName : int
 class RenderDevice
 {
 public:
-	RenderDevice(HWND hwnd);
+	RenderDevice(void* hwnd);
 	~RenderDevice();
 
 	void SetShader(ShaderName name);

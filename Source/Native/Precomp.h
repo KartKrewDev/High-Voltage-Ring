@@ -5,11 +5,13 @@
 #include <map>
 #include <memory>
 
+#ifdef WIN32
 #include <Windows.h>
-#include "gl_load/gl_system.h"
-
 #undef min
 #undef max
+#endif
+
+#include "gl_load/gl_system.h"
 
 #define APART(x) (static_cast<uint32_t>(x) >> 24)
 #define RPART(x) ((static_cast<uint32_t>(x) >> 16)  & 0xff)

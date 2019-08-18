@@ -61,8 +61,6 @@
 #define WGL_SAMPLE_BUFFERS                   0x2041
 #define WGL_SAMPLES                          0x2042
 
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 
 class OpenGLLoadFunctions
@@ -73,7 +71,7 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////
 
-OpenGLContext::OpenGLContext(HWND window) : window(window)
+OpenGLContext::OpenGLContext(void* windowptr) : window((HWND)windowptr)
 {
 	dc = GetDC(window);
 	OpenGLCreationHelper helper(window);
@@ -237,3 +235,37 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, int major_version, int minor_
 
 	return opengl3_context;
 }
+
+#else
+
+OpenGLContext::OpenGLContext(void* window)
+{
+}
+
+OpenGLContext::~OpenGLContext()
+{
+}
+
+void OpenGLContext::Begin()
+{
+}
+
+void OpenGLContext::End()
+{
+}
+
+void OpenGLContext::SwapBuffers()
+{
+}
+
+int OpenGLContext::GetWidth() const
+{
+	return 0;
+}
+
+int OpenGLContext::GetHeight() const
+{
+	return 0;
+}
+
+#endif

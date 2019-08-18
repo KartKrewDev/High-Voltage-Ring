@@ -7,7 +7,7 @@
 #include "ShaderManager.h"
 #include <stdexcept>
 
-RenderDevice::RenderDevice(HWND hwnd) : Context(hwnd)
+RenderDevice::RenderDevice(void* hwnd) : Context(hwnd)
 {
 	memset(mUniforms, 0, sizeof(mUniforms));
 
@@ -550,7 +550,7 @@ void RenderDevice::ApplyTextures()
 
 /////////////////////////////////////////////////////////////////////////////
 
-RenderDevice* RenderDevice_New(HWND hwnd)
+RenderDevice* RenderDevice_New(void* hwnd)
 {
 	RenderDevice *device = new RenderDevice(hwnd);
 	if (!device->Context)

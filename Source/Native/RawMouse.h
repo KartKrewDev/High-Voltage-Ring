@@ -1,9 +1,11 @@
 #pragma once
 
+#ifdef WIN32
+
 class RawMouse
 {
 public:
-	RawMouse(HWND ownerWindow);
+	RawMouse(void* ownerWindow);
 	~RawMouse();
 
 	float GetX();
@@ -19,3 +21,17 @@ private:
 
 	friend class RawMouseWindowClass;
 };
+
+#else
+
+class RawMouse
+{
+public:
+	RawMouse(void* ownerWindow);
+	~RawMouse();
+
+	float GetX();
+	float GetY();
+};
+
+#endif
