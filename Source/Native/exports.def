@@ -33,8 +33,6 @@ EXPORTS
 	RenderDevice_SetIndexBufferData
 	RenderDevice_SetPixels
 	RenderDevice_SetCubePixels
-	RenderDevice_LockTexture
-	RenderDevice_UnlockTexture
 	VertexBuffer_New
 	VertexBuffer_Delete
 	IndexBuffer_New

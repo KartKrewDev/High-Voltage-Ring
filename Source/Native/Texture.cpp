@@ -38,16 +38,6 @@ void Texture::SetCubePixels(CubeMapFace face, const void* data)
 	memcpy(mPixels[(int)face].data(), data, sizeof(uint32_t) * mWidth * mHeight);
 }
 
-void* Texture::Lock()
-{
-	mPixels[0].resize(mWidth * (size_t)mHeight);
-	return mPixels[0].data();
-}
-
-void Texture::Unlock()
-{
-}
-
 void Texture::Invalidate()
 {
 	if (mDepthRenderbuffer) glDeleteRenderbuffers(1, &mDepthRenderbuffer);

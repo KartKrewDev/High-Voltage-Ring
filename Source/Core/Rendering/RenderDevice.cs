@@ -313,16 +313,6 @@ namespace CodeImp.DoomBuilder.Rendering
             bitmap.UnlockBits(bmpdata);
         }
 
-        internal IntPtr LockTexture(Texture texture)
-        {
-            return RenderDevice_LockTexture(Handle, texture.Handle);
-        }
-
-        public void UnlockTexture(Texture texture)
-        {
-            RenderDevice_UnlockTexture(Handle, texture.Handle);
-        }
-
         internal void RegisterResource(IRenderResource res)
         {
         }
@@ -471,12 +461,6 @@ namespace CodeImp.DoomBuilder.Rendering
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         protected static extern void RenderDevice_SetCubePixels(IntPtr handle, IntPtr texture, CubeMapFace face, IntPtr data);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        protected static extern IntPtr RenderDevice_LockTexture(IntPtr handle, IntPtr texture);
-
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        protected static extern void RenderDevice_UnlockTexture(IntPtr handle, IntPtr texture);
-
         //mxd. Anisotropic filtering steps
         public static readonly List<float> AF_STEPS = new List<float> { 1.0f, 2.0f, 4.0f, 8.0f, 16.0f };
 
@@ -518,6 +502,7 @@ namespace CodeImp.DoomBuilder.Rendering
         things2d_thing,
         things2d_sprite,
         things2d_fill,
+        plotter,
         world3d_main,
         world3d_fullbright,
         world3d_main_highlight,

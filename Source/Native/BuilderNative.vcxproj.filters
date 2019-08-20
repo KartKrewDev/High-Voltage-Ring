@@ -33,6 +33,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShaderDisplay2D.h" />
     <ClInclude Include="RawMouse.h" />
+    <ClInclude Include="ShaderPlotter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

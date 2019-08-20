@@ -334,17 +334,6 @@ void RenderDevice::SetCubePixels(Texture* texture, CubeMapFace face, const void*
 	InvalidateTexture(texture);
 }
 
-void* RenderDevice::LockTexture(Texture* texture)
-{
-	return texture->Lock();
-}
-
-void RenderDevice::UnlockTexture(Texture* texture)
-{
-	texture->Unlock();
-	InvalidateTexture(texture);
-}
-
 void RenderDevice::InvalidateTexture(Texture* texture)
 {
 	if (texture->IsTextureCreated())
@@ -721,14 +710,4 @@ void RenderDevice_SetPixels(RenderDevice* device, Texture* texture, const void* 
 void RenderDevice_SetCubePixels(RenderDevice* device, Texture* texture, CubeMapFace face, const void* data)
 {
 	device->SetCubePixels(texture, face, data);
-}
-
-void* RenderDevice_LockTexture(RenderDevice* device, Texture* texture)
-{
-	return device->LockTexture(texture);
-}
-
-void RenderDevice_UnlockTexture(RenderDevice* device, Texture* texture)
-{
-	device->UnlockTexture(texture);
 }

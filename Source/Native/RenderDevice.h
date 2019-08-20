@@ -27,6 +27,7 @@ enum class ShaderName
 	things2d_thing,
 	things2d_sprite,
 	things2d_fill,
+	plotter,
 	world3d_main,
 	world3d_fullbright,
 	world3d_main_highlight,
@@ -113,8 +114,6 @@ public:
 
 	void SetPixels(Texture* texture, const void* data);
 	void SetCubePixels(Texture* texture, CubeMapFace face, const void* data);
-	void* LockTexture(Texture* texture);
-	void UnlockTexture(Texture* texture);
 
 	void InvalidateTexture(Texture* texture);
 

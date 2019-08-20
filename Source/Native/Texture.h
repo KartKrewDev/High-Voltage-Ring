@@ -22,9 +22,6 @@ public:
 	void SetPixels(const void* data);
 	void SetCubePixels(CubeMapFace face, const void* data);
 
-	void* Lock();
-	void Unlock();
-
 	bool IsCubeTexture() const { return mCubeTexture; }
 	int GetWidth() const { return mWidth; }
 	int GetHeight() const { return mHeight; }

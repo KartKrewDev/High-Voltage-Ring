@@ -842,8 +842,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This renders the grid with a transform applied
 		private void RenderGridTransformed(float size, float angle, float originx, float originy, PixelColor c, Plotter gridplotter)
 		{
-			const int mask = 0x55555555; // dotted line mask
-
 			//mxd. Increase rendered grid size if needed
 			if(!General.Settings.DynamicGridSize && size * scale <= 6f)
 				do { size *= 2; } while(size * scale <= 6f);
@@ -907,19 +905,19 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				if (xminintersect)
 				{
-					gridplotter.DrawLineSolid((int)xminplotline.v1.x, (int)xminplotline.v1.y, (int)xminplotline.v2.x, (int)xminplotline.v2.y, c, mask);
+					gridplotter.DrawLineSolid((int)xminplotline.v1.x, (int)xminplotline.v1.y, (int)xminplotline.v2.x, (int)xminplotline.v2.y, c, true);
 				}
 				if (xmaxintersect)
 				{
-					gridplotter.DrawLineSolid((int)xmaxplotline.v1.x, (int)xmaxplotline.v1.y, (int)xmaxplotline.v2.x, (int)xmaxplotline.v2.y, c, mask);
+					gridplotter.DrawLineSolid((int)xmaxplotline.v1.x, (int)xmaxplotline.v1.y, (int)xmaxplotline.v2.x, (int)xmaxplotline.v2.y, c, true);
 				}
 				if (yminintersect)
 				{
-					gridplotter.DrawLineSolid((int)yminplotline.v1.x, (int)yminplotline.v1.y, (int)yminplotline.v2.x, (int)yminplotline.v2.y, c, mask);
+					gridplotter.DrawLineSolid((int)yminplotline.v1.x, (int)yminplotline.v1.y, (int)yminplotline.v2.x, (int)yminplotline.v2.y, c, true);
 				}
 				if (ymaxintersect)
 				{
-					gridplotter.DrawLineSolid((int)ymaxplotline.v1.x, (int)ymaxplotline.v1.y, (int)ymaxplotline.v2.x, (int)ymaxplotline.v2.y, c, mask);
+					gridplotter.DrawLineSolid((int)ymaxplotline.v1.x, (int)ymaxplotline.v1.y, (int)ymaxplotline.v2.x, (int)ymaxplotline.v2.y, c, true);
 				}
 
 				num++;

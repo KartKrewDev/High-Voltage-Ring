@@ -4,6 +4,7 @@
 #include "ShaderDisplay2D.h"
 #include "ShaderThings2D.h"
 #include "ShaderWorld3D.h"
+#include "ShaderPlotter.h"
 #include <stdexcept>
 
 struct ShaderPair { const char* vs; const char* ps; };
@@ -15,6 +16,7 @@ static const ShaderPair ShaderSources[(int)ShaderName::count] = {
 	{ things2D_vs, things2D_ps_thing },
 	{ things2D_vs, things2D_ps_sprite },
 	{ things2D_vs, things2D_ps_fill },
+	{ plotter_vs, plotter_ps },
 	{ world3D_vs_main, world3D_ps_main },
 	{ world3D_vs_main, world3D_ps_fullbright },
 	{ world3D_vs_main, world3D_ps_main_highlight },
