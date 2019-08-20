@@ -365,7 +365,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetBufferData(thingsvertices, THING_BUFFER_SIZE * 12, VertexFormat.Flat);
 
 			// Make screen vertices
-			FlatVertex[] verts = CreateScreenVerts(new Size(plotter.Width, plotter.Height));
+			FlatVertex[] verts = CreateScreenVerts(new Size(windowsize.Width, windowsize.Height));
             graphics.SetBufferData(screenverts, verts);
 			
 			// Force update of view
@@ -380,27 +380,27 @@ namespace CodeImp.DoomBuilder.Rendering
 		private static FlatVertex[] CreateScreenVerts(Size texturesize)
 		{
 			FlatVertex[] screenverts = new FlatVertex[4];
-			screenverts[0].x = 0.5f;
-			screenverts[0].y = 0.5f;
-			screenverts[0].c = -1;
-			screenverts[0].u = 1f / texturesize.Width;
-			screenverts[0].v = 1f / texturesize.Height;
-			screenverts[1].x = texturesize.Width - 1.5f;
-			screenverts[1].y = 0.5f;
-			screenverts[1].c = -1;
-			screenverts[1].u = 1f - 1f / texturesize.Width;
-			screenverts[1].v = 1f / texturesize.Height;
-			screenverts[2].x = 0.5f;
-			screenverts[2].y = texturesize.Height - 1.5f;
-			screenverts[2].c = -1;
-			screenverts[2].u = 1f / texturesize.Width;
-			screenverts[2].v = 1f - 1f / texturesize.Height;
-			screenverts[3].x = texturesize.Width - 1.5f;
-			screenverts[3].y = texturesize.Height - 1.5f;
-			screenverts[3].c = -1;
-			screenverts[3].u = 1f - 1f / texturesize.Width;
-			screenverts[3].v = 1f - 1f / texturesize.Height;
-			return screenverts;
+            screenverts[0].x = 0.0f;
+            screenverts[0].y = 0.0f;
+            screenverts[0].c = -1;
+            screenverts[0].u = 0.0f;
+            screenverts[0].v = 0.0f;
+            screenverts[1].x = texturesize.Width;
+            screenverts[1].y = 0.0f;
+            screenverts[1].c = -1;
+            screenverts[1].u = 1.0f;
+            screenverts[1].v = 0.0f;
+            screenverts[2].x = 0.0f;
+            screenverts[2].y = texturesize.Height;
+            screenverts[2].c = -1;
+            screenverts[2].u = 0.0f;
+            screenverts[2].v = 1.0f;
+            screenverts[3].x = texturesize.Width;
+            screenverts[3].y = texturesize.Height;
+            screenverts[3].c = -1;
+            screenverts[3].u = 1.0f;
+            screenverts[3].v = 1.0f;
+            return screenverts;
 		}
 
 		#endregion
@@ -447,9 +447,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(vertexsize < 0) vertexsize = 0;
 			if(vertexsize > 4) vertexsize = 4;
 
-			Matrix scaling = Matrix.Scaling((1f / windowsize.Width) * 2f, (1f / windowsize.Height) * -2f, 1f);
-			Matrix translate = Matrix.Translation(-(float)windowsize.Width * 0.5f, -(float)windowsize.Height * 0.5f, 0f);
-			viewmatrix = translate * scaling;
+            viewmatrix = Matrix.Scaling(2.0f / windowsize.Width, -2.0f / windowsize.Height, 1.0f) * Matrix.Translation(-1.0f, 1.0f, 0.0f);
 			Vector2D lt = DisplayToMap(new Vector2D(0.0f, 0.0f));
 			Vector2D rb = DisplayToMap(new Vector2D(windowsize.Width, windowsize.Height));
 			viewport = new RectangleF(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
@@ -1536,6 +1534,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			if(renderlayer != RenderLayers.None) return; //mxd
 			renderlayer = RenderLayers.Surface;
+
+            // Recreate render targets if the window was resized
+            if (windowsize.Width != graphics.RenderTarget.ClientSize.Width || windowsize.Height != graphics.RenderTarget.ClientSize.Height)
+                CreateRendertargets();
 
 			// Rendertargets available?
 			if(surfacetex != null)

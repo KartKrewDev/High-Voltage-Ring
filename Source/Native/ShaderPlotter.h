@@ -27,13 +27,12 @@ const char* plotter_ps = R"(
 	void main()
 	{
 		// line stipple
-		int visible = int(UV.x) & 1;
-		if (visible == 1)
+		if (mod(UV.x, 2.0) > 1.0)
 			discard;
 
 		// line smoothing
-		float linewidth = 2.0;
-		float falloff = 1.5; //1.5..2.5
+		float linewidth = 3.0;
+		float falloff = 1.8; //1.5..2.5
 		float centerdist = abs(UV.y);
 		float a = pow(clamp((linewidth - centerdist) / linewidth, 0.0, 1.0), falloff);
 

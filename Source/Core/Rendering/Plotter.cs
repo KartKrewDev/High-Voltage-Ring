@@ -105,8 +105,8 @@ namespace CodeImp.DoomBuilder.Rendering
             }
             else
             {
-                start = -0.5f;
-                end = len + 0.5f;
+                start = 0.0f;
+                end = len;
             }
 
             float lineextent = 3.0f; // line width in shader + 1
@@ -165,7 +165,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void DrawLineSolid(int x1, int y1, int x2, int y2, PixelColor c, bool dotted = false)
         {
-            DrawLine(x1, y1, x2, y2, c.ToInt(), true);
+            DrawLine(x1, y1, x2, y2, c.ToInt(), dotted);
         }
 
         public void DrawLine3DFloor(Vector2D start, Vector2D end, PixelColor c, PixelColor c2) 

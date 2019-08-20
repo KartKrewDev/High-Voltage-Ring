@@ -118,14 +118,14 @@ int OpenGLContext::GetWidth() const
 {
 	RECT box = { 0 };
 	GetClientRect(window, &box);
-	return box.right;
+	return box.right - box.left;
 }
 
 int OpenGLContext::GetHeight() const
 {
 	RECT box = { 0 };
 	GetClientRect(window, &box);
-	return box.bottom;
+	return box.bottom - box.top;
 }
 
 /////////////////////////////////////////////////////////////////////////////
