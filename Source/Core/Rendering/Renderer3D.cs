@@ -239,7 +239,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			float fov = Angle2D.DegToRad(General.Settings.VisualFOV);
 			float reversefov = 1.0f / (float)Math.Tan(fov / 2.0f);
 			float reversefovy = reversefov * aspect;
-			float fovy = (float)Math.Atan(1.0f / reversefovy) * 2.0f;
+			float fovy = (float)Math.Atan(1.0f / reversefovy);
 			
 			// Make the projection matrix
 			projection = Matrix.PerspectiveFov(fovy, aspect, PROJ_NEAR_PLANE, General.Settings.ViewDistance);
