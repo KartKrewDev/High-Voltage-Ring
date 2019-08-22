@@ -147,26 +147,6 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetFillMode(Handle, mode);
         }
 
-        public void SetFogEnable(bool value)
-        {
-            // To do: move to shaders as an uniform
-        }
-
-        public void SetFogColor(int value)
-        {
-            // To do: move to shaders as an uniform
-        }
-
-        public void SetFogStart(float value)
-        {
-            // To do: move to shaders as an uniform
-        }
-
-        public void SetFogEnd(float value)
-        {
-            // To do: move to shaders as an uniform
-        }
-
         public void SetMultisampleAntialias(bool value)
         {
             RenderDevice_SetMultisampleAntialias(Handle, value);
@@ -329,7 +309,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			SetCullMode(Cull.None);
 			SetDestinationBlend(Blend.InverseSourceAlpha);
 			SetFillMode(FillMode.Solid);
-			SetFogEnable(false);
 			SetMultisampleAntialias((General.Settings.AntiAliasingSamples > 0));
 			SetSourceBlend(Blend.SourceAlpha);
 			SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
@@ -526,10 +505,10 @@ namespace CodeImp.DoomBuilder.Rendering
     public enum UniformName : int
     {
         rendersettings,
-        transformsettings,
+        projection,
         desaturation,
         highlightcolor,
-        worldviewproj,
+        view,
         world,
         modelnormal,
         FillColor,
@@ -542,7 +521,9 @@ namespace CodeImp.DoomBuilder.Rendering
         ignoreNormals,
         spotLight,
         campos,
-        texturefactor
+        texturefactor,
+        fogsettings,
+        fogcolor
     }
 
     public enum VertexFormat : int { Flat, World }

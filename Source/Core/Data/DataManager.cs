@@ -3471,7 +3471,9 @@ namespace CodeImp.DoomBuilder.Data
 			for(int i = 0; i < 6; i++)
 			{
 				Matrix faceview = GetCubeMapViewMatrix((CubeMapFace)i);
-                General.Map.Graphics.SetUniform(UniformName.worldviewproj, mworld * faceview * mprojection);
+                General.Map.Graphics.SetUniform(UniformName.world, mworld);
+                General.Map.Graphics.SetUniform(UniformName.view, faceview);
+                General.Map.Graphics.SetUniform(UniformName.projection, mprojection);
 
 				// Render the skysphere meshes
 				for(int j = 0; j < meshes.Meshes.Count; j++)

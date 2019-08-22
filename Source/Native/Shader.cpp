@@ -83,10 +83,10 @@ void Shader::CreateProgram()
 
 	static const char* names[(int)UniformName::NumUniforms] = {
 		"rendersettings",
-		"transformsettings",
+		"projection",
 		"desaturation",
 		"highlightcolor",
-		"worldviewproj",
+		"view",
 		"world",
 		"modelnormal",
 		"fillColor",
@@ -99,7 +99,9 @@ void Shader::CreateProgram()
 		"ignoreNormals",
 		"spotLight",
 		"campos",
-		"texturefactor"
+		"texturefactor",
+		"fogsettings",
+		"fogcolor"
 	};
 
 	for (int i = 0; i < (int)UniformName::NumUniforms; i++)

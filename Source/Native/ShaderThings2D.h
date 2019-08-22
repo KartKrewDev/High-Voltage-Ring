@@ -8,11 +8,11 @@ static const char* things2D_vs = R"(
 	out vec4 Color;
 	out vec2 UV;
 
-	uniform mat4 transformsettings;
+	uniform mat4 projection;
 
 	void main()
 	{
-		gl_Position = transformsettings * vec4(AttrPosition, 1.0f);
+		gl_Position = projection * vec4(AttrPosition, 1.0f);
 		Color = AttrColor;
 		UV = AttrUV;
 	}

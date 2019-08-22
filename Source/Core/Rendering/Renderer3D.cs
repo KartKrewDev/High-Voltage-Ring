@@ -45,17 +45,12 @@ namespace CodeImp.DoomBuilder.Rendering
 		// Matrices
 		private Matrix projection;
 		private Matrix view3d;
-		private Matrix viewproj; //mxd
 		private Matrix billboard;
 		private Matrix view2d;
 		private Matrix world;
 		private Vector3D cameraposition;
         private Vector3D cameravector;
 		private ShaderName shaderpass;
-
-        // Spaghetti
-        Matrix viewmatrix = Matrix.Identity;
-        Matrix worldmatrix = Matrix.Identity;
 
         // Window size
         private Size windowsize;
@@ -248,7 +243,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			// Make the projection matrix
 			projection = Matrix.PerspectiveFov(fovy, aspect, PROJ_NEAR_PLANE, General.Settings.ViewDistance);
-			viewproj = view3d * projection; //mxd
 		}
 		
 		// This creates matrices for a camera view
@@ -267,7 +261,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
             // Make the view matrix
             view3d = Matrix.LookAt(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3(0f, 0f, 1f));
-			viewproj = view3d * projection; //mxd
 			
 			// Make the billboard matrix
 			billboard = Matrix.RotationZ(anglexy + Angle2D.PI);
@@ -285,14 +278,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This applies the matrices
 		private void ApplyMatrices3D()
 		{
-			graphics.SetUniform(UniformName.worldviewproj, world * viewproj); //mxd. Multiplication is ~2x faster than "world * view3d * projection";
-		}
-
-		// This sets the appropriate view matrix
-		public void ApplyMatrices2D()
-		{
-			worldmatrix = world;
-			viewmatrix = view2d;
+            graphics.SetUniform(UniformName.projection, projection);
+            graphics.SetUniform(UniformName.world, world);
+            graphics.SetUniform(UniformName.view, view3d);
 		}
 		
 		#endregion
@@ -312,10 +300,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetSourceBlend(Blend.SourceAlpha);
 			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
-			graphics.SetFogEnable(false);
-			graphics.SetFogColor(General.Colors.Background.ToInt());
-			graphics.SetFogStart(General.Settings.ViewDistance * FOG_RANGE);
-			graphics.SetFogEnd(General.Settings.ViewDistance);
+			graphics.SetUniform(UniformName.fogsettings, new Vector4(-1.0f));
+			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
 
@@ -810,7 +796,6 @@ namespace CodeImp.DoomBuilder.Rendering
 							//mxd. Set variables for fog rendering?
 							if(wantedshaderpass > ShaderName.world3d_p7)
 							{
-								graphics.SetUniform(UniformName.world, world);
                                 graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                             }
 						}
@@ -915,7 +900,6 @@ namespace CodeImp.DoomBuilder.Rendering
 							//mxd. Set variables for fog rendering?
 							if(wantedshaderpass > ShaderName.world3d_p7)
 							{
-                                graphics.SetUniform(UniformName.world, world);
                                 graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                                 graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
 							}
@@ -1083,7 +1067,6 @@ namespace CodeImp.DoomBuilder.Rendering
                         //mxd. Set variables for fog rendering?
                         if (wantedshaderpass > ShaderName.world3d_p7)
                         {
-                            graphics.SetUniform(UniformName.world, world);
                             graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                         }
                     }
@@ -1221,7 +1204,6 @@ namespace CodeImp.DoomBuilder.Rendering
 						//mxd. Set variables for fog rendering?
 						if(wantedshaderpass > ShaderName.world3d_p7)
 						{
-                            graphics.SetUniform(UniformName.world, world);
                             graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                             if (t.FogFactor != fogfactor)
 							{
@@ -1456,7 +1438,6 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             if (geometrytolit.Count == 0) return;
 
-            graphics.SetUniform(UniformName.world, Matrix.Identity);
             graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
             graphics.SetShader(ShaderName.world3d_lightpass);
             graphics.SetAlphaBlendEnable(true);
@@ -1480,7 +1461,6 @@ namespace CodeImp.DoomBuilder.Rendering
             // Anything to do?
             if (geometrytolit.Count == 0) return;
 
-            graphics.SetUniform(UniformName.world, Matrix.Identity);
             graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
             graphics.SetShader(ShaderName.world3d_lightpass);
             graphics.SetAlphaBlendEnable(true);
@@ -1602,7 +1582,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Set variables for fog rendering
 				if(wantedshaderpass > ShaderName.world3d_p7)
 				{
-                    graphics.SetUniform(UniformName.world, world);
                     // this is not right...
                     graphics.SetUniform(UniformName.modelnormal, General.Map.Data.ModeldefEntries[t.Thing.Type].TransformRotation * modelrotation);
                     if (t.Thing.Sector != null) graphics.SetUniform(UniformName.lightColor, t.Thing.Sector.FogColor);
@@ -1756,7 +1735,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Set render settings
 			graphics.SetShader(ShaderName.world3d_skybox);
             graphics.SetTexture(General.Map.Data.SkyBox);
-			graphics.SetUniform(UniformName.world, world);
 			graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, 0f));
 
 			foreach(VisualGeometry g in geo)
@@ -2013,14 +1991,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetSourceBlend(Blend.SourceAlpha);
 			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
-			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            worldmatrix = Matrix.Identity;
-			ApplyMatrices2D();
-
             graphics.SetShader(ShaderName.display2d_normal);
-			
-			// Texture
-			if(crosshairbusy)
+            graphics.SetUniform(UniformName.projection, world * view2d);
+            graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
+            graphics.SetUniform(UniformName.rendersettings, new Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+            graphics.SetSamplerFilter(TextureFilter.Linear);
+
+            // Texture
+            if (crosshairbusy)
 			{
 				if(General.Map.Data.CrosshairBusy3D.Texture == null) General.Map.Data.CrosshairBusy3D.CreateTexture();
 				graphics.SetTexture(General.Map.Data.CrosshairBusy3D.Texture);
@@ -2032,22 +2010,20 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 			
 			// Draw
-			SetDisplay2DSettings(1.0f, 1.0f, 0.0f, 1.0f, true);
-			graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
+            graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
 		}
-
-        private void SetDisplay2DSettings(float texelx, float texely, float fsaafactor, float alpha, bool bilinear)
-        {
-            Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
-            graphics.SetUniform(UniformName.rendersettings, values);
-            graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
-            graphics.SetSamplerFilter(bilinear ? TextureFilter.Linear : TextureFilter.Point);
-        }
 
         // This switches fog on and off
         public void SetFogMode(bool usefog)
 		{
-			graphics.SetFogEnable(usefog);
+            if (usefog)
+            {
+                graphics.SetUniform(UniformName.fogsettings, new Vector4(General.Settings.ViewDistance * FOG_RANGE, General.Settings.ViewDistance, 0.0f, 0.0f));
+            }
+            else
+            {
+                graphics.SetUniform(UniformName.fogsettings, new Vector4(-1.0f));
+            }
 		}
 
 		// This siwtches crosshair busy icon on and off

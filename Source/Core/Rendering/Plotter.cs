@@ -49,7 +49,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
             graphics.StartRendering(clear, new Color4(0), this.Texture, false);
             graphics.SetShader(ShaderName.plotter);
-            graphics.SetUniform(UniformName.transformsettings, projmat);
+            graphics.SetUniform(UniformName.projection, projmat);
             graphics.SetAlphaBlendEnable(true);
             graphics.SetBlendOperation(BlendOperation.Add);
             graphics.SetSourceBlend(Blend.SourceAlpha);

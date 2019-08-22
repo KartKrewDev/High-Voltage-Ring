@@ -52,10 +52,10 @@ enum class ShaderName
 enum class UniformName : int
 {
 	rendersettings,
-	transformsettings,
+	projection,
 	desaturation,
 	highlightcolor,
-	worldviewproj,
+	view,
 	world,
 	modelnormal,
 	FillColor,
@@ -69,6 +69,8 @@ enum class UniformName : int
 	spotLight,
 	campos,
 	texturefactor,
+	fogsettings,
+	fogcolor,
 	NumUniforms
 };
 
@@ -158,7 +160,7 @@ public:
 		int32_t valuei;
 	};
 
-	UniformEntry mUniforms[4 * 16 + 13 * 4];
+	UniformEntry mUniforms[4 * 16 + 15 * 4];
 
 	GLuint mStreamVertexBuffer = 0;
 	GLuint mStreamVAO = 0;

@@ -426,10 +426,10 @@ void RenderDevice::SetShader(ShaderName name)
 
 static const int uniformLocations[(int)UniformName::NumUniforms] = {
 	64, // rendersettings
-	0, // transformsettings
+	0, // projection
 	108, // desaturation
 	80, // highlightcolor
-	16, // worldviewproj
+	16, // view
 	32, // world
 	48, // modelnormal
 	68, // FillColor
@@ -443,6 +443,8 @@ static const int uniformLocations[(int)UniformName::NumUniforms] = {
 	110, // spotLight
 	76, // campos,
 	112, // texturefactor
+	116, // fogsettings
+	120, // fogcolor
 };
 
 void RenderDevice::SetUniform(UniformName name, const void* values, int count)
@@ -564,8 +566,8 @@ void RenderDevice::ApplyUniforms()
 	Shader* shader = GetActiveShader();
 	auto& locations = shader->UniformLocations;
 
-	glUniformMatrix4fv(locations[(int)UniformName::transformsettings], 1, GL_FALSE, &mUniforms[0].valuef);
-	glUniformMatrix4fv(locations[(int)UniformName::worldviewproj], 1, GL_FALSE, &mUniforms[16].valuef);
+	glUniformMatrix4fv(locations[(int)UniformName::projection], 1, GL_FALSE, &mUniforms[0].valuef);
+	glUniformMatrix4fv(locations[(int)UniformName::view], 1, GL_FALSE, &mUniforms[16].valuef);
 	glUniformMatrix4fv(locations[(int)UniformName::world], 1, GL_FALSE, &mUniforms[32].valuef);
 	glUniformMatrix4fv(locations[(int)UniformName::modelnormal], 1, GL_FALSE, &mUniforms[48].valuef);
 
@@ -586,6 +588,8 @@ void RenderDevice::ApplyUniforms()
 	glUniform1fv(locations[(int)UniformName::spotLight], 1, &mUniforms[110].valuef);
 
 	glUniform4fv(locations[(int)UniformName::texturefactor], 1, &mUniforms[112].valuef);
+	glUniform4fv(locations[(int)UniformName::fogsettings], 1, &mUniforms[116].valuef);
+	glUniform4fv(locations[(int)UniformName::fogcolor], 1, &mUniforms[120].valuef);
 
 	mUniformsChanged = false;
 }

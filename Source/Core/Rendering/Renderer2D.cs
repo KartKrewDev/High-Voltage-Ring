@@ -180,7 +180,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Renderstates that count for this whole sequence
 			graphics.SetCullMode(Cull.None);
 			graphics.SetZEnable(false);
-			graphics.SetFogEnable(false);
 			graphics.SetVertexBuffer(screenverts);
 			worldmatrix = Matrix.Identity;
 
@@ -474,9 +473,9 @@ namespace CodeImp.DoomBuilder.Rendering
             Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
             if (flipY)
-                graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix * Matrix.Scaling(1f, -1f, 1f));
+                graphics.SetUniform(UniformName.projection, worldmatrix * viewmatrix * Matrix.Scaling(1f, -1f, 1f));
             else
-                graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
+                graphics.SetUniform(UniformName.projection, worldmatrix * viewmatrix);
             graphics.SetSamplerFilter(bilinear ? TextureFilter.Linear : TextureFilter.Point);
         }
 
@@ -484,13 +483,13 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             Vector4 values = new Vector4(0.0f, 0.0f, 1.0f, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
-            graphics.SetUniform(UniformName.transformsettings, worldmatrix * viewmatrix);
+            graphics.SetUniform(UniformName.projection, worldmatrix * viewmatrix);
         }
 
         //mxd. Used to render models
         private void SetThings2DTransformSettings(Matrix world)
         {
-            graphics.SetUniform(UniformName.transformsettings, world * viewmatrix);
+            graphics.SetUniform(UniformName.projection, world * viewmatrix);
         }
 
         /// <summary>
@@ -1198,8 +1197,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetSourceBlend(Blend.SourceAlpha);
 				graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
 				graphics.SetAlphaTestEnable(false);
-				graphics.SetFogEnable(false);
-				graphics.SetUniform(UniformName.texturefactor, alphacolor);
+                graphics.SetUniform(UniformName.texturefactor, alphacolor);
 				graphics.SetVertexBuffer(thingsvertices);
 				
 				// Set things texture
@@ -1558,8 +1556,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetAlphaBlendEnable(false);
 				graphics.SetAlphaTestEnable(false);
 				graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-                graphics.SetFogEnable(false);
-				SetWorldTransformation(true);
+                SetWorldTransformation(true);
 				SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
 					
 				// Prepare for rendering
@@ -1616,7 +1613,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetAlphaBlendEnable(false);
 				graphics.SetAlphaTestEnable(false);
 				graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-                graphics.SetFogEnable(false);
                 graphics.SetShader(ShaderName.display2d_normal);
 				graphics.SetTexture(t);
 				SetWorldTransformation(transformcoords);
@@ -1638,9 +1634,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(false);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetFogEnable(false);
 
-			SetWorldTransformation(true);
+            SetWorldTransformation(true);
 			graphics.SetUniform(UniformName.FillColor, new Color4(color));
 			SetThings2DSettings(1.0f);
 
@@ -1666,7 +1661,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(true);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetFogEnable(false);
             graphics.SetShader(ShaderName.display2d_normal);
 			graphics.SetTexture(label.Texture);
 			SetWorldTransformation(false);
@@ -1697,8 +1691,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(true);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetFogEnable(false);
-			SetWorldTransformation(false);
+            SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, false);
 			
@@ -1764,8 +1757,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(false);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetFogEnable(false);
-			SetWorldTransformation(false);
+            SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
 			graphics.SetTexture(General.Map.Data.WhiteTexture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1799,8 +1791,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(false);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetFogEnable(false);
-			SetWorldTransformation(false);
+            SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
 			graphics.SetTexture(General.Map.Data.WhiteTexture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1831,8 +1822,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(false);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetFogEnable(false);
-			SetWorldTransformation(false);
+            SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
 			graphics.SetTexture(texture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1930,8 +1920,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(false);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetFogEnable(false);
-			SetWorldTransformation(false);
+            SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
 			graphics.SetTexture(General.Map.Data.WhiteTexture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);
@@ -1982,8 +1971,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaBlendEnable(false);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetFogEnable(false);
-			SetWorldTransformation(false);
+            SetWorldTransformation(false);
             graphics.SetShader(ShaderName.display2d_normal);
 			graphics.SetTexture(General.Map.Data.WhiteTexture.Texture);
 			SetDisplay2DSettings(1f, 1f, 0f, 1f, General.Settings.ClassicBilinear);

@@ -8,12 +8,16 @@ static const char* world3D_vs_main = R"(
 
 	out vec4 Color;
 	out vec2 UV;
+	out vec4 viewpos;
 
-	uniform mat4 worldviewproj;
+	uniform mat4 world;
+	uniform mat4 view;
+	uniform mat4 projection;
 
 	void main()
 	{
-		gl_Position = worldviewproj * vec4(AttrPosition, 1.0);
+		viewpos = view * world * vec4(AttrPosition, 1.0);
+		gl_Position = projection * viewpos;
 		Color = AttrColor;
 		UV = AttrUV;
 	}
@@ -27,13 +31,18 @@ static const char* world3D_vs_customvertexcolor = R"(
 
 	out vec4 Color;
 	out vec2 UV;
+	out vec4 viewpos;
 
-	uniform mat4 worldviewproj;
+	uniform mat4 world;
+	uniform mat4 view;
+	uniform mat4 projection;
+
 	uniform vec4 vertexColor;
 
 	void main()
 	{
-		gl_Position = worldviewproj * vec4(AttrPosition, 1.0);
+		viewpos = view * world * vec4(AttrPosition, 1.0);
+		gl_Position = projection * viewpos;
 		Color = vertexColor;
 		UV = AttrUV;
 	}
@@ -49,15 +58,19 @@ static const char* world3D_vs_customvertexcolor_fog = R"(
 	out vec2 UV;
 	out vec3 PosW;
 	out vec3 Normal;
+	out vec4 viewpos;
 
-	uniform mat4 worldviewproj;
 	uniform mat4 world;
+	uniform mat4 view;
+	uniform mat4 projection;
 	uniform mat4 modelnormal;
+
 	uniform vec4 vertexColor;
 
 	void main()
 	{
-		gl_Position = worldviewproj * vec4(AttrPosition, 1.0);
+		viewpos = view * world * vec4(AttrPosition, 1.0);
+		gl_Position = projection * viewpos;
 		PosW = (world * vec4(AttrPosition, 1.0)).xyz;
 		Color = vertexColor;
 		UV = AttrUV;
@@ -75,14 +88,17 @@ static const char* world3D_vs_lightpass = R"(
 	out vec2 UV;
 	out vec3 PosW;
 	out vec3 Normal;
+	out vec4 viewpos;
 
-	uniform mat4 worldviewproj;
 	uniform mat4 world;
+	uniform mat4 view;
+	uniform mat4 projection;
 	uniform mat4 modelnormal;
 
 	void main()
 	{
-		gl_Position = worldviewproj * vec4(AttrPosition, 1.0);
+		viewpos = view * world * vec4(AttrPosition, 1.0);
+		gl_Position = projection * viewpos;
 		PosW = (world * vec4(AttrPosition, 1.0)).xyz;
 		Color = AttrColor;
 		UV = AttrUV;
@@ -95,14 +111,18 @@ static const char* world3D_vs_skybox = R"(
 	in vec2 AttrUV;
 
 	out vec3 Tex;
+	out vec4 viewpos;
 
-	uniform mat4 worldviewproj;
 	uniform mat4 world;
+	uniform mat4 view;
+	uniform mat4 projection;
+
 	uniform vec4 campos;  //w is set to fade factor (distance, at wich fog color completely overrides pixel color)
 
 	void main()
 	{
-		gl_Position = worldviewproj * vec4(AttrPosition, 1.0);
+		viewpos = view * world * vec4(AttrPosition, 1.0);
+		gl_Position = projection * viewpos;
 		vec3 worldpos = (world * vec4(AttrPosition, 1.0)).xyz;
 		vec4 skynormal = vec4(0.0, 1.0, 0.0, 0.0);
 		vec3 normal = normalize((world * skynormal).xyz);
@@ -113,11 +133,15 @@ static const char* world3D_vs_skybox = R"(
 static const char* world3D_ps_main = R"(
 	in vec4 Color;
 	in vec2 UV;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
 
 	uniform vec4 stencilColor;
 	uniform float desaturation;
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	uniform sampler2D texture1;
 
@@ -136,16 +160,22 @@ static const char* world3D_ps_main = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
 static const char* world3D_ps_fullbright = R"(
 	in vec4 Color;
 	in vec2 UV;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
 
 	uniform vec4 stencilColor;
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	uniform sampler2D texture1;
 
@@ -159,18 +189,24 @@ static const char* world3D_ps_fullbright = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
 static const char* world3D_ps_main_highlight = R"(
 	in vec4 Color;
 	in vec2 UV;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
 
 	uniform vec4 highlightcolor;
 	uniform vec4 stencilColor;
 	uniform float desaturation;
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	uniform sampler2D texture1;
 
@@ -199,12 +235,15 @@ static const char* world3D_ps_main_highlight = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
 static const char* world3D_ps_fullbright_highlight = R"(
 	in vec4 Color;
 	in vec2 UV;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
 
@@ -212,6 +251,9 @@ static const char* world3D_ps_fullbright_highlight = R"(
 	uniform vec4 stencilColor;
 
 	uniform sampler2D texture1;
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	void main()
 	{
@@ -232,6 +274,8 @@ static const char* world3D_ps_fullbright_highlight = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -240,6 +284,7 @@ static const char* world3D_ps_main_fog = R"(
 	in vec2 UV;
 	in vec3 PosW;
 	in vec3 Normal;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
 
@@ -247,6 +292,9 @@ static const char* world3D_ps_main_fog = R"(
 	uniform vec4 lightColor;
 	uniform float desaturation;
 	uniform vec4 campos;  //w is set to fade factor (distance, at wich fog color completely overrides pixel color)
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	uniform sampler2D texture1;
 
@@ -282,6 +330,8 @@ static const char* world3D_ps_main_fog = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -290,6 +340,7 @@ static const char* world3D_ps_main_highlight_fog = R"(
 	in vec2 UV;
 	in vec3 PosW;
 	in vec3 Normal;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
 
@@ -298,6 +349,9 @@ static const char* world3D_ps_main_highlight_fog = R"(
 	uniform vec4 lightColor;
 	uniform float desaturation;
 	uniform vec4 campos;  //w is set to fade factor (distance, at wich fog color completely overrides pixel color)
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	uniform sampler2D texture1;
 
@@ -336,16 +390,22 @@ static const char* world3D_ps_main_highlight_fog = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
 static const char* world3D_ps_constant_color = R"(
 	in vec4 Color;
 	in vec2 UV;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
 
 	uniform vec4 vertexColor;
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	void main()
 	{
@@ -354,14 +414,20 @@ static const char* world3D_ps_constant_color = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
 static const char* world3D_ps_vertex_color = R"(
 	in vec4 Color;
 	in vec2 UV;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	void main()
 	{
@@ -370,6 +436,8 @@ static const char* world3D_ps_vertex_color = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -451,10 +519,14 @@ static const char* world3D_ps_lightpass = R"(
 
 static const char* world3D_ps_skybox = R"(
 	in vec3 Tex;
+	in vec4 viewpos;
 
 	out vec4 FragColor;
 
 	uniform vec4 highlightcolor;
+
+	uniform vec4 fogsettings;
+	uniform vec4 fogcolor;
 
 	uniform samplerCube texture1;
 
@@ -466,5 +538,7 @@ static const char* world3D_ps_skybox = R"(
 		#if defined(ALPHA_TEST)
 		if (FragColor.a < 0.5) discard;
 		#endif
+
+		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
