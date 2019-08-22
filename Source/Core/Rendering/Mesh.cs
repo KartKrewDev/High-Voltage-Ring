@@ -8,11 +8,11 @@ namespace CodeImp.DoomBuilder.Rendering
 {
     internal class Mesh : IDisposable
     {
-        unsafe public Mesh(RenderDevice graphics, WorldVertex[] vertexData, int[] indexData)
+        public Mesh(RenderDevice graphics, WorldVertex[] vertexData, int[] indexData)
         {
             graphics.SetBufferData(Vertices, vertexData);
             graphics.SetBufferData(Indices, indexData);
-            Count = indexData.Length;
+            PrimitivesCount = indexData.Length / 3;
         }
 
         ~Mesh()
@@ -24,7 +24,7 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             device.SetVertexBuffer(Vertices);
             device.SetIndexBuffer(Indices);
-            device.DrawIndexed(PrimitiveType.TriangleList, 0, Count / 3);
+            device.DrawIndexed(PrimitiveType.TriangleList, 0, PrimitivesCount);
             device.SetIndexBuffer(null);
             device.SetVertexBuffer(null);
         }
@@ -37,6 +37,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
         VertexBuffer Vertices = new VertexBuffer();
         IndexBuffer Indices = new IndexBuffer();
-        int Count;
+        int PrimitivesCount;
     }
 }

@@ -608,7 +608,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Start / Finish
 
 		// This begins a drawing session
-		public unsafe bool StartPlotter(bool clear)
+		public bool StartPlotter(bool clear)
 		{
 			if(renderlayer != RenderLayers.None)
 			{
@@ -769,7 +769,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 
 		// This renders all grid
-		private unsafe void RenderBackgroundGrid()
+		private void RenderBackgroundGrid()
 		{
 			// Do we need to redraw grid?
 			if(lastgridsize != General.Map.Grid.GridSizeF || lastgridscale != scale ||
