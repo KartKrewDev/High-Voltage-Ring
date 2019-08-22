@@ -82,6 +82,7 @@ void RenderDevice::SetAlphaTestEnable(bool value)
 		mAlphaTest = value;
 		mNeedApply = true;
 		mShaderChanged = true;
+		mUniformsChanged = true;
 	}
 }
 
