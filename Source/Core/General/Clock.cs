@@ -23,6 +23,7 @@ namespace CodeImp.DoomBuilder
         static Clock()
         {
             Timer = new Stopwatch();
+            Timer.Start();
         }
 
         public static Stopwatch Timer { get; private set; }
