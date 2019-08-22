@@ -176,4 +176,14 @@ public:
 	bool mDepthWrite = false;
 
 	bool mNeedApply = true;
+	bool mShaderChanged = true;
+	bool mUniformsChanged = true;
+	bool mTexturesChanged = true;
+	bool mIndexBufferChanged = true;
+	bool mVertexBufferChanged = true;
+	bool mDepthStateChanged = true;
+	bool mBlendStateChanged = true;
+	bool mRasterizerStateChanged = true;
+
+	bool mContextIsCurrent = false;
 };

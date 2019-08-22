@@ -79,9 +79,9 @@ OpenGLContext::OpenGLContext(void* windowptr) : window((HWND)windowptr)
 	context = helper.CreateContext(dc, 3, 2);
 	if (context)
 	{
-		Begin();
+		MakeCurrent();
 		static OpenGLLoadFunctions loadFunctions;
-		End();
+		ClearCurrent();
 	}
 }
 
@@ -93,25 +93,19 @@ OpenGLContext::~OpenGLContext()
 		ReleaseDC(window, dc);
 }
 
-void OpenGLContext::Begin()
+void OpenGLContext::MakeCurrent()
 {
-	refcount++;
-	if (refcount == 1)
-		wglMakeCurrent(dc, context);
+	wglMakeCurrent(dc, context);
 }
 
-void OpenGLContext::End()
+void OpenGLContext::ClearCurrent()
 {
-	refcount--;
-	if (refcount == 0)
-		wglMakeCurrent(0, 0);
+	wglMakeCurrent(0, 0);
 }
 
 void OpenGLContext::SwapBuffers()
 {
-	Begin();
 	::SwapBuffers(dc);
-	End();
 }
 
 int OpenGLContext::GetWidth() const
@@ -286,25 +280,19 @@ OpenGLContext::~OpenGLContext()
 	}
 }
 
-void OpenGLContext::Begin()
+void OpenGLContext::MakeCurrent()
 {
-	refcount++;
-	if (refcount == 1)
-		glx.glXMakeCurrent(disp, window, opengl_context);
+	glx.glXMakeCurrent(disp, window, opengl_context);
 }
 
-void OpenGLContext::End()
+void OpenGLContext::ClearCurrent()
 {
-	refcount--;
-	if (refcount == 0)
-		glx.glXMakeCurrent(0, 0, opengl_context);
+	glx.glXMakeCurrent(0, 0, opengl_context);
 }
 
 void OpenGLContext::SwapBuffers()
 {
-	Begin();
 	glx.glXSwapBuffers(disp, window);
-	End();
 }
 
 int OpenGLContext::GetWidth() const

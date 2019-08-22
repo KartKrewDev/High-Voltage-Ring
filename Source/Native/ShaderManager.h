@@ -10,6 +10,4 @@ public:
 
 	Shader AlphaTestShaders[(int)ShaderName::count];
 	Shader Shaders[(int)ShaderName::count];
-
-	std::string CompileErrors;
 };

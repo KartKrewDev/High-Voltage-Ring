@@ -11,18 +11,19 @@ public:
 	Shader() = default;
 	void ReleaseResources();
 
-	bool Compile(const std::string& vertexShader, const std::string& fragmentShader, bool alphatest);
-	const char* GetErrors() const { return mErrors.c_str(); }
-
-	GLuint GetProgram() const { return mProgram; }
+	void Setup(const std::string& vertexShader, const std::string& fragmentShader, bool alphatest);
+	void Bind();
 
 	GLuint UniformLocations[(int)UniformName::NumUniforms] = { 0 };
 
-	enum { MaxSamplers = 4 };
-	GLuint SamplerLocations[MaxSamplers] = { };
-
 private:
+	void CreateProgram();
 	GLuint CompileShader(const std::string& code, GLenum type);
+
+	std::string mVertexText;
+	std::string mFragmentText;
+	bool mAlphatest = false;
+	bool mProgramBuilt = false;
 
 	GLuint mProgram = 0;
 	GLuint mVertexShader = 0;

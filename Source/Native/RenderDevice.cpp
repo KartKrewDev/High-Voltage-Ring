@@ -17,7 +17,7 @@ RenderDevice::RenderDevice(void* disp, void* window) : Context(disp, window)
 
 	if (Context)
 	{
-		Context.Begin();
+		Context.MakeCurrent();
 
 		glGenVertexArrays(1, &mStreamVAO);
 		glGenBuffers(1, &mStreamVertexBuffer);
@@ -29,7 +29,7 @@ RenderDevice::RenderDevice(void* disp, void* window) : Context(disp, window)
 		mShaderManager = std::make_unique<ShaderManager>();
 
 		CheckError();
-		Context.End();
+		Context.ClearCurrent();
 	}
 }
 
@@ -37,66 +37,102 @@ RenderDevice::~RenderDevice()
 {
 	if (Context)
 	{
-		Context.Begin();
+		Context.MakeCurrent();
 		glDeleteBuffers(1, &mStreamVertexBuffer);
 		glDeleteVertexArrays(1, &mStreamVAO);
 		mShaderManager->ReleaseResources();
-		Context.End();
+		Context.ClearCurrent();
 	}
 }
 
 void RenderDevice::SetVertexBuffer(VertexBuffer* buffer)
 {
-	mVertexBuffer = buffer;
-	mNeedApply = true;
+	if (mVertexBuffer != buffer)
+	{
+		mVertexBuffer = buffer;
+		mNeedApply = true;
+		mVertexBufferChanged = true;
+	}
 }
 
 void RenderDevice::SetIndexBuffer(IndexBuffer* buffer)
 {
-	mIndexBuffer = buffer;
-	mNeedApply = true;
+	if (mIndexBuffer != buffer)
+	{
+		mIndexBuffer = buffer;
+		mNeedApply = true;
+		mIndexBufferChanged = true;
+	}
 }
 
 void RenderDevice::SetAlphaBlendEnable(bool value)
 {
-	mAlphaBlend = value;
-	mNeedApply = true;
+	if (mAlphaBlend != value)
+	{
+		mAlphaBlend = value;
+		mNeedApply = true;
+		mBlendStateChanged = true;
+	}
 }
 
 void RenderDevice::SetAlphaTestEnable(bool value)
 {
-	mAlphaTest = value;
-	mNeedApply = true;
+	if (mAlphaTest != value)
+	{
+		mAlphaTest = value;
+		mNeedApply = true;
+		mShaderChanged = true;
+	}
 }
 
 void RenderDevice::SetCullMode(Cull mode)
 {
-	mCullMode = mode;
-	mNeedApply = true;
+	if (mCullMode != mode)
+	{
+		mCullMode = mode;
+		mNeedApply = true;
+		mRasterizerStateChanged = true;
+	}
 }
 
 void RenderDevice::SetBlendOperation(BlendOperation op)
 {
-	mBlendOperation = op;
-	mNeedApply = true;
+	if (mBlendOperation != op)
+	{
+		mBlendOperation = op;
+		mNeedApply = true;
+		mBlendStateChanged = true;
+	}
 }
 
 void RenderDevice::SetSourceBlend(Blend blend)
 {
-	mSourceBlend = blend;
-	mNeedApply = true;
+	if (mSourceBlend != blend)
+	{
+		mSourceBlend = blend;
+		mNeedApply = true;
+		mBlendStateChanged = true;
+	}
 }
 
 void RenderDevice::SetDestinationBlend(Blend blend)
 {
-	mDestinationBlend = blend;
-	mNeedApply = true;
+	if (mDestinationBlend != blend)
+	{
+		mDestinationBlend = blend;
+		mNeedApply = true;
+		mBlendStateChanged = true;
+	}
 }
 
 void RenderDevice::SetFillMode(FillMode mode)
 {
-	mFillMode = mode;
-	mNeedApply = true;
+	if (mFillMode != mode)
+	{
+		mFillMode = mode;
+		mNeedApply = true;
+		mRasterizerStateChanged = true;
+	}
 }
 
 void RenderDevice::SetMultisampleAntialias(bool value)
@@ -105,28 +141,46 @@ void RenderDevice::SetMultisampleAntialias(bool value)
 
 void RenderDevice::SetZEnable(bool value)
 {
-	mDepthTest = value;
-	mNeedApply = true;
+	if (mDepthTest != value)
+	{
+		mDepthTest = value;
+		mNeedApply = true;
+		mDepthStateChanged = true;
+	}
 }
 
 void RenderDevice::SetZWriteEnable(bool value)
 {
-	mDepthWrite = value;
-	mNeedApply = true;
+	if (mDepthWrite != value)
+	{
+		mDepthWrite = value;
+		mNeedApply = true;
+		mDepthStateChanged = true;
+	}
 }
 
 void RenderDevice::SetTexture(Texture* texture)
 {
-	mTextureUnit.Tex = texture;
-	mNeedApply = true;
+	if (mTextureUnit.Tex != texture)
+	{
+		mTextureUnit.Tex = texture;
+		mNeedApply = true;
+		mTexturesChanged = true;
+	}
 }
 
 void RenderDevice::SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
 {
-	mTextureUnit.MinFilter = GetGLMinFilter(minfilter, mipfilter);
-	mTextureUnit.MagFilter = (magfilter == TextureFilter::Point || magfilter == TextureFilter::None) ? GL_NEAREST : GL_LINEAR;
-	mTextureUnit.MaxAnisotropy = maxanisotropy;
-	mNeedApply = true;
+	auto glminfilter = GetGLMinFilter(minfilter, mipfilter);
+	auto glmagfilter = (magfilter == TextureFilter::Point || magfilter == TextureFilter::None) ? GL_NEAREST : GL_LINEAR;
+	if (mTextureUnit.MinFilter != glminfilter || mTextureUnit.MagFilter != glmagfilter || mTextureUnit.MaxAnisotropy != maxanisotropy)
+	{
+		mTextureUnit.MinFilter = glminfilter;
+		mTextureUnit.MagFilter = glmagfilter;
+		mTextureUnit.MaxAnisotropy = maxanisotropy;
+		mNeedApply = true;
+		mTexturesChanged = true;
+	}
 }
 
 GLint RenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter)
@@ -156,10 +210,14 @@ GLint RenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter
 
 void RenderDevice::SetSamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
 {
-	mTextureUnit.AddressU = addressU;
-	mTextureUnit.AddressV = addressV;
-	mTextureUnit.AddressW = addressW;
-	mNeedApply = true;
+	if (mTextureUnit.AddressU != addressU || mTextureUnit.AddressV != addressV || mTextureUnit.AddressW != addressW)
+	{
+		mTextureUnit.AddressU = addressU;
+		mTextureUnit.AddressV = addressV;
+		mTextureUnit.AddressW = addressW;
+		mNeedApply = true;
+		mTexturesChanged = true;
+	}
 }
 
 void RenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount)
@@ -168,11 +226,8 @@ void RenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount)
 	static const int toVertexCount[] = { 2, 3, 1 };
 	static const int toVertexStart[] = { 0, 0, 2 };
 
-	Context.Begin();
 	if (mNeedApply) ApplyChanges();
 	glDrawArrays(modes[(int)type], startIndex, toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type]);
-	CheckError();
-	Context.End();
 }
 
 void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount)
@@ -181,11 +236,8 @@ void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitive
 	static const int toVertexCount[] = { 2, 3, 1 };
 	static const int toVertexStart[] = { 0, 0, 2 };
 
-	Context.Begin();
 	if (mNeedApply) ApplyChanges();
 	glDrawElements(modes[(int)type], toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type], GL_UNSIGNED_INT, (const void*)(startIndex * sizeof(uint32_t)));
-	CheckError();
-	Context.End();
 }
 
 void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
@@ -196,22 +248,19 @@ void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCou
 
 	int vertcount = toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type];
 
-	Context.Begin();
 	if (mNeedApply) ApplyChanges();
 
 	glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertcount * (size_t)VertexBuffer::FlatStride, static_cast<const uint8_t*>(data) + startIndex * (size_t)VertexBuffer::FlatStride, GL_STREAM_DRAW);
 	glBindVertexArray(mStreamVAO);
 	glDrawArrays(modes[(int)type], 0, vertcount);
-	CheckError();
 	ApplyVertexBuffer();
-	CheckError();
-	Context.End();
 }
 
 void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer)
 {
-	Context.Begin();
+	Context.MakeCurrent();
+	mContextIsCurrent = true;
 
 	if (target)
 	{
@@ -239,12 +288,21 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 	}
 
 	mNeedApply = true;
-
-	Context.End();
+	mShaderChanged = true;
+	mUniformsChanged = true;
+	mTexturesChanged = true;
+	mIndexBufferChanged = true;
+	mVertexBufferChanged = true;
+	mDepthStateChanged = true;
+	mBlendStateChanged = true;
+	mRasterizerStateChanged = true;
 }
 
 void RenderDevice::FinishRendering()
 {
+	CheckError();
+	Context.ClearCurrent();
+	mContextIsCurrent = false;
 }
 
 void RenderDevice::Present()
@@ -269,7 +327,7 @@ void RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 
-	Context.Begin();
+	if (!mContextIsCurrent) Context.MakeCurrent();
 	GLint oldTexture = 0;
 	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldTexture);
 
@@ -279,47 +337,41 @@ void RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, oldTexture);
-	Context.End();
+	if (!mContextIsCurrent) Context.ClearCurrent();
 }
 
 void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format)
 {
-	Context.Begin();
-	CheckError();
+	if (!mContextIsCurrent) Context.MakeCurrent();
 	buffer->Format = format;
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
-	CheckError();
-	Context.End();
+	if (!mContextIsCurrent) Context.ClearCurrent();
 }
 
 void RenderDevice::SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size)
 {
-	Context.Begin();
-	CheckError();
+	if (!mContextIsCurrent) Context.MakeCurrent();
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferSubData(GL_ARRAY_BUFFER, destOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
-	CheckError();
-	Context.End();
+	if (!mContextIsCurrent) Context.ClearCurrent();
 }
 
 void RenderDevice::SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size)
 {
-	Context.Begin();
-	CheckError();
+	if (!mContextIsCurrent) Context.MakeCurrent();
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oldbinding);
-	CheckError();
-	Context.End();
+	if (!mContextIsCurrent) Context.ClearCurrent();
 }
 
 void RenderDevice::SetPixels(Texture* texture, const void* data)
@@ -338,10 +390,11 @@ void RenderDevice::InvalidateTexture(Texture* texture)
 {
 	if (texture->IsTextureCreated())
 	{
-		Context.Begin();
+		if (!mContextIsCurrent) Context.MakeCurrent();
 		texture->Invalidate();
-		Context.End();
+		if (!mContextIsCurrent) Context.ClearCurrent();
 		mNeedApply = true;
+		mTexturesChanged = true;
 	}
 }
 
@@ -360,104 +413,15 @@ Shader* RenderDevice::GetActiveShader()
 		return &mShaderManager->Shaders[(int)mShaderName];
 }
 
-void RenderDevice::ApplyChanges()
-{
-	CheckError();
-	ApplyShader();
-	CheckError();
-	ApplyVertexBuffer();
-	CheckError();
-	ApplyIndexBuffer();
-	CheckError();
-	ApplyUniforms();
-	CheckError();
-	ApplyTextures();
-	CheckError();
-	ApplyRasterizerState();
-	CheckError();
-	ApplyBlendState();
-	CheckError();
-	ApplyDepthState();
-
-	CheckError();
-
-	mNeedApply = false;
-}
-
-void RenderDevice::ApplyShader()
-{
-	glUseProgram(GetActiveShader()->GetProgram());
-}
-
-void RenderDevice::ApplyRasterizerState()
-{
-	if (mCullMode == Cull::None)
-	{
-		glDisable(GL_CULL_FACE);
-	}
-	else
-	{
-		glEnable(GL_CULL_FACE);
-		glFrontFace(GL_CW);
-	}
-
-	GLenum fillMode2GL[] = { GL_FILL, GL_LINE };
-	glPolygonMode(GL_FRONT_AND_BACK, fillMode2GL[(int)mFillMode]);
-}
-
-void RenderDevice::ApplyBlendState()
-{
-	if (mAlphaBlend)
-	{
-		static const GLenum blendOp2GL[] = { GL_FUNC_ADD, GL_FUNC_REVERSE_SUBTRACT };
-		static const GLenum blendFunc2GL[] = { GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE };
-
-		glEnable(GL_BLEND);
-		glBlendEquation(blendOp2GL[(int)mBlendOperation]);
-		glBlendFunc(blendFunc2GL[(int)mSourceBlend], blendFunc2GL[(int)mDestinationBlend]);
-	}
-	else
-	{
-		glDisable(GL_BLEND);
-	}
-}
-
-void RenderDevice::ApplyDepthState()
-{
-	if (mDepthTest)
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		glDepthMask(mDepthWrite ? GL_TRUE : GL_FALSE);
-	}
-	else
-	{
-		glDisable(GL_DEPTH_TEST);
-	}
-}
-
-void RenderDevice::ApplyIndexBuffer()
-{
-	if (mIndexBuffer)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer->GetBuffer());
-	}
-	else
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-}
-
-void RenderDevice::ApplyVertexBuffer()
-{
-	if (mVertexBuffer)
-		glBindVertexArray(mVertexBuffer->GetVAO());
-}
-
 void RenderDevice::SetShader(ShaderName name)
 {
-	mShaderName = name;
-	mNeedApply = true;
+	if (name != mShaderName)
+	{
+		mShaderName = name;
+		mNeedApply = true;
+		mShaderChanged = true;
+		mUniformsChanged = true;
+	}
 }
 
 static const int uniformLocations[(int)UniformName::NumUniforms] = {
@@ -483,8 +447,116 @@ static const int uniformLocations[(int)UniformName::NumUniforms] = {
 
 void RenderDevice::SetUniform(UniformName name, const void* values, int count)
 {
-	memcpy(&mUniforms[uniformLocations[(int)name]], values, sizeof(float) * count);
-	mNeedApply = true;
+	auto dest = &mUniforms[uniformLocations[(int)name]];
+	if (memcmp(dest, values, sizeof(float) * count) != 0)
+	{
+		memcpy(dest, values, sizeof(float) * count);
+		mNeedApply = true;
+		mUniformsChanged = true;
+	}
+}
+
+void RenderDevice::ApplyChanges()
+{
+	if (mShaderChanged)
+		ApplyShader();
+	if (mVertexBufferChanged)
+		ApplyVertexBuffer();
+	if (mIndexBufferChanged)
+		ApplyIndexBuffer();
+	if (mUniformsChanged)
+		ApplyUniforms();
+	if (mTexturesChanged)
+		ApplyTextures();
+	if (mRasterizerStateChanged)
+		ApplyRasterizerState();
+	if (mBlendStateChanged)
+		ApplyBlendState();
+	if (mDepthStateChanged)
+		ApplyDepthState();
+
+	mNeedApply = false;
+}
+
+void RenderDevice::ApplyShader()
+{
+	GetActiveShader()->Bind();
+	mShaderChanged = false;
+}
+
+void RenderDevice::ApplyRasterizerState()
+{
+	if (mCullMode == Cull::None)
+	{
+		glDisable(GL_CULL_FACE);
+	}
+	else
+	{
+		glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CW);
+	}
+
+	GLenum fillMode2GL[] = { GL_FILL, GL_LINE };
+	glPolygonMode(GL_FRONT_AND_BACK, fillMode2GL[(int)mFillMode]);
+
+	mRasterizerStateChanged = false;
+}
+
+void RenderDevice::ApplyBlendState()
+{
+	if (mAlphaBlend)
+	{
+		static const GLenum blendOp2GL[] = { GL_FUNC_ADD, GL_FUNC_REVERSE_SUBTRACT };
+		static const GLenum blendFunc2GL[] = { GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE };
+
+		glEnable(GL_BLEND);
+		glBlendEquation(blendOp2GL[(int)mBlendOperation]);
+		glBlendFunc(blendFunc2GL[(int)mSourceBlend], blendFunc2GL[(int)mDestinationBlend]);
+	}
+	else
+	{
+		glDisable(GL_BLEND);
+	}
+
+	mBlendStateChanged = false;
+}
+
+void RenderDevice::ApplyDepthState()
+{
+	if (mDepthTest)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		glDepthMask(mDepthWrite ? GL_TRUE : GL_FALSE);
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	mDepthStateChanged = false;
+}
+
+void RenderDevice::ApplyIndexBuffer()
+{
+	if (mIndexBuffer)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer->GetBuffer());
+	}
+	else
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	mIndexBufferChanged = false;
+}
+
+void RenderDevice::ApplyVertexBuffer()
+{
+	if (mVertexBuffer)
+		glBindVertexArray(mVertexBuffer->GetVAO());
+
+	mVertexBufferChanged = false;
 }
 
 void RenderDevice::ApplyUniforms()
@@ -515,8 +587,7 @@ void RenderDevice::ApplyUniforms()
 
 	glUniform4fv(locations[(int)UniformName::texturefactor], 1, &mUniforms[112].valuef);
 
-	for (int i = 0; i < Shader::MaxSamplers; i++)
-		glUniform1i(shader->SamplerLocations[i], i);
+	mUniformsChanged = false;
 }
 
 void RenderDevice::ApplyTextures()
@@ -539,6 +610,8 @@ void RenderDevice::ApplyTextures()
 	{
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+
+	mTexturesChanged = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -4,20 +4,34 @@
 #include "RenderDevice.h"
 #include <stdexcept>
 
-void Shader::ReleaseResources()
+void Shader::Setup(const std::string& vertexShader, const std::string& fragmentShader, bool alphatest)
 {
-	if (mProgram)
-		glDeleteProgram(mProgram);
-	if (mVertexShader)
-		glDeleteShader(mVertexShader);
-	if (mFragmentShader)
-		glDeleteShader(mFragmentShader);
-	mProgram = 0;
-	mVertexShader = 0;
-	mFragmentShader = 0;
+	mVertexText = vertexShader;
+	mFragmentText = fragmentShader;
+	mAlphatest = alphatest;
 }
 
-bool Shader::Compile(const std::string& vertexShader, const std::string& fragmentShader, bool alphatest)
+void Shader::Bind()
+{
+	bool firstCall = !mProgramBuilt;
+	if (firstCall)
+	{
+		mProgramBuilt = true;
+		CreateProgram();
+	}
+
+	if (!mProgram)
+		return;
+
+	glUseProgram(mProgram);
+
+	if (firstCall)
+	{
+		glUniform1i(glGetUniformLocation(mProgram, "texture1"), 0);
+	}
+}
+
+void Shader::CreateProgram()
 {
 	const char* prefixNAT = R"(
 		#version 150
@@ -29,15 +43,15 @@ bool Shader::Compile(const std::string& vertexShader, const std::string& fragmen
 		#line 1
 	)";
 
-	const char* prefix = alphatest ? prefixAT : prefixNAT;
+	const char* prefix = mAlphatest ? prefixAT : prefixNAT;
 
-	mVertexShader = CompileShader(prefix + vertexShader, GL_VERTEX_SHADER);
+	mVertexShader = CompileShader(prefix + mVertexText, GL_VERTEX_SHADER);
 	if (!mVertexShader)
-		return false;
+		return;
 
-	mFragmentShader = CompileShader(prefix + fragmentShader, GL_FRAGMENT_SHADER);
+	mFragmentShader = CompileShader(prefix + mFragmentText, GL_FRAGMENT_SHADER);
 	if (!mFragmentShader)
-		return false;
+		return;
 
 	mProgram = glCreateProgram();
 	glAttachShader(mProgram, mVertexShader);
@@ -64,7 +78,7 @@ bool Shader::Compile(const std::string& vertexShader, const std::string& fragmen
 		mProgram = 0;
 		mVertexShader = 0;
 		mFragmentShader = 0;
-		return false;
+		return;
 	}
 
 	static const char* names[(int)UniformName::NumUniforms] = {
@@ -92,13 +106,6 @@ bool Shader::Compile(const std::string& vertexShader, const std::string& fragmen
 	{
 		UniformLocations[i] = glGetUniformLocation(mProgram, names[i]);
 	}
-
-	for (int i = 0; i < MaxSamplers; i++)
-	{
-		SamplerLocations[i] = glGetUniformLocation(mProgram, ("texture" + std::to_string(i + 1)).c_str());
-	}
-
-	return mProgram;
 }
 
 GLuint Shader::CompileShader(const std::string& code, GLenum type)
@@ -122,4 +129,17 @@ GLuint Shader::CompileShader(const std::string& code, GLenum type)
 		return 0;
 	}
 	return shader;
+}
+
+void Shader::ReleaseResources()
+{
+	if (mProgram)
+		glDeleteProgram(mProgram);
+	if (mVertexShader)
+		glDeleteShader(mVertexShader);
+	if (mFragmentShader)
+		glDeleteShader(mFragmentShader);
+	mProgram = 0;
+	mVertexShader = 0;
+	mFragmentShader = 0;
 }

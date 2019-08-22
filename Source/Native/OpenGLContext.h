@@ -8,8 +8,8 @@ public:
 	OpenGLContext(void* window);
 	~OpenGLContext();
 
-	void Begin();
-	void End();
+	void MakeCurrent();
+	void ClearCurrent();
 	void SwapBuffers();
 
 	int GetWidth() const;
@@ -21,7 +21,6 @@ private:
 	HWND window;
 	HDC dc;
 	HGLRC context;
-	int refcount = 0;
 };
 
 class OpenGLCreationHelper
@@ -172,8 +171,6 @@ private:
 
 	GLXContext create_context_glx_1_3(GLXContext shared_context);
 	void create_glx_1_3(::Display* disp);
-
-	int refcount = 0;
 };
 
 #endif

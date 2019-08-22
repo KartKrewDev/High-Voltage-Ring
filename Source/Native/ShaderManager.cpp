@@ -43,21 +43,17 @@ ShaderManager::ShaderManager()
 	{
 		if (ShaderSources[i].vs && ShaderSources[i].ps)
 		{
-			if (!Shaders[i].Compile(ShaderSources[i].vs, ShaderSources[i].ps, false))
-			{
-				CompileErrors += "Could not compile " + std::to_string(i) + "\r\n";
-				CompileErrors += Shaders[i].GetErrors();
-			}
-
-			if (!AlphaTestShaders[i].Compile(ShaderSources[i].vs, ShaderSources[i].ps, true))
-			{
-				CompileErrors += "Could not compile " + std::to_string(i) + "\r\n";
-				CompileErrors += Shaders[i].GetErrors();
-			}
+			Shaders[i].Setup(ShaderSources[i].vs, ShaderSources[i].ps, false);
+			AlphaTestShaders[i].Setup(ShaderSources[i].vs, ShaderSources[i].ps, true);
 		}
 	}
 }
 
 void ShaderManager::ReleaseResources()
 {
+	for (int i = 0; i < (int)ShaderName::count; i++)
+	{
+		Shaders[i].ReleaseResources();
+		AlphaTestShaders[i].ReleaseResources();
+	}
 }
