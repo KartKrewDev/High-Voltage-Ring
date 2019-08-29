@@ -19,6 +19,11 @@ namespace CodeImp.DoomBuilder
 {
 	internal static class UpdateChecker
 	{
+#if NO_UPDATER
+		internal static void PerformCheck(bool verbosemode)
+		{
+		}
+#else
 		private delegate DialogResult ShowWarningMessageDelegate(string message, MessageBoxButtons buttons);
 		
 		private const string NO_UPDATE_REQUIRED = "Your version is up to date.";
@@ -340,5 +345,6 @@ namespace CodeImp.DoomBuilder
 			result.Position = 0;
 			return result;
 		}
+#endif
 	}
 }
