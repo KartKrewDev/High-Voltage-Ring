@@ -43,6 +43,43 @@ namespace CodeImp.DoomBuilder.IO
 		internal const int IL_DDS = 0x0437;  //!< DirectDraw Surface - .dds extension
 	}
 
+#if NO_DEVIL
+
+    internal unsafe class FileImageReader : IImageReader
+    {
+		public FileImageReader()
+		{
+			//imagetype = DevilImageType.IL_TYPE_UNKNOWN;
+		}
+
+		public FileImageReader(uint devilImagetype) 
+		{
+		}
+
+        public FileImageReader(uint devilImagetype, int guesstype, Playpal guesspalette)
+        {
+        }
+
+        public Bitmap ReadAsBitmap(Stream stream)
+        {
+            int x, y;
+            return ReadAsBitmap(stream, out x, out y);
+        }
+
+        public Bitmap ReadAsBitmap(Stream stream, out int offsetx, out int offsety)
+        {
+            offsetx = 0;
+            offsety = 0;
+            return new Bitmap(64, 64, PixelFormat.Format32bppArgb);
+        }
+
+        public void DrawToPixelData(Stream stream, PixelColor* target, int targetwidth, int targetheight, int x, int y)
+        {
+        }
+    }
+
+#else
+
     // [ZZ]
     internal enum DevilError
     {
@@ -77,7 +114,7 @@ namespace CodeImp.DoomBuilder.IO
 
     internal unsafe class FileImageReader : IImageReader
 	{
-		#region ================== APIs
+#region ================== APIs
 
 		[DllImport("devil.dll")]
 		private static extern void ilGenImages(int num, IntPtr images);
@@ -388,9 +425,9 @@ namespace CodeImp.DoomBuilder.IO
         private readonly Playpal guesspalette;
         private IImageReader proxyreader;
 		
-		#endregion
+#endregion
 
-		#region ================== Constructor / Disposer
+#region ================== Constructor / Disposer
 
 		// Constructor
 		public FileImageReader()
@@ -421,9 +458,9 @@ namespace CodeImp.DoomBuilder.IO
             GC.SuppressFinalize(this);
         }
 
-		#endregion
+#endregion
 
-		#region ================== Methods
+#region ================== Methods
 
 		// This creates a Bitmap from the given data
 		// Returns null on failure
@@ -683,6 +720,8 @@ namespace CodeImp.DoomBuilder.IO
             return true;
         }
 		
-		#endregion
+#endregion
 	}
+
+#endif
 }

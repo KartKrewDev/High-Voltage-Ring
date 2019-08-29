@@ -26,3 +26,4 @@ obj
 *.iobj
 *.ipdb
 /Source/Plugins/vpo_dll/Release
+/Source/Core/*.user

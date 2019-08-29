@@ -47,12 +47,14 @@ namespace CodeImp.DoomBuilder
 {
 	public static class General
 	{
-		#region ================== API Declarations
+        #region ================== API Declarations
 
-		[DllImport("devil.dll")]
+#if !NO_DEVIL
+        [DllImport("devil.dll")]
 		private static extern void ilInit();
+#endif
 
-		[DllImport("user32.dll")]
+        [DllImport("user32.dll")]
 		internal static extern bool LockWindowUpdate(IntPtr hwnd);
 
 		[DllImport("kernel32.dll", EntryPoint = "RtlZeroMemory", SetLastError = false)]
@@ -617,7 +619,9 @@ namespace CodeImp.DoomBuilder
 
 				// Initialize static classes
 				MapSet.Initialize();
+#if !NO_DEVIL
 				ilInit();
+#endif
 
 				// Create main window
 				General.WriteLogLine("Loading main interface window...");
@@ -917,9 +921,9 @@ namespace CodeImp.DoomBuilder
 			autoloadfile = null;
 		}
 		
-		#endregion
+#endregion
 		
-		#region ================== Terminate
+#region ================== Terminate
 
 		// This is for plugins to use
 		public static void Exit(bool properexit)
@@ -988,9 +992,9 @@ namespace CodeImp.DoomBuilder
 			Process.GetCurrentProcess().Kill();
 		}
 		
-		#endregion
+#endregion
 		
-		#region ================== Management
+#region ================== Management
 		
 		// This creates a new map
 		[BeginAction("newmap")]
@@ -1613,9 +1617,9 @@ namespace CodeImp.DoomBuilder
 			}
 		}
 		
-		#endregion
+#endregion
 
-		#region ================== Debug
+#region ================== Debug
 		
 		// This shows a major failure
 		public static void Fail(string message)
@@ -1657,9 +1661,9 @@ namespace CodeImp.DoomBuilder
 			catch(Exception) { }
 		}
 		
-		#endregion
+#endregion
 
-		#region ================== Tools
+#region ================== Tools
 		
 		// This swaps two pointers
 		public static void Swap<T>(ref T a, ref T b)
@@ -2089,9 +2093,9 @@ namespace CodeImp.DoomBuilder
             }
         }
 		
-		#endregion
+#endregion
 
-		#region ==================  mxd. Uncaught exceptions handling
+#region ==================  mxd. Uncaught exceptions handling
 
 		// In some cases the program can remain operational after these
 		private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e) 
@@ -2154,7 +2158,7 @@ namespace CodeImp.DoomBuilder
 			}
 		}
 
-		#endregion
+#endregion
 
 	}
 }
