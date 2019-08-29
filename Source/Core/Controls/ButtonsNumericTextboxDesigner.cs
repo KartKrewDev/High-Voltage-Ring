@@ -14,6 +14,8 @@
 
 #endregion
 
+#if !NO_FORMS_DESIGN
+
 #region ================== Namespaces
 
 using System.Collections;
@@ -63,3 +65,5 @@ namespace CodeImp.DoomBuilder.Controls
 		}
 	}
 }
+
+#endif

@@ -27,10 +27,87 @@ using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Compilers;
 using CodeImp.DoomBuilder.ZDoom.Scripting;
-using ScintillaNET;
 using System.Text;
 
 #endregion
+
+#if NO_SCINTILLA
+
+namespace CodeImp.DoomBuilder.Controls
+{
+	internal abstract class ScriptDocumentTab : TabPage
+	{
+		protected readonly ScriptEditorControl editor;
+		protected ScriptConfiguration config;
+		protected readonly ScriptEditorPanel panel;
+		protected ScriptDocumentTabType tabtype;
+
+		public virtual bool ExplicitSave { get { return true; } }
+		public virtual bool IsSaveAsRequired { get { return true; } }
+		public virtual bool IsClosable { get { return true; } }
+		public virtual bool IsReconfigurable { get { return true; } }
+		public virtual bool IsReadOnly { get { return false; } }
+		public virtual string Filename { get { return ""; } }
+		public ScriptEditorPanel Panel { get { return panel; } }
+		public ScriptEditorControl Editor { get; private set; }
+		public string Title { get; private set; }
+		public bool IsChanged { get { return false; } }
+		public int SelectionStart { get; set; }
+		public int SelectionEnd { get; set; }
+		public bool ShowWhitespace { get; set; }
+		public bool WrapLongLines { get; set; }
+		public string SelectedText { get { return ""; } }
+		public ScriptConfiguration Config { get { return config; } }
+
+		public new event EventHandler OnTextChanged;
+		
+		protected ScriptDocumentTab(ScriptEditorPanel panel, ScriptConfiguration config)
+		{
+			this.panel = panel;
+			this.config = config;
+			
+			editor = new ScriptEditorControl();
+			this.Controls.Add(editor);
+		}
+		
+		public bool LaunchKeywordHelp() { return false; }
+		public virtual void RefreshSettings() { }
+		public virtual void MoveToLine(int linenumber) { }
+		public virtual void ClearMarks() { }
+		public virtual void MarkScriptErrors(IEnumerable<CompilerError> errors) { }
+		public virtual bool VerifyErrorForScript(CompilerError e) { return false; }
+		public virtual void Compile() { }
+		public virtual bool Save() { return false; }
+		public virtual bool SaveAs(string filename) { return false; }
+		public virtual void ChangeScriptConfig(ScriptConfiguration newconfig) { }
+		public void Undo() { }
+		public void Redo() { }
+		public void Cut() { }
+		public void Copy() { }
+		public void Paste() { }
+		public bool FindNext(FindReplaceOptions options) { return false; }
+		public bool FindNext(FindReplaceOptions options, bool useselectionstart) { return false; }
+		public bool FindPrevious(FindReplaceOptions options) { return false; }
+		public void ReplaceSelection(string replacement) { }
+		
+		internal virtual ScriptDocumentSettings GetViewSettings() { return new ScriptDocumentSettings {}; }
+		internal virtual void SetViewSettings(ScriptDocumentSettings settings) { }
+		internal void SetDefaultViewSettings() { }
+		
+		internal List<CompilerError> UpdateNavigator() { return new List<CompilerError>(); }
+		internal ScriptType VerifyScriptType()  { return ScriptType.UNKNOWN; }
+		internal void InsertSnippet(string name) { }
+		internal void IndentSelection(bool indent) { }
+		
+		protected void SetTitle(string title) { }
+		protected void UpdateTitle() { }
+		protected void RemoveTrailingWhitespace() { }
+	}
+}
+
+#else
+
+using ScintillaNET;
 
 namespace CodeImp.DoomBuilder.Controls
 {
@@ -513,3 +590,5 @@ namespace CodeImp.DoomBuilder.Controls
 		#endregion
 	}
 }
+
+#endif

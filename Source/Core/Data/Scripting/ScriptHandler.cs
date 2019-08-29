@@ -10,9 +10,32 @@ using CodeImp.DoomBuilder.Compilers;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.IO;
-using ScintillaNET;
 
 #endregion
+
+#if NO_SCINTILLA
+
+namespace CodeImp.DoomBuilder.Data.Scripting
+{
+	[ScriptHandler(ScriptType.UNKNOWN)]
+	internal class ScriptHandler
+	{
+		public virtual void Initialize(ScriptEditorControl scriptcontrol, ScriptConfiguration scriptconfig)
+		{
+		}
+		
+		public virtual List<CompilerError> UpdateFunctionBarItems(ScriptDocumentTab tab, MemoryStream stream, ComboBox target)
+		{
+			// Unsupported script type. Just clear the items
+			target.Items.Clear();
+			return new List<CompilerError>();
+		}
+	}
+}
+
+#else
+
+using ScintillaNET;
 
 namespace CodeImp.DoomBuilder.Data.Scripting
 {
@@ -452,3 +475,5 @@ namespace CodeImp.DoomBuilder.Data.Scripting
 		#endregion
 	}
 }
+
+#endif

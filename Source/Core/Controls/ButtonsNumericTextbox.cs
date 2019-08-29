@@ -25,7 +25,9 @@ using System.Windows.Forms;
 
 namespace CodeImp.DoomBuilder.Controls
 {
+#if !NO_FORMS_DESIGN
 	[Designer(typeof(ButtonsNumericTextboxDesigner))]
+#endif
 	public partial class ButtonsNumericTextbox : UserControl
 	{
 		#region ================== Events
