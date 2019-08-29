@@ -54,6 +54,14 @@ namespace CodeImp.DoomBuilder
 		private static extern void ilInit();
 #endif
 
+#if NO_WIN32
+
+	internal static bool LockWindowUpdate(IntPtr hwnd) { return true; }
+	internal static bool MessageBeep(MessageBeepType type) { return true; }
+	internal static void ZeroMemory(IntPtr dest, int size) { }
+	internal static int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam) { return 0; }
+
+#else
         [DllImport("user32.dll")]
 		internal static extern bool LockWindowUpdate(IntPtr hwnd);
 
@@ -94,6 +102,7 @@ namespace CodeImp.DoomBuilder
 
 		//[DllImport("user32.dll")]
 		//internal static extern int GetScrollInfo(IntPtr windowptr, int bar, IntPtr scrollinfo);
+#endif
 
 		#endregion
 
@@ -2044,10 +2053,14 @@ namespace CodeImp.DoomBuilder
 		// This returns the short path name for a file
 		public static string GetShortFilePath(string longpath)
 		{
+#if NO_WIN32
+			return longpath;
+#else
 			const int maxlen = 256;
 			StringBuilder shortname = new StringBuilder(maxlen);
 			GetShortPathName(longpath, shortname, maxlen);
 			return shortname.ToString();
+#endif
 		}
 
 		//mxd
