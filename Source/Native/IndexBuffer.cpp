@@ -20,6 +20,9 @@ GLuint IndexBuffer::GetBuffer()
 
 /////////////////////////////////////////////////////////////////////////////
 
+extern "C"
+{
+
 IndexBuffer* IndexBuffer_New()
 {
 	return new IndexBuffer();
@@ -28,4 +31,6 @@ IndexBuffer* IndexBuffer_New()
 void IndexBuffer_Delete(IndexBuffer* buffer)
 {
 	//delete buffer;
+}
+
 }

@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Geometry;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 #endregion
 
@@ -32,7 +33,17 @@ namespace CodeImp.DoomBuilder.Rendering
     {
 		public RenderDevice(RenderTargetControl rendertarget)
 		{
-            Handle = RenderDevice_New(IntPtr.Zero, rendertarget.Handle);
+		
+		// Grab the X11 Display handle by abusing reflection to access internal classes in the mono implementation.
+		// That's par for the course for everything in Linux, so yeah..
+		IntPtr display = IntPtr.Zero;
+		Type xplatui = Type.GetType("System.Windows.Forms.XplatUIX11, System.Windows.Forms");
+		if (xplatui != null)
+		{
+		    display = (IntPtr)xplatui.GetField("DisplayHandle", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+		}
+		
+            Handle = RenderDevice_New(display, rendertarget.Handle);
             if (Handle == IntPtr.Zero)
                 throw new Exception("RenderDevice_New failed");
 
@@ -332,112 +343,112 @@ namespace CodeImp.DoomBuilder.Rendering
 
         IntPtr Handle;
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr RenderDevice_New(IntPtr display, IntPtr window);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_Delete(IntPtr handle);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr RenderDevice_SetShader(IntPtr hwnd, ShaderName name);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr RenderDevice_SetUniform(IntPtr hwnd, UniformName name, float[] data, int count);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBuffer(IntPtr handle, IntPtr buffer);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetIndexBuffer(IntPtr handle, IntPtr buffer);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetAlphaBlendEnable(IntPtr handle, bool value);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetAlphaTestEnable(IntPtr handle, bool value);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetCullMode(IntPtr handle, Cull mode);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetBlendOperation(IntPtr handle, BlendOperation op);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetSourceBlend(IntPtr handle, Blend blend);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetDestinationBlend(IntPtr handle, Blend blend);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetFillMode(IntPtr handle, FillMode mode);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetMultisampleAntialias(IntPtr handle, bool value);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetZEnable(IntPtr handle, bool value);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetZWriteEnable(IntPtr handle, bool value);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetTexture(IntPtr handle, IntPtr texture);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetSamplerFilter(IntPtr handle, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetSamplerState(IntPtr handle, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_Draw(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_DrawIndexed(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_DrawData(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_StartRendering(IntPtr handle, bool clear, int backcolor);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_StartRendering(IntPtr handle, bool clear, int backcolor, IntPtr target, bool usedepthbuffer);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_FinishRendering(IntPtr handle);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_Present(IntPtr handle);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_ClearTexture(IntPtr handle, int backcolor, IntPtr texture);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_CopyTexture(IntPtr handle, IntPtr dst, CubeMapFace face);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetIndexBufferData(IntPtr handle, IntPtr buffer, int[] data, long size);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, IntPtr data, long size, VertexFormat format);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, FlatVertex[] data, long size, VertexFormat format);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBufferData(IntPtr handle, IntPtr buffer, WorldVertex[] data, long size, VertexFormat format);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBufferSubdata(IntPtr handle, IntPtr buffer, long destOffset, FlatVertex[] data, long sizeInBytes);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBufferSubdata(IntPtr handle, IntPtr buffer, long destOffset, WorldVertex[] data, long sizeInBytes);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         protected static extern void RenderDevice_SetPixels(IntPtr handle, IntPtr texture, IntPtr data);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         protected static extern void RenderDevice_SetCubePixels(IntPtr handle, IntPtr texture, CubeMapFace face, IntPtr data);
 
         //mxd. Anisotropic filtering steps

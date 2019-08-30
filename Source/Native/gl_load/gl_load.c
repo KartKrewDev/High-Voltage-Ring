@@ -85,8 +85,8 @@ static PROC WinGetProcAddress(const char *name)
 		#define IntGetProcAddress(name) AppleGLGetProcAddress(name)
 	#else
 		#if defined(__sgi) || defined(__sun) || defined(__unix__)
-			void* SDL_GL_GetProcAddress(const char* proc);
-			#define IntGetProcAddress(name) SDL_GL_GetProcAddress((const char*)name)
+			void* GL_GetProcAddress(const char* proc);
+			#define IntGetProcAddress(name) GL_GetProcAddress((const char*)name)
 			//#define IntGetProcAddress(name) PosixGetProcAddress((const GLubyte*)name)
 /* END OF MANUAL CHANGES, DO NOT REMOVE! */
 		#else /* GLX */

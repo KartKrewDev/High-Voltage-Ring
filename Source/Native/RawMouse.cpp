@@ -147,6 +147,9 @@ float RawMouse::GetY()
 
 /////////////////////////////////////////////////////////////////////////////
 
+extern "C"
+{
+
 RawMouse* RawMouse_New(void* hwnd)
 {
 	return new RawMouse(hwnd);
@@ -165,4 +168,6 @@ float RawMouse_GetX(RawMouse* mouse)
 float RawMouse_GetY(RawMouse* mouse)
 {
 	return mouse->GetY();
+}
+
 }

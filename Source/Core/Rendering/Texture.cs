@@ -34,16 +34,16 @@ namespace CodeImp.DoomBuilder.Rendering
 
         internal IntPtr Handle;
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         protected static extern IntPtr Texture_New();
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         protected static extern void Texture_Delete(IntPtr handle);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         protected static extern void Texture_Set2DImage(IntPtr handle, int width, int height);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         protected static extern void Texture_SetCubeImage(IntPtr handle, int size);
     }
 

@@ -618,6 +618,9 @@ void RenderDevice::ApplyTextures()
 
 /////////////////////////////////////////////////////////////////////////////
 
+extern "C"
+{
+
 RenderDevice* RenderDevice_New(void* disp, void* window)
 {
 	RenderDevice *device = new RenderDevice(disp, window);
@@ -785,4 +788,6 @@ void RenderDevice_SetPixels(RenderDevice* device, Texture* texture, const void* 
 void RenderDevice_SetCubePixels(RenderDevice* device, Texture* texture, CubeMapFace face, const void* data)
 {
 	device->SetCubePixels(texture, face, data);
+}
+
 }

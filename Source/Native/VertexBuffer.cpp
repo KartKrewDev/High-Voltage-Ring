@@ -59,6 +59,9 @@ void VertexBuffer::SetupWorldVAO()
 
 /////////////////////////////////////////////////////////////////////////////
 
+extern "C"
+{
+
 VertexBuffer* VertexBuffer_New()
 {
 	return new VertexBuffer();
@@ -67,4 +70,6 @@ VertexBuffer* VertexBuffer_New()
 void VertexBuffer_Delete(VertexBuffer* buffer)
 {
 	//delete buffer;
+}
+
 }

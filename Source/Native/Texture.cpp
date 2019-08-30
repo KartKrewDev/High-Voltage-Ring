@@ -136,6 +136,9 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 
 /////////////////////////////////////////////////////////////////////////////
 
+extern "C"
+{
+
 Texture* Texture_New()
 {
 	return new Texture();
@@ -154,4 +157,6 @@ void Texture_Set2DImage(Texture* handle, int width, int height)
 void Texture_SetCubeImage(Texture* handle, int size)
 {
 	handle->SetCubeImage(size);
+}
+
 }

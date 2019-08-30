@@ -34,10 +34,10 @@ namespace CodeImp.DoomBuilder.Rendering
 
         internal IntPtr Handle;
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr VertexBuffer_New();
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void VertexBuffer_Delete(IntPtr handle);
     }
 }

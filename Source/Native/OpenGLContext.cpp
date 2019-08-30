@@ -3,6 +3,12 @@
 #include "OpenGLContext.h"
 #include <stdexcept>
 
+class OpenGLLoadFunctions
+{
+public:
+	OpenGLLoadFunctions() { ogl_LoadFunctions(); }
+};
+
 #ifdef WIN32
 
 #include <CommCtrl.h>
@@ -108,11 +114,6 @@ private:
 	typedef BOOL(WINAPI* ptr_wglChoosePixelFormatEXT)(HDC, const int*, const FLOAT*, UINT, int*, UINT*);
 };
 
-class OpenGLLoadFunctions
-{
-public:
-	OpenGLLoadFunctions() { ogl_LoadFunctions(); }
-};
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -275,7 +276,7 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, int major_version, int minor_
 	return opengl3_context;
 }
 
-std::unique_ptr<IOpenGLContext> Create(void* disp, void* window)
+std::unique_ptr<IOpenGLContext> IOpenGLContext::Create(void* disp, void* window)
 {
 	auto ctx = std::make_unique<OpenGLContext>(window);
 	if (!ctx->IsValid()) return nullptr;
@@ -421,6 +422,8 @@ private:
 	void* opengl_lib_handle = nullptr;
 };
 
+GL_GLXFunctions glx_global;
+
 #include <cstdio>
 
 #define GL_USE_DLOPEN // Using dlopen for linux by default
@@ -441,10 +444,18 @@ OpenGLContext::OpenGLContext(void* display, void* window) : disp((::Display*)dis
 	try
 	{
 		CreateContext();
+		glx_global = glx;
 	}
 	catch (const std::exception& e)
 	{
 		// to do: maybe provide a way to query what the creation error was
+	}
+
+	if (opengl_context)
+	{
+		MakeCurrent();
+		static OpenGLLoadFunctions loadFunctions;
+		ClearCurrent();
 	}
 }
 
@@ -601,7 +612,7 @@ void OpenGLContext::create_glx_1_3(::Display* disp)
 	int gl_attribs_single[] =
 	{
 		GLX_X_RENDERABLE, True,
-		GLX_RENDER_TYPE, GLX_RGBA_BIT,
+		//GLX_RENDER_TYPE, GLX_RGBA_BIT,
 		GLX_DEPTH_SIZE, 16,
 		GLX_STENCIL_SIZE, 8,
 		GLX_BUFFER_SIZE, 24,
@@ -615,8 +626,8 @@ void OpenGLContext::create_glx_1_3(::Display* disp)
 	gl_attribs.push_back(True);
 	gl_attribs.push_back(GLX_DRAWABLE_TYPE);
 	gl_attribs.push_back(GLX_WINDOW_BIT);
-	gl_attribs.push_back(GLX_RENDER_TYPE);
-	gl_attribs.push_back(GLX_RGBA_BIT);
+	//gl_attribs.push_back(GLX_RENDER_TYPE);
+	//gl_attribs.push_back(GLX_RGBA_BIT);
 	gl_attribs.push_back(GLX_X_VISUAL_TYPE);
 	gl_attribs.push_back(GLX_TRUE_COLOR);
 	gl_attribs.push_back(GLX_RED_SIZE);
@@ -626,7 +637,7 @@ void OpenGLContext::create_glx_1_3(::Display* disp)
 	gl_attribs.push_back(GLX_BLUE_SIZE);
 	gl_attribs.push_back(8);
 	gl_attribs.push_back(GLX_ALPHA_SIZE);
-	gl_attribs.push_back(8);
+	gl_attribs.push_back(0);
 	gl_attribs.push_back(GLX_DEPTH_SIZE);
 	gl_attribs.push_back(24);
 	gl_attribs.push_back(GLX_STENCIL_SIZE);
@@ -640,6 +651,7 @@ void OpenGLContext::create_glx_1_3(::Display* disp)
 	// get an appropriate visual
 	int fb_count;
 	GLXFBConfig* fbc = glx.glXChooseFBConfig(disp, DefaultScreen(disp), &gl_attribs[0], &fb_count);
+
 	if (!fbc)
 	{
 		printf("Requested visual not supported by your OpenGL implementation. Falling back on singlebuffered Visual!\n");
@@ -809,11 +821,21 @@ GLXContext OpenGLContext::create_context_glx_1_3(GLXContext shared_context)
 	return context;
 }
 
-std::unique_ptr<IOpenGLContext> Create(void* disp, void* window)
+std::unique_ptr<IOpenGLContext> IOpenGLContext::Create(void* disp, void* window)
 {
 	auto ctx = std::make_unique<OpenGLContext>(disp, window);
 	if (!ctx->IsValid()) return nullptr;
 	return ctx;
+}
+
+void* GL_GetProcAddress(const char* function_name)
+{
+	if (glx_global.glXGetProcAddressARB)
+		return (void*)glx_global.glXGetProcAddressARB((GLubyte*)function_name);
+	else if (glx_global.glXGetProcAddress)
+		return (void*)glx_global.glXGetProcAddress((GLubyte*)function_name);
+	else
+		return nullptr;
 }
 
 #endif
