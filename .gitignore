@@ -27,3 +27,4 @@ obj
 *.ipdb
 /Source/Plugins/vpo_dll/Release
 /Source/Core/*.user
+/Build/BuilderNative.so

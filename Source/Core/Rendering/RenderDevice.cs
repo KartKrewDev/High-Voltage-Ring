@@ -32,7 +32,7 @@ namespace CodeImp.DoomBuilder.Rendering
     {
 		public RenderDevice(RenderTargetControl rendertarget)
 		{
-            Handle = RenderDevice_New(rendertarget.Handle);
+            Handle = RenderDevice_New(IntPtr.Zero, rendertarget.Handle);
             if (Handle == IntPtr.Zero)
                 throw new Exception("RenderDevice_New failed");
 
@@ -333,7 +333,7 @@ namespace CodeImp.DoomBuilder.Rendering
         IntPtr Handle;
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr RenderDevice_New(IntPtr hwnd);
+        static extern IntPtr RenderDevice_New(IntPtr display, IntPtr window);
 
         [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_Delete(IntPtr handle);

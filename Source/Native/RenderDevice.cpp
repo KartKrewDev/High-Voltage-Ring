@@ -7,17 +7,14 @@
 #include "ShaderManager.h"
 #include <stdexcept>
 
-#ifdef WIN32
-RenderDevice::RenderDevice(void* hwnd) : Context(hwnd)
-#else
-RenderDevice::RenderDevice(void* disp, void* window) : Context(disp, window)
-#endif
+RenderDevice::RenderDevice(void* disp, void* window)
 {
 	memset(mUniforms, 0, sizeof(mUniforms));
 
+	Context = IOpenGLContext::Create(disp, window);
 	if (Context)
 	{
-		Context.MakeCurrent();
+		Context->MakeCurrent();
 
 		glGenVertexArrays(1, &mStreamVAO);
 		glGenBuffers(1, &mStreamVertexBuffer);
@@ -29,7 +26,7 @@ RenderDevice::RenderDevice(void* disp, void* window) : Context(disp, window)
 		mShaderManager = std::make_unique<ShaderManager>();
 
 		CheckError();
-		Context.ClearCurrent();
+		Context->ClearCurrent();
 	}
 }
 
@@ -37,11 +34,11 @@ RenderDevice::~RenderDevice()
 {
 	if (Context)
 	{
-		Context.MakeCurrent();
+		Context->MakeCurrent();
 		glDeleteBuffers(1, &mStreamVertexBuffer);
 		glDeleteVertexArrays(1, &mStreamVAO);
 		mShaderManager->ReleaseResources();
-		Context.ClearCurrent();
+		Context->ClearCurrent();
 	}
 }
 
@@ -260,7 +257,7 @@ void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCou
 
 void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer)
 {
-	Context.MakeCurrent();
+	Context->MakeCurrent();
 	mContextIsCurrent = true;
 
 	if (target)
@@ -271,7 +268,7 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 	else
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, Context.GetWidth(), Context.GetHeight());
+		glViewport(0, 0, Context->GetWidth(), Context->GetHeight());
 	}
 
 	if (clear && usedepthbuffer)
@@ -302,13 +299,13 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 void RenderDevice::FinishRendering()
 {
 	CheckError();
-	Context.ClearCurrent();
+	Context->ClearCurrent();
 	mContextIsCurrent = false;
 }
 
 void RenderDevice::Present()
 {
-	Context.SwapBuffers();
+	Context->SwapBuffers();
 }
 
 void RenderDevice::ClearTexture(int backcolor, Texture* texture)
@@ -328,7 +325,7 @@ void RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 
-	if (!mContextIsCurrent) Context.MakeCurrent();
+	if (!mContextIsCurrent) Context->MakeCurrent();
 	GLint oldTexture = 0;
 	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldTexture);
 
@@ -338,41 +335,41 @@ void RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, oldTexture);
-	if (!mContextIsCurrent) Context.ClearCurrent();
+	if (!mContextIsCurrent) Context->ClearCurrent();
 }
 
 void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format)
 {
-	if (!mContextIsCurrent) Context.MakeCurrent();
+	if (!mContextIsCurrent) Context->MakeCurrent();
 	buffer->Format = format;
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
-	if (!mContextIsCurrent) Context.ClearCurrent();
+	if (!mContextIsCurrent) Context->ClearCurrent();
 }
 
 void RenderDevice::SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size)
 {
-	if (!mContextIsCurrent) Context.MakeCurrent();
+	if (!mContextIsCurrent) Context->MakeCurrent();
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferSubData(GL_ARRAY_BUFFER, destOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
-	if (!mContextIsCurrent) Context.ClearCurrent();
+	if (!mContextIsCurrent) Context->ClearCurrent();
 }
 
 void RenderDevice::SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size)
 {
-	if (!mContextIsCurrent) Context.MakeCurrent();
+	if (!mContextIsCurrent) Context->MakeCurrent();
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oldbinding);
-	if (!mContextIsCurrent) Context.ClearCurrent();
+	if (!mContextIsCurrent) Context->ClearCurrent();
 }
 
 void RenderDevice::SetPixels(Texture* texture, const void* data)
@@ -391,9 +388,9 @@ void RenderDevice::InvalidateTexture(Texture* texture)
 {
 	if (texture->IsTextureCreated())
 	{
-		if (!mContextIsCurrent) Context.MakeCurrent();
+		if (!mContextIsCurrent) Context->MakeCurrent();
 		texture->Invalidate();
-		if (!mContextIsCurrent) Context.ClearCurrent();
+		if (!mContextIsCurrent) Context->ClearCurrent();
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -621,9 +618,9 @@ void RenderDevice::ApplyTextures()
 
 /////////////////////////////////////////////////////////////////////////////
 
-RenderDevice* RenderDevice_New(void* hwnd)
+RenderDevice* RenderDevice_New(void* disp, void* window)
 {
-	RenderDevice *device = new RenderDevice(hwnd);
+	RenderDevice *device = new RenderDevice(disp, window);
 	if (!device->Context)
 	{
 		delete device;
