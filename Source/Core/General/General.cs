@@ -49,10 +49,8 @@ namespace CodeImp.DoomBuilder
 	{
         #region ================== API Declarations
 
-#if !NO_DEVIL
         [DllImport("devil.dll")]
 		private static extern void ilInit();
-#endif
 
 #if NO_WIN32
 
@@ -628,9 +626,8 @@ namespace CodeImp.DoomBuilder
 
 				// Initialize static classes
 				MapSet.Initialize();
-#if !NO_DEVIL
+
 				ilInit();
-#endif
 
 				// Create main window
 				General.WriteLogLine("Loading main interface window...");
