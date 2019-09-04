@@ -231,6 +231,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						if((backimageverts == null) || (General.Map.Grid.Background.Texture == null)) break;
                         graphics.SetShader(aapass);
                         graphics.SetTexture(General.Map.Grid.Background.Texture);
+						graphics.SetSamplerState(TextureAddress.Wrap);
 						SetDisplay2DSettings(1f / windowsize.Width, 1f / windowsize.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, backimageverts);
 						graphics.SetVertexBuffer(screenverts);
@@ -240,6 +241,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Grid:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(gridplotter.Texture);
+						graphics.SetSamplerState(TextureAddress.Wrap);
 						SetDisplay2DSettings(1f / gridplotter.Width, 1f / gridplotter.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -248,6 +250,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Geometry:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(plotter.Texture);
+						graphics.SetSamplerState(TextureAddress.Wrap);
 						SetDisplay2DSettings(1f / plotter.Width, 1f / plotter.Height, FSAA_FACTOR, layer.alpha, false, false);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -256,6 +259,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Things:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(thingstex);
+						graphics.SetSamplerState(TextureAddress.Clamp);
 						SetDisplay2DSettings(1f / thingstex.Width, 1f / thingstex.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -264,6 +268,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Overlay:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(overlaytex);
+						graphics.SetSamplerState(TextureAddress.Wrap);
 						SetDisplay2DSettings(1f / overlaytex.Width, 1f / overlaytex.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
@@ -272,6 +277,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case RendererLayer.Surface:
                         graphics.SetShader(aapass);
                         graphics.SetTexture(surfacetex);
+						graphics.SetSamplerState(TextureAddress.Wrap);
 						SetDisplay2DSettings(1f / overlaytex.Width, 1f / overlaytex.Height, FSAA_FACTOR, layer.alpha, false, true);
 						graphics.Draw(PrimitiveType.TriangleStrip, 0, 2);
 						break;
