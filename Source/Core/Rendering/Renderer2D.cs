@@ -824,7 +824,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				//mxd. Render center of map
 				if(drawmapcenter)
 				{
-					Vector2D center = new Vector2D().GetTransformed(translatex, translatey, scale, -scale);
+					Vector2D center = new Vector2D(0, 0).GetTransformed(translatex, translatey, scale, -scale);
+					center.y = windowsize.Height - center.y;
 					int cx = (int)center.x;
 					int cy = (int)center.y;
 					PixelColor c = General.Colors.Highlight;
@@ -963,6 +964,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				pos.y = y;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
+				pos.y = windowsize.Height - pos.y;
 
 				// Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
 				gridplotter.DrawGridLineH((int)pos.y, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), c);
