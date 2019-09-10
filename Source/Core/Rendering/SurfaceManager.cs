@@ -325,9 +325,9 @@ namespace CodeImp.DoomBuilder.Rendering
 					{
 						if(!resourcesunloaded)
 						{
-                            // Fill buffer
-                            General.Map.Graphics.SetBufferSubdata(set.buffers[bufferindex], vertexoffset, e.floorvertices);
-                            General.Map.Graphics.SetBufferSubdata(set.buffers[bufferindex], vertexoffset + e.floorvertices.Length, e.ceilvertices);
+							// Fill buffer
+							General.Map.Graphics.SetBufferSubdata(vb, vertexoffset, e.floorvertices);
+							General.Map.Graphics.SetBufferSubdata(vb, vertexoffset + e.floorvertices.Length, e.ceilvertices);
 						}
 
 						// Set the new location in the buffer
