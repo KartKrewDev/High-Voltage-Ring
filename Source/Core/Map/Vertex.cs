@@ -306,6 +306,10 @@ namespace CodeImp.DoomBuilder.Map
 		// Which means this vertex is removed and the other is kept!
 		public void Join(Vertex other)
 		{
+			// biwa. Preserve z coords in a smart way
+			if (float.IsNaN(other.ZCeiling)) other.ZCeiling = zceiling;
+			if (float.IsNaN(other.ZFloor)) other.ZFloor = zfloor;
+
 			// If either of the two vertices was selected, keep the other selected
 			if(this.Selected) other.Selected = true;
 			if(this.marked) other.marked = true;
