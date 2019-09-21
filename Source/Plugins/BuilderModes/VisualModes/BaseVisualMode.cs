@@ -813,51 +813,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 			}
 
-			// Find sectors with 3 vertices, because they can be sloped
-			foreach(Sector s in General.Map.Map.Sectors)
-			{
-				// ========== Thing vertex slope, vertices with UDMF vertex offsets ==========
-				if(s.Sidedefs.Count == 3)
-				{
-					if(General.Map.UDMF) GetSectorData(s).AddEffectVertexOffset(); //mxd
-					List<Thing> slopeceilingthings = new List<Thing>(3);
-					List<Thing> slopefloorthings = new List<Thing>(3);
-					
-					foreach(Sidedef sd in s.Sidedefs) 
-					{
-						Vertex v = sd.IsFront ? sd.Line.End : sd.Line.Start;
-
-						// Check if a thing is at this vertex
-						VisualBlockEntry b = blockmap.GetBlock(blockmap.GetBlockCoordinates(v.Position));
-						foreach(Thing t in b.Things) 
-						{
-							if((Vector2D)t.Position == v.Position) 
-							{
-								switch(t.Type)
-								{
-									case 1504: slopefloorthings.Add(t); break;
-									case 1505: slopeceilingthings.Add(t); break;
-								}
-							}
-						}
-					}
-
-					// Slope any floor vertices?
-					if(slopefloorthings.Count > 0) 
-					{
-						SectorData sd = GetSectorData(s);
-						sd.AddEffectThingVertexSlope(slopefloorthings, true);
-					}
-
-					// Slope any ceiling vertices?
-					if(slopeceilingthings.Count > 0) 
-					{
-						SectorData sd = GetSectorData(s);
-						sd.AddEffectThingVertexSlope(slopeceilingthings, false);
-					}
-				}
-			}
-			
 			// Find interesting linedefs (such as line slopes)
 			foreach(Linedef l in General.Map.Map.Linedefs)
 			{
@@ -1044,6 +999,51 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						break;
 				}
 			}
+
+			// Find sectors with 3 vertices, because they can be sloped
+			foreach (Sector s in General.Map.Map.Sectors)
+			{
+				// ========== Thing vertex slope, vertices with UDMF vertex offsets ==========
+				if (s.Sidedefs.Count == 3)
+				{
+					if (General.Map.UDMF) GetSectorData(s).AddEffectVertexOffset(); //mxd
+					List<Thing> slopeceilingthings = new List<Thing>(3);
+					List<Thing> slopefloorthings = new List<Thing>(3);
+
+					foreach (Sidedef sd in s.Sidedefs)
+					{
+						Vertex v = sd.IsFront ? sd.Line.End : sd.Line.Start;
+
+						// Check if a thing is at this vertex
+						VisualBlockEntry b = blockmap.GetBlock(blockmap.GetBlockCoordinates(v.Position));
+						foreach (Thing t in b.Things)
+						{
+							if ((Vector2D)t.Position == v.Position)
+							{
+								switch (t.Type)
+								{
+									case 1504: slopefloorthings.Add(t); break;
+									case 1505: slopeceilingthings.Add(t); break;
+								}
+							}
+						}
+					}
+
+					// Slope any floor vertices?
+					if (slopefloorthings.Count > 0)
+					{
+						SectorData sd = GetSectorData(s);
+						sd.AddEffectThingVertexSlope(slopefloorthings, true);
+					}
+
+					// Slope any ceiling vertices?
+					if (slopeceilingthings.Count > 0)
+					{
+						SectorData sd = GetSectorData(s);
+						sd.AddEffectThingVertexSlope(slopeceilingthings, false);
+					}
+				}
+			}
 		}
 		
 		#endregion
@@ -1070,6 +1070,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
             //mxd. Update fog color (otherwise FogBoundaries won't be setup correctly)
             foreach (Sector s in General.Map.Map.Sectors)
                 s.UpdateFogColor();
+
+			// biwa. We need a blockmap for the slope things. Can't wait until it's built in base.OnEngage
+			// This was the root cause for issue #160
+			FillBlockMap();
 
             // (Re)create special effects
             RebuildElementData();
