@@ -112,12 +112,12 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Clear" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Clear.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -612,5 +612,80 @@
   </data>
   <data name="Github" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Github.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="display2d_vp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\display2d.vp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="display2d_fsaa" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\display2d_fsaa.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="display2d_fullbright" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\display2d_fullbright.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="display2d_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\display2d_normal.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="plotter_vp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\plotter.vp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="plotter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\plotter.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="things2d_vp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\things2d.vp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="things2d_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\things2d_fill.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="things2d_sprite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\things2d_sprite.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="things2d_thing" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\things2d_thing.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_constant_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_constant_color.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_customvertexcolor_vp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_customvertexcolor.vp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_customvertexcolor_fog_vp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_customvertexcolor_fog.vp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_fullbright" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_fullbright.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_fullbright_highlight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_fullbright_highlight.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_lightpass_vp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_lightpass.vp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_lightpass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_lightpass.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_main_vp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_main.vp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_main" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_main.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_main_fog" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_main_fog.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_main_highlight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_main_highlight.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_main_highlight_fog" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_main_highlight_fog.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_skybox_vp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_skybox.vp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_skybox" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_skybox.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="world3d_vertex_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\world3d_vertex_color.fp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

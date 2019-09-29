@@ -5,9 +5,10 @@
 class ShaderManager
 {
 public:
-	ShaderManager();
 	void ReleaseResources();
 
-	Shader AlphaTestShaders[(int)ShaderName::count];
-	Shader Shaders[(int)ShaderName::count];
+	void DeclareShader(int index, const char* vs, const char* ps);
+
+	std::vector<Shader> AlphaTestShaders;
+	std::vector<Shader> Shaders;
 };

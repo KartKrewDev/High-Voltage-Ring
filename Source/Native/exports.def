@@ -4,6 +4,7 @@ EXPORTS
 	RenderDevice_New
 	RenderDevice_Delete
 	RenderDevice_GetError
+	RenderDevice_DeclareShader
 	RenderDevice_SetShader
 	RenderDevice_SetUniform
 	RenderDevice_SetVertexBuffer

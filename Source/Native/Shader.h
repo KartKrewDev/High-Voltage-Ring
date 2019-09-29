@@ -8,7 +8,6 @@ enum class DeclarationUsage : int32_t { Position, Color, TextureCoordinate, Norm
 class Shader
 {
 public:
-	Shader() = default;
 	void ReleaseResources();
 
 	void Setup(const std::string& identifier, const std::string& vertexShader, const std::string& fragmentShader, bool alphatest);
@@ -35,7 +34,4 @@ private:
 	GLuint mVertexShader = 0;
 	GLuint mFragmentShader = 0;
 	std::string mErrors;
-
-	Shader(const Shader&) = delete;
-	Shader& operator=(const Shader&) = delete;
 };

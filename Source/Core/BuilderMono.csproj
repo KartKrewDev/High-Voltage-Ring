@@ -639,7 +639,17 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <EmbeddedResource Include="Resources\display2d.vp" />
+    <EmbeddedResource Include="Resources\display2d_fsaa.fp" />
+    <EmbeddedResource Include="Resources\display2d_fullbright.fp" />
+    <EmbeddedResource Include="Resources\display2d_normal.fp" />
     <None Include="Resources\MissingTexture.png" />
+    <EmbeddedResource Include="Resources\plotter.fp" />
+    <EmbeddedResource Include="Resources\plotter.vp" />
+    <EmbeddedResource Include="Resources\things2d.vp" />
+    <EmbeddedResource Include="Resources\things2d_fill.fp" />
+    <EmbeddedResource Include="Resources\things2d_sprite.fp" />
+    <EmbeddedResource Include="Resources\things2d_thing.fp" />
     <None Include="Resources\UnknownImage.png" />
     <None Include="Resources\treeview.png" />
     <None Include="Resources\Folder.png" />
@@ -655,6 +665,21 @@
     <None Include="Resources\Status2.png" />
     <None Include="Resources\Status0.png" />
     <None Include="Resources\ColorPick.png" />
+    <EmbeddedResource Include="Resources\world3d_constant_color.fp" />
+    <EmbeddedResource Include="Resources\world3d_customvertexcolor.vp" />
+    <EmbeddedResource Include="Resources\world3d_customvertexcolor_fog.vp" />
+    <EmbeddedResource Include="Resources\world3d_fullbright.fp" />
+    <EmbeddedResource Include="Resources\world3d_fullbright_highlight.fp" />
+    <EmbeddedResource Include="Resources\world3d_lightpass.fp" />
+    <EmbeddedResource Include="Resources\world3d_lightpass.vp" />
+    <EmbeddedResource Include="Resources\world3d_main.fp" />
+    <EmbeddedResource Include="Resources\world3d_main.vp" />
+    <EmbeddedResource Include="Resources\world3d_main_fog.fp" />
+    <EmbeddedResource Include="Resources\world3d_main_highlight.fp" />
+    <EmbeddedResource Include="Resources\world3d_main_highlight_fog.fp" />
+    <EmbeddedResource Include="Resources\world3d_skybox.fp" />
+    <EmbeddedResource Include="Resources\world3d_skybox.vp" />
+    <EmbeddedResource Include="Resources\world3d_vertex_color.fp" />
     <None Include="Resources\Zoom.png" />
     <None Include="Resources\Properties.png" />
     <None Include="Resources\NewMap2.png" />
@@ -744,10 +769,7 @@
       <DependentUpon>VertexInfoPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Actions.cfg" />
-    <EmbeddedResource Include="Resources\display2d.fx" />
     <EmbeddedResource Include="Resources\ThingTexture2D.png" />
-    <EmbeddedResource Include="Resources\things2d.fx" />
-    <EmbeddedResource Include="Resources\world3d.fx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\MissingTexture3D.png" />

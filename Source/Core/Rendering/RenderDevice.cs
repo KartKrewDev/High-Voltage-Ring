@@ -24,6 +24,9 @@ using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Geometry;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.IO;
+using System.Text;
+using System.Linq;
 
 #endregion
 
@@ -38,19 +41,40 @@ namespace CodeImp.DoomBuilder.Rendering
     {
 		public RenderDevice(RenderTargetControl rendertarget)
 		{
-		
-		// Grab the X11 Display handle by abusing reflection to access internal classes in the mono implementation.
-		// That's par for the course for everything in Linux, so yeah..
-		IntPtr display = IntPtr.Zero;
-		Type xplatui = Type.GetType("System.Windows.Forms.XplatUIX11, System.Windows.Forms");
-		if (xplatui != null)
-		{
-		    display = (IntPtr)xplatui.GetField("DisplayHandle", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
-		}
+            // Grab the X11 Display handle by abusing reflection to access internal classes in the mono implementation.
+            // That's par for the course for everything in Linux, so yeah..
+            IntPtr display = IntPtr.Zero;
+            Type xplatui = Type.GetType("System.Windows.Forms.XplatUIX11, System.Windows.Forms");
+            if (xplatui != null)
+            {
+                display = (IntPtr)xplatui.GetField("DisplayHandle", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            }
 		
             Handle = RenderDevice_New(display, rendertarget.Handle);
             if (Handle == IntPtr.Zero)
                 throw new Exception("RenderDevice_New failed");
+
+            DeclareShader(ShaderName.display2d_fsaa, "display2d.vp", "display2d_fsaa.fp");
+            DeclareShader(ShaderName.display2d_normal, "display2d.vp", "display2d_normal.fp");
+            DeclareShader(ShaderName.display2d_fullbright, "display2d.vp", "display2d_fullbright.fp");
+            DeclareShader(ShaderName.things2d_thing, "things2d.vp", "things2d_thing.fp");
+            DeclareShader(ShaderName.things2d_sprite, "things2d.vp", "things2d_sprite.fp");
+            DeclareShader(ShaderName.things2d_fill, "things2d.vp", "things2d_fill.fp");
+            DeclareShader(ShaderName.plotter, "plotter.vp", "plotter.fp");
+            DeclareShader(ShaderName.world3d_main, "world3d_main.vp", "world3d_main.fp");
+            DeclareShader(ShaderName.world3d_fullbright, "world3d_main.vp", "world3d_fullbright.fp");
+            DeclareShader(ShaderName.world3d_main_highlight, "world3d_main.vp", "world3d_main_highlight.fp");
+            DeclareShader(ShaderName.world3d_fullbright_highlight, "world3d_main.vp", "world3d_fullbright_highlight.fp");
+            DeclareShader(ShaderName.world3d_main_vertexcolor, "world3d_customvertexcolor.vp", "world3d_main.fp");
+            DeclareShader(ShaderName.world3d_skybox, "world3d_skybox.vp", "world3d_skybox.fp");
+            DeclareShader(ShaderName.world3d_main_highlight_vertexcolor, "world3d_customvertexcolor.vp", "world3d_main_highlight.fp");
+            DeclareShader(ShaderName.world3d_main_fog, "world3d_lightpass.vp", "world3d_main_fog.fp");
+            DeclareShader(ShaderName.world3d_main_highlight_fog, "world3d_lightpass.vp", "world3d_main_highlight_fog.fp");
+            DeclareShader(ShaderName.world3d_main_fog_vertexcolor, "world3d_customvertexcolor_fog.vp", "world3d_main_fog.fp");
+            DeclareShader(ShaderName.world3d_main_highlight_fog_vertexcolor, "world3d_customvertexcolor_fog.vp", "world3d_main_highlight_fog.fp");
+            DeclareShader(ShaderName.world3d_vertex_color, "world3d_main.vp", "world3d_vertex_color.fp");
+            DeclareShader(ShaderName.world3d_constant_color, "world3d_customvertexcolor.vp", "world3d_constant_color.fp");
+            DeclareShader(ShaderName.world3d_lightpass, "world3d_lightpass.vp", "world3d_lightpass.fp");
 
             RenderTarget = rendertarget;
 
@@ -76,6 +100,25 @@ namespace CodeImp.DoomBuilder.Rendering
             {
                 RenderDevice_Delete(Handle);
                 Handle = IntPtr.Zero;
+            }
+        }
+
+        public void DeclareShader(ShaderName name, string vertResourceName, string fragResourceName)
+        {
+            RenderDevice_DeclareShader(Handle, name, GetResourceText(vertResourceName), GetResourceText(fragResourceName));
+        }
+
+        static string GetResourceText(string name)
+        {
+            string fullname = string.Format("CodeImp.DoomBuilder.Resources.{0}", name);
+            using (Stream stream = General.ThisAssembly.GetManifestResourceStream(fullname))
+            {
+                if (stream == null)
+                    throw new Exception(string.Format("Resource {0} not found!", fullname));
+                byte[] data = new byte[stream.Length];
+                if (stream.Read(data, 0, data.Length) != data.Length)
+                    throw new Exception("Could not read resource stream");
+                return Encoding.UTF8.GetString(data);
             }
         }
 
@@ -381,6 +424,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_Delete(IntPtr handle);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        static extern void RenderDevice_DeclareShader(IntPtr handle, ShaderName name, string vertexShader, string fragShader);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr RenderDevice_GetError(IntPtr handle);

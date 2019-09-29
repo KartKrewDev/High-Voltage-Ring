@@ -21,35 +21,7 @@ enum class ShaderFlags : int { None, Debug };
 enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };
 enum class TextureFilter : int { None, Point, Linear, Anisotropic };
 
-enum class ShaderName
-{
-	display2d_fsaa,
-	display2d_normal,
-	display2d_fullbright,
-	things2d_thing,
-	things2d_sprite,
-	things2d_fill,
-	plotter,
-	world3d_main,
-	world3d_fullbright,
-	world3d_main_highlight,
-	world3d_fullbright_highlight,
-	world3d_main_vertexcolor,
-	world3d_skybox,
-	world3d_main_highlight_vertexcolor,
-	world3d_p7,
-	world3d_main_fog,
-	world3d_p9,
-	world3d_main_highlight_fog,
-	world3d_p11,
-	world3d_main_fog_vertexcolor,
-	world3d_p13,
-	world3d_main_highlight_fog_vertexcolor,
-	world3d_vertex_color,
-	world3d_constant_color,
-	world3d_lightpass,
-	count
-};
+typedef int ShaderName;
 
 enum class UniformName : int
 {
@@ -82,6 +54,7 @@ public:
 	RenderDevice(void* disp, void* window);
 	~RenderDevice();
 
+	void DeclareShader(ShaderName shadername, const char* vertexshader, const char* fragmentshader);
 	void SetShader(ShaderName name);
 	void SetUniform(UniformName name, const void* values, int count);
 	void SetVertexBuffer(VertexBuffer* buffer);
@@ -175,7 +148,7 @@ public:
 	std::unique_ptr<SharedVertexBuffer> mSharedVertexBuffers[2];
 
 	std::unique_ptr<ShaderManager> mShaderManager;
-	ShaderName mShaderName = ShaderName::display2d_normal;
+	ShaderName mShaderName = {};
 
 	enum class UniformType { Matrix, Vec4f, Vec3f, Vec2f, Float };
 
