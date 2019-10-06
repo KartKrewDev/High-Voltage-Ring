@@ -177,9 +177,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		// Thing line slope effect
-		public void AddEffectThingLineSlope(Thing sourcething)
+		public void AddEffectThingLineSlope(Thing sourcething, Sidedef sourcesidedef)
 		{
-			EffectThingLineSlope e = new EffectThingLineSlope(this, sourcething);
+			EffectThingLineSlope e = new EffectThingLineSlope(this, sourcething, sourcesidedef);
 			alleffects.Add(e);
 		}
 
