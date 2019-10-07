@@ -69,9 +69,19 @@ CALL "setenv.bat"
 DEL /F /Q "setenv.bat"
 
 ECHO.
-ECHO Cleaning solution...
+ECHO Cleaning solutions...
 ECHO.
 msbuild.exe Builder.sln /t:Clean
+msbuild.exe Source/Tools/Updater/Updater.csproj /t:Clean
+
+ECHO.
+ECHO Compiling Updater...
+ECHO.
+IF EXIST "Build\Updater.exe" DEL /F /Q "Build\Updater.exe" > NUL
+IF EXIST "Source\Tools\Updater\obj" RD /S /Q "Source\Tools\Updater\obj"
+msbuild "Source\Tools\Updater\Updater.csproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
+IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+IF NOT EXIST "Build\Updater.exe" GOTO FILEFAIL
 
 ECHO.
 ECHO Compiling GZDoom Builder core...
