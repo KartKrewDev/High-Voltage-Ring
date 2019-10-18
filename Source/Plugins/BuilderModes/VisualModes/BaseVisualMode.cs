@@ -3913,6 +3913,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Get the align job to do
 				SidedefAlignJob j = todo.Pop();
 
+				// Make sure to not align already aligned textures. This prevents unexpected
+				// results when aligning textures on circular shapes
+				if (j.sidedef.Marked)
+					continue;
+
+				DebugConsole.WriteLine("Aligning " + j.sidedef);
+
 				if(j.forward) 
 				{
 					// Apply alignment
@@ -3931,14 +3938,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(aligny) j.sidedef.OffsetY %= texture.Height;
 					}
 
-					// Add sidedefs forward (connected to the right vertex)
-					Vertex v = j.sidedef.IsFront ? j.sidedef.Line.End : j.sidedef.Line.Start;
-					AddSidedefsForAlignment(todo, v, true, forwardoffset, 1.0f, texturehashes, false);
-
 					// Add sidedefs backward (connected to the left vertex)
-					v = j.sidedef.IsFront ? j.sidedef.Line.Start : j.sidedef.Line.End;
+					Vertex v = j.sidedef.IsFront ? j.sidedef.Line.Start : j.sidedef.Line.End;
 					AddSidedefsForAlignment(todo, v, false, backwardoffset, 1.0f, texturehashes, false);
-				} 
+
+					// Add sidedefs forward (connected to the right vertex)
+					v = j.sidedef.IsFront ? j.sidedef.Line.End : j.sidedef.Line.Start;
+					AddSidedefsForAlignment(todo, v, true, forwardoffset, 1.0f, texturehashes, false);
+				}
 				else 
 				{
 					// Apply alignment
@@ -3957,13 +3964,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(aligny) j.sidedef.OffsetY %= texture.Height;
 					}
 
-					// Add sidedefs backward (connected to the left vertex)
-					Vertex v = j.sidedef.IsFront ? j.sidedef.Line.Start : j.sidedef.Line.End;
-					AddSidedefsForAlignment(todo, v, false, backwardoffset, 1.0f, texturehashes, false);
-
 					// Add sidedefs forward (connected to the right vertex)
-					v = j.sidedef.IsFront ? j.sidedef.Line.End : j.sidedef.Line.Start;
+					Vertex v = j.sidedef.IsFront ? j.sidedef.Line.End : j.sidedef.Line.Start;
 					AddSidedefsForAlignment(todo, v, true, forwardoffset, 1.0f, texturehashes, false);
+
+					// Add sidedefs backward (connected to the left vertex)
+					v = j.sidedef.IsFront ? j.sidedef.Line.Start : j.sidedef.Line.End;
+					AddSidedefsForAlignment(todo, v, false, backwardoffset, 1.0f, texturehashes, false);
 				}
 			}
 		}
@@ -4093,8 +4100,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Get the align job to do
 				SidedefAlignJob j = todo.Pop();
 
+				// Make sure to not align already aligned textures. This prevents unexpected
+				// results when aligning textures on circular shapes
+				if (j.sidedef.Marked)
+					continue;
+
 				//mxd. Get visual parts
-				if(VisualSectorExists(j.sidedef.Sector))
+				if (VisualSectorExists(j.sidedef.Sector))
 				{
 					VisualSidedefParts parts = ((BaseVisualSector)GetVisualSector(j.sidedef.Sector)).GetSidedefParts(j.sidedef);
 					VisualSidedefParts controlparts = (j.sidedef != j.controlSide ? ((BaseVisualSector)GetVisualSector(j.controlSide.Sector)).GetSidedefParts(j.controlSide) : parts);
