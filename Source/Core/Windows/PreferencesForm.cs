@@ -33,6 +33,12 @@ namespace CodeImp.DoomBuilder.Windows
 {
 	internal partial class PreferencesForm : DelayedForm
 	{
+		#region ================== Constants
+
+		private const float VIEW_DISTANCE_STEP_SIZE = 500.0f;
+
+		#endregion
+
 		#region ================== Variables
 
 		private PreferencesController controller;
@@ -71,7 +77,7 @@ namespace CodeImp.DoomBuilder.Windows
 			mousespeed.Value = General.Clamp(General.Settings.MouseSpeed / 100, mousespeed.Minimum, mousespeed.Maximum);
 			movespeed.Value = General.Clamp(General.Settings.MoveSpeed / 100, movespeed.Minimum, movespeed.Maximum);
 			vertexScale3D.Value = General.Clamp((int)(General.Settings.GZVertexScale3D * 10), vertexScale3D.Minimum, vertexScale3D.Maximum); //mxd
-			viewdistance.Value = General.Clamp((int)(General.Settings.ViewDistance / 200.0f), viewdistance.Minimum, viewdistance.Maximum);
+			viewdistance.Value = General.Clamp((int)(General.Settings.ViewDistance / VIEW_DISTANCE_STEP_SIZE), viewdistance.Minimum, viewdistance.Maximum);
 			invertyaxis.Checked = General.Settings.InvertYAxis;
 			autoscrollspeed.Value = General.Clamp(General.Settings.AutoScrollSpeed, autoscrollspeed.Minimum, autoscrollspeed.Maximum);
 			zoomfactor.Value = General.Clamp(General.Settings.ZoomFactor, zoomfactor.Minimum, zoomfactor.Maximum);
@@ -301,7 +307,7 @@ namespace CodeImp.DoomBuilder.Windows
 			General.Settings.MouseSpeed = mousespeed.Value * 100;
 			General.Settings.MoveSpeed = movespeed.Value * 100;
 			General.Settings.GZVertexScale3D = vertexScale3D.Value * 0.1f; //mxd
-			General.Settings.ViewDistance = viewdistance.Value * 200.0f;
+			General.Settings.ViewDistance = viewdistance.Value * VIEW_DISTANCE_STEP_SIZE;
 			General.Settings.InvertYAxis = invertyaxis.Checked;
 			General.Settings.AutoScrollSpeed = autoscrollspeed.Value;
 			General.Settings.ZoomFactor = zoomfactor.Value;
@@ -500,7 +506,7 @@ namespace CodeImp.DoomBuilder.Windows
 
 		private void viewdistance_ValueChanged(object sender, EventArgs e)
 		{
-			int value = viewdistance.Value * 200;
+			int value = viewdistance.Value * (int)VIEW_DISTANCE_STEP_SIZE;
 			viewdistancelabel.Text = value + " mp";
 		}
 
