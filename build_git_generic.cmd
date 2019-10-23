@@ -183,6 +183,15 @@ IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "Build\Plugins\TagRange.dll" GOTO FILEFAIL
 
 ECHO.
+ECHO Compiling 3D Floor Mode plugin...
+ECHO.
+IF EXIST "Build\Plugins\ThreeDFloorMode.dll" DEL /F /Q "Build\Plugins\ThreeDFloorMode.dll" > NUL
+IF EXIST "Source\Plugins\3DFloorMode\obj" RD /S /Q "Source\Plugins\3DFloorMode\obj"
+msbuild "Source\Plugins\3DFloorMode\ThreeDFloorMode.csproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
+IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+IF NOT EXIST "Build\Plugins\ThreeDFloorMode.dll" GOTO FILEFAIL
+
+ECHO.
 ECHO Compiling vpo_dll...
 ECHO.
 IF EXIST "Source\Plugins\VisplaneExplorer\Resources\vpo.dll" DEL /F /Q "Source\Plugins\VisplaneExplorer\Resources\vpo.dll" > NUL
@@ -190,7 +199,6 @@ IF EXIST "Source\Plugins\vpo_dll\Release" RD /S /Q "Source\Plugins\vpo_dll\Relea
 msbuild "Source\Plugins\vpo_dll\vpo_dll.vcxproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
 IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "Source\Plugins\VisplaneExplorer\Resources\vpo.dll" GOTO FILEFAIL
-
 
 ECHO.
 ECHO Compiling Visplane Explorer plugin...
