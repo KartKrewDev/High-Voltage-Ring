@@ -253,14 +253,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		{
 			base.OnActionEnd(action);
 
-			Debug.WriteLine("SLOPE: OnActionEnd (" + action.Name + ")");
-
 			if (!updateafteraction && action.Name != updateafteractionname)
 				return;
 
 			updateafteraction = false;
-
-			Debug.WriteLine("SLOPE: Acting for OnActionEnd (" + action.Name + ")");
 
 			Dictionary<SlopeVertexGroup, int> updatesvgs = new Dictionary<SlopeVertexGroup, int>();
 
