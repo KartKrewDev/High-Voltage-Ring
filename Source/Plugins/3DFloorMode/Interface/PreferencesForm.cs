@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Windows;
 
@@ -23,6 +24,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		#region ================== Methods
 
 		// When OK is pressed on the preferences dialog
+		// Prevent inlining, otherwise there are unexpected interactions with Assembly.GetCallingAssembly
+		// See https://docs.microsoft.com/en-us/dotnet/api/system.reflection.assembly.getcallingassembly?view=netframework-4.6.1#remarks
+		[MethodImplAttribute(MethodImplOptions.NoInlining)]
 		public void OnAccept(PreferencesController controller)
 		{
 			// Write preferred settings
