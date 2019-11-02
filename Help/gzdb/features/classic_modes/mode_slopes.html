@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	
+	<title>Template</title>
+	
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<link rel="stylesheet" type="text/css" href="../../../default.css" media="screen" title="Default" />
+</head>
+<body>
+	
+	<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<param name="keyword" value="3D Floor Mode">
+	</object>
+	
+	<div id="gz_title"><h1>Draw Slope Mode, Slope Mode</h1></div>
+	
+	<div id="contents">
+	<p>
+<ul>
+  <li><b>Draw slope mode:</b> draws slope definitions (slope vertex groups, SVG), that slope a sector using UDMF sector properties. Primary use it to make sloping 3D floors easy, but works on any sector. Only available in UDMF</li>
+  <li><b>Slope mode:</b> modify the slope vertex groups created by draw slope mode. Only available in UDMF</li>
+</ul>
+	<br>
+<b>Menu path:</b> Mode -&gt; Draw Slope Mode<br>
+<b>Action category:</b> 3D Floor Plugin.<br>
+<b>Default key:</b> None.<br>
+
+<table border="0" cellspacing="3" cellpadding="3">
+  <tr>
+    <th>Action</th>
+	<th>Default key</th>
+	<th>UI button</th>
+	<th>Description</th>
+  </tr>
+  <tr>
+    <td>Draw slope mode</td>
+	<td><i>none</i></td>
+    <td><img align="texttop" src="DrawSlopeModeIcon.png" /></td>
+	<td>Lets you draw a lope vertex group</td>
+  </tr>
+  <tr>
+    <td>Slope mode</td>
+	<td><i>none</i></td>
+    <td><img align="texttop" src="SlopeModeIcon.png" /></td>
+	<td>Enters slope mode that lets you edit slope vertex groups</td>
+  </tr>  
+  <tr>
+    <td>Draw slope vertex</td>
+	<td>Left mouse button</td>
+    <td><i>none</i></td>
+	<td>Draws a slope vertex</td>
+  </tr>
+  <tr>
+    <td>Finish slope drawing</td>
+	<td>Right mouse button</td>
+    <td><i>none</i></td>
+	<td>Finishes drawing a slope vertex group</td>
+  </tr>  
+</table>
+
+<h1>Slope Data Sector</h1>
+
+The plugin needs a <i>slope data sector</i> to store custom UDMF fields that describe the slope vertex groups. This is required for undo/redo purposes and to keep the slope vertex groups saved between mapping sessions. When you enter Draw Slope Mode and no <i>slope data sector</i> is defined, you will get a pop-up asking you what to do.<br>
+<br>
+<img src="slopedatasector.png" /><br>
+<br>
+The easiest and recommended way is to let the plugin create the <i>slope data sector</i> in the Control Sector Area. <b>Note:</b> it is important that you do not edit or delete this sector.
+
+<h1>Draw Slope Mode</h1>
+
+Draw Slope Mode allows you to draw slope vertex groups, that define a slope. If any sectors are selected the drawn slope will be assigned to them.
+
+<h2>Drawing A Slope</h2>
+
+Drawing slopes works similar to drawing geometry. You always have to draw either two or three slope vertices, forming a slope vertex group. The slope vertices in the group define the plane of your slope.<br>
+<br>
+When you start drawing a slope you will see a yellow square with a black center at the mouse cursor. This is a <i>slope vertex</i>. You can place it anywhere by pressing the left mouse button. Repeat this with the second and optional third slope vertex. If you only want to use two slope vertices you can finish drawing by pressing the right mouse button.<br>
+<br>
+<img src="drawslope_2sv.gif" /> <img src="drawslope_3sv.gif" /><br>
+<br>
+It is important to understand that the the slope vertex group only defines a plane - it does not say if it slopes a floor or ceiling of a sector. That also means that you can slope both floors and ceilings with a single slope vertex group, which can come in handy when sloping both normal sectors and 3D floors at the same time.
+
+<h3>Assigning A Slope While Drawing A Slope</h3>
+
+When you have one or more sectors selected when drawing a slope, this slope will immediately be assigned to those sectors. Wile drawing the slope you will see three buttons in the menu bar, depicting <i>F</i>, <i>C</i>, and <i>FC</i>.<br>
+<br>
+<img src="drawslopefloorceiling.png" /><br>
+<br>
+If <i>F</i> is enabled (indicated by the blue border), the floor of the sectors will be sloped. If <i>C</i> is enabled, the ceiling of the sectors will be sloped. If <i>FC</i> is on, both the floor and ceiling of the sectors will be sloped.
+
+<h1>Slope Mode</h1>
+
+Slope Mode lets you modify existing slope vertex groups, and assign the slopes to sectors.
+
+<h2>Modifying Slope Vertices</h2>
+
+<h3>Moving Slope Vertices</h3>
+
+Moving slope vertices works just like moving normal vertices - you can simple drag them around while holding the right mouse button. You can also select multiple vertices, either be left-clicking on them while holding the shift key, or by drawing a multi-selection around them. All selected slope vertices (indicated by their red color) will move simultaneously when being dragged around, just like any other geometry.
+
+<h3>Editing Slope Vertices</h3>
+
+Slope vertices can be edited by hovering the mouse cursor over one and clicking the right mouse button. This will open the <i>Edit Slope Vertex</i> dialog.<br>
+<br>
+<img src="editslopevertexdialog.png" /><br>
+<br>
+In this dialog you can modify the position of the slope vertex - most notably its Z position (height). The input boxes allow relative values (like <i>++128</i> to add 128 to the current value). Having multiple slope vertices selected will modify all of them.<br>
+<br>
+You can also add or remove the slope from sectors, more on that in the following sections.<br>
+
+<h3>Deleting A Slope Vertex / Slope Vertex Group</h3>
+
+You can not delete a single slope vertex - you can only remove a whole slope vertex group. To do so hover the mouse over one slope vertex of the slope vertex group and press the delete key.
+
+
+
+</p>
+</div>
+</body>

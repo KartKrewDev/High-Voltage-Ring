@@ -109,7 +109,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		public override void OnHelp()
 		{
-			General.ShowHelp("e_things.html");
+			General.ShowHelp("gzdb/features/classic_modes/mode_slopes.html");
 		}
 
 		// Cancel mode

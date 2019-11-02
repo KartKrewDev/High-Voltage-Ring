@@ -620,7 +620,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		public override void OnHelp()
 		{
-			General.ShowHelp("e_sectors.html");
+			General.ShowHelp("gzdb/features/classic_modes/mode_3dfloor.html");
 		}
 
 		// Cancel mode
