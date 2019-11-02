@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Text;
 using System.Drawing;
@@ -450,6 +451,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			csacfg.ShowDialog((Form)General.Interface);
 		}
 
+		// When OK is pressed on the preferences dialog
+		// Prevent inlining, otherwise there are unexpected interactions with Assembly.GetCallingAssembly
+		// See https://docs.microsoft.com/en-us/dotnet/api/system.reflection.assembly.getcallingassembly?view=netframework-4.6.1#remarks
+		[MethodImplAttribute(MethodImplOptions.NoInlining)]
 		public void SaveConfig()
 		{
 			ListDictionary config = new ListDictionary();
@@ -470,6 +475,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			General.Map.Options.WritePluginSetting("controlsectorarea", config);
 		}
 
+		// When OK is pressed on the preferences dialog
+		// Prevent inlining, otherwise there are unexpected interactions with Assembly.GetCallingAssembly
+		// See https://docs.microsoft.com/en-us/dotnet/api/system.reflection.assembly.getcallingassembly?view=netframework-4.6.1#remarks
+		[MethodImplAttribute(MethodImplOptions.NoInlining)]
 		public void LoadConfig()
 		{
 			ListDictionary config = (ListDictionary)General.Map.Options.ReadPluginSetting("controlsectorarea", new ListDictionary());
