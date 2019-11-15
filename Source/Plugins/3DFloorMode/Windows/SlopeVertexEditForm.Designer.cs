@@ -283,6 +283,7 @@
 			this.spline.TabIndex = 10;
 			this.spline.Text = "Spline";
 			this.spline.UseVisualStyleBackColor = true;
+			this.spline.Visible = false;
 			// 
 			// SlopeVertexEditForm
 			// 

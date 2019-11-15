@@ -51,6 +51,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			  ButtonImage = "ThreeDFloorIcon.png",	// Image resource name for the button
 			  ButtonOrder = int.MinValue + 501,	// Position of the button (lower is more to the left)
 			  ButtonGroup = "000_editing",
+			  SupportedMapFormats = new[] { "HexenMapSetIO", "UniversalMapSetIO" },
 			  UseByDefault = true,
 			  SafeStartMode = false,
 			  Volatile = false)]
