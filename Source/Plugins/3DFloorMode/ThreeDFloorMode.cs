@@ -94,6 +94,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		#region ================== Properties
 
 		public override object HighlightedObject { get { return highlighted; } }
+		public List<ThreeDFloor> ThreeDFloors { get { return threedfloors; } }
 
 		#endregion
 

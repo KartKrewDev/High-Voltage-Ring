@@ -432,8 +432,26 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				{
 					// Managed control sectors have the custom UDMF field "user_managed_3d_floor" set to true
 					// So if the field is NOT set, add the sector to the blockmap
-					if (s.Fields.GetValue("user_managed_3d_floor", false) == false)
+					bool managed = s.Fields.GetValue("user_managed_3d_floor", false);
+
+					if (managed == false)
 						blockmap.AddSector(s);
+					else // When a tag was manually removed a control sector still might have the user_managed_3d_floor field, but not be
+					{    // recognized as a 3D floor control sector. In that case also add the sector to the blockmap
+						bool orphaned = true;
+
+						foreach(ThreeDFloor tdf in ((ThreeDFloorHelperMode)General.Editing.Mode).ThreeDFloors)
+						{
+							if(tdf.Sector == s)
+							{
+								orphaned = false;
+								break;
+							}
+						}
+
+						if (orphaned)
+							blockmap.AddSector(s);
+					}
 				}
 			}
 			else
