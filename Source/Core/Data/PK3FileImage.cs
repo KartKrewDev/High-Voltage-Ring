@@ -128,10 +128,6 @@ namespace CodeImp.DoomBuilder.Data
 					IImageReader reader = ImageDataFormat.GetImageReader(filedata, probableformat, General.Map.Data.Palette);
 					if(!(reader is UnknownImageReader))
 					{
-                        // [ZZ] check for flat type
-                        if (reader is DoomFlatReader)
-                            isBadForLongTextureNames = true;
-
                         // Load the image
                         filedata.Seek(0, SeekOrigin.Begin);
 						try
