@@ -309,6 +309,10 @@ namespace CodeImp.DoomBuilder.ZDoom
                     return null;
                 }
 
+				// biwa. Report a recoverable parsing problem
+				if (!string.IsNullOrEmpty(token.WarningMessage))
+					LogWarning(token.WarningMessage);
+
                 if ((token.Type == ZScriptTokenType.Semicolon ||
                      token.Type == ZScriptTokenType.Comma) && nestingLevel == 0 && !betweenparen)
                 {
