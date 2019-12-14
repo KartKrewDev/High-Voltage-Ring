@@ -751,21 +751,29 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 			else
 			{
-				offset = heightoffset.GetResult(0);
-				
 				//restore values
 				if(string.IsNullOrEmpty(ceilingheight.Text))
 				{
-					foreach(Sector s in sectors)
+					// Reset increment steps, otherwise it's just keep counting and counting
+					heightoffset.ResetIncrementStep();
+
+					foreach (Sector s in sectors)
 					{
+						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
+						offset = heightoffset.GetResult(0);
 						s.CeilHeight = sectorprops[s].CeilHeight + offset;
 						SynchCeilSlopeOffsetToHeight(s);
 					}
 				}
 				else //update values
 				{
-					foreach(Sector s in sectors)
+					// Reset increment steps, otherwise it's just keep counting and counting
+					heightoffset.ResetIncrementStep();
+
+					foreach (Sector s in sectors)
 					{
+						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
+						offset = heightoffset.GetResult(0);
 						s.CeilHeight = ceilingheight.GetResult(sectorprops[s].CeilHeight) + offset;
 						SynchCeilSlopeOffsetToHeight(s);
 					}
@@ -790,13 +798,16 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 			else
 			{
-				offset = heightoffset.GetResult(0);
+				// Reset increment steps, otherwise it's just keep counting and counting
+				heightoffset.ResetIncrementStep();
 				
 				//restore values
 				if(string.IsNullOrEmpty(floorheight.Text))
 				{
 					foreach(Sector s in sectors)
 					{
+						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
+						offset = heightoffset.GetResult(0);
 						s.FloorHeight = sectorprops[s].FloorHeight + offset;
 						SynchFloorSlopeOffsetToHeight(s);
 					}
@@ -805,6 +816,8 @@ namespace CodeImp.DoomBuilder.Windows
 				{
 					foreach(Sector s in sectors)
 					{
+						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
+						offset = heightoffset.GetResult(0);
 						s.FloorHeight = floorheight.GetResult(sectorprops[s].FloorHeight) + offset;
 						SynchFloorSlopeOffsetToHeight(s);
 					}

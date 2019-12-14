@@ -229,18 +229,27 @@ namespace CodeImp.DoomBuilder.Windows
 			} 
 			else
 			{
-				offset = heightoffset.GetResult(0);
+				// Reset increment steps, otherwise it's just keep counting and counting
+				heightoffset.ResetIncrementStep();
 
 				//restore values
-				if(string.IsNullOrEmpty(ceilingheight.Text)) 
+				if (string.IsNullOrEmpty(ceilingheight.Text)) 
 				{
-					foreach(Sector s in sectors)
+					foreach (Sector s in sectors)
+					{
+						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
+						offset = heightoffset.GetResult(0);
 						s.CeilHeight = sectorprops[i++].CeilHeight + offset;
+					}
 				} 
 				else //update values
 				{
-					foreach(Sector s in sectors)
+					foreach (Sector s in sectors)
+					{
+						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
+						offset = heightoffset.GetResult(0);
 						s.CeilHeight = ceilingheight.GetResult(sectorprops[i++].CeilHeight) + offset;
+					}
 				}
 			}
 		}
@@ -264,18 +273,27 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 			else
 			{
-				offset = heightoffset.GetResult(0);
-				
+				// Reset increment steps, otherwise it's just keep counting and counting
+				heightoffset.ResetIncrementStep();
+
 				//restore values
-				if(string.IsNullOrEmpty(floorheight.Text))
+				if (string.IsNullOrEmpty(floorheight.Text))
 				{
-					foreach(Sector s in sectors)
+					foreach (Sector s in sectors)
+					{
+						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
+						offset = heightoffset.GetResult(0);
 						s.FloorHeight = sectorprops[i++].FloorHeight + offset;
+					}
 				}
 				else //update values
 				{
-					foreach(Sector s in sectors)
+					foreach (Sector s in sectors)
+					{
+						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
+						offset = heightoffset.GetResult(0);
 						s.FloorHeight = floorheight.GetResult(sectorprops[i++].FloorHeight) + offset;
+					}
 				}
 			}
 		}

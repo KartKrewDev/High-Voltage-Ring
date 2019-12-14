@@ -239,6 +239,12 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 		}
 
+		// biwa
+		public void ResetIncrementStep()
+		{
+			textbox.ResetIncrementStep();
+		}
+
 		#endregion
 	}
 }
