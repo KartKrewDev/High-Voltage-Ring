@@ -62,8 +62,16 @@ namespace CodeImp.DoomBuilder.Rendering
             vertices.Clear();
         }
 
+        private int TransformY(int y)
+        {
+            return this.Texture.Height - y;
+        }
+
         void DrawLine(int x0, int y0, int x1, int y1, int c, bool dotted = false)
         {
+            y0 = TransformY(y0);
+            y1 = TransformY(y1);
+
             var v = new FlatVertex();
             v.c = c;
 
@@ -123,6 +131,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
         void FillBox(int x0, int y0, int x1, int y1, int c)
         {
+            y0 = TransformY(y0);
+            y1 = TransformY(y1);
+
             var v = new FlatVertex();
             v.c = c;
             v.u = 0.5f;
@@ -140,8 +151,8 @@ namespace CodeImp.DoomBuilder.Rendering
         {
             int x0 = x - size;
             int x1 = x + size;
-            int y0 = y - size;
-            int y1 = y + size;
+            int y0 = y + size;
+            int y1 = y - size;
 
             int lightcolor = l.ToInt();
             int darkcolor = d.ToInt();
@@ -150,7 +161,7 @@ namespace CodeImp.DoomBuilder.Rendering
             DrawLine(x1, y1, x1, y0, darkcolor);
             DrawLine(x0, y0, x1, y0, lightcolor);
             DrawLine(x0, y0, x0, y1, lightcolor);
-            FillBox(x0 + 1, y0 + 1, x1, y1, centercolor);
+            FillBox(x0+1, y0-1, x1, y1, centercolor);
         }
 
         public void DrawGridLineH(int y, int x1, int x2, PixelColor c)

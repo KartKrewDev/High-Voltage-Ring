@@ -825,7 +825,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(drawmapcenter)
 				{
 					Vector2D center = new Vector2D(0, 0).GetTransformed(translatex, translatey, scale, -scale);
-					center.y = windowsize.Height - center.y;
 					int cx = (int)center.x;
 					int cy = (int)center.y;
 					PixelColor c = General.Colors.Highlight;
@@ -964,7 +963,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				pos.y = y;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
-				pos.y = windowsize.Height - pos.y;
 
 				// Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
 				gridplotter.DrawGridLineH((int)pos.y, (int)from, (int)to, c);
@@ -984,8 +982,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				pos.x = x;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
-                from = windowsize.Height - from;
-                to = windowsize.Height - to;
 
                 // Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
                 gridplotter.DrawGridLineV((int)pos.x, (int)from, (int)to, c);
@@ -2022,7 +2018,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				PlotVertex(sd.Line.Start, DetermineVertexColor(sd.Line.Start));
 				PlotVertex(sd.Line.End, DetermineVertexColor(sd.Line.End));
 			}
-		}	
+		}
 
 		// This renders a simple line
 		public void PlotLine(Vector2D start, Vector2D end, PixelColor c) { PlotLine(start, end, c, 0.0625f); }
@@ -2039,6 +2035,21 @@ namespace CodeImp.DoomBuilder.Rendering
 			plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, c);
 		}
 		
+        private Vector2D TransformY(Vector2D v)
+        {
+            return new Vector2D(v.x, TransformY(v.y));
+        }
+
+        private float TransformY(float y)
+        {
+            return windowsize.Height - y;
+        }
+
+        private int TransformY(int y)
+        {
+            return windowsize.Height - y;
+        }
+
 		// This renders a single linedef
 		public void PlotLinedef(Linedef l, PixelColor c)
 		{
@@ -2052,9 +2063,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Draw line. mxd: added 3d-floor indication
 			if(l.ExtraFloorFlag && General.Settings.GZMarkExtraFloors)
-				plotter.DrawLine3DFloor(v1, v2, c, General.Colors.ThreeDFloor);
+				plotter.DrawLine3DFloor(TransformY(v1), TransformY(v2), c, General.Colors.ThreeDFloor);
 			else
-				plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, c);
+				plotter.DrawLineSolid((int)v1.x, TransformY((int)v1.y), (int)v2.x, TransformY((int)v2.y), c);
 
 			//mxd. Should we bother?
 			if(lengthsq < minlinenormallength) return; //mxd
@@ -2064,9 +2075,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			float my = (v2.y - v1.y) * 0.5f;
 
 			// Draw normal indicator
-			plotter.DrawLineSolid((int)(v1.x + mx), (int)(v1.y + my),
+			plotter.DrawLineSolid((int)(v1.x + mx), TransformY((int)(v1.y + my)),
 								  (int)((v1.x + mx) - (my * l.LengthInv) * linenormalsize),
-								  (int)((v1.y + my) + (mx * l.LengthInv) * linenormalsize), c);
+								  TransformY((int)((v1.y + my) + (mx * l.LengthInv) * linenormalsize)), c);
 		}
 		
 		// This renders a set of linedefs
@@ -2088,9 +2099,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				// Draw line. mxd: added 3d-floor indication
 				if(l.ExtraFloorFlag && General.Settings.GZMarkExtraFloors)
-					plotter.DrawLine3DFloor(v1, v2, c, General.Colors.ThreeDFloor);
+					plotter.DrawLine3DFloor(TransformY(v1), TransformY(v2), c, General.Colors.ThreeDFloor);
 				else
-					plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, c);
+					plotter.DrawLineSolid((int)v1.x, TransformY((int)v1.y), (int)v2.x, TransformY((int)v2.y), c);
 
 				//mxd. Should we bother?
 				if(lengthsq < minlinenormallength) continue; //mxd
@@ -2100,9 +2111,9 @@ namespace CodeImp.DoomBuilder.Rendering
 				float my = (v2.y - v1.y) * 0.5f;
 
 				// Draw normal indicator
-				plotter.DrawLineSolid((int)(v1.x + mx), (int)(v1.y + my),
+				plotter.DrawLineSolid((int)(v1.x + mx), TransformY((int)(v1.y + my)),
 									  (int)((v1.x + mx) - (my * l.LengthInv) * linenormalsize),
-									  (int)((v1.y + my) + (mx * l.LengthInv) * linenormalsize), c);
+									  TransformY((int)((v1.y + my) + (mx * l.LengthInv) * linenormalsize)), c);
 			}
 		}
 
@@ -2113,7 +2124,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			Vector2D nv = v.Position.GetTransformed(translatex, translatey, scale, -scale);
 
 			// Draw pixel here
-			plotter.DrawVertexSolid((int)nv.x, (int)nv.y, vertexsize, General.Colors.Colors[colorindex], General.Colors.BrightColors[colorindex], General.Colors.DarkColors[colorindex]);
+			plotter.DrawVertexSolid((int)nv.x, TransformY((int)nv.y), vertexsize, General.Colors.Colors[colorindex], General.Colors.BrightColors[colorindex], General.Colors.DarkColors[colorindex]);
 		}
 
 		// This renders a single vertex at specified coordinates
@@ -2123,7 +2134,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			Vector2D nv = v.GetTransformed(translatex, translatey, scale, -scale);
 
 			// Draw pixel here
-			plotter.DrawVertexSolid((int)nv.x, (int)nv.y, vertexsize, General.Colors.Colors[colorindex], General.Colors.BrightColors[colorindex], General.Colors.DarkColors[colorindex]);
+			plotter.DrawVertexSolid((int)nv.x, TransformY((int)nv.y), vertexsize, General.Colors.Colors[colorindex], General.Colors.BrightColors[colorindex], General.Colors.DarkColors[colorindex]);
 		}
 		
 		// This renders a set of vertices
