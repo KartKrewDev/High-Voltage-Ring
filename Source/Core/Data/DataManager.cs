@@ -1366,15 +1366,8 @@ namespace CodeImp.DoomBuilder.Data
         // This checks if a flat is known
         public bool GetFlatExists(long longname)
         {
-            // [ZZ] return nonexistent name for bad flats.
             if (flats.ContainsKey(longname))
-            {
-                // [ZZ] long name is long. a doom flat with a long name is invalid.
-                ImageData id = flats[longname];
-                if (id is PK3FileImage && ((PK3FileImage)id).IsBadForLongTextureNames)
-                    return false;
                 return true;
-            }
 
             return flatnamesshorttofull.ContainsKey(longname);
         }
@@ -1396,14 +1389,7 @@ namespace CodeImp.DoomBuilder.Data
 			if(flatnamesshorttofull.ContainsKey(longname))
                 return flats[flatnamesshorttofull[longname]]; //mxd
             if (flats.ContainsKey(longname))
-            {
-                // [ZZ] long name is long. a doom flat with a long name is invalid.
-                ImageData id = flats[longname];
-                if (id is PK3FileImage && ((PK3FileImage)id).IsBadForLongTextureNames)
-                    return unknownimage;
-
-                return id;
-            }
+                return flats[longname];
 			
 			// Return null image
 			return unknownimage; //mxd

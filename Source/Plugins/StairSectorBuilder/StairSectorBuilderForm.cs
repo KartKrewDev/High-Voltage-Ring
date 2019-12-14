@@ -82,10 +82,16 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			set { distinctbaseheights = value; }
 		}
 
-		public CheckBox SingleSectors
+		public CheckBox SingleSteps
 		{
-			get { return singlesectors; }
-			set { singlesectors = value; }
+			get { return singlesteps; }
+			set { singlesteps = value; }
+		}
+
+		public CheckBox DistinctSectors
+		{
+			get { return distinctsectors; }
+			set { distinctsectors = value; }
 		}
 
 		public CheckBox SingleDirection
@@ -466,17 +472,23 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				singledirection.Checked = false;
 				singledirection.Enabled = false;
 
-				singlesectors.Checked = true;
-				singlesectors.Enabled = false;
+				singlesteps.Checked = true;
+				singlesteps.Enabled = false;
 			}
 		}
 
-		private void singlesectors_CheckedChanged(object sender, EventArgs e)
+		private void singleseteps_CheckedChanged(object sender, EventArgs e)
 		{
-			if(singlesectors.Checked)
+			if (singlesteps.Checked)
+			{
 				singledirection.Enabled = true;
+				distinctsectors.Enabled = true;
+			}
 			else
+			{
 				singledirection.Enabled = false;
+				distinctsectors.Enabled = false;
+			}
 
 			DoRedrawDisplay();
 		}
@@ -677,7 +689,8 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
             pf.sectordepth = (int)SectorDepth;
             pf.spacing = Spacing;
             pf.frontside = SideFront;
-            pf.singlesectors = SingleSectors.Checked;
+            pf.singlesteps = SingleSteps.Checked;
+			pf.distinctsectors = distinctsectors.Checked;
             pf.singledirection = SingleDirection.Checked;
 			pf.distinctbaseheights = DistinctBaseHeights.Checked;
 
@@ -736,62 +749,68 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			}
         }
 
-        private void prefabload_Click(object sender, EventArgs e)
-        {
-			if(prefabs.SelectedIndices.Count == 0) return;
-
+		private void LoadPrefab(int position)
+		{
 			loadingprefab = true;
 
-            BuilderPlug.Prefab p = BuilderPlug.Me.Prefabs[prefabs.SelectedIndices[0]];
-			
-            prefabname.Text = p.name;
+			BuilderPlug.Prefab p = BuilderPlug.Me.Prefabs[position];
 
-            NumberOfSectors = (uint)p.numberofsectors;
-            OuterVertexMultiplier = p.outervertexmultiplier;
-            InnerVertexMultiplier = p.innervertexmultiplier;
+			prefabname.Text = p.name;
 
-            tabcontrol.SelectedIndex = p.stairtype;
+			NumberOfSectors = (uint)p.numberofsectors;
+			OuterVertexMultiplier = p.outervertexmultiplier;
+			InnerVertexMultiplier = p.innervertexmultiplier;
 
-            // Straight stairs
-            SectorDepth = (uint)p.sectordepth;
-            Spacing = p.spacing;
-            SideFront = p.frontside;
-            SingleSectors.Checked = p.singlesectors;
-            SingleDirection.Checked = p.singledirection;
+			tabcontrol.SelectedIndex = p.stairtype;
+
+			// Straight stairs
+			SectorDepth = (uint)p.sectordepth;
+			Spacing = p.spacing;
+			SideFront = p.frontside;
+			SingleSteps.Checked = p.singlesteps;
+			distinctsectors.Checked = p.distinctsectors;
+			SingleDirection.Checked = p.singledirection;
 			DistinctBaseHeights.Checked = p.distinctbaseheights;
 
-            // Auto curve TODO
+			// Auto curve TODO
 			Flipping = p.flipping;
 
-            // Catmull Rom spline
-            NumControlPoints = p.numberofcontrolpoints;
+			// Catmull Rom spline
+			NumControlPoints = p.numberofcontrolpoints;
 
-            // Height info
-            FloorHeight = p.applyfloormod;
-            FloorHeightModification = p.floormod;
+			// Height info
+			FloorHeight = p.applyfloormod;
+			FloorHeightModification = p.floormod;
 			//FloorBase = p.floorbase;
-            CeilingHeight = p.applyceilingmod;
-            CeilingHeightModification = p.ceilingmod;
+			CeilingHeight = p.applyceilingmod;
+			CeilingHeightModification = p.ceilingmod;
 			//CeilingBase = p.ceilingbase;
 
-            // Textures
-            FloorFlat = p.applyfloortexture;
-            FloorFlatTexture = p.floortexture;
-            CeilingFlat = p.applyceilingtexture;
-            CeilingFlatTexture = p.ceilingtexture;
+			// Textures
+			FloorFlat = p.applyfloortexture;
+			FloorFlatTexture = p.floortexture;
+			CeilingFlat = p.applyceilingtexture;
+			CeilingFlatTexture = p.ceilingtexture;
 
-            UpperTexture = p.applyuppertexture;
-            UpperTextureTexture = p.uppertexture;
+			UpperTexture = p.applyuppertexture;
+			UpperTextureTexture = p.uppertexture;
 			UpperUnpegged = p.upperunpegged;
 
 			MiddleTexture = p.applymiddletexture;
 			MiddleTextureTexture = p.middletexture;
 
-            LowerTexture = p.applylowertexture;
-            LowerTextureTexture = p.lowertexture;
+			LowerTexture = p.applylowertexture;
+			LowerTextureTexture = p.lowertexture;
 			LowerUnpegged = p.lowerunpegged;
 
 			loadingprefab = false;
+		}
+
+        private void prefabload_Click(object sender, EventArgs e)
+        {
+			if(prefabs.SelectedIndices.Count == 0) return;
+
+			LoadPrefab(prefabs.SelectedIndices[0]);
 
 			DoRedrawDisplay();
         }
@@ -876,6 +895,20 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 		private void ceilingbasegetter_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			ceilingbase.Text = originalceilingbase.ToString();
+		}
+
+		private void prefabs_DoubleClick(object sender, EventArgs e)
+		{
+			if (prefabs.SelectedIndices.Count == 0) return;
+
+			LoadPrefab(prefabs.SelectedIndices[0]);
+
+			DoRedrawDisplay();
+		}
+
+		private void distinctsectors_CheckedChanged(object sender, EventArgs e)
+		{
+			DoRedrawDisplay();
 		}
 	}
 }

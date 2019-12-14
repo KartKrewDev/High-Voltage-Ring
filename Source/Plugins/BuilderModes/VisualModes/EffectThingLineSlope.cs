@@ -13,11 +13,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// The thing is in the sector that must receive the slope and the
 		// Thing's arg 0 indicates the linedef to start the slope at.
 		private Thing thing;
+		private Sidedef sidedef;
 		
 		// Constructor
-		public EffectThingLineSlope(SectorData data, Thing sourcething) : base(data)
+		public EffectThingLineSlope(SectorData data, Thing sourcething, Sidedef sourcesidedef) : base(data)
 		{
 			thing = sourcething;
+			sidedef = sourcesidedef;
 			
 			// New effect added: This sector needs an update!
 			if(data.Mode.VisualSectorExists(data.Sector))
@@ -35,78 +37,31 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			ThingData td = data.Mode.GetThingData(thing);
 			Thing t = thing;
+			Linedef ld = sidedef.Line;
 
-			// Find the tagged line
-			Linedef ld = null;
-			foreach(Linedef l in General.Map.Map.Linedefs)
-			{
-				if(l.Tags.Contains(t.Args[0]))
-				{
-					ld = l;
-					break;
-				}
-			}
-			
 			if(ld != null)
 			{
 				if(t.Type == 9500)
 				{
-					// Slope the floor from the linedef to thing
-					t.DetermineSector(data.Mode.BlockMap);
-					if(t.Sector != null)
-					{
-						Vector3D v3 = new Vector3D(t.Position.x, t.Position.y, t.Position.z + t.Sector.FloorHeight);
-						if(ld.SideOfLine(t.Position) < 0.0f)
-						{
-							Vector3D v1 = new Vector3D(ld.Start.Position.x, ld.Start.Position.y, ld.Front.Sector.FloorHeight);
-							Vector3D v2 = new Vector3D(ld.End.Position.x, ld.End.Position.y, ld.Front.Sector.FloorHeight);
-							SectorData sd = data.Mode.GetSectorData(ld.Front.Sector);
-							sd.AddUpdateSector(data.Sector, true);
-							if(!sd.Updated) sd.Update();
-							td.AddUpdateSector(ld.Front.Sector, true);
-							sd.Floor.plane = new Plane(v1, v2, v3, true);
-						}
-						else
-						{
-							Vector3D v1 = new Vector3D(ld.Start.Position.x, ld.Start.Position.y, ld.Back.Sector.FloorHeight);
-							Vector3D v2 = new Vector3D(ld.End.Position.x, ld.End.Position.y, ld.Back.Sector.FloorHeight);
-							SectorData sd = data.Mode.GetSectorData(ld.Back.Sector);
-							sd.AddUpdateSector(data.Sector, true);
-							if(!sd.Updated) sd.Update();
-							td.AddUpdateSector(ld.Back.Sector, true);
-							sd.Floor.plane = new Plane(v2, v1, v3, true);
-						}
-					}
+					SectorData sd = data.Mode.GetSectorData(sidedef.Sector);
+					Vector3D v1 = new Vector3D(ld.Start.Position.x, ld.Start.Position.y, sd.Floor.plane.GetZ(ld.Start.Position));
+					Vector3D v2 = new Vector3D(ld.End.Position.x, ld.End.Position.y, sd.Floor.plane.GetZ(ld.End.Position));
+					Vector3D v3 = new Vector3D(t.Position.x, t.Position.y, t.Position.z + sd.Floor.plane.GetZ(t.Position));
+					sd.AddUpdateSector(data.Sector, true);
+					if (!sd.Updated) sd.Update();
+					td.AddUpdateSector(sidedef.Sector, true);
+					sd.Floor.plane = new Plane(v1, v2, v3, true);
 				}
 				else if(t.Type == 9501)
 				{
-					// Slope the ceiling from the linedef to thing
-					t.DetermineSector(data.Mode.BlockMap);
-					if(t.Sector != null)
-					{
-						td.AddUpdateSector(t.Sector, true);
-						Vector3D v3 = new Vector3D(t.Position.x, t.Position.y, t.Position.z + t.Sector.CeilHeight);
-						if(ld.SideOfLine(t.Position) < 0.0f)
-						{
-							Vector3D v1 = new Vector3D(ld.Start.Position.x, ld.Start.Position.y, ld.Front.Sector.CeilHeight);
-							Vector3D v2 = new Vector3D(ld.End.Position.x, ld.End.Position.y, ld.Front.Sector.CeilHeight);
-							SectorData sd = data.Mode.GetSectorData(ld.Front.Sector);
-							sd.AddUpdateSector(data.Sector, true);
-							td.AddUpdateSector(ld.Front.Sector, true);
-							if(!sd.Updated) sd.Update();
-							sd.Ceiling.plane = new Plane(v1, v2, v3, false);
-						}
-						else
-						{
-							Vector3D v1 = new Vector3D(ld.Start.Position.x, ld.Start.Position.y, ld.Back.Sector.CeilHeight);
-							Vector3D v2 = new Vector3D(ld.End.Position.x, ld.End.Position.y, ld.Back.Sector.CeilHeight);
-							SectorData sd = data.Mode.GetSectorData(ld.Back.Sector);
-							sd.AddUpdateSector(data.Sector, true);
-							td.AddUpdateSector(ld.Back.Sector, true);
-							if(!sd.Updated) sd.Update();
-							sd.Ceiling.plane = new Plane(v2, v1, v3, false);
-						}
-					}
+					SectorData sd = data.Mode.GetSectorData(sidedef.Sector);
+					Vector3D v1 = new Vector3D(ld.Start.Position.x, ld.Start.Position.y, sd.Ceiling.plane.GetZ(ld.Start.Position));
+					Vector3D v2 = new Vector3D(ld.End.Position.x, ld.End.Position.y, sd.Ceiling.plane.GetZ(ld.End.Position));
+					Vector3D v3 = new Vector3D(t.Position.x, t.Position.y, t.Position.z + sd.Ceiling.plane.GetZ(t.Position));
+					sd.AddUpdateSector(data.Sector, true);
+					if (!sd.Updated) sd.Update();
+					td.AddUpdateSector(sidedef.Sector, true);
+					sd.Ceiling.plane = new Plane(v1, v2, v3, false);
 				}
 			}
 		}

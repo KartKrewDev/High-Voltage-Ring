@@ -1010,11 +1010,15 @@ namespace CodeImp.DoomBuilder.Map
 			// Limit intersection offset to the line
 			if (bounded)
 			{
-				if (General.Map.UDMF)
+				// We really don't want u to be 0 or 1, because that'd mean the distance will be measured
+				// from the vertices, which will result in linedefs being equally far away. We still need 
+				// special handling for linedefs that are shorter than 1 mu (which is possible in UDMF)
+				// Detailed explanation here: https://github.com/jewalky/GZDoom-Builder-Bugfix/issues/307
+				if (lengthinv > 1.0f)
 				{
 					u = Math.Max(0f, Math.Min(1f, u));
 				}
-				else // restore old way for visplane explorer (which doesn't work for UDMF anyway)
+				else
 				{
 					u = Math.Max(lengthinv, Math.Min(1f - lengthinv, u));
 				}

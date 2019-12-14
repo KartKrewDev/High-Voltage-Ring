@@ -26,7 +26,7 @@ using System;
 namespace CodeImp.DoomBuilder.BuilderModes
 {
 	[ErrorChecker("Check missing textures", true, 80)]
-	public class CheckMissingTextures : ErrorChecker
+	public class CheckMissingTextures : BaseCheckTextures
 	{
 		#region ================== Constants
 
@@ -37,22 +37,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#region ================== Constructor / Destructor
 
 		// Constructor
-		public CheckMissingTextures()
+		public CheckMissingTextures() : base()
 		{
-			// Total progress is done when all lines are checked
-			SetTotalProgress(General.Map.Map.Sidedefs.Count / PROGRESS_STEP);
-		}
-
-		#endregion
-
-		#region ================== Enum
-
-		[Flags]
-		private enum Flags3DFloor
-		{
-			UseUpper = 1,
-			UseLower = 2,
-			RenderInside = 4
 		}
 
 		#endregion
@@ -65,36 +51,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			int progress = 0;
 			int stepprogress = 0;
 
-			Dictionary<int, Flags3DFloor> sector3dfloors = new Dictionary<int, Flags3DFloor>();
-
-			// Create a cache of sectors that have 3D floors, with their flags relevant to the error checker
-			foreach (Linedef ld in General.Map.Map.Linedefs)
-			{
-				if (ld.Action == 160)
-				{
-					if ((ld.Args[1] & 4) == 4) // Type render inside
-					{
-						if (!sector3dfloors.ContainsKey(ld.Args[0]))
-							sector3dfloors.Add(ld.Args[0], Flags3DFloor.RenderInside);
-					}
-
-					if ((ld.Args[2] & 16) == 16) // Flag use upper
-					{
-						if (!sector3dfloors.ContainsKey(ld.Args[0]))
-							sector3dfloors.Add(ld.Args[0], Flags3DFloor.UseUpper);
-						else
-							sector3dfloors[ld.Args[0]] |= Flags3DFloor.UseUpper;
-					}
-
-					if ((ld.Args[2] & 32) == 32) // Flag use lower
-					{
-						if (!sector3dfloors.ContainsKey(ld.Args[0]))
-							sector3dfloors.Add(ld.Args[0], Flags3DFloor.UseLower);
-						else
-							sector3dfloors[ld.Args[0]] |= Flags3DFloor.UseLower;
-					}
-				}
-			}
+			Build3DFloorCache();
 
 			// Go for all the sidedefs
 			foreach(Sidedef sd in General.Map.Map.Sidedefs)
@@ -102,7 +59,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Check upper texture. Also make sure not to return a false
 				// positive if the sector on the other side has the ceiling
 				// set to be sky
-				if (sd.HighTexture == "-") {
+				if (sd.LongHighTexture == MapSet.EmptyLongName) {
 					if (sd.HighRequired())
 					{
 						if (sd.Line.Action == 181 && sd.Line.Args[1] > 0) continue; //mxd. Ceiling slopes doesn't require upper texture
@@ -150,7 +107,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Check lower texture. Also make sure not to return a false
 				// positive if the sector on the other side has the floor
 				// set to be sky
-				if(sd.LowTexture == "-")
+				if(sd.LongLowTexture == MapSet.EmptyLongName)
 				{
 					if (sd.LowRequired())
 					{

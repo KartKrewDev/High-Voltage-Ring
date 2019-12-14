@@ -756,8 +756,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		internal void RebuildElementData()
 		{
 			HashSet<Sector> effectsectors = null; //mxd
+			List<Linedef>[] slopelinedefpass = new List<Linedef>[] { new List<Linedef>(), new List<Linedef>() };
+			List<Thing>[] slopethingpass = new List<Thing>[] { new List<Thing>(), new List<Thing>() };
 
-			if(!General.Settings.EnhancedRenderingEffects) //mxd
+			if (!General.Settings.EnhancedRenderingEffects) //mxd
 			{
 				// Store all sectors with effects
 				if(sectordata != null && sectordata.Count > 0) 
@@ -778,6 +780,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			Dictionary<int, List<Sector>> sectortags = new Dictionary<int, List<Sector>>();
+			Dictionary<int, List<Linedef>> linetags = new Dictionary<int, List<Linedef>>();
 			sectordata = new Dictionary<Sector, SectorData>(General.Map.Map.Sectors.Count);
 			thingdata = new Dictionary<Thing, ThingData>(General.Map.Map.Things.Count);
 
@@ -813,110 +816,41 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 			}
 
-			// Find sectors with 3 vertices, because they can be sloped
-			foreach(Sector s in General.Map.Map.Sectors)
+			// Find interesting linedefs (such as line slopes)
+			// This also determines which slope lines belong to pass one and pass two. See https://zdoom.org/wiki/Slope
+			foreach (Linedef l in General.Map.Map.Linedefs)
 			{
-				// ========== Thing vertex slope, vertices with UDMF vertex offsets ==========
-				if(s.Sidedefs.Count == 3)
+				// Builds a cache of linedef ids/tags. Used for slope things. Use linedef tags in UDMF
+				if(General.Map.UDMF)
 				{
-					if(General.Map.UDMF) GetSectorData(s).AddEffectVertexOffset(); //mxd
-					List<Thing> slopeceilingthings = new List<Thing>(3);
-					List<Thing> slopefloorthings = new List<Thing>(3);
-					
-					foreach(Sidedef sd in s.Sidedefs) 
+					foreach(int tag in l.Tags)
 					{
-						Vertex v = sd.IsFront ? sd.Line.End : sd.Line.Start;
-
-						// Check if a thing is at this vertex
-						VisualBlockEntry b = blockmap.GetBlock(blockmap.GetBlockCoordinates(v.Position));
-						foreach(Thing t in b.Things) 
-						{
-							if((Vector2D)t.Position == v.Position) 
-							{
-								switch(t.Type)
-								{
-									case 1504: slopefloorthings.Add(t); break;
-									case 1505: slopeceilingthings.Add(t); break;
-								}
-							}
-						}
-					}
-
-					// Slope any floor vertices?
-					if(slopefloorthings.Count > 0) 
-					{
-						SectorData sd = GetSectorData(s);
-						sd.AddEffectThingVertexSlope(slopefloorthings, true);
-					}
-
-					// Slope any ceiling vertices?
-					if(slopeceilingthings.Count > 0) 
-					{
-						SectorData sd = GetSectorData(s);
-						sd.AddEffectThingVertexSlope(slopeceilingthings, false);
+						if (!linetags.ContainsKey(tag)) linetags[tag] = new List<Linedef>();
+						linetags[tag].Add(l);
 					}
 				}
-			}
-			
-			// Find interesting linedefs (such as line slopes)
-			foreach(Linedef l in General.Map.Map.Linedefs)
-			{
+
 				//mxd. Rewritten to use action ID instead of number
-				if(l.Action == 0 || !General.Map.Config.LinedefActions.ContainsKey(l.Action)) continue;
+				if (l.Action == 0 || !General.Map.Config.LinedefActions.ContainsKey(l.Action)) continue;
 
 				switch(General.Map.Config.LinedefActions[l.Action].Id.ToLowerInvariant())
 				{
+					// ========== Line Set Identification (121) (see https://zdoom.org/wiki/Line_SetIdentification) ==========
+					// Builds a cache of linedef ids/tags. Used for slope things. Only used for Hexen format
+					case "line_setidentification":
+						int tag = l.Args[0] + l.Args[4] * 256;
+						if (!linetags.ContainsKey(tag)) linetags[tag] = new List<Linedef>();
+						linetags[tag].Add(l);
+						break;
+
 					// ========== Plane Align (181) (see http://zdoom.org/wiki/Plane_Align) ==========
 					case "plane_align":
-						if(((l.Args[0] == 1) || (l.Args[1] == 1)) && (l.Front != null))
-						{
-							SectorData sd = GetSectorData(l.Front.Sector);
-							sd.AddEffectLineSlope(l);
-						}
-						if(((l.Args[0] == 2) || (l.Args[1] == 2)) && (l.Back != null))
-						{
-							SectorData sd = GetSectorData(l.Back.Sector);
-							sd.AddEffectLineSlope(l);
-						}
+						slopelinedefpass[0].Add(l);
 						break;
 
 					// ========== Plane Copy (118) (mxd) (see http://zdoom.org/wiki/Plane_Copy) ==========
-					case "plane_copy": 
-					{
-						//check the flags...
-						bool floorCopyToBack = false;
-						bool floorCopyToFront = false;
-						bool ceilingCopyToBack = false;
-						bool ceilingCopyToFront = false;
-
-						if(l.Args[4] > 0 && l.Args[4] != 3 && l.Args[4] != 12) 
-						{
-							floorCopyToBack = (l.Args[4] & 1) == 1;
-							floorCopyToFront = (l.Args[4] & 2) == 2;
-							ceilingCopyToBack = (l.Args[4] & 4) == 4;
-							ceilingCopyToFront = (l.Args[4] & 8) == 8;
-						}
-					
-						// Copy slope to front sector
-						if(l.Front != null) 
-						{
-							if( (l.Args[0] > 0 || l.Args[1] > 0) || (l.Back != null && (floorCopyToFront || ceilingCopyToFront)) ) 
-							{
-								SectorData sd = GetSectorData(l.Front.Sector);
-								sd.AddEffectPlaneClopySlope(l, true);
-							}
-						}
-
-						// Copy slope to back sector
-						if(l.Back != null) 
-						{
-							if( (l.Args[2] > 0 || l.Args[3] > 0) || (l.Front != null && (floorCopyToBack || ceilingCopyToBack)) ) 
-							{
-								SectorData sd = GetSectorData(l.Back.Sector);
-								sd.AddEffectPlaneClopySlope(l, false);
-							}
-						}
-					}
+					case "plane_copy":
+						slopelinedefpass[1].Add(l);
 						break;
 
 					// ========== Sector 3D floor (160) (see http://zdoom.org/wiki/Sector_Set3dFloor) ==========
@@ -1004,31 +938,55 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 			}
 
-			// Find interesting things (such as sector slopes)
-			//TODO: rewrite using classnames instead of numbers
-			foreach(Thing t in General.Map.Map.Things)
+			// Pass one for linedefs
+			foreach (Linedef l in slopelinedefpass[0])
 			{
-				switch(t.Type)
+				//mxd. Rewritten to use action ID instead of number
+				if (l.Action == 0 || !General.Map.Config.LinedefActions.ContainsKey(l.Action)) continue;
+
+				switch (General.Map.Config.LinedefActions[l.Action].Id.ToLowerInvariant())
+				{
+					// ========== Plane Align (181) (see http://zdoom.org/wiki/Plane_Align) ==========
+					case "plane_align":
+						if (((l.Args[0] == 1) || (l.Args[1] == 1)) && (l.Front != null))
+						{
+							SectorData sd = GetSectorData(l.Front.Sector);
+							sd.AddEffectLineSlope(l);
+						}
+						if (((l.Args[0] == 2) || (l.Args[1] == 2)) && (l.Back != null))
+						{
+							SectorData sd = GetSectorData(l.Back.Sector);
+							sd.AddEffectLineSlope(l);
+						}
+						break;
+				}
+			}
+
+			// Find interesting things (such as sector slopes)
+			// Pass one of slope things, and determine which one are for pass two
+			//TODO: rewrite using classnames instead of numbers
+			foreach (Thing t in General.Map.Map.Things)
+			{
+				switch (t.Type)
 				{
 					// ========== Copy slope ==========
 					case 9511:
 					case 9510:
-						t.DetermineSector(blockmap);
-						if(t.Sector != null)
-						{
-							SectorData sd = GetSectorData(t.Sector);
-							sd.AddEffectCopySlope(t);
-						}
+						slopethingpass[1].Add(t);
 						break;
 
 					// ========== Thing line slope ==========
 					case 9501:
 					case 9500:
-						t.DetermineSector(blockmap);
-						if(t.Sector != null)
+						if(linetags.ContainsKey(t.Args[0]))
 						{
-							SectorData sd = GetSectorData(t.Sector);
-							sd.AddEffectThingLineSlope(t);
+							foreach(Linedef ld in linetags[t.Args[0]])
+							{
+								if (ld.Line.GetSideOfLine(t.Position) < 0.0f)
+									GetSectorData(ld.Front.Sector).AddEffectThingLineSlope(t, ld.Front);
+								else if (ld.Back != null)
+									GetSectorData(ld.Back.Sector).AddEffectThingLineSlope(t, ld.Back);
+							}
 						}
 						break;
 
@@ -1036,10 +994,122 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					case 9503:
 					case 9502:
 						t.DetermineSector(blockmap);
-						if(t.Sector != null)
+						if (t.Sector != null)
 						{
 							SectorData sd = GetSectorData(t.Sector);
 							sd.AddEffectThingSlope(t);
+						}
+						break;
+				}
+			}
+
+			// Pass two of slope things
+			//TODO: rewrite using classnames instead of numbers
+			foreach (Thing t in slopethingpass[1])
+			{
+				switch (t.Type)
+				{
+					// ========== Copy slope ==========
+					case 9511:
+					case 9510:
+						t.DetermineSector(blockmap);
+						if (t.Sector != null)
+						{
+							SectorData sd = GetSectorData(t.Sector);
+							sd.AddEffectCopySlope(t);
+						}
+						break;
+				}
+			}
+
+			// Find sectors with 3 vertices, because they can be sloped
+			foreach (Sector s in General.Map.Map.Sectors)
+			{
+				// ========== Thing vertex slope, vertices with UDMF vertex offsets ==========
+				if (s.Sidedefs.Count == 3)
+				{
+					if (General.Map.UDMF) GetSectorData(s).AddEffectVertexOffset(); //mxd
+					List<Thing> slopeceilingthings = new List<Thing>(3);
+					List<Thing> slopefloorthings = new List<Thing>(3);
+
+					foreach (Sidedef sd in s.Sidedefs)
+					{
+						Vertex v = sd.IsFront ? sd.Line.End : sd.Line.Start;
+
+						// Check if a thing is at this vertex
+						VisualBlockEntry b = blockmap.GetBlock(blockmap.GetBlockCoordinates(v.Position));
+						foreach (Thing t in b.Things)
+						{
+							if ((Vector2D)t.Position == v.Position)
+							{
+								switch (t.Type)
+								{
+									case 1504: slopefloorthings.Add(t); break;
+									case 1505: slopeceilingthings.Add(t); break;
+								}
+							}
+						}
+					}
+
+					// Slope any floor vertices?
+					if (slopefloorthings.Count > 0)
+					{
+						SectorData sd = GetSectorData(s);
+						sd.AddEffectThingVertexSlope(slopefloorthings, true);
+					}
+
+					// Slope any ceiling vertices?
+					if (slopeceilingthings.Count > 0)
+					{
+						SectorData sd = GetSectorData(s);
+						sd.AddEffectThingVertexSlope(slopeceilingthings, false);
+					}
+				}
+			}
+
+			// Pass two for linedefs
+			foreach (Linedef l in slopelinedefpass[1])
+			{
+				if (l.Action == 0 || !General.Map.Config.LinedefActions.ContainsKey(l.Action)) continue;
+
+				switch (General.Map.Config.LinedefActions[l.Action].Id.ToLowerInvariant())
+				{
+					// ========== Plane Copy (118) (mxd) (see http://zdoom.org/wiki/Plane_Copy) ==========
+					case "plane_copy":
+						{
+							//check the flags...
+							bool floorCopyToBack = false;
+							bool floorCopyToFront = false;
+							bool ceilingCopyToBack = false;
+							bool ceilingCopyToFront = false;
+
+							if (l.Args[4] > 0 && l.Args[4] != 3 && l.Args[4] != 12)
+							{
+								floorCopyToBack = (l.Args[4] & 1) == 1;
+								floorCopyToFront = (l.Args[4] & 2) == 2;
+								ceilingCopyToBack = (l.Args[4] & 4) == 4;
+								ceilingCopyToFront = (l.Args[4] & 8) == 8;
+							}
+
+							// Copy slope to front sector
+							if (l.Front != null)
+							{
+								if ((l.Args[0] > 0 || l.Args[1] > 0) || (l.Back != null && (floorCopyToFront || ceilingCopyToFront)))
+								{
+									SectorData sd = GetSectorData(l.Front.Sector);
+									sd.AddEffectPlaneClopySlope(l, true);
+								}
+							}
+
+							// Copy slope to back sector
+							if (l.Back != null)
+							{
+								if ((l.Args[2] > 0 || l.Args[3] > 0) || (l.Front != null && (floorCopyToBack || ceilingCopyToBack)))
+								{
+									SectorData sd = GetSectorData(l.Back.Sector);
+									sd.AddEffectPlaneClopySlope(l, false);
+								}
+							}
 						}
 						break;
 				}
@@ -1070,6 +1140,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
             //mxd. Update fog color (otherwise FogBoundaries won't be setup correctly)
             foreach (Sector s in General.Map.Map.Sectors)
                 s.UpdateFogColor();
+
+			// biwa. We need a blockmap for the slope things. Can't wait until it's built in base.OnEngage
+			// This was the root cause for issue #160
+			FillBlockMap();
 
             // (Re)create special effects
             RebuildElementData();
@@ -3839,6 +3913,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Get the align job to do
 				SidedefAlignJob j = todo.Pop();
 
+				// Make sure to not align already aligned textures. This prevents unexpected
+				// results when aligning textures on circular shapes
+				if (j.sidedef.Marked)
+					continue;
+
+				DebugConsole.WriteLine("Aligning " + j.sidedef);
+
 				if(j.forward) 
 				{
 					// Apply alignment
@@ -3857,14 +3938,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(aligny) j.sidedef.OffsetY %= texture.Height;
 					}
 
-					// Add sidedefs forward (connected to the right vertex)
-					Vertex v = j.sidedef.IsFront ? j.sidedef.Line.End : j.sidedef.Line.Start;
-					AddSidedefsForAlignment(todo, v, true, forwardoffset, 1.0f, texturehashes, false);
-
 					// Add sidedefs backward (connected to the left vertex)
-					v = j.sidedef.IsFront ? j.sidedef.Line.Start : j.sidedef.Line.End;
+					Vertex v = j.sidedef.IsFront ? j.sidedef.Line.Start : j.sidedef.Line.End;
 					AddSidedefsForAlignment(todo, v, false, backwardoffset, 1.0f, texturehashes, false);
-				} 
+
+					// Add sidedefs forward (connected to the right vertex)
+					v = j.sidedef.IsFront ? j.sidedef.Line.End : j.sidedef.Line.Start;
+					AddSidedefsForAlignment(todo, v, true, forwardoffset, 1.0f, texturehashes, false);
+				}
 				else 
 				{
 					// Apply alignment
@@ -3883,13 +3964,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(aligny) j.sidedef.OffsetY %= texture.Height;
 					}
 
-					// Add sidedefs backward (connected to the left vertex)
-					Vertex v = j.sidedef.IsFront ? j.sidedef.Line.Start : j.sidedef.Line.End;
-					AddSidedefsForAlignment(todo, v, false, backwardoffset, 1.0f, texturehashes, false);
-
 					// Add sidedefs forward (connected to the right vertex)
-					v = j.sidedef.IsFront ? j.sidedef.Line.End : j.sidedef.Line.Start;
+					Vertex v = j.sidedef.IsFront ? j.sidedef.Line.End : j.sidedef.Line.Start;
 					AddSidedefsForAlignment(todo, v, true, forwardoffset, 1.0f, texturehashes, false);
+
+					// Add sidedefs backward (connected to the left vertex)
+					v = j.sidedef.IsFront ? j.sidedef.Line.Start : j.sidedef.Line.End;
+					AddSidedefsForAlignment(todo, v, false, backwardoffset, 1.0f, texturehashes, false);
 				}
 			}
 		}
@@ -4019,8 +4100,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Get the align job to do
 				SidedefAlignJob j = todo.Pop();
 
+				// Make sure to not align already aligned textures. This prevents unexpected
+				// results when aligning textures on circular shapes
+				if (j.sidedef.Marked)
+					continue;
+
 				//mxd. Get visual parts
-				if(VisualSectorExists(j.sidedef.Sector))
+				if (VisualSectorExists(j.sidedef.Sector))
 				{
 					VisualSidedefParts parts = ((BaseVisualSector)GetVisualSector(j.sidedef.Sector)).GetSidedefParts(j.sidedef);
 					VisualSidedefParts controlparts = (j.sidedef != j.controlSide ? ((BaseVisualSector)GetVisualSector(j.controlSide.Sector)).GetSidedefParts(j.controlSide) : parts);

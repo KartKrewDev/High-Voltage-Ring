@@ -248,7 +248,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					//mxd. Create a floor
-					if(floorRequired) 
+					if(floorRequired && ef.Ceiling.sector.IsDisposed == false) 
 					{
 						VisualFloor vf = (i < extrafloors.Count) ? extrafloors[i] : new VisualFloor(mode, this);
 						if(vf.Setup(ef.Ceiling, ef)) 
@@ -286,7 +286,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				//mxd. Create a ceiling
-				if(ceilingRequired) 
+				if(ceilingRequired && ef.Floor.sector.IsDisposed == false) 
 				{
 					VisualCeiling vc = (i < extraceilings.Count) ? extraceilings[i] : new VisualCeiling(mode, this);
 					if(vc.Setup(ef.Floor, ef)) 

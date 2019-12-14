@@ -481,9 +481,11 @@ namespace CodeImp.DoomBuilder.Controls
 
 		// biwa. Removes all duplicates. That was done each time in AddItem before. Much faster
 		// to do it in one go. Not sure when there are actually duplicates
+		// Depending on whether a floor or a wall is selected the corrosponding images come first
+		// in the list, so alawys keep the first occurence
 		public void MakeTexturesUnique()
 		{
-			items = items.GroupBy(item => item.TextureName).Select(item => item.Last()).ToList();
+			items = items.GroupBy(item => item.TextureName).Select(item => item.First()).ToList();
 		}
 
 		// This fills the list based on the objectname filter

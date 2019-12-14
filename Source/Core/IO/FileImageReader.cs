@@ -534,8 +534,11 @@ namespace CodeImp.DoomBuilder.IO
 			}
 			catch(Exception e)
 			{
-                // [ZZ] try to make a guessed reader
-                switch (guesstype)
+				// Remove last error from the stack. Workaround for https://github.com/jewalky/GZDoom-Builder-Bugfix/issues/295
+				ilGetError();
+
+				// [ZZ] try to make a guessed reader
+				switch (guesstype)
                 {
                     case ImageDataFormat.DOOMPICTURE:
                         // Check if data is valid for a doom picture

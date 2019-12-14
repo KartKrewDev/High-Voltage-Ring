@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Geometry;
 using System.Drawing;
+using System.Diagnostics;
+using System.Linq;
 
 #endregion
 
@@ -105,14 +107,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public VisualBlockEntry GetBlock(Point p)
 		{
 			ulong k = GetBlockKey(p);
-			if(blockmap.ContainsKey(k))
-			{
-				return blockmap[k];
-			}
+			VisualBlockEntry vbe;
+			
+			if (blockmap.TryGetValue(k, out vbe))
+				return vbe;
 			else
-			{
 				return (blockmap[k] = new VisualBlockEntry());
-			}
 		}
 		
 		// This clears the blockmap
@@ -148,18 +148,54 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			// Make square range from frustum circle
 			// This will be the range in which we will test blocks
-			Point lt = GetBlockCoordinates(frustum.Center - frustum.Radius);
-			Point rb = GetBlockCoordinates(frustum.Center + frustum.Radius);
+			Point lb = GetBlockCoordinates(frustum.Center - frustum.Radius);
+			Point rt = GetBlockCoordinates(frustum.Center + frustum.Radius);
+
+			Vector2D maplb = new Vector2D();
+			Vector2D maprt = new Vector2D();
+
+			Vertex firstvertex = General.Map.Map.Vertices.OfType<Vertex>().FirstOrDefault();
+			
+			if (firstvertex != null)
+				maplb = maprt = firstvertex.Position;
+
+			// Get maximum dimensions of the map. First vertices...
+			foreach (Vertex v in General.Map.Map.Vertices)
+			{
+				if (v.Position.x < maplb.x) maplb.x = v.Position.x;
+				if (v.Position.y < maplb.y) maplb.y = v.Position.y;
+				if (v.Position.x > maprt.x) maprt.x = v.Position.x;
+				if (v.Position.y > maprt.y) maprt.y = v.Position.y;
+			}
+
+			// ... then things
+			foreach (Thing t in General.Map.Map.Things)
+			{
+				if (t.Position.x < maplb.x) maplb.x = t.Position.x;
+				if (t.Position.y < maplb.y) maplb.y = t.Position.y;
+				if (t.Position.x > maprt.x) maprt.x = t.Position.x;
+				if (t.Position.y > maprt.y) maprt.y = t.Position.y;
+			}
+
+			Point mlb = GetBlockCoordinates(maplb);
+			Point mrt = GetBlockCoordinates(maprt);
+			
+			// Make sure that the checked region does not exceed the dimensions where something is to be displayed
+			if (lb.X < mlb.X) lb.X = mlb.X;
+			if (lb.Y < mlb.Y) lb.Y = mlb.Y;
+			if (rt.X > mrt.X) rt.X = mrt.X;
+			if (rt.Y > mrt.Y) rt.Y = mrt.Y;
 
 			// Constants we need
 			float blockfrustumdistance2 = (frustum.Radius * frustum.Radius) + (BLOCK_RADIUS * BLOCK_RADIUS);
-			
+
 			// Go through the range to make a list
-			int entriescount = (rb.X - lt.X) * (rb.Y - lt.Y);
+			int entriescount = (rt.X - lb.X) * (rt.Y - lb.Y);
 			List<VisualBlockEntry> entries = new List<VisualBlockEntry>(entriescount);
-			for(int x = lt.X; x <= rb.X; x++)
+			
+			for (int x = lb.X; x <= rt.X; x++)
 			{
-				for(int y = lt.Y; y <= rb.Y; y++)
+				for(int y = lb.Y; y <= rt.Y; y++)
 				{
 					// First check if the block circle is intersecting the frustum circle
 					Point block = new Point(x, y);
@@ -167,11 +203,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 					if(Vector2D.DistanceSq(frustum.Center, blockcenter) < blockfrustumdistance2)
 					{
 						// Add the block if the block circle is inside the frustum
-						if(frustum.IntersectCircle(blockcenter, BLOCK_RADIUS)) entries.Add(GetBlock(block));
+						if (frustum.IntersectCircle(blockcenter, BLOCK_RADIUS)) entries.Add(GetBlock(block));
 					}
 				}
 			}
-			
+
 			// Return list
 			return entries;
 		}
@@ -266,8 +302,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public void AddThing(Thing t)
 		{
 			//mxd
-			Point p1 = GetBlockCoordinates(new Vector2D(t.Position.x - t.Size, t.Position.y - t.Size));
-			Point p2 = GetBlockCoordinates(new Vector2D(t.Position.x + t.Size, t.Position.y + t.Size));
+			Point p1 = GetBlockCoordinates(new Vector2D(t.Position.x - t.RenderSize, t.Position.y - t.RenderSize));
+			Point p2 = GetBlockCoordinates(new Vector2D(t.Position.x + t.RenderSize, t.Position.y + t.RenderSize));
 			for(int x = p1.X; x <= p2.X; x++)
 			{
 				for(int y = p1.Y; y <= p2.Y; y++)

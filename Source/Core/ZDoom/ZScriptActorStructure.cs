@@ -9,13 +9,22 @@ namespace CodeImp.DoomBuilder.ZDoom
 {
     public sealed class ZScriptActorStructure : ActorStructure
     {
-        // privates
-        private ZScriptParser parser;
+		#region ================== Variables
+
+		private ZScriptParser parser;
         private Stream stream;
         private ZScriptTokenizer tokenizer;
-        // ========
+		private List<string> mixins;
 
-        internal static bool ParseGZDBComment(Dictionary<string, List<string>> props, string text)
+		#endregion
+
+		#region ================== Properties
+
+		public List<string> Mixins { get { return mixins; } }
+
+		#endregion
+
+		internal static bool ParseGZDBComment(Dictionary<string, List<string>> props, string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return false;
@@ -373,6 +382,30 @@ namespace CodeImp.DoomBuilder.ZDoom
             return true;
         }
 
+		private bool ParseMixin()
+		{
+			// mixin identifier;
+			tokenizer.SkipWhitespace();
+			ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected mixin class name, got " + ((Object)token ?? "<null>").ToString());
+				return false;
+			}
+
+			mixins.Add(token.Value.ToLowerInvariant());
+
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.Semicolon);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected semicolon, got " + ((Object)token ?? "<null>").ToString());
+				return false;
+			}
+
+			return true;
+		}
+
         private bool ParseProperty()
         {
             // property identifier: identifier, identifier, identifier, ...;
@@ -462,7 +495,9 @@ namespace CodeImp.DoomBuilder.ZDoom
 
             classname = _classname;
             replaceclass = _replacesname;
-            //baseclass = parser.GetArchivedActorByName(_parentname); // this is not guaranteed to work here
+			//baseclass = parser.GetArchivedActorByName(_parentname); // this is not guaranteed to work here
+
+			mixins = new List<string>();
 
             ZScriptToken cls_open = tokenizer.ExpectToken(ZScriptTokenType.OpenCurly);
             if (cls_open == null || !cls_open.IsValid)
@@ -531,7 +566,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
                     // apparently we can have a struct inside a class, but not another class.
                     case "struct":
-                        if (!parser.ParseClassOrStruct(true, false, null))
+                        if (!parser.ParseClassOrStruct(true, false, false, null))
                             return;
                         continue;
 
@@ -546,6 +581,12 @@ namespace CodeImp.DoomBuilder.ZDoom
                         if (!ParseFlagdef())
                             return;
                         continue;
+
+					// mixins
+					case "mixin":
+						if (!ParseMixin())
+							return;
+						continue;
 
                     default:
                         stream.Position = ocpos;

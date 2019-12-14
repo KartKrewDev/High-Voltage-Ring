@@ -50,7 +50,8 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
             public int sectordepth;
             public int spacing;
             public bool frontside;
-            public bool singlesectors;
+            public bool singlesteps;
+			public bool distinctsectors;
             public bool singledirection;
 			public bool distinctbaseheights;
 

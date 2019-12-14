@@ -355,6 +355,14 @@
 				<param name="Local" value="gzdb\features\classic_modes\mode_soundenvironment.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="3D Floor Mode">
+				<param name="Local" value="gzdb\features\classic_modes\mode_3dfloor.html">
+				</OBJECT>		
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Draw Slope Mode/Slope Mode">
+				<param name="Local" value="gzdb\features\classic_modes\mode_slopes.html">
+				</OBJECT>					
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Randomize mode">
 				<param name="Local" value="gzdb\features\all_modes\jitter.html">
 				</OBJECT>

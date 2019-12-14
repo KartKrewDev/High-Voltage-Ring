@@ -40,7 +40,7 @@
 			this.label11 = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.singledirection = new System.Windows.Forms.CheckBox();
-			this.singlesectors = new System.Windows.Forms.CheckBox();
+			this.singlesteps = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.sideback = new System.Windows.Forms.RadioButton();
 			this.sidefront = new System.Windows.Forms.RadioButton();
@@ -102,11 +102,12 @@
 			this.prefabsave = new System.Windows.Forms.Button();
 			this.prefabname = new System.Windows.Forms.TextBox();
 			this.prefabs = new System.Windows.Forms.ListView();
-			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.groupBox10 = new System.Windows.Forms.GroupBox();
 			this.middletexturetexture = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.middletexture = new System.Windows.Forms.CheckBox();
+			this.distinctsectors = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.tabcontrol.SuspendLayout();
 			this.tabPage1.SuspendLayout();
@@ -159,10 +160,15 @@
 			// numberofsectors
 			// 
 			this.numberofsectors.AllowDecimal = false;
+			this.numberofsectors.AllowExpressions = false;
 			this.numberofsectors.AllowNegative = false;
 			this.numberofsectors.AllowRelative = false;
 			this.numberofsectors.ButtonStep = 1;
+			this.numberofsectors.ButtonStepBig = 10F;
 			this.numberofsectors.ButtonStepFloat = 1F;
+			this.numberofsectors.ButtonStepSmall = 0.1F;
+			this.numberofsectors.ButtonStepsUseModifierKeys = false;
+			this.numberofsectors.ButtonStepsWrapAround = false;
 			this.numberofsectors.Location = new System.Drawing.Point(112, 17);
 			this.numberofsectors.Name = "numberofsectors";
 			this.numberofsectors.Size = new System.Drawing.Size(56, 24);
@@ -222,10 +228,15 @@
 			// spacing
 			// 
 			this.spacing.AllowDecimal = false;
+			this.spacing.AllowExpressions = false;
 			this.spacing.AllowNegative = false;
 			this.spacing.AllowRelative = false;
 			this.spacing.ButtonStep = 8;
+			this.spacing.ButtonStepBig = 10F;
 			this.spacing.ButtonStepFloat = 1F;
+			this.spacing.ButtonStepSmall = 0.1F;
+			this.spacing.ButtonStepsUseModifierKeys = false;
+			this.spacing.ButtonStepsWrapAround = false;
 			this.spacing.Location = new System.Drawing.Point(81, 33);
 			this.spacing.Name = "spacing";
 			this.spacing.Size = new System.Drawing.Size(56, 24);
@@ -244,11 +255,12 @@
 			// 
 			// groupBox3
 			// 
+			this.groupBox3.Controls.Add(this.distinctsectors);
 			this.groupBox3.Controls.Add(this.singledirection);
-			this.groupBox3.Controls.Add(this.singlesectors);
+			this.groupBox3.Controls.Add(this.singlesteps);
 			this.groupBox3.Location = new System.Drawing.Point(82, 94);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(124, 79);
+			this.groupBox3.Size = new System.Drawing.Size(124, 93);
 			this.groupBox3.TabIndex = 3;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Appearance";
@@ -257,7 +269,7 @@
 			// 
 			this.singledirection.AutoSize = true;
 			this.singledirection.Enabled = false;
-			this.singledirection.Location = new System.Drawing.Point(7, 46);
+			this.singledirection.Location = new System.Drawing.Point(10, 64);
 			this.singledirection.Name = "singledirection";
 			this.singledirection.Size = new System.Drawing.Size(99, 18);
 			this.singledirection.TabIndex = 1;
@@ -265,17 +277,17 @@
 			this.singledirection.UseVisualStyleBackColor = true;
 			this.singledirection.CheckedChanged += new System.EventHandler(this.singledirection_CheckedChanged);
 			// 
-			// singlesectors
+			// singlesteps
 			// 
-			this.singlesectors.AutoSize = true;
-			this.singlesectors.Enabled = false;
-			this.singlesectors.Location = new System.Drawing.Point(7, 22);
-			this.singlesectors.Name = "singlesectors";
-			this.singlesectors.Size = new System.Drawing.Size(95, 18);
-			this.singlesectors.TabIndex = 0;
-			this.singlesectors.Text = "Single sectors";
-			this.singlesectors.UseVisualStyleBackColor = true;
-			this.singlesectors.CheckedChanged += new System.EventHandler(this.singlesectors_CheckedChanged);
+			this.singlesteps.AutoSize = true;
+			this.singlesteps.Enabled = false;
+			this.singlesteps.Location = new System.Drawing.Point(10, 22);
+			this.singlesteps.Name = "singlesteps";
+			this.singlesteps.Size = new System.Drawing.Size(85, 18);
+			this.singlesteps.TabIndex = 0;
+			this.singlesteps.Text = "Single steps";
+			this.singlesteps.UseVisualStyleBackColor = true;
+			this.singlesteps.CheckedChanged += new System.EventHandler(this.singleseteps_CheckedChanged);
 			// 
 			// groupBox2
 			// 
@@ -283,7 +295,7 @@
 			this.groupBox2.Controls.Add(this.sidefront);
 			this.groupBox2.Location = new System.Drawing.Point(11, 94);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(65, 79);
+			this.groupBox2.Size = new System.Drawing.Size(65, 93);
 			this.groupBox2.TabIndex = 2;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Side";
@@ -291,7 +303,7 @@
 			// sideback
 			// 
 			this.sideback.AutoSize = true;
-			this.sideback.Location = new System.Drawing.Point(7, 46);
+			this.sideback.Location = new System.Drawing.Point(7, 54);
 			this.sideback.Name = "sideback";
 			this.sideback.Size = new System.Drawing.Size(49, 18);
 			this.sideback.TabIndex = 1;
@@ -304,7 +316,7 @@
 			// 
 			this.sidefront.AutoSize = true;
 			this.sidefront.Checked = true;
-			this.sidefront.Location = new System.Drawing.Point(7, 22);
+			this.sidefront.Location = new System.Drawing.Point(7, 30);
 			this.sidefront.Name = "sidefront";
 			this.sidefront.Size = new System.Drawing.Size(50, 18);
 			this.sidefront.TabIndex = 0;
@@ -316,10 +328,15 @@
 			// sectordepth
 			// 
 			this.sectordepth.AllowDecimal = false;
+			this.sectordepth.AllowExpressions = false;
 			this.sectordepth.AllowNegative = false;
 			this.sectordepth.AllowRelative = false;
 			this.sectordepth.ButtonStep = 8;
+			this.sectordepth.ButtonStepBig = 10F;
 			this.sectordepth.ButtonStepFloat = 1F;
+			this.sectordepth.ButtonStepSmall = 0.1F;
+			this.sectordepth.ButtonStepsUseModifierKeys = false;
+			this.sectordepth.ButtonStepsWrapAround = false;
 			this.sectordepth.Location = new System.Drawing.Point(81, 3);
 			this.sectordepth.Name = "sectordepth";
 			this.sectordepth.Size = new System.Drawing.Size(56, 24);
@@ -378,10 +395,15 @@
 			// autocurveoutervertexmultiplier
 			// 
 			this.autocurveoutervertexmultiplier.AllowDecimal = false;
+			this.autocurveoutervertexmultiplier.AllowExpressions = false;
 			this.autocurveoutervertexmultiplier.AllowNegative = false;
 			this.autocurveoutervertexmultiplier.AllowRelative = false;
 			this.autocurveoutervertexmultiplier.ButtonStep = 1;
+			this.autocurveoutervertexmultiplier.ButtonStepBig = 10F;
 			this.autocurveoutervertexmultiplier.ButtonStepFloat = 1F;
+			this.autocurveoutervertexmultiplier.ButtonStepSmall = 0.1F;
+			this.autocurveoutervertexmultiplier.ButtonStepsUseModifierKeys = false;
+			this.autocurveoutervertexmultiplier.ButtonStepsWrapAround = false;
 			this.autocurveoutervertexmultiplier.Location = new System.Drawing.Point(128, 72);
 			this.autocurveoutervertexmultiplier.Name = "autocurveoutervertexmultiplier";
 			this.autocurveoutervertexmultiplier.Size = new System.Drawing.Size(56, 24);
@@ -392,10 +414,15 @@
 			// autocurveinnervertexmultiplier
 			// 
 			this.autocurveinnervertexmultiplier.AllowDecimal = false;
+			this.autocurveinnervertexmultiplier.AllowExpressions = false;
 			this.autocurveinnervertexmultiplier.AllowNegative = false;
 			this.autocurveinnervertexmultiplier.AllowRelative = false;
 			this.autocurveinnervertexmultiplier.ButtonStep = 1;
+			this.autocurveinnervertexmultiplier.ButtonStepBig = 10F;
 			this.autocurveinnervertexmultiplier.ButtonStepFloat = 1F;
+			this.autocurveinnervertexmultiplier.ButtonStepSmall = 0.1F;
+			this.autocurveinnervertexmultiplier.ButtonStepsUseModifierKeys = false;
+			this.autocurveinnervertexmultiplier.ButtonStepsWrapAround = false;
 			this.autocurveinnervertexmultiplier.Location = new System.Drawing.Point(128, 45);
 			this.autocurveinnervertexmultiplier.Name = "autocurveinnervertexmultiplier";
 			this.autocurveinnervertexmultiplier.Size = new System.Drawing.Size(56, 24);
@@ -465,10 +492,15 @@
 			// splineoutervertexmultiplier
 			// 
 			this.splineoutervertexmultiplier.AllowDecimal = false;
+			this.splineoutervertexmultiplier.AllowExpressions = false;
 			this.splineoutervertexmultiplier.AllowNegative = false;
 			this.splineoutervertexmultiplier.AllowRelative = false;
 			this.splineoutervertexmultiplier.ButtonStep = 1;
+			this.splineoutervertexmultiplier.ButtonStepBig = 10F;
 			this.splineoutervertexmultiplier.ButtonStepFloat = 1F;
+			this.splineoutervertexmultiplier.ButtonStepSmall = 0.1F;
+			this.splineoutervertexmultiplier.ButtonStepsUseModifierKeys = false;
+			this.splineoutervertexmultiplier.ButtonStepsWrapAround = false;
 			this.splineoutervertexmultiplier.Location = new System.Drawing.Point(128, 72);
 			this.splineoutervertexmultiplier.Name = "splineoutervertexmultiplier";
 			this.splineoutervertexmultiplier.Size = new System.Drawing.Size(56, 24);
@@ -479,10 +511,15 @@
 			// splineinnervertexmultiplier
 			// 
 			this.splineinnervertexmultiplier.AllowDecimal = false;
+			this.splineinnervertexmultiplier.AllowExpressions = false;
 			this.splineinnervertexmultiplier.AllowNegative = false;
 			this.splineinnervertexmultiplier.AllowRelative = false;
 			this.splineinnervertexmultiplier.ButtonStep = 1;
+			this.splineinnervertexmultiplier.ButtonStepBig = 10F;
 			this.splineinnervertexmultiplier.ButtonStepFloat = 1F;
+			this.splineinnervertexmultiplier.ButtonStepSmall = 0.1F;
+			this.splineinnervertexmultiplier.ButtonStepsUseModifierKeys = false;
+			this.splineinnervertexmultiplier.ButtonStepsWrapAround = false;
 			this.splineinnervertexmultiplier.Location = new System.Drawing.Point(128, 45);
 			this.splineinnervertexmultiplier.Name = "splineinnervertexmultiplier";
 			this.splineinnervertexmultiplier.Size = new System.Drawing.Size(56, 24);
@@ -511,10 +548,15 @@
 			// numberofcontrolpoints
 			// 
 			this.numberofcontrolpoints.AllowDecimal = false;
+			this.numberofcontrolpoints.AllowExpressions = false;
 			this.numberofcontrolpoints.AllowNegative = false;
 			this.numberofcontrolpoints.AllowRelative = false;
 			this.numberofcontrolpoints.ButtonStep = 1;
+			this.numberofcontrolpoints.ButtonStepBig = 10F;
 			this.numberofcontrolpoints.ButtonStepFloat = 1F;
+			this.numberofcontrolpoints.ButtonStepSmall = 0.1F;
+			this.numberofcontrolpoints.ButtonStepsUseModifierKeys = false;
+			this.numberofcontrolpoints.ButtonStepsWrapAround = false;
 			this.numberofcontrolpoints.Location = new System.Drawing.Point(128, 99);
 			this.numberofcontrolpoints.Name = "numberofcontrolpoints";
 			this.numberofcontrolpoints.Size = new System.Drawing.Size(56, 24);
@@ -623,10 +665,15 @@
 			// floorbase
 			// 
 			this.floorbase.AllowDecimal = false;
+			this.floorbase.AllowExpressions = false;
 			this.floorbase.AllowNegative = true;
 			this.floorbase.AllowRelative = false;
 			this.floorbase.ButtonStep = 8;
+			this.floorbase.ButtonStepBig = 10F;
 			this.floorbase.ButtonStepFloat = 1F;
+			this.floorbase.ButtonStepSmall = 0.1F;
+			this.floorbase.ButtonStepsUseModifierKeys = false;
+			this.floorbase.ButtonStepsWrapAround = false;
 			this.floorbase.Location = new System.Drawing.Point(45, 48);
 			this.floorbase.Name = "floorbase";
 			this.floorbase.Size = new System.Drawing.Size(56, 24);
@@ -686,10 +733,15 @@
 			// floorheightmod
 			// 
 			this.floorheightmod.AllowDecimal = false;
+			this.floorheightmod.AllowExpressions = false;
 			this.floorheightmod.AllowNegative = true;
 			this.floorheightmod.AllowRelative = false;
 			this.floorheightmod.ButtonStep = 8;
+			this.floorheightmod.ButtonStepBig = 10F;
 			this.floorheightmod.ButtonStepFloat = 1F;
+			this.floorheightmod.ButtonStepSmall = 0.1F;
+			this.floorheightmod.ButtonStepsUseModifierKeys = false;
+			this.floorheightmod.ButtonStepsWrapAround = false;
 			this.floorheightmod.Location = new System.Drawing.Point(45, 22);
 			this.floorheightmod.Name = "floorheightmod";
 			this.floorheightmod.Size = new System.Drawing.Size(56, 24);
@@ -837,10 +889,15 @@
 			// ceilingheightmod
 			// 
 			this.ceilingheightmod.AllowDecimal = false;
+			this.ceilingheightmod.AllowExpressions = false;
 			this.ceilingheightmod.AllowNegative = true;
 			this.ceilingheightmod.AllowRelative = false;
 			this.ceilingheightmod.ButtonStep = 8;
+			this.ceilingheightmod.ButtonStepBig = 10F;
 			this.ceilingheightmod.ButtonStepFloat = 1F;
+			this.ceilingheightmod.ButtonStepSmall = 0.1F;
+			this.ceilingheightmod.ButtonStepsUseModifierKeys = false;
+			this.ceilingheightmod.ButtonStepsWrapAround = false;
 			this.ceilingheightmod.Location = new System.Drawing.Point(45, 22);
 			this.ceilingheightmod.Name = "ceilingheightmod";
 			this.ceilingheightmod.Size = new System.Drawing.Size(56, 24);
@@ -887,10 +944,15 @@
 			// ceilingbase
 			// 
 			this.ceilingbase.AllowDecimal = false;
+			this.ceilingbase.AllowExpressions = false;
 			this.ceilingbase.AllowNegative = true;
 			this.ceilingbase.AllowRelative = false;
 			this.ceilingbase.ButtonStep = 8;
+			this.ceilingbase.ButtonStepBig = 10F;
 			this.ceilingbase.ButtonStepFloat = 1F;
+			this.ceilingbase.ButtonStepSmall = 0.1F;
+			this.ceilingbase.ButtonStepsUseModifierKeys = false;
+			this.ceilingbase.ButtonStepsWrapAround = false;
 			this.ceilingbase.Location = new System.Drawing.Point(45, 48);
 			this.ceilingbase.Name = "ceilingbase";
 			this.ceilingbase.Size = new System.Drawing.Size(56, 24);
@@ -975,6 +1037,7 @@
 			this.prefabs.TabIndex = 24;
 			this.prefabs.UseCompatibleStateImageBehavior = false;
 			this.prefabs.View = System.Windows.Forms.View.Details;
+			this.prefabs.DoubleClick += new System.EventHandler(this.prefabs_DoubleClick);
 			// 
 			// columnHeader1
 			// 
@@ -1018,6 +1081,18 @@
 			this.middletexture.UseVisualStyleBackColor = true;
 			this.middletexture.CheckedChanged += new System.EventHandler(this.middletexture_CheckedChanged);
 			// 
+			// distinctsectors
+			// 
+			this.distinctsectors.AutoSize = true;
+			this.distinctsectors.Enabled = false;
+			this.distinctsectors.Location = new System.Drawing.Point(10, 43);
+			this.distinctsectors.Name = "distinctsectors";
+			this.distinctsectors.Size = new System.Drawing.Size(101, 18);
+			this.distinctsectors.TabIndex = 2;
+			this.distinctsectors.Text = "Distinct sectors";
+			this.distinctsectors.UseVisualStyleBackColor = true;
+			this.distinctsectors.CheckedChanged += new System.EventHandler(this.distinctsectors_CheckedChanged);
+			// 
 			// StairSectorBuilderForm
 			// 
 			this.AcceptButton = this.btnOK;
@@ -1042,14 +1117,14 @@
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "StairSectorBuilderForm";
-			this.Opacity = 0;
+			this.Opacity = 0D;
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Stair Sector Builder";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StairSectorBuilderForm_FormClosing);
 			this.Load += new System.EventHandler(this.StairSectorBuilderForm_Load);
 			this.Shown += new System.EventHandler(this.StairSectorBuilderForm_Shown);
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StairSectorBuilderForm_FormClosing);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.tabcontrol.ResumeLayout(false);
@@ -1100,7 +1175,7 @@
 		private System.Windows.Forms.RadioButton sidefront;
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.CheckBox singledirection;
-		private System.Windows.Forms.CheckBox singlesectors;
+		private System.Windows.Forms.CheckBox singlesteps;
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.CheckBox floorflat;
 		private CodeImp.DoomBuilder.Controls.FlatSelectorControl floorflattexture;
@@ -1164,5 +1239,6 @@
 		private System.Windows.Forms.GroupBox groupBox10;
 		private CodeImp.DoomBuilder.Controls.TextureSelectorControl middletexturetexture;
 		private System.Windows.Forms.CheckBox middletexture;
+		private System.Windows.Forms.CheckBox distinctsectors;
 	}
 }

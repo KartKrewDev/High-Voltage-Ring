@@ -101,6 +101,7 @@ namespace CodeImp.DoomBuilder.ZDoom
         public ZScriptToken()
         {
             IsValid = true;
+			WarningMessage = String.Empty;
         }
 
         public ZScriptTokenType Type { get; internal set; }
@@ -108,6 +109,7 @@ namespace CodeImp.DoomBuilder.ZDoom
         public int ValueInt { get; internal set; }
         public double ValueDouble { get; internal set; }
         public bool IsValid { get; internal set; }
+		public string WarningMessage { get; internal set; }
 
         public override string ToString()
         {
@@ -330,9 +332,34 @@ namespace CodeImp.DoomBuilder.ZDoom
                             tok.ValueInt = (int)tok.ValueDouble;
                         }
                     }
+					catch (OverflowException) // biwa. If the value is too small or too big set it to the min or max, and set a warning message
+					{
+						tok.WarningMessage = "Number " + tok.Value + " too " + (tok.Value[0] == '-' ? "small" : "big") + ". Set to ";
+
+						if (ishex || isoctal || !isdouble)
+						{
+							if (tok.Value[0] == '-')
+								tok.ValueInt = Int32.MinValue;
+							else
+								tok.ValueInt = Int32.MaxValue;
+
+							tok.ValueDouble = tok.ValueInt;
+							tok.WarningMessage += tok.ValueInt;
+						}
+						else if (isdouble)
+						{
+							if (tok.Value[0] == '-')
+								tok.ValueDouble = Double.MinValue;
+							else
+								tok.ValueDouble = Double.MaxValue;
+
+							tok.ValueInt = (int)tok.ValueDouble;
+							tok.WarningMessage += tok.ValueDouble;
+						}
+					}
                     catch (Exception)
                     {
-                        //throw new Exception(tok.ToString());
+                        // throw new Exception(tok.ToString());
                         return null;
                     }
 

@@ -444,6 +444,12 @@ namespace CodeImp.DoomBuilder.Controls
 				tooltip.RemoveAll();
 			}
 		}
+
+		// biwa
+		public void ResetIncrementStep()
+		{
+			incrementstep = 1;
+		}
 		
 		#endregion
 	}

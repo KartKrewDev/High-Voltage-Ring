@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	
+	<title>Template</title>
+	
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<link rel="stylesheet" type="text/css" href="../../../default.css" media="screen" title="Default" />
+</head>
+<body>
+	
+	<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<param name="keyword" value="3D Floor Mode">
+	</object>
+	
+	<div id="gz_title"><h1>3D Floor Mode</h1></div>
+	
+	<div id="contents">
+	<p>
+This mode lets you manage the 3D floors. Available in Hexen format and UDMF<br>
+<b>Menu path:</b> Mode -&gt; 3D Floor Mode<br>
+<b>Action category:</b> 3D Floor Plugin.<br>
+<b>Default key:</b> None.<br>
+
+<table border="0" cellspacing="3" cellpadding="3">
+  <tr>
+    <th>Action</th>
+	<th>Default key</th>
+	<th>UI button</th>
+	<th>Description</th>
+  </tr>
+  <tr>
+    <td>3D floor editing mode</td>
+	<td><i>none</i></td>
+    <td><img align="texttop" src="ThreeDFloorIcon.png" /></td>
+	<td>Enters the 3D floor editing mode</td>
+  </tr>
+  <tr>
+    <td>Cycle highlighted 3D floor down</td>
+	<td>Shift+ScrollDown</td>
+    <td><i>none</i></td>
+	<td>Cycles down through the 3D floors present in the highlighted sector</td>
+  </tr>
+  <tr>
+    <td>Cycle highlighted 3D floor up</td>
+	<td>Shift+ScrollUp</td>
+    <td><i>none</i></td>
+	<td>Cycles up through the 3D floors present in the highlighted sector</td>
+  </tr>
+  <tr>
+    <td>Select 3D floor control sector</td>
+	<td>Shift+S</td>
+    <td><i>none</i></td>
+	<td>Selects the control sector of the highlighted 3D floor</td>
+  </tr> 
+  <tr>
+    <td>Relocate 3D floor control sectors</td>
+	<td><i>none</i></td>
+    <td>Text button</td>
+	<td>Relocates the 3D floor control sectors to the current position of the control sector area</td>
+  </tr>
+  
+  <tr>
+    <td></td>
+	<td><i>none</i></td>
+    <td><img align="texttop" src="" /></td>
+	<td></td>
+  </tr>
+  
+</table>
+
+<h1>The Control Sector Area</h1>
+
+Upon entering the 3D floor mode you will see a green square:<br>
+
+<img src="csa.png" /><br>
+
+This is  the control sector area (CSA). All 3D floor control sectors will be created in this area. If there is not enough space in the CSA you will not be able to create more 3D floors.<br>
+
+<h2>Modifying The Control Sector Area</h2>
+
+You can resize and move the CSA. Resizing is done by simply dragging the edges or corners by holding the right mouse button. Moving is done by pointing the cursor inside the CSA and then drag it around by holding the right mouse button.<br>
+
+<h2>Tag Ranges</h2>
+
+You can define a range of tags that should be used for the 3D floor control sectors. This is done by pointing the cursor inside the CSA and then pressing the right mouse button. This will open the following dialog:<br>
+<br>
+<img src="csaoptions.png" /><br>
+<br>
+To set a range of tags to use first check the <i>Use tag range</i> checkbox and then set the desired first and last tag. <b>Note:</b> if you run out of tags you will not be able to create more 3D floors.<br>
+
+<h1>Managing 3D Floors</h1>
+
+3D floor mode works similar to sectors mode. You can select and deselect sectors, but when you edit them (default: right mouse button) the 3D floor editing dialog will show up:<br>
+<br>
+<img src="no3dfloors.png" /><br>
+<br>
+To add a new 3D floor press either one of the *Add 3D floor* buttons. After doing so a widget will be shown in the window that lets you set the properties of the 3D floor. The green bar on the left side indicates that this 3D floor was newly added.<br>
+<br>
+<b>Note:</b> you can have many 3D floors in the same sectors. Just keep pressing the <b>Add 3D floor</b> button.<br>
+<br>
+<img src="new3dfloor.png" /><br>
+<br>
+On the left side you can set bottom (control sector floor) height and texture, the border texture and the top (control sector ceiling) height and texture of the 3D floor. The border height, or thickness, is calculated automatically.<br>
+<br>
+In the center let's you set commonly used properties, like the type and flags of the 3D floor, as well as it's alpha and the brightness <i>below</i> the 3D floor. It also shows the tags of the control sector, as well as a button to edit the all properties of the control sector.<br>
+<br>
+On the right a list of sectors is displayed. This list indicates which sectors this 3D floor is applied to. Currently selected sectors are shown at the top, currently not selected sectors at the bottom, grayed out. You can check or uncheck the selected sectors to apply or remove a 3D floor from this sector.<br>
+<br>
+On the very right are several buttons to speed up common workflows:
+
+<table border="0" cellspacing="3" cellpadding="3">
+  <tr>
+    <th>Button</th>
+	<th>Action</th>
+  </tr>
+  <tr>
+    <td>Duplicate</td>
+	<td>creates an exact copy of the 3D floor and adds it to all checked sectors</td>
+  </tr>
+  <tr>
+    <td>Split</td>
+    <td>creates a new 3D floor for each checked sector, so that each sector has its unique 3D floor</td>
+  </tr>
+  <tr>  
+    <td>Detach</td>
+    <td>creates a copy of the 3D floor, remocing the checked sectors from the source 3D floor, adding them to the newly created one</td>
+  </tr>
+  <tr>  
+    <td>Check all</td>
+    <td>checks all sectors, applying the 3D floor to them</td>
+  </tr>
+  <tr>  
+    <td>Uncheck all</td>
+    <td>unchecks all sectors, removing the 3D floor from them</td>
+  </tr>	
+</table>
+
+<h1>Using The Docker</h1>
+
+The plugin comes with a docker for the 3D floor editing mode. Make sure the dockers are always expanded by pressing the <img src="DockerExpand.png" /> icon at the top of the docker if necessary. The docker will be selected by default when entering the 3D floor editing mode.<br>
+<br>
+When highlighting a sector the docker will show basic information about the 3D floors in this sector:<br>
+<br>
+<img src="docker1.png" /><br>
+<br>
+You can use the <i>cycle highlighted 3D floor up</i> (default: Shift+ScrollUp) and <i>cycle highlighted 3D floor down</i> (default: Shift+ScrollDown) actions to cycle through the 3D floors in the docker. A green bar on the left side will indicate which 3D floor is highlighted. All sectors the highlighted 3D floor is applied to will be shown with a green tint.<br>
+<br>
+<img src="docker2.png" /><br>
+<br>
+You can use the <i>Select 3D floor control sector</i> action (default: Shift+S) to select the control sector of the highlighted 3D floor. This is useful if you want to apply a slope to this 3D floor.
+
+</p>
+</div>
+</body>

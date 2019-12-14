@@ -1889,7 +1889,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public void AddThingGeometry(VisualThing t)
 		{
 			//mxd. Gather lights
-			if (General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && t.LightType != null && t.LightType.LightInternal)
+			if (General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && t.LightType != null)
 			{
 				t.UpdateLightRadius();
                 if (t.LightRadius > 0)

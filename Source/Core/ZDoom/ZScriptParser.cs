@@ -21,6 +21,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             public string ParentName { get; internal set; }
             public ZScriptActorStructure Actor { get; internal set; }
             internal DecorateCategoryInfo Region;
+			public bool IsMixin { get; internal set; }
 
             // these are used for parsing and error reporting
             public ZScriptParser Parser { get; internal set; }
@@ -33,7 +34,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             // textresourcepath
             public string TextResourcePath { get; internal set; }
 
-            internal ZScriptClassStructure(ZScriptParser parser, string classname, string replacesname, string parentname, DecorateCategoryInfo region)
+            internal ZScriptClassStructure(ZScriptParser parser, string classname, string replacesname, string parentname, bool ismixin, DecorateCategoryInfo region)
             {
                 Parser = parser;
 
@@ -49,6 +50,8 @@ namespace CodeImp.DoomBuilder.ZDoom
                 ParentName = parentname;
                 Actor = null;
                 Region = region;
+
+				IsMixin = ismixin;
             }
 
             internal void RestoreStreamData()
@@ -87,7 +90,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                 if (ReplacementName != null) log_inherits += ((log_inherits.Length > 0) ? ", " : "") + "replaces " + ReplacementName;
                 if (log_inherits.Length > 0) log_inherits = " (" + log_inherits + ")";
 
-                if (isactor)
+                if (isactor || IsMixin)
                 {
                     Actor = new ZScriptActorStructure(Parser, Region, ClassName, ReplacementName, ParentName);
                     if (Parser.HasError)
@@ -155,6 +158,10 @@ namespace CodeImp.DoomBuilder.ZDoom
         // In ZScript, you can inherit an actor before defining it. So we need to postpone all processing after the classes have been gathered.
         private Dictionary<string, ZScriptClassStructure> allclasses;
         private List<ZScriptClassStructure> allclasseslist;
+
+		// Mixin classes
+		private Dictionary<string, ZScriptClassStructure> mixinclasses;
+		private List<ZScriptClassStructure> mixinclasseslist;
 
         //mxd. Includes tracking
         private HashSet<string> parsedlumps;
@@ -308,6 +315,10 @@ namespace CodeImp.DoomBuilder.ZDoom
                     ReportError("Expected a token");
                     return null;
                 }
+
+				// biwa. Report a recoverable parsing problem
+				if (!string.IsNullOrEmpty(token.WarningMessage))
+					LogWarning(token.WarningMessage);
 
                 if ((token.Type == ZScriptTokenType.Semicolon ||
                      token.Type == ZScriptTokenType.Comma) && nestingLevel == 0 && !betweenparen)
@@ -571,7 +582,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             return name;
         }
 
-        internal bool ParseClassOrStruct(bool isstruct, bool extend, DecorateCategoryInfo region)
+        internal bool ParseClassOrStruct(bool isstruct, bool extend, bool mixin, DecorateCategoryInfo region)
         {
             // 'class' keyword is already parsed
             tokenizer.SkipWhitespace();
@@ -729,21 +740,37 @@ namespace CodeImp.DoomBuilder.ZDoom
             if (extend) log_inherits += ((log_inherits.Length > 0) ? ", " : "") + "extends";
             if (log_inherits.Length > 0) log_inherits = " (" + log_inherits + ")";
 
-            // now if we are a class, and we inherit actor, parse this entry as an actor. don't process extensions.
-            if (!isstruct && !extend)
-            {
-                ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, (tok_replacename != null) ? tok_replacename.Value : null, (tok_parentname != null) ? tok_parentname.Value : null, region);
-                cls.Position = cpos;
-                string clskey = cls.ClassName.ToLowerInvariant();
-                if (allclasses.ContainsKey(clskey))
-                {
-                    ReportError("Class "+cls.ClassName+" is double-defined");
-                    return false;
-                }
+			// now if we are a class, and we inherit actor, parse this entry as an actor. don't process extensions.
+			if (!isstruct && !extend && !mixin)
+			{
+				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, (tok_replacename != null) ? tok_replacename.Value : null, (tok_parentname != null) ? tok_parentname.Value : null, false, region);
+				cls.Position = cpos;
+				string clskey = cls.ClassName.ToLowerInvariant();
+				if (allclasses.ContainsKey(clskey))
+				{
+					ReportError("Class " + cls.ClassName + " is double-defined");
+					return false;
+				}
 
-                allclasses.Add(cls.ClassName.ToLowerInvariant(), cls);
-                allclasseslist.Add(cls);
-            }
+				allclasses.Add(cls.ClassName.ToLowerInvariant(), cls);
+				allclasseslist.Add(cls);
+			}
+			else if (mixin)
+			{
+				// This is a bit ugly. We're treating mixin classes as actors, even though they aren't. But otherwise the parser
+				// doesn't parse all the actor info we need
+				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, null, null, true, region);
+				cls.Position = cpos;
+				string clskey = cls.ClassName.ToLowerInvariant();
+				if(mixinclasses.ContainsKey(clskey))
+				{
+					ReportError("Mixin class " + cls.ClassName + " is double-defines");
+					return false;
+				}
+
+				mixinclasses.Add(cls.ClassName.ToLowerInvariant(), cls);
+				mixinclasseslist.Add(cls);
+			}
 
             //LogWarning(string.Format("Parsed {0} {1}{2}", (isstruct ? "struct" : "class"), tok_classname.Value, log_inherits));
 
@@ -890,17 +917,28 @@ namespace CodeImp.DoomBuilder.ZDoom
                                         ReportError("Expected class or struct, got " + ((Object)token ?? "<null>").ToString());
                                         return false;
                                     }
-                                    if (!ParseClassOrStruct((token.Value.ToLowerInvariant() == "struct"), true, (regions.Count > 0 ? regions.Last() : null)))
+                                    if (!ParseClassOrStruct((token.Value.ToLowerInvariant() == "struct"), true, false, (regions.Count > 0 ? regions.Last() : null)))
                                         return false;
                                     break;
-                                case "class":
+								case "mixin":
+									tokenizer.SkipWhitespace();
+									token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+									if(token == null || !token.IsValid ||((token.Value.ToLower() != "class")))
+									{
+										ReportError("Expected class, got " + ((Object)token ?? "<null>").ToString());
+										return false;
+									}
+									if (!ParseClassOrStruct(false, false, true, (regions.Count > 0 ? regions.Last() : null)))
+										return false;
+									break;
+								case "class":
                                     // todo parse class
-                                    if (!ParseClassOrStruct(false, false, (regions.Count > 0 ? regions.Last() : null)))
+                                    if (!ParseClassOrStruct(false, false, false, (regions.Count > 0 ? regions.Last() : null)))
                                         return false;
                                     break;
                                 case "struct":
                                     // todo parse struct
-                                    if (!ParseClassOrStruct(true, false, null))
+                                    if (!ParseClassOrStruct(true, false, false, null))
                                         return false;
                                     break;
                                 case "const":
@@ -944,83 +982,131 @@ namespace CodeImp.DoomBuilder.ZDoom
                     return false;
             }
 
+			// Parse mixin class data
+			foreach(ZScriptClassStructure cls in mixinclasseslist)
+			{
+				if (!cls.Process())
+					return false;
+			}
+
             // set datastream to null so that log messages aren't output using incorrect line numbers
             Stream odatastream = datastream;
             datastream = null;
 
-            // inject superclasses, since everything is parsed by now
+            // inject superclasses, and mixins, since everything is parsed by now
             Dictionary<int, ThingTypeInfo> things = General.Map.Config.GetThingTypes();
             foreach (ZScriptClassStructure cls in allclasseslist)
             {
                 ActorStructure actor = cls.Actor;
-                if (actor != null && cls.ParentName != null && cls.ParentName.ToLowerInvariant() != "thinker") // don't try to inherit this one
-                {
-                    actor.baseclass = GetArchivedActorByName(cls.ParentName, true);
-                    string inheritclass = cls.ParentName;
+				if (actor != null)
+				{
+					// Inheritance
+					if (cls.ParentName != null && cls.ParentName.ToLowerInvariant() != "thinker") // don't try to inherit this one)
+					{
+						actor.baseclass = GetArchivedActorByName(cls.ParentName, true);
+						string inheritclass = cls.ParentName;
 
-                    //check if this class inherits from a class defined in game configuration
-                    string inheritclasscheck = inheritclass.ToLowerInvariant();
+						//check if this class inherits from a class defined in game configuration
+						string inheritclasscheck = inheritclass.ToLowerInvariant();
 
-                    // inherit args from base class
-                    if (actor.baseclass != null)
-                    {
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (actor.args[i] == null)
-                                actor.args[i] = actor.baseclass.args[i];
-                        }
-                    }
+						// inherit args from base class
+						if (actor.baseclass != null)
+						{
+							for (int i = 0; i < 5; i++)
+							{
+								if (actor.args[i] == null)
+									actor.args[i] = actor.baseclass.args[i];
+							}
+						}
 
-                    bool thingfound = false;
-                    foreach (KeyValuePair<int, ThingTypeInfo> ti in things)
-                    {
-                        if (!string.IsNullOrEmpty(ti.Value.ClassName) && ti.Value.ClassName.ToLowerInvariant() == inheritclasscheck)
-                        {
-                            //states
-                            // [ZZ] allow internal prefix here. it can inherit MapSpot, light, or other internal stuff.
-                            if (actor.states.Count == 0 && !string.IsNullOrEmpty(ti.Value.Sprite))
-                                actor.states.Add("spawn", new StateStructure(ti.Value.Sprite.StartsWith(DataManager.INTERNAL_PREFIX) ? ti.Value.Sprite : ti.Value.Sprite.Substring(0, 5)));
+						bool thingfound = false;
+						foreach (KeyValuePair<int, ThingTypeInfo> ti in things)
+						{
+							if (!string.IsNullOrEmpty(ti.Value.ClassName) && ti.Value.ClassName.ToLowerInvariant() == inheritclasscheck)
+							{
+								//states
+								// [ZZ] allow internal prefix here. it can inherit MapSpot, light, or other internal stuff.
+								if (actor.states.Count == 0 && !string.IsNullOrEmpty(ti.Value.Sprite))
+									actor.states.Add("spawn", new StateStructure(ti.Value.Sprite.StartsWith(DataManager.INTERNAL_PREFIX) ? ti.Value.Sprite : ti.Value.Sprite.Substring(0, 5)));
 
-                            if (actor.baseclass == null)
-                            {
-                                //flags
-                                if (ti.Value.Hangs && !actor.flags.ContainsKey("spawnceiling"))
-                                    actor.flags["spawnceiling"] = true;
+								if (actor.baseclass == null)
+								{
+									//flags
+									if (ti.Value.Hangs && !actor.flags.ContainsKey("spawnceiling"))
+										actor.flags["spawnceiling"] = true;
 
-                                if (ti.Value.Blocking > 0 && !actor.flags.ContainsKey("solid"))
-                                    actor.flags["solid"] = true;
+									if (ti.Value.Blocking > 0 && !actor.flags.ContainsKey("solid"))
+										actor.flags["solid"] = true;
 
-                                //properties
-                                if (!actor.props.ContainsKey("height"))
-                                    actor.props["height"] = new List<string> { ti.Value.Height.ToString() };
+									//properties
+									if (!actor.props.ContainsKey("height"))
+										actor.props["height"] = new List<string> { ti.Value.Height.ToString() };
 
-                                if (!actor.props.ContainsKey("radius"))
-                                    actor.props["radius"] = new List<string> { ti.Value.Radius.ToString() };
-                            }
+									if (!actor.props.ContainsKey("radius"))
+										actor.props["radius"] = new List<string> { ti.Value.Radius.ToString() };
+								}
 
-                            // [ZZ] inherit arguments from game configuration
-                            //      
-                            if (!actor.props.ContainsKey("$clearargs"))
-                            {
-                                for (int i = 0; i < 5; i++)
-                                {
-                                    if (actor.args[i] != null)
-                                        continue; // don't touch it if we already have overrides
+								// [ZZ] inherit arguments from game configuration
+								//      
+								if (!actor.props.ContainsKey("$clearargs"))
+								{
+									for (int i = 0; i < 5; i++)
+									{
+										if (actor.args[i] != null)
+											continue; // don't touch it if we already have overrides
 
-                                    ArgumentInfo arg = ti.Value.Args[i];
-                                    if (arg != null && arg.Used)
-                                        actor.args[i] = arg;
-                                }
-                            }
+										ArgumentInfo arg = ti.Value.Args[i];
+										if (arg != null && arg.Used)
+											actor.args[i] = arg;
+									}
+								}
 
-                            thingfound = true;
-                            break;
-                        }
+								thingfound = true;
+								break;
+							}
 
-                        if (actor.baseclass == null && !thingfound)
-                            LogWarning("Unable to find \"" + inheritclass + "\" class to inherit from, while parsing \"" + cls.ClassName + "\"");
-                    }
-                }
+							if (actor.baseclass == null && !thingfound)
+								LogWarning("Unable to find \"" + inheritclass + "\" class to inherit from, while parsing \"" + cls.ClassName + "\"");
+						}
+					}
+
+					// Mixins. https://zdoom.org/wiki/ZScript_mixins
+					if (((ZScriptActorStructure)actor).Mixins.Count > 0)
+					{
+						foreach(string mixinclassname in ((ZScriptActorStructure)actor).Mixins)
+						{
+							if(!mixinclasses.ContainsKey(mixinclassname))
+							{
+								LogWarning("Unable to find \"" + mixinclassname + "\" mixin class while parsing \"" + actor.ClassName + "\"");
+								continue;
+							}
+
+							ZScriptClassStructure mixincls = mixinclasses[mixinclassname];
+
+							// States
+							if(actor.states.Count == 0 && mixincls.Actor.states.Count != 0)
+							{
+								// Can't use HasState and GetState here, because it does some magic that will not work for mixins
+								if (!actor.states.ContainsKey("spawn") && mixincls.Actor.states.ContainsKey("spawn"))
+									actor.states.Add("spawn", mixincls.Actor.GetState("spawn"));
+							}
+
+							// Properties
+							if (!actor.props.ContainsKey("height") && mixincls.Actor.props.ContainsKey("height"))
+								actor.props["height"] = new List<string>(mixincls.Actor.props["height"]);
+
+							if (!actor.props.ContainsKey("radius") && mixincls.Actor.props.ContainsKey("radius"))
+								actor.props["radius"] = new List<string>(mixincls.Actor.props["radius"]);
+
+							// Flags
+							if (!actor.flags.ContainsKey("spawnceiling") && mixincls.Actor.flags.ContainsKey("spawnceiling"))
+								actor.flags["spawnceiling"] = true;
+
+							if (!actor.flags.ContainsKey("solid") && mixincls.Actor.flags.ContainsKey("solid"))
+								actor.flags["solid"] = true;
+						}
+					}
+				}
             }
 
             // validate user variables (no variables should shadow parent variables)
@@ -1097,6 +1183,8 @@ namespace CodeImp.DoomBuilder.ZDoom
             parsedlumps = new HashSet<string>(StringComparer.OrdinalIgnoreCase); //mxd
             allclasses = new Dictionary<string, ZScriptClassStructure>();
             allclasseslist = new List<ZScriptClassStructure>();
+			mixinclasses = new Dictionary<string, ZScriptClassStructure>();
+			mixinclasseslist = new List<ZScriptClassStructure>();
         }
 
         #endregion

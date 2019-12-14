@@ -115,7 +115,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					else if(General.Map.Config.GeneralizedEffects && effect != 0 && s.Effect != 0)
 					{
 						SectorEffectData sdo = General.Map.Config.GetSectorEffectData(s.Effect);
-						match = (sd.Effect == sdo.Effect || (sd.GeneralizedBits.Count == sdo.GeneralizedBits.Count && sd.GeneralizedBits.Overlaps(sdo.GeneralizedBits)));
+
+						// It's a bit complicated, so use the following logic:
+						// Searching for normal effect + generalized effect -> sector has to have both (plus optionally other generalized effects)
+						// Searching for generalized effect -> sector has to have this generalized effect (plus optionally other generalized effects) and optionally any normal effect
+						// Searching for normal effect -> sector has to have normal effect and optionally any generalized effect
+						if (sd.Effect != 0 && sd.GeneralizedBits.Count > 0)
+							match = sd.Effect == sdo.Effect && sd.GeneralizedBits.IsSubsetOf(sdo.GeneralizedBits);
+						else if (sd.GeneralizedBits.Count > 0)
+							match = sd.GeneralizedBits.IsSubsetOf(sdo.GeneralizedBits);
+						else if (sd.Effect == sdo.Effect)
+							match = true;
 					}
 					
 					if(match)

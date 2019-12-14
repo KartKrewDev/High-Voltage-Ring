@@ -1606,12 +1606,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 					face.Add(int.Parse(vertexdata[0], CultureInfo.InvariantCulture) - 1);
 
-					if (vertexdata.Length >= 1 && vertexdata[1] != "")
+					if (vertexdata.Length > 1 && vertexdata[1] != "")
 						texcoords.Add(int.Parse(vertexdata[1], CultureInfo.InvariantCulture) - 1);
 					else
 						texcoords.Add(-1);
 
-					if (vertexdata.Length >= 2 && vertexdata[2] != "")
+					if (vertexdata.Length > 2 && vertexdata[2] != "")
 						normals.Add(int.Parse(vertexdata[2], CultureInfo.InvariantCulture) - 1);
 					else
 						normals.Add(-1);
