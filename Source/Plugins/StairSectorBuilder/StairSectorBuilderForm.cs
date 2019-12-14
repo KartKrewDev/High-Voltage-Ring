@@ -736,62 +736,67 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			}
         }
 
-        private void prefabload_Click(object sender, EventArgs e)
-        {
-			if(prefabs.SelectedIndices.Count == 0) return;
-
+		private void LoadPrefab(int position)
+		{
 			loadingprefab = true;
 
-            BuilderPlug.Prefab p = BuilderPlug.Me.Prefabs[prefabs.SelectedIndices[0]];
-			
-            prefabname.Text = p.name;
+			BuilderPlug.Prefab p = BuilderPlug.Me.Prefabs[position];
 
-            NumberOfSectors = (uint)p.numberofsectors;
-            OuterVertexMultiplier = p.outervertexmultiplier;
-            InnerVertexMultiplier = p.innervertexmultiplier;
+			prefabname.Text = p.name;
 
-            tabcontrol.SelectedIndex = p.stairtype;
+			NumberOfSectors = (uint)p.numberofsectors;
+			OuterVertexMultiplier = p.outervertexmultiplier;
+			InnerVertexMultiplier = p.innervertexmultiplier;
 
-            // Straight stairs
-            SectorDepth = (uint)p.sectordepth;
-            Spacing = p.spacing;
-            SideFront = p.frontside;
-            SingleSectors.Checked = p.singlesectors;
-            SingleDirection.Checked = p.singledirection;
+			tabcontrol.SelectedIndex = p.stairtype;
+
+			// Straight stairs
+			SectorDepth = (uint)p.sectordepth;
+			Spacing = p.spacing;
+			SideFront = p.frontside;
+			SingleSectors.Checked = p.singlesectors;
+			SingleDirection.Checked = p.singledirection;
 			DistinctBaseHeights.Checked = p.distinctbaseheights;
 
-            // Auto curve TODO
+			// Auto curve TODO
 			Flipping = p.flipping;
 
-            // Catmull Rom spline
-            NumControlPoints = p.numberofcontrolpoints;
+			// Catmull Rom spline
+			NumControlPoints = p.numberofcontrolpoints;
 
-            // Height info
-            FloorHeight = p.applyfloormod;
-            FloorHeightModification = p.floormod;
+			// Height info
+			FloorHeight = p.applyfloormod;
+			FloorHeightModification = p.floormod;
 			//FloorBase = p.floorbase;
-            CeilingHeight = p.applyceilingmod;
-            CeilingHeightModification = p.ceilingmod;
+			CeilingHeight = p.applyceilingmod;
+			CeilingHeightModification = p.ceilingmod;
 			//CeilingBase = p.ceilingbase;
 
-            // Textures
-            FloorFlat = p.applyfloortexture;
-            FloorFlatTexture = p.floortexture;
-            CeilingFlat = p.applyceilingtexture;
-            CeilingFlatTexture = p.ceilingtexture;
+			// Textures
+			FloorFlat = p.applyfloortexture;
+			FloorFlatTexture = p.floortexture;
+			CeilingFlat = p.applyceilingtexture;
+			CeilingFlatTexture = p.ceilingtexture;
 
-            UpperTexture = p.applyuppertexture;
-            UpperTextureTexture = p.uppertexture;
+			UpperTexture = p.applyuppertexture;
+			UpperTextureTexture = p.uppertexture;
 			UpperUnpegged = p.upperunpegged;
 
 			MiddleTexture = p.applymiddletexture;
 			MiddleTextureTexture = p.middletexture;
 
-            LowerTexture = p.applylowertexture;
-            LowerTextureTexture = p.lowertexture;
+			LowerTexture = p.applylowertexture;
+			LowerTextureTexture = p.lowertexture;
 			LowerUnpegged = p.lowerunpegged;
 
 			loadingprefab = false;
+		}
+
+        private void prefabload_Click(object sender, EventArgs e)
+        {
+			if(prefabs.SelectedIndices.Count == 0) return;
+
+			LoadPrefab(prefabs.SelectedIndices[0]);
 
 			DoRedrawDisplay();
         }
@@ -876,6 +881,15 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 		private void ceilingbasegetter_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			ceilingbase.Text = originalceilingbase.ToString();
+		}
+
+		private void prefabs_DoubleClick(object sender, EventArgs e)
+		{
+			if (prefabs.SelectedIndices.Count == 0) return;
+
+			LoadPrefab(prefabs.SelectedIndices[0]);
+
+			DoRedrawDisplay();
 		}
 	}
 }
