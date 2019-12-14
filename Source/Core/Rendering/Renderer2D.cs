@@ -967,7 +967,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				pos.y = windowsize.Height - pos.y;
 
 				// Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
-				gridplotter.DrawGridLineH((int)pos.y, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), c);
+				gridplotter.DrawGridLineH((int)pos.y, (int)from, (int)to, c);
 			}
 
 			// Draw all vertical grid lines
@@ -984,9 +984,11 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				pos.x = x;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
+                from = windowsize.Height - from;
+                to = windowsize.Height - to;
 
-				// Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
-				gridplotter.DrawGridLineV((int)pos.x, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), c);
+                // Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
+                gridplotter.DrawGridLineV((int)pos.x, (int)from, (int)to, c);
 			}
 		}
 
