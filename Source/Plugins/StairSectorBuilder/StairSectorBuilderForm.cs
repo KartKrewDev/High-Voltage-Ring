@@ -82,10 +82,16 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			set { distinctbaseheights = value; }
 		}
 
-		public CheckBox SingleSectors
+		public CheckBox SingleSteps
 		{
-			get { return singlesectors; }
-			set { singlesectors = value; }
+			get { return singlesteps; }
+			set { singlesteps = value; }
+		}
+
+		public CheckBox DistinctSectors
+		{
+			get { return distinctsectors; }
+			set { distinctsectors = value; }
 		}
 
 		public CheckBox SingleDirection
@@ -466,17 +472,23 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				singledirection.Checked = false;
 				singledirection.Enabled = false;
 
-				singlesectors.Checked = true;
-				singlesectors.Enabled = false;
+				singlesteps.Checked = true;
+				singlesteps.Enabled = false;
 			}
 		}
 
-		private void singlesectors_CheckedChanged(object sender, EventArgs e)
+		private void singleseteps_CheckedChanged(object sender, EventArgs e)
 		{
-			if(singlesectors.Checked)
+			if (singlesteps.Checked)
+			{
 				singledirection.Enabled = true;
+				distinctsectors.Enabled = true;
+			}
 			else
+			{
 				singledirection.Enabled = false;
+				distinctsectors.Enabled = false;
+			}
 
 			DoRedrawDisplay();
 		}
@@ -677,7 +689,8 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
             pf.sectordepth = (int)SectorDepth;
             pf.spacing = Spacing;
             pf.frontside = SideFront;
-            pf.singlesectors = SingleSectors.Checked;
+            pf.singlesteps = SingleSteps.Checked;
+			pf.distinctsectors = distinctsectors.Checked;
             pf.singledirection = SingleDirection.Checked;
 			pf.distinctbaseheights = DistinctBaseHeights.Checked;
 
@@ -754,7 +767,8 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			SectorDepth = (uint)p.sectordepth;
 			Spacing = p.spacing;
 			SideFront = p.frontside;
-			SingleSectors.Checked = p.singlesectors;
+			SingleSteps.Checked = p.singlesteps;
+			distinctsectors.Checked = p.distinctsectors;
 			SingleDirection.Checked = p.singledirection;
 			DistinctBaseHeights.Checked = p.distinctbaseheights;
 
@@ -889,6 +903,11 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 
 			LoadPrefab(prefabs.SelectedIndices[0]);
 
+			DoRedrawDisplay();
+		}
+
+		private void distinctsectors_CheckedChanged(object sender, EventArgs e)
+		{
 			DoRedrawDisplay();
 		}
 	}

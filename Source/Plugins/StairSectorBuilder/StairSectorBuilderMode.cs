@@ -107,6 +107,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
             public int floorheight;
             public int ceilingheight;
             public List<List<Vector2D>> sectors;
+			public List<List<Vector2D>> postlines;
         }
 
 
@@ -714,7 +715,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			GetConnectedLines(ref selectedlinedefs, -1);
 
             // Build an independend set of steps from each selected line
-			if(!stairsectorbuilderform.SingleSectors.Checked)
+			if(!stairsectorbuilderform.SingleSteps.Checked)
 			{
 				// Go through each selected line
 				for(int k = 0; k < sourceld.Count; k++)
@@ -761,7 +762,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
                     stairinfo.Add(si);
 				}
 			}
-			else if(stairsectorbuilderform.SingleSectors.Checked)
+			else if(stairsectorbuilderform.SingleSteps.Checked)
 			{
 				Vector2D direction = new Vector2D();
 				bool closed = false;
@@ -772,6 +773,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 					List<Vector2D> connecteddirections = new List<Vector2D>();
 					List<double> connectedlength = new List<double>();
                     List<List<Vector2D>> sisecs = new List<List<Vector2D>>();
+					List<List<Vector2D>> sipostlines = new List<List<Vector2D>>();
 
 					Vector2D globaldirection = Vector2D.FromAngle(cld.firstlinedef.Angle + Angle2D.DegToRad(stairsectorbuilderform.SideFront ? -90.0f : 90.0f));
 
@@ -899,6 +901,20 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 							}
 
                             newsec.Add(connectedvertices[k] + direction * length * (i + 1) + (direction * spacing) * i);
+
+							// Add lines to draw after the stair has been created, if desired
+							if (stairsectorbuilderform.DistinctSectors.Checked)
+							{
+								// Skip last and first vertex if vertices are not in a loop, the line would
+								// just draw over existing lines anyway
+								if (closed || (!closed && (k != connectedvertices.Count - 1 && k != 0)))
+								{
+									sipostlines.Add(new List<Vector2D>() {
+										connectedvertices[k] + direction * length * i + (direction * spacing) * i,
+										connectedvertices[k] + direction * length * (i + 1) + (direction * spacing) * i
+									});
+								}
+							}
 						}
 
 						if(closed == false)
@@ -916,6 +932,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 					GetSetTextureAndHeightInfo(cld.firstlinedef, out si);
 
                     si.sectors = sisecs;
+					si.postlines = sipostlines;
 
                     stairinfo.Add(si);
 				}
@@ -1190,7 +1207,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			selectedcontrolpoint.crsd = -1;
 			selectedcontrolpoint.crsg = -1;
 
-			stairsectorbuilderform.SingleSectors.Enabled = linesconnected;
+			stairsectorbuilderform.SingleSteps.Enabled = linesconnected;
 			stairsectorbuilderform.DistinctBaseHeights.Checked = (General.Map.Map.SelectedLinedefsCount != 1);
 
 
@@ -1326,8 +1343,32 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 					}
 				}
 
-				if(stairsectorbuilderform.MiddleTexture)
-					General.Map.Options.DefaultWallTexture = olddefaulttexture;
+				// Draw post lines
+				foreach (StairInfo si in stairsectors)
+				{
+					if (si.postlines != null)
+					{
+						foreach (List<Vector2D> lv in si.postlines)
+						{
+							List<Sector> oldsectors = new List<Sector>(General.Map.Map.Sectors);
+							List<DrawnVertex> vertices = new List<DrawnVertex>();
+
+							for (int i = 0; i < lv.Count; i++)
+								vertices.Add(SectorVertex(lv[i]));
+
+							// Draw the new sector
+							if (!Tools.DrawLines(vertices)) throw new Exception("Failed drawing lines");
+
+							// Find new sectors
+							foreach (Sector s in General.Map.Map.Sectors)
+								if (!oldsectors.Contains(s))
+									allnewsectors.Add(s);
+						}
+					}
+				}
+
+				if (stairsectorbuilderform.MiddleTexture)
+				General.Map.Options.DefaultWallTexture = olddefaulttexture;
 
 				// Snap to map format accuracy
 				General.Map.Map.SnapAllToAccuracy();
@@ -1447,8 +1488,22 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 							renderer.RenderRectangle(rect, 2, new PixelColor(128, 255, 0, 0), true);
 						}
 					}
+
+					if (si.postlines != null)
+					{
+						foreach (List<Vector2D> lv in si.postlines)
+						{
+							for (int i = 0; i < lv.Count - 1; i++)
+							{
+								renderer.RenderLine(lv[i], lv[i + 1], LINE_THICKNESS, General.Colors.Highlight, true);
+
+								//RectangleF rect = new RectangleF(lv[i].x - CONTROLPOINT_SIZE / 2, lv[i].y - CONTROLPOINT_SIZE / 2, 10.0f, 10.0f);
+								//renderer.RenderRectangle(rect, 2, new PixelColor(128, 255, 0, 0), true);
+							}
+						}
+					}
 				}
-			
+
 				renderer.Finish();
 			}
 
@@ -1541,7 +1596,8 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				data.Add("sectordepth", p.sectordepth);
 				data.Add("spacing", p.spacing);
 				data.Add("frontside", p.frontside);
-				data.Add("singlesectors", p.singlesectors);
+				data.Add("singlesectors", p.singlesteps);
+				data.Add("distinctsectors", p.distinctsectors);
 				data.Add("singledirection", p.singledirection);
 				data.Add("distinctbaseheights", p.distinctbaseheights);
 				data.Add("flipping", p.flipping);
@@ -1594,7 +1650,8 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 					if((string)entry.Key == "sectordepth") p.sectordepth = (int)entry.Value;
 					if((string)entry.Key == "spacing") p.spacing = (int)entry.Value;
 					if((string)entry.Key == "frontside") p.frontside = (bool)entry.Value;
-					if((string)entry.Key == "singlesectors") p.singlesectors = (bool)entry.Value;
+					if((string)entry.Key == "singlesectors") p.singlesteps = (bool)entry.Value;
+					if((string)entry.Key == "distinctsectors") p.distinctsectors = (bool)entry.Value;
 					if((string)entry.Key == "singledirection") p.singledirection = (bool)entry.Value;
 					if((string)entry.Key == "distinctbaseheights") p.distinctbaseheights = (bool)entry.Value;
 					if((string)entry.Key == "flipping") p.flipping = (int)entry.Value;

@@ -40,7 +40,7 @@
 			this.label11 = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.singledirection = new System.Windows.Forms.CheckBox();
-			this.singlesectors = new System.Windows.Forms.CheckBox();
+			this.singlesteps = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.sideback = new System.Windows.Forms.RadioButton();
 			this.sidefront = new System.Windows.Forms.RadioButton();
@@ -107,6 +107,7 @@
 			this.groupBox10 = new System.Windows.Forms.GroupBox();
 			this.middletexturetexture = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.middletexture = new System.Windows.Forms.CheckBox();
+			this.distinctsectors = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.tabcontrol.SuspendLayout();
 			this.tabPage1.SuspendLayout();
@@ -254,11 +255,12 @@
 			// 
 			// groupBox3
 			// 
+			this.groupBox3.Controls.Add(this.distinctsectors);
 			this.groupBox3.Controls.Add(this.singledirection);
-			this.groupBox3.Controls.Add(this.singlesectors);
+			this.groupBox3.Controls.Add(this.singlesteps);
 			this.groupBox3.Location = new System.Drawing.Point(82, 94);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(124, 79);
+			this.groupBox3.Size = new System.Drawing.Size(124, 93);
 			this.groupBox3.TabIndex = 3;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Appearance";
@@ -267,7 +269,7 @@
 			// 
 			this.singledirection.AutoSize = true;
 			this.singledirection.Enabled = false;
-			this.singledirection.Location = new System.Drawing.Point(7, 46);
+			this.singledirection.Location = new System.Drawing.Point(10, 64);
 			this.singledirection.Name = "singledirection";
 			this.singledirection.Size = new System.Drawing.Size(99, 18);
 			this.singledirection.TabIndex = 1;
@@ -275,17 +277,17 @@
 			this.singledirection.UseVisualStyleBackColor = true;
 			this.singledirection.CheckedChanged += new System.EventHandler(this.singledirection_CheckedChanged);
 			// 
-			// singlesectors
+			// singlesteps
 			// 
-			this.singlesectors.AutoSize = true;
-			this.singlesectors.Enabled = false;
-			this.singlesectors.Location = new System.Drawing.Point(7, 22);
-			this.singlesectors.Name = "singlesectors";
-			this.singlesectors.Size = new System.Drawing.Size(95, 18);
-			this.singlesectors.TabIndex = 0;
-			this.singlesectors.Text = "Single sectors";
-			this.singlesectors.UseVisualStyleBackColor = true;
-			this.singlesectors.CheckedChanged += new System.EventHandler(this.singlesectors_CheckedChanged);
+			this.singlesteps.AutoSize = true;
+			this.singlesteps.Enabled = false;
+			this.singlesteps.Location = new System.Drawing.Point(10, 22);
+			this.singlesteps.Name = "singlesteps";
+			this.singlesteps.Size = new System.Drawing.Size(85, 18);
+			this.singlesteps.TabIndex = 0;
+			this.singlesteps.Text = "Single steps";
+			this.singlesteps.UseVisualStyleBackColor = true;
+			this.singlesteps.CheckedChanged += new System.EventHandler(this.singleseteps_CheckedChanged);
 			// 
 			// groupBox2
 			// 
@@ -293,7 +295,7 @@
 			this.groupBox2.Controls.Add(this.sidefront);
 			this.groupBox2.Location = new System.Drawing.Point(11, 94);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(65, 79);
+			this.groupBox2.Size = new System.Drawing.Size(65, 93);
 			this.groupBox2.TabIndex = 2;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Side";
@@ -301,7 +303,7 @@
 			// sideback
 			// 
 			this.sideback.AutoSize = true;
-			this.sideback.Location = new System.Drawing.Point(7, 46);
+			this.sideback.Location = new System.Drawing.Point(7, 54);
 			this.sideback.Name = "sideback";
 			this.sideback.Size = new System.Drawing.Size(49, 18);
 			this.sideback.TabIndex = 1;
@@ -314,7 +316,7 @@
 			// 
 			this.sidefront.AutoSize = true;
 			this.sidefront.Checked = true;
-			this.sidefront.Location = new System.Drawing.Point(7, 22);
+			this.sidefront.Location = new System.Drawing.Point(7, 30);
 			this.sidefront.Name = "sidefront";
 			this.sidefront.Size = new System.Drawing.Size(50, 18);
 			this.sidefront.TabIndex = 0;
@@ -1079,6 +1081,18 @@
 			this.middletexture.UseVisualStyleBackColor = true;
 			this.middletexture.CheckedChanged += new System.EventHandler(this.middletexture_CheckedChanged);
 			// 
+			// distinctsectors
+			// 
+			this.distinctsectors.AutoSize = true;
+			this.distinctsectors.Enabled = false;
+			this.distinctsectors.Location = new System.Drawing.Point(10, 43);
+			this.distinctsectors.Name = "distinctsectors";
+			this.distinctsectors.Size = new System.Drawing.Size(101, 18);
+			this.distinctsectors.TabIndex = 2;
+			this.distinctsectors.Text = "Distinct sectors";
+			this.distinctsectors.UseVisualStyleBackColor = true;
+			this.distinctsectors.CheckedChanged += new System.EventHandler(this.distinctsectors_CheckedChanged);
+			// 
 			// StairSectorBuilderForm
 			// 
 			this.AcceptButton = this.btnOK;
@@ -1161,7 +1175,7 @@
 		private System.Windows.Forms.RadioButton sidefront;
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.CheckBox singledirection;
-		private System.Windows.Forms.CheckBox singlesectors;
+		private System.Windows.Forms.CheckBox singlesteps;
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.CheckBox floorflat;
 		private CodeImp.DoomBuilder.Controls.FlatSelectorControl floorflattexture;
@@ -1225,5 +1239,6 @@
 		private System.Windows.Forms.GroupBox groupBox10;
 		private CodeImp.DoomBuilder.Controls.TextureSelectorControl middletexturetexture;
 		private System.Windows.Forms.CheckBox middletexture;
+		private System.Windows.Forms.CheckBox distinctsectors;
 	}
 }
