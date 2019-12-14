@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ThreeDFloorMode</RootNamespace>
     <AssemblyName>ThreeDFloorMode</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -235,16 +235,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Builder.csproj">
-      <Project>{818b3d10-f791-4c3f-9af5-bb2d0079b63c}</Project>
+      <Project>{818B3D10-F791-4C3F-9AF5-BB2D0079B63C}</Project>
       <Name>Builder</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\BuilderEffects\BuilderEffects.csproj">
-      <Project>{b859be0f-a992-476d-a642-fa8efe94aaa5}</Project>
+      <Project>{B859BE0F-A992-476D-A642-FA8EFE94AAA5}</Project>
       <Name>BuilderEffects</Name>
     </ProjectReference>
     <ProjectReference Include="..\BuilderModes\BuilderModes.csproj">
-      <Project>{b42d5aa0-f9a6-4234-9c4b-a05b11a64851}</Project>
+      <Project>{B42D5AA0-F9A6-4234-9C4B-A05B11A64851}</Project>
       <Name>BuilderModes</Name>
     </ProjectReference>
   </ItemGroup>
