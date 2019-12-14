@@ -597,7 +597,7 @@
             this.tabs.Name = "tabs";
             this.tabs.Padding = new System.Drawing.Point(20, 3);
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(578, 556);
+            this.tabs.Size = new System.Drawing.Size(578, 552);
             this.tabs.TabIndex = 1;
             // 
             // tabproperties
@@ -609,10 +609,10 @@
             this.tabproperties.Controls.Add(groupfloorceiling);
             this.tabproperties.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.tabproperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabproperties.Location = new System.Drawing.Point(4, 22);
+            this.tabproperties.Location = new System.Drawing.Point(4, 24);
             this.tabproperties.Name = "tabproperties";
             this.tabproperties.Padding = new System.Windows.Forms.Padding(3);
-            this.tabproperties.Size = new System.Drawing.Size(570, 530);
+            this.tabproperties.Size = new System.Drawing.Size(570, 524);
             this.tabproperties.TabIndex = 0;
             this.tabproperties.Text = "Properties";
             this.tabproperties.UseVisualStyleBackColor = true;
@@ -741,9 +741,9 @@
             this.tabColors.Controls.Add(this.groupBox9);
             this.tabColors.Controls.Add(this.groupBox8);
             this.tabColors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tabColors.Location = new System.Drawing.Point(4, 22);
+            this.tabColors.Location = new System.Drawing.Point(4, 24);
             this.tabColors.Name = "tabColors";
-            this.tabColors.Size = new System.Drawing.Size(570, 530);
+            this.tabColors.Size = new System.Drawing.Size(570, 528);
             this.tabColors.TabIndex = 5;
             this.tabColors.Text = "Colors";
             this.tabColors.UseVisualStyleBackColor = true;
@@ -1057,9 +1057,9 @@
             this.tabSurfaces.Controls.Add(this.groupBox2);
             this.tabSurfaces.Controls.Add(this.groupBox1);
             this.tabSurfaces.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabSurfaces.Location = new System.Drawing.Point(4, 22);
+            this.tabSurfaces.Location = new System.Drawing.Point(4, 24);
             this.tabSurfaces.Name = "tabSurfaces";
-            this.tabSurfaces.Size = new System.Drawing.Size(570, 530);
+            this.tabSurfaces.Size = new System.Drawing.Size(570, 528);
             this.tabSurfaces.TabIndex = 2;
             this.tabSurfaces.Text = "Surfaces";
             this.tabSurfaces.UseVisualStyleBackColor = true;
@@ -1214,7 +1214,7 @@
             // 
             // floorAngleControl
             // 
-            this.floorAngleControl.Angle = -1620;
+            this.floorAngleControl.Angle = -1710;
             this.floorAngleControl.AngleOffset = 90;
             this.floorAngleControl.DoomAngleClamping = false;
             this.floorAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1511,7 +1511,7 @@
             // 
             // ceilAngleControl
             // 
-            this.ceilAngleControl.Angle = -1620;
+            this.ceilAngleControl.Angle = -1710;
             this.ceilAngleControl.AngleOffset = 90;
             this.ceilAngleControl.DoomAngleClamping = false;
             this.ceilAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1666,9 +1666,9 @@
             this.tabslopes.Controls.Add(this.groupBox5);
             this.tabslopes.Controls.Add(this.groupBox4);
             this.tabslopes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabslopes.Location = new System.Drawing.Point(4, 22);
+            this.tabslopes.Location = new System.Drawing.Point(4, 24);
             this.tabslopes.Name = "tabslopes";
-            this.tabslopes.Size = new System.Drawing.Size(570, 530);
+            this.tabslopes.Size = new System.Drawing.Size(570, 528);
             this.tabslopes.TabIndex = 3;
             this.tabslopes.Text = "Slopes / Portals";
             this.tabslopes.UseVisualStyleBackColor = true;
@@ -1897,9 +1897,9 @@
             // 
             this.tabcomment.Controls.Add(this.commenteditor);
             this.tabcomment.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tabcomment.Location = new System.Drawing.Point(4, 22);
+            this.tabcomment.Location = new System.Drawing.Point(4, 24);
             this.tabcomment.Name = "tabcomment";
-            this.tabcomment.Size = new System.Drawing.Size(570, 530);
+            this.tabcomment.Size = new System.Drawing.Size(570, 528);
             this.tabcomment.TabIndex = 4;
             this.tabcomment.Text = "Comment";
             this.tabcomment.UseVisualStyleBackColor = true;
@@ -1909,17 +1909,17 @@
             this.commenteditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.commenteditor.Location = new System.Drawing.Point(0, 0);
             this.commenteditor.Name = "commenteditor";
-            this.commenteditor.Size = new System.Drawing.Size(570, 530);
+            this.commenteditor.Size = new System.Drawing.Size(570, 528);
             this.commenteditor.TabIndex = 0;
             // 
             // tabcustom
             // 
             this.tabcustom.Controls.Add(this.fieldslist);
             this.tabcustom.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabcustom.Location = new System.Drawing.Point(4, 22);
+            this.tabcustom.Location = new System.Drawing.Point(4, 24);
             this.tabcustom.Name = "tabcustom";
             this.tabcustom.Padding = new System.Windows.Forms.Padding(3);
-            this.tabcustom.Size = new System.Drawing.Size(570, 530);
+            this.tabcustom.Size = new System.Drawing.Size(570, 528);
             this.tabcustom.TabIndex = 1;
             this.tabcustom.Text = "Custom";
             this.tabcustom.UseVisualStyleBackColor = true;
@@ -1937,7 +1937,7 @@
             this.fieldslist.PropertyColumnVisible = true;
             this.fieldslist.PropertyColumnWidth = 150;
             this.fieldslist.ShowFixedFields = true;
-            this.fieldslist.Size = new System.Drawing.Size(564, 524);
+            this.fieldslist.Size = new System.Drawing.Size(564, 522);
             this.fieldslist.TabIndex = 1;
             this.fieldslist.TypeColumnVisible = true;
             this.fieldslist.TypeColumnWidth = 100;
@@ -1947,7 +1947,7 @@
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(474, 570);
+            this.cancel.Location = new System.Drawing.Point(474, 566);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(112, 25);
             this.cancel.TabIndex = 4;
@@ -1958,7 +1958,7 @@
             // apply
             // 
             this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.apply.Location = new System.Drawing.Point(356, 570);
+            this.apply.Location = new System.Drawing.Point(356, 566);
             this.apply.Name = "apply";
             this.apply.Size = new System.Drawing.Size(112, 25);
             this.apply.TabIndex = 3;
@@ -1979,7 +1979,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(598, 600);
+            this.ClientSize = new System.Drawing.Size(598, 592);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.apply);
             this.Controls.Add(this.tabs);

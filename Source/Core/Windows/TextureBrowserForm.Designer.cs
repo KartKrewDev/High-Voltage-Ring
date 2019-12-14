@@ -48,7 +48,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(682, 413);
+            this.cancel.Location = new System.Drawing.Point(682, 409);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(98, 25);
             this.cancel.TabIndex = 3;
@@ -61,7 +61,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.apply.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.apply.Location = new System.Drawing.Point(682, 381);
+            this.apply.Location = new System.Drawing.Point(682, 377);
             this.apply.Name = "apply";
             this.apply.Size = new System.Drawing.Size(98, 30);
             this.apply.TabIndex = 2;
@@ -98,7 +98,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.tvTextureSets.SelectedImageIndex = 0;
             this.tvTextureSets.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             this.tvTextureSets.SelectionMode = CodeImp.DoomBuilder.Controls.TreeViewSelectionMode.SingleSelect;
-            this.tvTextureSets.Size = new System.Drawing.Size(198, 374);
+            this.tvTextureSets.Size = new System.Drawing.Size(198, 366);
             this.tvTextureSets.TabIndex = 4;
             this.tvTextureSets.TabStop = false;
             this.tvTextureSets.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvTextureSets_NodeMouseClick);
@@ -108,12 +108,13 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.browser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.browser.HideInputBox = false;
+            this.browser.ImageSize = 0;
             this.browser.Location = new System.Drawing.Point(0, 0);
             this.browser.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.browser.Name = "browser";
             this.browser.Padding = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.browser.PreventSelection = false;
-            this.browser.Size = new System.Drawing.Size(573, 442);
+            this.browser.Size = new System.Drawing.Size(573, 434);
             this.browser.TabIndex = 1;
             this.browser.TabStop = false;
             this.browser.SelectedItemChanged += new CodeImp.DoomBuilder.Controls.ImageBrowserControl.SelectedItemChangedDelegate(this.browser_SelectedItemChanged);
@@ -125,7 +126,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel.Location = new System.Drawing.Point(0, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(203, 442);
+            this.panel.Size = new System.Drawing.Size(203, 434);
             this.panel.TabIndex = 6;
             // 
             // splitter
@@ -143,7 +144,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.splitter.Panel2.Controls.Add(this.panel);
             this.splitter.Panel2MinSize = 100;
-            this.splitter.Size = new System.Drawing.Size(784, 442);
+            this.splitter.Size = new System.Drawing.Size(784, 434);
             this.splitter.SplitterDistance = 573;
             this.splitter.SplitterWidth = 8;
             this.splitter.TabIndex = 0;
@@ -155,7 +156,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(784, 442);
+            this.ClientSize = new System.Drawing.Size(784, 434);
             this.Controls.Add(this.apply);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.splitter);

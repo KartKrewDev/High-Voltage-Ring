@@ -91,7 +91,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.close.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.close.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.close.Location = new System.Drawing.Point(285, 245);
+            this.close.Location = new System.Drawing.Point(285, 241);
             this.close.Name = "close";
             this.close.Size = new System.Drawing.Size(116, 25);
             this.close.TabIndex = 5;
@@ -156,10 +156,10 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabPage1.Controls.Add(this.copyversion);
             this.tabPage1.Controls.Add(this.version);
             this.tabPage1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(383, 201);
+            this.tabPage1.Size = new System.Drawing.Size(383, 199);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "About GZDoom Builder";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -236,10 +236,10 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabPage2.Controls.Add(this.pictureBox2);
             this.tabPage2.Controls.Add(this.builderlink);
             this.tabPage2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(383, 201);
+            this.tabPage2.Size = new System.Drawing.Size(383, 199);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "About Doom Builder";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -250,7 +250,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.close;
-            this.ClientSize = new System.Drawing.Size(413, 277);
+            this.ClientSize = new System.Drawing.Size(413, 269);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.close);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
