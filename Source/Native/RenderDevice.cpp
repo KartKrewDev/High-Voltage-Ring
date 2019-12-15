@@ -6,10 +6,13 @@
 #include "Texture.h"
 #include "ShaderManager.h"
 #include <stdexcept>
+#include <cstdarg>
 
 RenderDevice::RenderDevice(void* disp, void* window)
 {
 	memset(mUniforms, 0, sizeof(mUniforms));
+	memset(mLastError, 0, sizeof(mLastError));
+	memset(mReturnError, 0, sizeof(mReturnError));
 
 	Context = IOpenGLContext::Create(disp, window);
 	if (Context)
@@ -25,7 +28,7 @@ RenderDevice::RenderDevice(void* disp, void* window)
 
 		mShaderManager = std::make_unique<ShaderManager>();
 
-		CheckError();
+		CheckGLError();
 		Context->ClearCurrent();
 	}
 }
@@ -270,7 +273,16 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 
 	if (target)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, target->GetFramebuffer(usedepthbuffer));
+		GLuint framebuffer = 0;
+		try
+		{
+			framebuffer = target->GetFramebuffer(usedepthbuffer);
+		}
+		catch (std::runtime_error& e)
+		{
+			SetError("Error setting render target: %s", e.what());
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		mViewportWidth = target->GetWidth();
 		mViewportHeight = target->GetHeight();
 		ApplyViewport();
@@ -310,7 +322,7 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 
 void RenderDevice::FinishRendering()
 {
-	CheckError();
+	CheckGLError();
 	Context->ClearCurrent();
 	mContextIsCurrent = false;
 }
@@ -408,11 +420,27 @@ void RenderDevice::InvalidateTexture(Texture* texture)
 	}
 }
 
-void RenderDevice::CheckError()
+void RenderDevice::CheckGLError()
 {
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR)
-		throw std::runtime_error("OpenGL error!");
+		SetError("OpenGL error: %d", error);
+}
+
+void RenderDevice::SetError(const char* fmt, ...)
+{
+	va_list va;
+	va_start(va, fmt);
+	mLastError[sizeof(mLastError) - 1] = 0;
+	_vsnprintf(mLastError, sizeof(mLastError)-1, fmt, va);
+	va_end(va);
+}
+
+const char* RenderDevice::GetError()
+{
+	memcpy(mReturnError, mLastError, sizeof(mReturnError));
+	mLastError[0] = 0;
+	return mReturnError;
 }
 
 Shader* RenderDevice::GetActiveShader()
@@ -492,7 +520,14 @@ void RenderDevice::ApplyChanges()
 
 void RenderDevice::ApplyShader()
 {
-	GetActiveShader()->Bind();
+	Shader* curShader = GetActiveShader();
+	if (!curShader->CheckCompile())
+	{
+		SetError("Failed to bind shader:\r\n%s", curShader->GetCompileError().c_str());
+		return;
+	}
+
+	curShader->Bind();
 	mShaderChanged = false;
 }
 
@@ -650,6 +685,11 @@ RenderDevice* RenderDevice_New(void* disp, void* window)
 void RenderDevice_Delete(RenderDevice* device)
 {
 	delete device;
+}
+
+const char* RenderDevice_GetError(RenderDevice* device)
+{
+	return device->GetError();
 }
 
 void RenderDevice_SetShader(RenderDevice* device, ShaderName name)

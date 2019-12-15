@@ -29,6 +29,11 @@ using System.Reflection;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
+    public class RenderDeviceException : Exception
+    {
+        public RenderDeviceException(string message) : base(message) { }
+    }
+
     public class RenderDevice : IDisposable
     {
 		public RenderDevice(RenderTargetControl rendertarget)
@@ -59,6 +64,13 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public bool Disposed { get { return Handle == IntPtr.Zero; } }
 
+        private void CheckAndThrow()
+        {
+            string err = Marshal.PtrToStringAnsi(RenderDevice_GetError(Handle));
+            if (err != "")
+                throw new RenderDeviceException(err);
+        }
+
         public void Dispose()
         {
             if (!Disposed)
@@ -71,36 +83,43 @@ namespace CodeImp.DoomBuilder.Rendering
         public void SetShader(ShaderName shader)
         {
             RenderDevice_SetShader(Handle, shader);
+            CheckAndThrow();
         }
 
         public void SetUniform(UniformName uniform, bool value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value ? 1.0f : 0.0f }, 1);
+            CheckAndThrow();
         }
 
         public void SetUniform(UniformName uniform, float value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value }, 1);
+            CheckAndThrow();
         }
 
         public void SetUniform(UniformName uniform, Vector2 value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y }, 2);
+            CheckAndThrow();
         }
 
         public void SetUniform(UniformName uniform, Vector3 value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z }, 3);
+            CheckAndThrow();
         }
 
         public void SetUniform(UniformName uniform, Vector4 value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z, value.W }, 4);
+            CheckAndThrow();
         }
 
         public void SetUniform(UniformName uniform, Color4 value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value.Red, value.Green, value.Blue, value.Alpha }, 4);
+            CheckAndThrow();
         }
 
         public void SetUniform(UniformName uniform, Matrix matrix)
@@ -111,173 +130,207 @@ namespace CodeImp.DoomBuilder.Rendering
                 matrix.M31, matrix.M32, matrix.M33, matrix.M34,
                 matrix.M41, matrix.M42, matrix.M43, matrix.M44
             }, 16);
+            CheckAndThrow();
         }
 
         public void SetVertexBuffer(VertexBuffer buffer)
         {
             RenderDevice_SetVertexBuffer(Handle, buffer != null ? buffer.Handle : IntPtr.Zero);
+            CheckAndThrow();
         }
 
         public void SetIndexBuffer(IndexBuffer buffer)
         {
             RenderDevice_SetIndexBuffer(Handle, buffer != null ? buffer.Handle : IntPtr.Zero);
+            CheckAndThrow();
         }
 
         public void SetAlphaBlendEnable(bool value)
         {
             RenderDevice_SetAlphaBlendEnable(Handle, value);
+            CheckAndThrow();
         }
 
         public void SetAlphaTestEnable(bool value)
         {
             RenderDevice_SetAlphaTestEnable(Handle, value);
+            CheckAndThrow();
         }
 
         public void SetCullMode(Cull mode)
         {
             RenderDevice_SetCullMode(Handle, mode);
+            CheckAndThrow();
         }
 
         public void SetBlendOperation(BlendOperation op)
         {
             RenderDevice_SetBlendOperation(Handle, op);
+            CheckAndThrow();
         }
 
         public void SetSourceBlend(Blend blend)
         {
             RenderDevice_SetSourceBlend(Handle, blend);
+            CheckAndThrow();
         }
 
         public void SetDestinationBlend(Blend blend)
         {
             RenderDevice_SetDestinationBlend(Handle, blend);
+            CheckAndThrow();
         }
 
         public void SetFillMode(FillMode mode)
         {
             RenderDevice_SetFillMode(Handle, mode);
+            CheckAndThrow();
         }
 
         public void SetMultisampleAntialias(bool value)
         {
             RenderDevice_SetMultisampleAntialias(Handle, value);
+            CheckAndThrow();
         }
 
         public void SetZEnable(bool value)
         {
             RenderDevice_SetZEnable(Handle, value);
+            CheckAndThrow();
         }
 
         public void SetZWriteEnable(bool value)
         {
             RenderDevice_SetZWriteEnable(Handle, value);
+            CheckAndThrow();
         }
 
         public void SetTexture(BaseTexture value)
         {
             RenderDevice_SetTexture(Handle, value != null ? value.Handle : IntPtr.Zero);
+            CheckAndThrow();
         }
 
         public void SetSamplerFilter(TextureFilter filter)
         {
             SetSamplerFilter(filter, filter, TextureFilter.None, 0.0f);
+            CheckAndThrow();
         }
 
         public void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
         {
             RenderDevice_SetSamplerFilter(Handle, minfilter, magfilter, mipfilter, maxanisotropy);
+            CheckAndThrow();
         }
 
         public void SetSamplerState(TextureAddress address)
         {
             SetSamplerState(address, address, address);
+            CheckAndThrow();
         }
 
         public void SetSamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
         {
             RenderDevice_SetSamplerState(Handle, addressU, addressV, addressW);
+            CheckAndThrow();
         }
 
         public void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount)
         {
             RenderDevice_DrawIndexed(Handle, type, startIndex, primitiveCount);
+            CheckAndThrow();
         }
 
         public void Draw(PrimitiveType type, int startIndex, int primitiveCount)
         {
             RenderDevice_Draw(Handle, type, startIndex, primitiveCount);
+            CheckAndThrow();
         }
 
         public void Draw(PrimitiveType type, int startIndex, int primitiveCount, FlatVertex[] data)
         {
             RenderDevice_DrawData(Handle, type, startIndex, primitiveCount, data);
+            CheckAndThrow();
         }
 
         public void StartRendering(bool clear, Color4 backcolor)
         {
             RenderDevice_StartRendering(Handle, clear, backcolor.ToArgb(), IntPtr.Zero, true);
+            CheckAndThrow();
         }
 
         public void StartRendering(bool clear, Color4 backcolor, Texture target, bool usedepthbuffer)
         {
             RenderDevice_StartRendering(Handle, clear, backcolor.ToArgb(), target.Handle, usedepthbuffer);
+            CheckAndThrow();
         }
 
         public void FinishRendering()
         {
             RenderDevice_FinishRendering(Handle);
+            CheckAndThrow();
         }
 
         public void Present()
         {
             RenderDevice_Present(Handle);
+            CheckAndThrow();
         }
 
         public void ClearTexture(Color4 backcolor, Texture texture)
         {
             RenderDevice_ClearTexture(Handle, backcolor.ToArgb(), texture.Handle);
+            CheckAndThrow();
         }
 
         public void CopyTexture(CubeTexture dst, CubeMapFace face)
         {
             RenderDevice_CopyTexture(Handle, dst.Handle, face);
+            CheckAndThrow();
         }
 
         public void SetBufferData(IndexBuffer buffer, int[] data)
         {
             RenderDevice_SetIndexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<int>());
+            CheckAndThrow();
         }
 
         public void SetBufferData(VertexBuffer buffer, int length, VertexFormat format)
         {
             int stride = (format == VertexFormat.Flat) ? FlatVertex.Stride : WorldVertex.Stride;
             RenderDevice_SetVertexBufferData(Handle, buffer.Handle, IntPtr.Zero, length * stride, format);
+            CheckAndThrow();
         }
 
         public void SetBufferData(VertexBuffer buffer, FlatVertex[] data)
         {
             RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<FlatVertex>(), VertexFormat.Flat);
+            CheckAndThrow();
         }
 
         public void SetBufferData(VertexBuffer buffer, WorldVertex[] data)
         {
             RenderDevice_SetVertexBufferData(Handle, buffer.Handle, data, data.Length * Marshal.SizeOf<WorldVertex>(), VertexFormat.World);
+            CheckAndThrow();
         }
 
         public void SetBufferSubdata(VertexBuffer buffer, long destOffset, FlatVertex[] data)
         {
             RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset * FlatVertex.Stride, data, data.Length * FlatVertex.Stride);
+            CheckAndThrow();
         }
 
         public void SetBufferSubdata(VertexBuffer buffer, long destOffset, WorldVertex[] data)
         {
             RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, destOffset * WorldVertex.Stride, data, data.Length * WorldVertex.Stride);
+            CheckAndThrow();
         }
 
         public void SetBufferSubdata(VertexBuffer buffer, FlatVertex[] data, long size)
         {
             if (size < 0 || size > data.Length) throw new ArgumentOutOfRangeException("size");
             RenderDevice_SetVertexBufferSubdata(Handle, buffer.Handle, 0, data, size * FlatVertex.Stride);
+            CheckAndThrow();
         }
 
         public void SetPixels(Texture texture, System.Drawing.Bitmap bitmap)
@@ -290,6 +343,7 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetPixels(Handle, texture.Handle, bmpdata.Scan0);
 
             bitmap.UnlockBits(bmpdata);
+            CheckAndThrow();
         }
 
         public void SetPixels(CubeTexture texture, CubeMapFace face, System.Drawing.Bitmap bitmap)
@@ -302,6 +356,7 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetCubePixels(Handle, texture.Handle, face, bmpdata.Scan0);
 
             bitmap.UnlockBits(bmpdata);
+            CheckAndThrow();
         }
 
         internal void RegisterResource(IRenderResource res)
@@ -350,10 +405,13 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_Delete(IntPtr handle);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr RenderDevice_SetShader(IntPtr hwnd, ShaderName name);
+        static extern IntPtr RenderDevice_GetError(IntPtr handle);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr RenderDevice_SetUniform(IntPtr hwnd, UniformName name, float[] data, int count);
+        static extern IntPtr RenderDevice_SetShader(IntPtr handle, ShaderName name);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr RenderDevice_SetUniform(IntPtr handle, UniformName name, float[] data, int count);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBuffer(IntPtr handle, IntPtr buffer);

@@ -126,7 +126,9 @@ public:
 	void ApplyBlendState();
 	void ApplyDepthState();
 
-	void CheckError();
+	void CheckGLError();
+	void SetError(const char* fmt, ...);
+	const char* GetError();
 
 	Shader* GetActiveShader();
 
@@ -185,6 +187,9 @@ public:
 	bool mRasterizerStateChanged = true;
 
 	bool mContextIsCurrent = false;
+
+	char mLastError[4096];
+	char mReturnError[4096];
 
 	int mViewportWidth = 0;
 	int mViewportHeight = 0;

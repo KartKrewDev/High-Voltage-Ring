@@ -4,31 +4,54 @@
 #include "RenderDevice.h"
 #include <stdexcept>
 
-void Shader::Setup(const std::string& vertexShader, const std::string& fragmentShader, bool alphatest)
+void Shader::Setup(const std::string& identifier, const std::string& vertexShader, const std::string& fragmentShader, bool alphatest)
 {
+	mIdentifier = identifier;
 	mVertexText = vertexShader;
 	mFragmentText = fragmentShader;
 	mAlphatest = alphatest;
 }
 
-void Shader::Bind()
+bool Shader::CheckCompile()
 {
 	bool firstCall = !mProgramBuilt;
 	if (firstCall)
 	{
 		mProgramBuilt = true;
 		CreateProgram();
+		glUseProgram(mProgram);
+		glUniform1i(glGetUniformLocation(mProgram, "texture1"), 0);
+		glUseProgram(0);
 	}
 
-	if (!mProgram)
+	return !mErrors.size();
+}
+
+std::string Shader::GetCompileError()
+{
+	std::string lines = "Error compiling ";
+	if (!mVertexShader)
+		lines += "vertex ";
+	else if (!mFragmentShader)
+		lines += "fragment ";
+	lines += "shader \"" + mIdentifier + "\":\r\n";
+	for (auto c : mErrors)
+	{
+		if (c == '\r')
+			continue;
+		if (c == '\n')
+			lines += "\r\n";
+		else lines += c;
+	}
+	return lines;
+}
+
+void Shader::Bind()
+{
+	if (!mProgram || !mProgramBuilt || mErrors.size())
 		return;
 
 	glUseProgram(mProgram);
-
-	if (firstCall)
-	{
-		glUniform1i(glGetUniformLocation(mProgram, "texture1"), 0);
-	}
 }
 
 void Shader::CreateProgram()
