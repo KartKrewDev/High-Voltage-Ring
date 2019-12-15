@@ -93,6 +93,14 @@ IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "Build\Builder.exe" GOTO FILEFAIL
 
 ECHO.
+ECHO Compiling BuilderNative component...
+ECHO.
+IF EXIST "Build\BuilderNative.dll" DEL /F /Q "Build\BuilderNative.dll" > NUL
+msbuild "Source\Native\BuilderNative.vcxproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
+IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+IF NOT EXIST "Build\BuilderNative.dll" GOTO FILEFAIL
+
+ECHO.
 ECHO Compiling Automap Mode plugin...
 ECHO.
 IF EXIST "Build\Plugins\AutomapMode.dll" DEL /F /Q "Build\Plugins\AutomapMode.dll" > NUL
