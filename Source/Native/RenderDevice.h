@@ -115,6 +115,7 @@ public:
 
 	void InvalidateTexture(Texture* texture);
 
+	void ApplyViewport();
 	void ApplyChanges();
 	void ApplyVertexBuffer();
 	void ApplyIndexBuffer();
@@ -184,4 +185,7 @@ public:
 	bool mRasterizerStateChanged = true;
 
 	bool mContextIsCurrent = false;
+
+	int mViewportWidth = 0;
+	int mViewportHeight = 0;
 };

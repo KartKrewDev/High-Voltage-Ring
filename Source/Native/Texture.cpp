@@ -42,11 +42,9 @@ void Texture::Invalidate()
 {
 	if (mDepthRenderbuffer) glDeleteRenderbuffers(1, &mDepthRenderbuffer);
 	if (mFramebuffer) glDeleteFramebuffers(1, &mFramebuffer);
-	if (mFramebufferDepth) glDeleteFramebuffers(1, &mFramebufferDepth);
 	if (mTexture) glDeleteTextures(1, &mTexture);
 	mDepthRenderbuffer = 0;
 	mFramebuffer = 0;
-	mFramebufferDepth = 0;
 	mTexture = 0;
 }
 
@@ -112,16 +110,16 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 	}
 	else
 	{
-		if (mFramebuffer == mFramebufferDepth)
+		if (mDepthRenderbuffer == 0)
 		{
-			if (mDepthRenderbuffer == 0)
-			{
-				glGenRenderbuffers(1, &mDepthRenderbuffer);
-				glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderbuffer);
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWidth, mHeight);
-				glBindRenderbuffer(GL_RENDERBUFFER, 0);
-			}
+			glGenRenderbuffers(1, &mDepthRenderbuffer);
+			glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderbuffer);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWidth, mHeight);
+			glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		}
 
+		if (mFramebuffer == 0)
+		{
 			GLuint texture = GetTexture();
 			glGenFramebuffers(1, &mFramebuffer);
 			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
@@ -129,8 +127,9 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer);
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				throw std::runtime_error("glCheckFramebufferStatus did not return GL_FRAMEBUFFER_COMPLETE");
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-		return mFramebufferDepth;
+		return mFramebuffer;
 	}
 }
 

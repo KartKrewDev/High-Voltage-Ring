@@ -218,12 +218,18 @@ void RenderDevice::SetSamplerState(TextureAddress addressU, TextureAddress addre
 	}
 }
 
+void RenderDevice::ApplyViewport()
+{
+	glViewport(0, 0, mViewportWidth, mViewportHeight);
+}
+
 void RenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount)
 {
 	static const int modes[] = { GL_LINES, GL_TRIANGLES, GL_TRIANGLE_STRIP };
 	static const int toVertexCount[] = { 2, 3, 1 };
 	static const int toVertexStart[] = { 0, 0, 2 };
 
+	ApplyViewport();
 	if (mNeedApply) ApplyChanges();
 	glDrawArrays(modes[(int)type], startIndex, toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type]);
 }
@@ -234,6 +240,7 @@ void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitive
 	static const int toVertexCount[] = { 2, 3, 1 };
 	static const int toVertexStart[] = { 0, 0, 2 };
 
+	ApplyViewport();
 	if (mNeedApply) ApplyChanges();
 	glDrawElements(modes[(int)type], toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type], GL_UNSIGNED_INT, (const void*)(startIndex * sizeof(uint32_t)));
 }
@@ -246,6 +253,7 @@ void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCou
 
 	int vertcount = toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type];
 
+	ApplyViewport();
 	if (mNeedApply) ApplyChanges();
 
 	glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
@@ -263,12 +271,16 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 	if (target)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, target->GetFramebuffer(usedepthbuffer));
-		glViewport(0, 0, target->GetWidth(), target->GetHeight());
+		mViewportWidth = target->GetWidth();
+		mViewportHeight = target->GetHeight();
+		ApplyViewport();
 	}
 	else
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, Context->GetWidth(), Context->GetHeight());
+		mViewportWidth = Context->GetWidth();
+		mViewportHeight = Context->GetHeight();
+		ApplyViewport();
 	}
 
 	if (clear && usedepthbuffer)

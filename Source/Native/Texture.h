@@ -39,6 +39,5 @@ private:
 	std::map<int, std::vector<uint32_t>> mPixels;
 	GLuint mTexture = 0;
 	GLuint mFramebuffer = 0;
-	GLuint mFramebufferDepth = 0;
 	GLuint mDepthRenderbuffer = 0;
 };
