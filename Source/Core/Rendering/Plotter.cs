@@ -166,12 +166,12 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void DrawGridLineH(int y, int x1, int x2, PixelColor c)
         {
-            DrawLine(x1, y, x2, y, c.ToInt());
+            DrawLine(x1, y, x2, y, c.ToInt(), true);
         }
 
         public void DrawGridLineV(int x, int y1, int y2, PixelColor c)
         {
-            DrawLine(x, y1, x, y2, c.ToInt());
+            DrawLine(x, y1, x, y2, c.ToInt(), true);
         }
 
         public void DrawLineSolid(int x1, int y1, int x2, int y2, PixelColor c, bool dotted = false)
