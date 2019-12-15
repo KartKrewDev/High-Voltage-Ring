@@ -215,9 +215,9 @@ namespace CodeImp.DoomBuilder.Rendering
             int y0 = y + size;
             int y1 = y - size;
 
-            int lightcolor = l.ToInt();
-            int darkcolor = d.ToInt();
-            int centercolor = c.ToInt();
+            int lightcolor = l.ApplyAlpha().ToInt();
+            int darkcolor = d.ApplyAlpha().ToInt();
+            int centercolor = c.ApplyAlpha().ToInt();
             DrawLine(x1, y1, x0, y1, darkcolor);
             DrawLine(x1, y1, x1, y0, darkcolor);
             DrawLine(x0, y0, x1, y0, lightcolor);
@@ -227,17 +227,17 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void DrawGridLineH(int y, int x1, int x2, PixelColor c)
         {
-            DrawLine(x1, y, x2, y, c.ToInt(), true);
+            DrawLine(x1, y, x2, y, c.ApplyAlpha().ToInt(), true);
         }
 
         public void DrawGridLineV(int x, int y1, int y2, PixelColor c)
         {
-            DrawLine(x, y1, x, y2, c.ToInt(), true);
+            DrawLine(x, y1, x, y2, c.ApplyAlpha().ToInt(), true);
         }
 
         public void DrawLineSolid(int x1, int y1, int x2, int y2, PixelColor c, bool dotted = false)
         {
-            DrawLine(x1, y1, x2, y2, c.ToInt(), dotted);
+            DrawLine(x1, y1, x2, y2, c.ApplyAlpha().ToInt(), dotted);
         }
 
         public void DrawLine3DFloor(Vector2D start, Vector2D end, PixelColor c, PixelColor c2) 
