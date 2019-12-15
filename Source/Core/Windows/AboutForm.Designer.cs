@@ -179,12 +179,12 @@ namespace CodeImp.DoomBuilder.Windows
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 135);
+            this.label2.Location = new System.Drawing.Point(14, 125);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(286, 39);
             this.label2.TabIndex = 17;
             this.label2.Text = "GZDoom Builder is designed and programmed by MaxED.\r\nGZDoom Builder uses game con" +
-    "figurations created by Gez.\r\nThis version (GZDB-Bugfix) is maintained by ZZYZX.";
+    "figurations created by Gez.\r\nThis version (GZDB-Bugfix) is maintained by ZZYZX.\r\nOpenGL port by Talon1024 && dpJudas.";
             // 
             // pictureBox4
             // 
