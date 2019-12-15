@@ -304,9 +304,10 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
+            graphics.SetSamplerFilter(General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point);
 
-			// Texture addressing
-			graphics.SetSamplerState(TextureAddress.Wrap);
+            // Texture addressing
+            graphics.SetSamplerState(TextureAddress.Wrap);
 
 			// Matrices
 			world = Matrix.Identity;
@@ -1995,7 +1996,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetUniform(UniformName.projection, world * view2d);
             graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.rendersettings, new Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-            graphics.SetSamplerFilter(TextureFilter.Linear);
+            graphics.SetSamplerFilter(General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point);
 
             // Texture
             if (crosshairbusy)
