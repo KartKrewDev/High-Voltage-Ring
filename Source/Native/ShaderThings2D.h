@@ -12,7 +12,7 @@ static const char* things2D_vs = R"(
 
 	void main()
 	{
-		gl_Position = projection * vec4(AttrPosition, 1.0f);
+		gl_Position = projection * vec4(AttrPosition, 1.0);
 		Color = AttrColor;
 		UV = AttrUV;
 	}
@@ -47,7 +47,7 @@ static const char* things2D_ps_sprite = R"(
 		if (Color.a > 0.0)
 		{
 			vec3 cr = desaturate(c.rgb);
-			FragColor = vec4((cr.r + Color.r) / 2.0f, (cr.g + Color.g) / 2.0f, (cr.b + Color.b) / 2.0f, c.a * rendersettings.w * Color.a);
+			FragColor = vec4((cr.r + Color.r) / 2.0, (cr.g + Color.g) / 2.0, (cr.b + Color.b) / 2.0, c.a * rendersettings.w * Color.a);
 		}
 		else
 		{

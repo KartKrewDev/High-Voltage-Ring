@@ -13,7 +13,7 @@ static const char* plotter_vs = R"(
 
 	void main()
 	{
-		gl_Position = projection * vec4(AttrPosition, 1.0f);
+		gl_Position = projection * vec4(AttrPosition, 1.0);
 		Color = AttrColor;
 		UV = AttrUV;
 		Pos = AttrPosition.xy;
@@ -41,7 +41,7 @@ const char* plotter_ps = R"(
 			);
 
 			// line stipple
-			if (mod(floor(mix(tPos.x, tPos.y, yFrac)), 2.0) > 0f)
+			if (mod(floor(mix(tPos.x, tPos.y, yFrac)), 2.0) > 0.0)
 				discard;
 		}
 

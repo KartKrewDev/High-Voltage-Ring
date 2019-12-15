@@ -12,7 +12,7 @@ static const char* display2D_vs = R"(
 
 	void main()
 	{
-		gl_Position = projection * vec4(AttrPosition, 1.0f);
+		gl_Position = projection * vec4(AttrPosition, 1.0);
 		Color = AttrColor;
 		UV = AttrUV;
 	}
@@ -56,7 +56,7 @@ static const char* display2D_ps_fsaa = R"(
 		vec4 c = texture(texture1, UV);
 	
 		// If this pixel is not drawn on...
-		if(c.a < 0.1f)
+		if(c.a < 0.1)
 		{
 			// Mix the colors of nearby pixels
 			vec4 n = vec4(0.0);

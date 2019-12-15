@@ -161,7 +161,7 @@ static const char* world3D_ps_main = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -190,7 +190,7 @@ static const char* world3D_ps_fullbright = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -236,7 +236,7 @@ static const char* world3D_ps_main_highlight = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -275,7 +275,7 @@ static const char* world3D_ps_fullbright_highlight = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -331,7 +331,7 @@ static const char* world3D_ps_main_fog = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -391,7 +391,7 @@ static const char* world3D_ps_main_highlight_fog = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -415,7 +415,7 @@ static const char* world3D_ps_constant_color = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -437,7 +437,7 @@ static const char* world3D_ps_vertex_color = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
 
@@ -499,7 +499,7 @@ static const char* world3D_ps_lightpass = R"(
 			lightColorMod.rgb *= df;
 		}
 
-		if (lightColor.a > 0.979f && lightColor.a < 0.981f) // attenuated light 98%
+		if (lightColor.a > 0.979 && lightColor.a < 0.981) // attenuated light 98%
 			lightColorMod.rgb *= diffuseContribution;
 
 		if (lightColorMod.r <= 0.0 && lightColorMod.g <= 0.0 && lightColorMod.b <= 0.0)
@@ -539,6 +539,6 @@ static const char* world3D_ps_skybox = R"(
 		if (FragColor.a < 0.5) discard;
 		#endif
 
-		if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+		if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 	}
 )";
