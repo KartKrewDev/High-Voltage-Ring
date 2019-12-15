@@ -7,6 +7,7 @@ static const char* plotter_vs = R"(
 
 	out vec4 Color;
 	out vec2 UV;
+	out vec2 Pos;
 
 	uniform mat4 projection;
 
@@ -15,20 +16,34 @@ static const char* plotter_vs = R"(
 		gl_Position = projection * vec4(AttrPosition, 1.0f);
 		Color = AttrColor;
 		UV = AttrUV;
+		Pos = AttrPosition.xy;
 	}
 )";
 
 const char* plotter_ps = R"(
 	in vec4 Color;
 	in vec2 UV;
+	in vec2 Pos;
 
 	out vec4 FragColor;
 
+	uniform vec4 rendersettings;
+
 	void main()
 	{
-		// line stipple
-		if (mod(UV.x, 2.0) > 1.0)
-			discard;
+		if (UV.x < 0)
+		{
+			float yFrac = -(UV.x + 1);
+
+			vec2 tPos = vec2(
+				gl_FragCoord.x,
+				gl_FragCoord.y
+			);
+
+			// line stipple
+			if (mod(floor(mix(tPos.x, tPos.y, yFrac)), 2.0) > 0f)
+				discard;
+		}
 
 		// line smoothing
 		float linewidth = 3.0;

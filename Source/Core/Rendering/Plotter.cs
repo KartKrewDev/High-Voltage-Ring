@@ -42,7 +42,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void DrawContents(RenderDevice graphics)
         {
-            if (clear == false && vertices.Count == 0)
+            if (clear == false && Lists.Count == 0)
                 return;
 
             var projmat = Matrix.Scaling(2.0f / this.Texture.Width, 2.0f / this.Texture.Height, 1.0f) * Matrix.Translation(-1.0f, -1.0f, 0.0f);
@@ -54,12 +54,30 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetBlendOperation(BlendOperation.Add);
             graphics.SetSourceBlend(Blend.SourceAlpha);
             graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
-            graphics.Draw(PrimitiveType.TriangleList, 0, vertices.Count / 3, vertices.ToArray());
+            for (int i = 0; i < Lists.Count; i++)
+            {
+                PrimitiveType pt = Lists[i].PrimitiveType;
+                List<FlatVertex> vertices = Lists[i].Vertices;
+                int cnt = vertices.Count;
+                switch (pt)
+                {
+                    case PrimitiveType.TriangleList:
+                        cnt /= 3;
+                        break;
+                    case PrimitiveType.LineList:
+                        cnt /= 2;
+                        break;
+                    case PrimitiveType.TriangleStrip:
+                        cnt = 1;
+                        break;
+                }
+                graphics.Draw(Lists[i].PrimitiveType, 0, cnt, vertices.ToArray());
+            }
             graphics.SetAlphaBlendEnable(false);
             graphics.FinishRendering();
 
             clear = false;
-            vertices.Clear();
+            Lists.Clear();
         }
 
         private int TransformY(int y)
@@ -67,11 +85,9 @@ namespace CodeImp.DoomBuilder.Rendering
             return this.Texture.Height - y;
         }
 
-        void DrawLine(int x0, int y0, int x1, int y1, int c, bool dotted = false)
+        // non-dotted line may be smoothed
+        void DrawSmoothedLine(int x0, int y0, int x1, int y1, int c)
         {
-            y0 = TransformY(y0);
-            y1 = TransformY(y1);
-
             var v = new FlatVertex();
             v.c = c;
 
@@ -105,28 +121,73 @@ namespace CodeImp.DoomBuilder.Rendering
             float xx1 = x1 + 0.5f + dx;
             float yy1 = y1 + 0.5f + dy;
 
-            float start, end;
-            if (!dotted)
-            {
-                start = 0.5f;
-                end = 0.5f;
-            }
-            else
-            {
-                start = 0.0f;
-                end = len;
-            }
-
             float lineextent = 3.0f; // line width in shader + 1
             nx *= lineextent;
             ny *= lineextent;
 
-            v.u = start; v.v = -lineextent; v.x = xx0 - nx; v.y = yy0 - ny; vertices.Add(v);
-            v.u = start; v.v = lineextent; v.x = xx0 + nx; v.y = yy0 + ny; vertices.Add(v);
-            v.u = end; v.v = lineextent; v.x = xx1 + nx; v.y = yy1 + ny; vertices.Add(v);
-            vertices.Add(v);
-            v.u = end; v.v = -lineextent; v.x = xx1 - nx; v.y = yy1 - ny; vertices.Add(v);
-            v.u = start; v.v = -lineextent; v.x = xx0 - nx; v.y = yy0 - ny; vertices.Add(v);
+            v.u = 0.5f;
+
+            v.v = -lineextent; v.x = xx0 - nx; v.y = yy0 - ny; AddVertex(PrimitiveType.TriangleList, v);
+            v.v = lineextent; v.x = xx0 + nx; v.y = yy0 + ny; AddVertex(PrimitiveType.TriangleList, v);
+            v.v = lineextent; v.x = xx1 + nx; v.y = yy1 + ny; AddVertex(PrimitiveType.TriangleList, v);
+            AddVertex(PrimitiveType.TriangleList, v);
+            v.v = -lineextent; v.x = xx1 - nx; v.y = yy1 - ny; AddVertex(PrimitiveType.TriangleList, v);
+            v.v = -lineextent; v.x = xx0 - nx; v.y = yy0 - ny; AddVertex(PrimitiveType.TriangleList, v);
+        }
+
+        void DrawLine(int x0, int y0, int x1, int y1, int c, bool dotted = false)
+        {
+            y0 = TransformY(y0);
+            y1 = TransformY(y1);
+
+            if (!dotted)
+            {
+                DrawSmoothedLine(x0, y0, x1, y1, c);
+                return;
+            }
+
+            var v = new FlatVertex();
+            v.c = c;
+
+            float nx, ny, len;
+            if (x0 == x1)
+            {
+                nx = 1.0f;
+                ny = 0.0f;
+                len = y1 - y0;
+            }
+            else if (y0 == y1)
+            {
+                nx = 0.0f;
+                ny = 1.0f;
+                len = x1 - x0;
+            }
+            else
+            {
+                nx = (float)(y1 - y0);
+                ny = (float)-(x1 - x0);
+                len = (float)Math.Sqrt(nx * nx + ny * ny);
+                nx /= len;
+                ny /= len;
+            }
+
+            float xx0 = x0 + 0.5f;
+            float yy0 = y0 + 0.5f;
+            float xx1 = x1 + 0.5f;
+            float yy1 = y1 + 0.5f;
+
+            float dotType = 0;
+            if (dotted)
+            {
+                if (Math.Abs(ny) > Math.Abs(nx))
+                    dotType = -1;
+                else dotType = -2;
+            }
+
+            v.u = dotType; v.v = 0; v.x = xx0; v.y = yy0;
+            AddVertex(PrimitiveType.LineList, v);
+            v.u = dotType; v.v = 0; v.x = xx1; v.y = yy1;
+            AddVertex(PrimitiveType.LineList, v);
         }
 
         void FillBox(int x0, int y0, int x1, int y1, int c)
@@ -139,12 +200,12 @@ namespace CodeImp.DoomBuilder.Rendering
             v.u = 0.5f;
             v.v = 0.0f;
 
-            v.x = x0; v.y = y0; vertices.Add(v);
-            v.x = x1; v.y = y0; vertices.Add(v);
-            v.x = x1; v.y = y1; vertices.Add(v);
-            vertices.Add(v);
-            v.x = x0; v.y = y1; vertices.Add(v);
-            v.x = x0; v.y = y0; vertices.Add(v);
+            v.x = x0; v.y = y0; AddVertex(PrimitiveType.TriangleList, v);
+            v.x = x1; v.y = y0; AddVertex(PrimitiveType.TriangleList, v);
+            v.x = x1; v.y = y1; AddVertex(PrimitiveType.TriangleList, v);
+            AddVertex(PrimitiveType.TriangleList, v);
+            v.x = x0; v.y = y1; AddVertex(PrimitiveType.TriangleList, v);
+            v.x = x0; v.y = y0; AddVertex(PrimitiveType.TriangleList, v);
         }
 
         public void DrawVertexSolid(int x, int y, int size, PixelColor c, PixelColor l, PixelColor d)
@@ -214,7 +275,26 @@ namespace CodeImp.DoomBuilder.Rendering
         }
 
         bool clear = true;
-        List<FlatVertex> vertices = new List<FlatVertex>();
+        // 
+        private struct PlotVertexList
+        {
+            public PrimitiveType PrimitiveType;
+            public List<FlatVertex> Vertices;
+        }
+        private List<PlotVertexList> Lists = new List<PlotVertexList>();
+
+        private void AddVertex(PrimitiveType t, FlatVertex v)
+        {
+            if (Lists.Count == 0 || Lists[Lists.Count-1].PrimitiveType != t)
+            {
+                PlotVertexList vxlist;
+                vxlist.PrimitiveType = t;
+                vxlist.Vertices = new List<FlatVertex>();
+                Lists.Add(vxlist);
+            }
+
+            Lists[Lists.Count - 1].Vertices.Add(v);
+        }
 
         const int DASH_INTERVAL = 16;
     }
