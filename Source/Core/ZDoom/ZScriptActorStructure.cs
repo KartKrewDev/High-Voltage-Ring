@@ -870,6 +870,11 @@ namespace CodeImp.DoomBuilder.ZDoom
                     switch (type)
                     {
                         case "int":
+						case "int8":
+						case "int16":
+						case "uint":
+						case "uint8":
+						case "uint16":
                             utype = UniversalType.Integer;
                             break;
                         case "float":
@@ -877,7 +882,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                             utype = UniversalType.Float;
                             break;
                         case "bool":
-                            utype = UniversalType.Integer;
+                            utype = UniversalType.Boolean;
                             break;
                         case "string":
                             utype = UniversalType.String;
@@ -925,36 +930,33 @@ namespace CodeImp.DoomBuilder.ZDoom
                                 break;
                             case UniversalType.Integer:
                                 int i;
-                                if (!int.TryParse(sp, out i))
-                                {
-                                    if (utype_reinterpret == UniversalType.Color)
-                                    {
-                                        sp = sp.ToLowerInvariant();
-                                        Rendering.PixelColor pc;
-                                        if (!ZDTextParser.GetColorFromString(sp, out pc))
-                                        {
-                                            parser.LogWarning("Incorrect color default from string \"" + sp + "\"");
-                                            break;
-                                        }
-                                        udefault = pc.ToInt()&0xFFFFFF;
-                                        break;
-                                    }
-                                    if (type == "bool")
-                                    {
-                                        sp = sp.ToLowerInvariant();
-                                        if (sp == "true")
-                                            udefault = true;
-                                        else if (sp == "false")
-                                            udefault = false;
-                                        else parser.LogWarning("Incorrect boolean default from string \"" + sp + "\"");
-                                        break;
-                                    }
-                                    parser.LogWarning("Incorrect integer default from string \"" + sp + "\"");
-                                    break;
-                                }
-                                udefault = i;
-                                break;
-                        }
+								if (!int.TryParse(sp, out i))
+								{
+									if (utype_reinterpret == UniversalType.Color)
+									{
+										sp = sp.ToLowerInvariant();
+										Rendering.PixelColor pc;
+										if (!ZDTextParser.GetColorFromString(sp, out pc))
+										{
+											parser.LogWarning("Incorrect color default from string \"" + sp + "\"");
+											break;
+										}
+										udefault = pc.ToInt() & 0xFFFFFF;
+										break;
+									}
+								}
+								udefault = i;
+								break;
+							case UniversalType.Boolean:
+								sp = sp.ToLowerInvariant();
+								if (sp == "true")
+									udefault = true;
+								else if (sp == "false")
+									udefault = false;
+								else
+									parser.LogWarning("Incorrect boolean default from string \"" + sp + "\"");
+								break;
+						}
                     }
 
                     for (int i = 0; i < names.Count; i++)
