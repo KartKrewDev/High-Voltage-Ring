@@ -3702,12 +3702,12 @@ namespace CodeImp.DoomBuilder.Data
 					break;
 
 				case CubeMapFace.PositiveY:
-					lookdir = new Vector3(0.0f, 1.0f, 0.0f);
+					lookdir = new Vector3(0.0f, -1.0f, 0.0f);
 					updir = new Vector3(0.0f, 0.0f, 1.0f);
 					break;
 
 				case CubeMapFace.NegativeY:
-					lookdir = new Vector3(0.0f, -1.0f, 0.0f);
+					lookdir = new Vector3(0.0f, 1.0f, 0.0f);
 					updir = new Vector3(0.0f, 0.0f, -1.0f);
 					break;
 
