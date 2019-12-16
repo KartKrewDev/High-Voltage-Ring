@@ -359,6 +359,12 @@ namespace CodeImp.DoomBuilder.Rendering
             CheckAndThrow();
         }
 
+        public unsafe void SetPixels(Texture texture, uint* pixeldata)
+        {
+            RenderDevice_SetPixels(Handle, texture.Handle, new IntPtr(pixeldata));
+            CheckAndThrow();
+        }
+
         internal void RegisterResource(IRenderResource res)
         {
         }

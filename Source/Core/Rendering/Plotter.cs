@@ -17,285 +17,407 @@
 #region ================== Namespaces
 
 using System;
-using System.Collections.Generic;
 using CodeImp.DoomBuilder.Geometry;
 
 #endregion
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal sealed class Plotter : IDisposable
-	{
-		public Plotter(int width, int height)
-		{
-            this.Texture = new Texture(width, height);
-        }
+    internal unsafe sealed class Plotter : IDisposable
+    {
+        #region ================== Constants
 
-        ~Plotter()
+        private const int DASH_INTERVAL = 16; //mxd
+
+        #endregion
+
+        #region ================== Variables
+
+        // Memory
+        private PixelColor[] pixels;
+        private int width;
+        private int height;
+        private int visiblewidth;
+        private int visibleheight;
+        // GL
+        public Texture Texture { get; private set; }
+
+        #endregion
+
+        #region ================== Properties
+
+        public int VisibleWidth { get { return visiblewidth; } }
+        public int VisibleHeight { get { return visibleheight; } }
+        public int Width { get { return width; } }
+        public int Height { get { return height; } }
+
+        #endregion
+
+        #region ================== Constructor / Disposer
+
+        // Constructor
+        public Plotter(int width, int height)
         {
-            Dispose();
-        }
-
-        public int Width { get { return Texture.Width; } }
-        public int Height { get { return Texture.Height; } }
-        public Texture Texture { get; set; }
-
-        public void DrawContents(RenderDevice graphics)
-        {
-            if (clear == false && Lists.Count == 0)
-                return;
-
-            var projmat = Matrix.Scaling(2.0f / this.Texture.Width, 2.0f / this.Texture.Height, 1.0f) * Matrix.Translation(-1.0f, -1.0f, 0.0f);
-
-            graphics.StartRendering(clear, new Color4(0), this.Texture, false);
-            graphics.SetShader(ShaderName.plotter);
-            graphics.SetUniform(UniformName.projection, projmat);
-            graphics.SetAlphaBlendEnable(true);
-            graphics.SetBlendOperation(BlendOperation.Add);
-            graphics.SetSourceBlend(Blend.SourceAlpha);
-            graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
-            for (int i = 0; i < Lists.Count; i++)
-            {
-                PrimitiveType pt = Lists[i].PrimitiveType;
-                List<FlatVertex> vertices = Lists[i].Vertices;
-                int cnt = vertices.Count;
-                switch (pt)
-                {
-                    case PrimitiveType.TriangleList:
-                        cnt /= 3;
-                        break;
-                    case PrimitiveType.LineList:
-                        cnt /= 2;
-                        break;
-                    case PrimitiveType.TriangleStrip:
-                        cnt = 1;
-                        break;
-                }
-                graphics.Draw(Lists[i].PrimitiveType, 0, cnt, vertices.ToArray());
-            }
-            graphics.SetAlphaBlendEnable(false);
-            graphics.FinishRendering();
-
-            clear = false;
-            Lists.Clear();
-        }
-
-        private int TransformY(int y)
-        {
-            return this.Texture.Height - y;
-        }
-
-        // non-dotted line may be smoothed
-        void DrawSmoothedLine(int x0, int y0, int x1, int y1, int c)
-        {
-            var v = new FlatVertex();
-            v.c = c;
-
-            float nx, ny, len;
-            if (x0 == x1)
-            {
-                nx = 1.0f;
-                ny = 0.0f;
-                len = y1 - y0;
-            }
-            else if (y0 == y1)
-            {
-                nx = 0.0f;
-                ny = 1.0f;
-                len = x1 - x0;
-            }
-            else
-            {
-                nx = (float)(y1 - y0);
-                ny = (float)-(x1 - x0);
-                len = (float)Math.Sqrt(nx * nx + ny * ny);
-                nx /= len;
-                ny /= len;
-            }
-
-            float dx = -ny * 0.5f;
-            float dy = nx * 0.5f;
-
-            float xx0 = x0 + 0.5f - dx;
-            float yy0 = y0 + 0.5f - dy;
-            float xx1 = x1 + 0.5f + dx;
-            float yy1 = y1 + 0.5f + dy;
-
-            float lineextent = 3.0f; // line width in shader + 1
-            nx *= lineextent;
-            ny *= lineextent;
-
-            v.u = 0.5f;
-
-            v.v = -lineextent; v.x = xx0 - nx; v.y = yy0 - ny; AddVertex(PrimitiveType.TriangleList, v);
-            v.v = lineextent; v.x = xx0 + nx; v.y = yy0 + ny; AddVertex(PrimitiveType.TriangleList, v);
-            v.v = lineextent; v.x = xx1 + nx; v.y = yy1 + ny; AddVertex(PrimitiveType.TriangleList, v);
-            AddVertex(PrimitiveType.TriangleList, v);
-            v.v = -lineextent; v.x = xx1 - nx; v.y = yy1 - ny; AddVertex(PrimitiveType.TriangleList, v);
-            v.v = -lineextent; v.x = xx0 - nx; v.y = yy0 - ny; AddVertex(PrimitiveType.TriangleList, v);
-        }
-
-        void DrawLine(int x0, int y0, int x1, int y1, int c, bool dotted = false)
-        {
-            y0 = TransformY(y0);
-            y1 = TransformY(y1);
-
-            if (!dotted)
-            {
-                DrawSmoothedLine(x0, y0, x1, y1, c);
-                return;
-            }
-
-            var v = new FlatVertex();
-            v.c = c;
-
-            float nx, ny, len;
-            if (x0 == x1)
-            {
-                nx = 1.0f;
-                ny = 0.0f;
-                len = y1 - y0;
-            }
-            else if (y0 == y1)
-            {
-                nx = 0.0f;
-                ny = 1.0f;
-                len = x1 - x0;
-            }
-            else
-            {
-                nx = (float)(y1 - y0);
-                ny = (float)-(x1 - x0);
-                len = (float)Math.Sqrt(nx * nx + ny * ny);
-                nx /= len;
-                ny /= len;
-            }
-
-            float xx0 = x0 + 0.5f;
-            float yy0 = y0 + 0.5f;
-            float xx1 = x1 + 0.5f;
-            float yy1 = y1 + 0.5f;
-
-            float dotType = 0;
-            if (dotted)
-            {
-                if (Math.Abs(ny) > Math.Abs(nx))
-                    dotType = -1;
-                else dotType = -2;
-            }
-
-            v.u = dotType; v.v = 0; v.x = xx0; v.y = yy0;
-            AddVertex(PrimitiveType.LineList, v);
-            v.u = dotType; v.v = 0; v.x = xx1; v.y = yy1;
-            AddVertex(PrimitiveType.LineList, v);
-        }
-
-        void FillBox(int x0, int y0, int x1, int y1, int c)
-        {
-            y0 = TransformY(y0);
-            y1 = TransformY(y1);
-
-            var v = new FlatVertex();
-            v.c = c;
-            v.u = 0.5f;
-            v.v = 0.0f;
-
-            v.x = x0; v.y = y0; AddVertex(PrimitiveType.TriangleList, v);
-            v.x = x1; v.y = y0; AddVertex(PrimitiveType.TriangleList, v);
-            v.x = x1; v.y = y1; AddVertex(PrimitiveType.TriangleList, v);
-            AddVertex(PrimitiveType.TriangleList, v);
-            v.x = x0; v.y = y1; AddVertex(PrimitiveType.TriangleList, v);
-            v.x = x0; v.y = y0; AddVertex(PrimitiveType.TriangleList, v);
-        }
-
-        public void DrawVertexSolid(int x, int y, int size, PixelColor c, PixelColor l, PixelColor d)
-        {
-            int x0 = x - size;
-            int x1 = x + size;
-            int y0 = y + size;
-            int y1 = y - size;
-
-            int lightcolor = l.ApplyAlpha().ToInt();
-            int darkcolor = d.ApplyAlpha().ToInt();
-            int centercolor = c.ApplyAlpha().ToInt();
-            DrawLine(x1, y1, x0, y1, darkcolor);
-            DrawLine(x1, y1, x1, y0, darkcolor);
-            DrawLine(x0, y0, x1, y0, lightcolor);
-            DrawLine(x0, y0, x0, y1, lightcolor);
-            FillBox(x0+1, y0-1, x1, y1, centercolor);
-        }
-
-        public void DrawGridLineH(int y, int x1, int x2, PixelColor c)
-        {
-            DrawLine(x1, y, x2, y, c.ApplyAlpha().ToInt(), true);
-        }
-
-        public void DrawGridLineV(int x, int y1, int y2, PixelColor c)
-        {
-            DrawLine(x, y1, x, y2, c.ApplyAlpha().ToInt(), true);
-        }
-
-        public void DrawLineSolid(int x1, int y1, int x2, int y2, PixelColor c, bool dotted = false)
-        {
-            DrawLine(x1, y1, x2, y2, c.ApplyAlpha().ToInt(), dotted);
-        }
-
-        public void DrawLine3DFloor(Vector2D start, Vector2D end, PixelColor c, PixelColor c2) 
-		{
-			Vector2D delta = end - start;
-			float length = delta.GetLength();
-
-			if(length < DASH_INTERVAL * 2) 
-			{
-				DrawLineSolid((int)start.x, (int)start.y, (int)end.x, (int)end.y, c2);
-			} 
-			else 
-			{
-				float d1 = DASH_INTERVAL / length;
-				float d2 = 1.0f - d1;
-
-				Vector2D p1 = CurveTools.GetPointOnLine(start, end, d1);
-				Vector2D p2 = CurveTools.GetPointOnLine(start, end, d2);
-
-				DrawLineSolid((int)start.x, (int)start.y, (int)p1.x, (int)p1.y, c2);
-				DrawLineSolid((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y, c);
-				DrawLineSolid((int)p2.x, (int)p2.y, (int)end.x, (int)end.y, c2);
-			}
-		}
-
-        // This clears all pixels black
-        public void Clear()
-        {
-            clear = true;
+            // Initialize
+            Texture = new Texture(width, height);
+            this.pixels = new PixelColor[width*height];
+            this.width = width;
+            this.height = height;
+            this.visiblewidth = width;
+            this.visibleheight = height;
         }
 
         public void Dispose()
         {
-            if (Texture != null) Texture.Dispose();
-        }
-
-        bool clear = true;
-        // 
-        private struct PlotVertexList
-        {
-            public PrimitiveType PrimitiveType;
-            public List<FlatVertex> Vertices;
-        }
-        private List<PlotVertexList> Lists = new List<PlotVertexList>();
-
-        private void AddVertex(PrimitiveType t, FlatVertex v)
-        {
-            if (Lists.Count == 0 || Lists[Lists.Count-1].PrimitiveType != t)
+            if (Texture != null)
             {
-                PlotVertexList vxlist;
-                vxlist.PrimitiveType = t;
-                vxlist.Vertices = new List<FlatVertex>();
-                Lists.Add(vxlist);
+                Texture.Dispose();
+                Texture = null;
             }
-
-            Lists[Lists.Count - 1].Vertices.Add(v);
         }
 
-        const int DASH_INTERVAL = 16;
+        #endregion
+
+        #region ================== Pixel Rendering
+
+        private int TransformY(int y)
+        {
+            return height - y;
+        }
+
+        // This clears all pixels black
+        public void Clear()
+        {
+            // Clear memory
+            fixed(PixelColor* pixel = pixels)
+            {
+                PixelColor* op = pixel;
+                for (int i = 0; i < pixels.Length; i++)
+                {
+                    op->a = 0;
+                    op++;
+                }
+            }
+        }
+
+        // This draws a pixel normally
+        public void DrawPixelSolid(int x, int y, ref PixelColor c)
+        {
+            y = TransformY(y);
+
+            // Draw pixel when within range
+            if ((x >= 0) && (x < visiblewidth) && (y >= 0) && (y < visibleheight))
+                pixels[y * width + x] = c;
+        }
+
+        // This draws a pixel normally
+        public void DrawVertexSolid(int x, int y, int size, ref PixelColor c, ref PixelColor l, ref PixelColor d)
+        {
+            y = TransformY(y);
+
+            int x1 = x - size;
+            int x2 = x + size;
+            int y1 = y - size;
+            int y2 = y + size;
+
+            // Do unchecked?
+            if ((x1 >= 0) && (x2 < visiblewidth) && (y1 >= 0) && (y2 < visibleheight))
+            {
+                // Filled square
+                for (int yp = y1; yp <= y2; yp++)
+                    for (int xp = x1; xp <= x2; xp++)
+                        pixels[yp * width + xp] = c;
+
+                // Vertical edges
+                for (int yp = y1 + 1; yp <= y2 - 1; yp++)
+                {
+                    pixels[yp * width + x1] = l;
+                    pixels[yp * width + x2] = d;
+                }
+
+                // Horizontal edges
+                for (int xp = x1 + 1; xp <= x2 - 1; xp++)
+                {
+                    pixels[y1 * width + xp] = l;
+                    pixels[y2 * width + xp] = d;
+                }
+
+                // Corners
+                pixels[y2 * width + x2] = d;
+                pixels[y1 * width + x1] = l;
+            }
+            /*
+			else
+			{
+				// Filled square
+				for(yp = y - size; yp <= y + size; yp++)
+					for(xp = x - size; xp <= x + size; xp++)
+						DrawPixelSolid(xp, yp, c);
+
+				// Vertical edges
+				for(yp = y - size + 1; yp <= y + size - 1; yp++)
+				{
+					DrawPixelSolid(x - size, yp, l);
+					DrawPixelSolid(x + size, yp, d);
+				}
+
+				// Horizontal edges
+				for(xp = x - size + 1; xp <= x + size - 1; xp++)
+				{
+					DrawPixelSolid(xp, y - size, l);
+					DrawPixelSolid(xp, y + size, d);
+				}
+
+				// Corners
+				DrawPixelSolid(x + size, y + size, d);
+				DrawPixelSolid(x - size, y - size, l);
+			}
+			*/
+        }
+
+        // This draws a dotted grid line horizontally
+        public void DrawGridLineH(int y, int x1, int x2, ref PixelColor c)
+        {
+            y = TransformY(y);
+
+            int numpixels = visiblewidth >> 1;
+            int offset = y & 0x01;
+            int ywidth = y * width;
+            x1 = General.Clamp(x1 >> 1, 0, numpixels - 1);
+            x2 = General.Clamp(x2 >> 1, 0, numpixels - 1);
+
+            if ((y >= 0) && (y < height))
+            {
+                // Draw all pixels on this line
+                for (int i = x1; i < x2; i++) pixels[ywidth + ((i << 1) | offset)] = c;
+            }
+        }
+
+        // This draws a dotted grid line vertically
+        public void DrawGridLineV(int x, int y1, int y2, ref PixelColor c)
+        {
+            y1 = TransformY(y1);
+            y2 = TransformY(y2);
+
+            int numpixels = visibleheight >> 1;
+            int offset = x & 0x01;
+            y1 = General.Clamp(y1 >> 1, 0, numpixels - 1);
+            y2 = General.Clamp(y2 >> 1, 0, numpixels - 1);
+
+            if ((x >= 0) && (x < width))
+            {
+                // Draw all pixels on this line
+                for (int i = y2; i < y1; i++) pixels[((i << 1) | offset) * width + x] = c;
+            }
+        }
+
+        // This draws a pixel alpha blended
+        public void DrawPixelAlpha(int x, int y, ref PixelColor c)
+        {
+            y = TransformY(y);
+
+            fixed (PixelColor* pixels = this.pixels)
+            {
+                // Draw only when within range
+                if ((x >= 0) && (x < visiblewidth) && (y >= 0) && (y < visibleheight))
+                {
+                    // Get the target pixel
+                    PixelColor* p = pixels + (y * width + x);
+
+                    // Not drawn on target yet?
+                    if (*(int*)p == 0)
+                    {
+                        // Simply apply color to pixel
+                        *p = c;
+                    }
+                    else
+                    {
+                        // Blend with pixel
+                        float a = c.a * 0.003921568627450980392156862745098f;
+                        if (p->a + c.a > 255) p->a = 255; else p->a += c.a;
+                        p->r = (byte)(p->r * (1f - a) + c.r * a);
+                        p->g = (byte)(p->g * (1f - a) + c.g * a);
+                        p->b = (byte)(p->b * (1f - a) + c.b * a);
+                    }
+                }
+            }
+        }
+
+        // This draws a line normally
+        // See: http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+        public void DrawLineSolid(int x1, int y1, int x2, int y2, ref PixelColor c, uint mask = 0xffffffff)
+        {
+            y1 = TransformY(y1);
+            y2 = TransformY(y2);
+
+            // Check if the line is outside the screen for sure.
+            // This is quickly done by checking in which area both points are. When this
+            // is above, below, right or left of the screen, then skip drawing the line.
+            if (((x1 < 0) && (x2 < 0)) ||
+               ((x1 > visiblewidth) && (x2 > visiblewidth)) ||
+               ((y1 < 0) && (y2 < 0)) ||
+               ((y1 > visibleheight) && (y2 > visibleheight))) return;
+
+            // Distance of the line
+            int dx = x2 - x1;
+            int dy = y2 - y1;
+
+            // Positive (absolute) distance
+            int dxabs = Math.Abs(dx);
+            int dyabs = Math.Abs(dy);
+
+            // Half distance
+            int x = dyabs >> 1;
+            int y = dxabs >> 1;
+
+            // Direction
+            int sdx = Math.Sign(dx);
+            int sdy = Math.Sign(dy);
+
+            // Start position
+            int px = x1;
+            int py = y1;
+
+            // When the line is completely inside screen,
+            // then do an unchecked draw, because all of its pixels are
+            // guaranteed to be within the memory range
+            if ((x1 >= 0) && (x2 >= 0) && (x1 < visiblewidth) && (x2 < visiblewidth) &&
+               (y1 >= 0) && (y2 >= 0) && (y1 < visibleheight) && (y2 < visibleheight))
+            {
+                // Draw first pixel
+                pixels[py * width + px] = c;
+
+                // Check if the line is more horizontal than vertical
+                if (dxabs >= dyabs)
+                {
+                    for (int i = 0; i < dxabs; i++)
+                    {
+                        y += dyabs;
+                        if (y >= dxabs)
+                        {
+                            y -= dxabs;
+                            py += sdy;
+                        }
+                        px += sdx;
+
+                        // Draw pixel
+                        if ((mask & (1 << (i & 0x7))) != 0)
+                        {
+                            pixels[py * width + px] = c;
+                        }
+                    }
+                }
+                // Else the line is more vertical than horizontal
+                else
+                {
+                    for (int i = 0; i < dyabs; i++)
+                    {
+                        x += dxabs;
+                        if (x >= dyabs)
+                        {
+                            x -= dyabs;
+                            px += sdx;
+                        }
+                        py += sdy;
+
+                        // Draw pixel
+                        if ((mask & (1 << (i & 0x7))) != 0)
+                        {
+                            pixels[py * width + px] = c;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Draw first pixel
+                if ((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+                    pixels[py * width + px] = c;
+
+                // Check if the line is more horizontal than vertical
+                if (dxabs >= dyabs)
+                {
+                    for (int i = 0; i < dxabs; i++)
+                    {
+                        y += dyabs;
+                        if (y >= dxabs)
+                        {
+                            y -= dxabs;
+                            py += sdy;
+                        }
+                        px += sdx;
+
+                        // Draw pixel
+                        if ((mask & (1 << (i & 0x7))) != 0)
+                        {
+                            if ((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+                                pixels[py * width + px] = c;
+                        }
+                    }
+                }
+                // Else the line is more vertical than horizontal
+                else
+                {
+                    for (int i = 0; i < dyabs; i++)
+                    {
+                        x += dxabs;
+                        if (x >= dyabs)
+                        {
+                            x -= dyabs;
+                            px += sdx;
+                        }
+                        py += sdy;
+
+                        // Draw pixel
+                        if ((mask & (1 << (i & 0x7))) != 0)
+                        {
+                            if ((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+                                pixels[py * width + px] = c;
+                        }
+                    }
+                }
+            }
+        }
+
+        //mxd
+        public void DrawLine3DFloor(Vector2D start, Vector2D end, ref PixelColor c, PixelColor c2)
+        {
+            Vector2D delta = end - start;
+            float length = delta.GetLength();
+
+            if (length < DASH_INTERVAL * 2)
+            {
+                DrawLineSolid((int)start.x, (int)start.y, (int)end.x, (int)end.y, ref c2);
+            }
+            else
+            {
+                float d1 = DASH_INTERVAL / length;
+                float d2 = 1.0f - d1;
+
+                Vector2D p1 = CurveTools.GetPointOnLine(start, end, d1);
+                Vector2D p2 = CurveTools.GetPointOnLine(start, end, d2);
+
+                DrawLineSolid((int)start.x, (int)start.y, (int)p1.x, (int)p1.y, ref c2);
+                DrawLineSolid((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y, ref c);
+                DrawLineSolid((int)p2.x, (int)p2.y, (int)end.x, (int)end.y, ref c2);
+            }
+        }
+
+        #endregion
+
+        #region ================== Drawing to rendertarget
+
+        public void DrawContents(RenderDevice graphics)
+        {
+            // set pixels of texture
+            // convert from pixelcolor to uint
+            fixed (PixelColor* pixels = this.pixels)
+            {
+                uint* uintpixels = (uint*)pixels;
+                graphics.SetPixels(Texture, uintpixels);
+            }
+        }
+
+        #endregion
     }
 }
