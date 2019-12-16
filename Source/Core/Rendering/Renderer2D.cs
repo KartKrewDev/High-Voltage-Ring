@@ -208,7 +208,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.SetAlphaTestEnable(false);
 						graphics.SetSourceBlend(Blend.SourceAlpha);
 						graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
-						graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, layer.alpha));
+						graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
 						break;
 
 					case BlendingMode.Additive:
@@ -216,7 +216,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.SetAlphaTestEnable(false);
 						graphics.SetSourceBlend(Blend.SourceAlpha);
 						graphics.SetDestinationBlend(Blend.One);
-						graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, layer.alpha));
+						graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
 						break;
 				}
 
