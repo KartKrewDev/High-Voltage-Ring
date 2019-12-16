@@ -34,6 +34,8 @@ EXPORTS
 	RenderDevice_SetIndexBufferData
 	RenderDevice_SetPixels
 	RenderDevice_SetCubePixels
+	RenderDevice_MapPBO
+	RenderDevice_UnmapPBO
 	VertexBuffer_New
 	VertexBuffer_Delete
 	IndexBuffer_New

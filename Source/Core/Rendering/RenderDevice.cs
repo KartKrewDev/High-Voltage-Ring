@@ -64,6 +64,11 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public bool Disposed { get { return Handle == IntPtr.Zero; } }
 
+        public void ClearError()
+        {
+            RenderDevice_GetError(Handle);
+        }
+
         private void CheckAndThrow()
         {
             string err = Marshal.PtrToStringAnsi(RenderDevice_GetError(Handle));
@@ -365,6 +370,19 @@ namespace CodeImp.DoomBuilder.Rendering
             CheckAndThrow();
         }
 
+        public unsafe void* MapPBO(Texture texture)
+        {
+            void* ptr = RenderDevice_MapPBO(Handle, texture.Handle).ToPointer();
+            CheckAndThrow();
+            return ptr;
+        }
+
+        public void UnmapPBO(Texture texture)
+        {
+            RenderDevice_UnmapPBO(Handle, texture.Handle);
+            CheckAndThrow();
+        }
+
         internal void RegisterResource(IRenderResource res)
         {
         }
@@ -511,6 +529,12 @@ namespace CodeImp.DoomBuilder.Rendering
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         protected static extern void RenderDevice_SetPixels(IntPtr handle, IntPtr texture, IntPtr data);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern IntPtr RenderDevice_MapPBO(IntPtr handle, IntPtr texture);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        protected static extern void RenderDevice_UnmapPBO(IntPtr handle, IntPtr texture);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         protected static extern void RenderDevice_SetCubePixels(IntPtr handle, IntPtr texture, CubeMapFace face, IntPtr data);

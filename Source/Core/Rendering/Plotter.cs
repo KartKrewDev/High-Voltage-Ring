@@ -414,7 +414,10 @@ namespace CodeImp.DoomBuilder.Rendering
             fixed (PixelColor* pixels = this.pixels)
             {
                 uint* uintpixels = (uint*)pixels;
-                graphics.SetPixels(Texture, uintpixels);
+                uint* targetpixels = (uint*)graphics.MapPBO(Texture);
+                for (int i = 0; i < this.pixels.Length; i++)
+                    *targetpixels++ = *uintpixels++;
+                graphics.UnmapPBO(Texture);
             }
         }
 

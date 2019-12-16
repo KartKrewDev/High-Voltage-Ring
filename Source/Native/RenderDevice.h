@@ -112,6 +112,8 @@ public:
 
 	void SetPixels(Texture* texture, const void* data);
 	void SetCubePixels(Texture* texture, CubeMapFace face, const void* data);
+	void* MapPBO(Texture* texture);
+	void UnmapPBO(Texture* texture);
 
 	void InvalidateTexture(Texture* texture);
 
@@ -126,7 +128,7 @@ public:
 	void ApplyBlendState();
 	void ApplyDepthState();
 
-	void CheckGLError();
+	bool CheckGLError();
 	void SetError(const char* fmt, ...);
 	const char* GetError();
 

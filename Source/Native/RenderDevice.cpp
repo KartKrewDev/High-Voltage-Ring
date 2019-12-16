@@ -1,4 +1,4 @@
-
+﻿
 #include "Precomp.h"
 #include "RenderDevice.h"
 #include "VertexBuffer.h"
@@ -7,6 +7,17 @@
 #include "ShaderManager.h"
 #include <stdexcept>
 #include <cstdarg>
+
+static bool GLLogStarted = false;
+static void APIENTRY GLLogCallback(GLenum source, GLenum type, GLuint id,
+	GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	FILE* f = fopen("OpenGLDebug.log", GLLogStarted ? "a" : "w");
+	if (!f) return;
+	GLLogStarted = true;
+	fprintf(f, "%s\r\n", message);
+	fclose(f);
+}
 
 RenderDevice::RenderDevice(void* disp, void* window)
 {
@@ -18,6 +29,11 @@ RenderDevice::RenderDevice(void* disp, void* window)
 	if (Context)
 	{
 		Context->MakeCurrent();
+
+#ifdef _DEBUG
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback(&GLLogCallback, nullptr);
+#endif
 
 		glGenVertexArrays(1, &mStreamVAO);
 		glGenBuffers(1, &mStreamVertexBuffer);
@@ -224,6 +240,7 @@ void RenderDevice::SetSamplerState(TextureAddress addressU, TextureAddress addre
 void RenderDevice::ApplyViewport()
 {
 	glViewport(0, 0, mViewportWidth, mViewportHeight);
+	CheckGLError();
 }
 
 void RenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount)
@@ -235,6 +252,7 @@ void RenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount)
 	ApplyViewport();
 	if (mNeedApply) ApplyChanges();
 	glDrawArrays(modes[(int)type], startIndex, toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type]);
+	CheckGLError();
 }
 
 void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount)
@@ -246,6 +264,7 @@ void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitive
 	ApplyViewport();
 	if (mNeedApply) ApplyChanges();
 	glDrawElements(modes[(int)type], toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type], GL_UNSIGNED_INT, (const void*)(startIndex * sizeof(uint32_t)));
+	CheckGLError();
 }
 
 void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
@@ -264,6 +283,7 @@ void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCou
 	glBindVertexArray(mStreamVAO);
 	glDrawArrays(modes[(int)type], 0, vertcount);
 	ApplyVertexBuffer();
+	CheckGLError();
 }
 
 void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer)
@@ -318,11 +338,12 @@ void RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 	mDepthStateChanged = true;
 	mBlendStateChanged = true;
 	mRasterizerStateChanged = true;
+
+	CheckGLError();
 }
 
 void RenderDevice::FinishRendering()
 {
-	CheckGLError();
 	Context->ClearCurrent();
 	mContextIsCurrent = false;
 }
@@ -330,12 +351,14 @@ void RenderDevice::FinishRendering()
 void RenderDevice::Present()
 {
 	Context->SwapBuffers();
+	CheckGLError();
 }
 
 void RenderDevice::ClearTexture(int backcolor, Texture* texture)
 {
 	StartRendering(true, backcolor, texture, false);
 	FinishRendering();
+	CheckGLError();
 }
 
 void RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
@@ -359,6 +382,7 @@ void RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, oldTexture);
+	CheckGLError();
 	if (!mContextIsCurrent) Context->ClearCurrent();
 }
 
@@ -371,6 +395,7 @@ void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
+	CheckGLError();
 	if (!mContextIsCurrent) Context->ClearCurrent();
 }
 
@@ -382,6 +407,7 @@ void RenderDevice::SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffs
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferSubData(GL_ARRAY_BUFFER, destOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
+	CheckGLError();
 	if (!mContextIsCurrent) Context->ClearCurrent();
 }
 
@@ -393,6 +419,7 @@ void RenderDevice::SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t s
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oldbinding);
+	CheckGLError();
 	if (!mContextIsCurrent) Context->ClearCurrent();
 }
 
@@ -400,12 +427,39 @@ void RenderDevice::SetPixels(Texture* texture, const void* data)
 {
 	texture->SetPixels(data);
 	InvalidateTexture(texture);
+	CheckGLError();
 }
 
 void RenderDevice::SetCubePixels(Texture* texture, CubeMapFace face, const void* data)
 {
 	texture->SetCubePixels(face, data);
 	InvalidateTexture(texture);
+	CheckGLError();
+}
+
+void* RenderDevice::MapPBO(Texture* texture)
+{
+	if (!mContextIsCurrent) Context->MakeCurrent();
+	GLint pbo = texture->GetPBO();
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+	void* buf = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+	CheckGLError();
+	if (!mContextIsCurrent) Context->ClearCurrent();
+	return buf;
+}
+
+void RenderDevice::UnmapPBO(Texture* texture)
+{
+	if (!mContextIsCurrent) Context->MakeCurrent();
+	GLint pbo = texture->GetPBO();
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+	glBindTexture(GL_TEXTURE_2D, texture->GetTexture());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture->GetWidth(), texture->GetHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+	CheckGLError();
+	if (!mContextIsCurrent) Context->ClearCurrent();
+	mNeedApply = true;
+	mTexturesChanged = true;
 }
 
 void RenderDevice::InvalidateTexture(Texture* texture)
@@ -414,17 +468,24 @@ void RenderDevice::InvalidateTexture(Texture* texture)
 	{
 		if (!mContextIsCurrent) Context->MakeCurrent();
 		texture->Invalidate();
+		CheckGLError();
 		if (!mContextIsCurrent) Context->ClearCurrent();
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
 }
 
-void RenderDevice::CheckGLError()
+bool RenderDevice::CheckGLError()
 {
+	// on Windows, "no context" is a GL_INVALID_OPERATION error
 	GLenum error = glGetError();
-	if (error != GL_NO_ERROR)
+	if (error != GL_NO_ERROR && Context->IsCurrent())
+	{
 		SetError("OpenGL error: %d", error);
+		return true;
+	}
+
+	return false;
 }
 
 void RenderDevice::SetError(const char* fmt, ...)
@@ -529,6 +590,8 @@ void RenderDevice::ApplyShader()
 
 	curShader->Bind();
 	mShaderChanged = false;
+
+	CheckGLError();
 }
 
 void RenderDevice::ApplyRasterizerState()
@@ -547,6 +610,8 @@ void RenderDevice::ApplyRasterizerState()
 	glPolygonMode(GL_FRONT_AND_BACK, fillMode2GL[(int)mFillMode]);
 
 	mRasterizerStateChanged = false;
+
+	CheckGLError();
 }
 
 void RenderDevice::ApplyBlendState()
@@ -566,6 +631,8 @@ void RenderDevice::ApplyBlendState()
 	}
 
 	mBlendStateChanged = false;
+
+	CheckGLError();
 }
 
 void RenderDevice::ApplyDepthState()
@@ -582,6 +649,8 @@ void RenderDevice::ApplyDepthState()
 	}
 
 	mDepthStateChanged = false;
+
+	CheckGLError();
 }
 
 void RenderDevice::ApplyIndexBuffer()
@@ -596,6 +665,8 @@ void RenderDevice::ApplyIndexBuffer()
 	}
 
 	mIndexBufferChanged = false;
+
+	CheckGLError();
 }
 
 void RenderDevice::ApplyVertexBuffer()
@@ -604,6 +675,8 @@ void RenderDevice::ApplyVertexBuffer()
 		glBindVertexArray(mVertexBuffer->GetVAO());
 
 	mVertexBufferChanged = false;
+
+	CheckGLError();
 }
 
 void RenderDevice::ApplyUniforms()
@@ -637,6 +710,8 @@ void RenderDevice::ApplyUniforms()
 	glUniform4fv(locations[(int)UniformName::fogcolor], 1, &mUniforms[120].valuef);
 
 	mUniformsChanged = false;
+
+	CheckGLError();
 }
 
 void RenderDevice::ApplyTextures()
@@ -661,6 +736,8 @@ void RenderDevice::ApplyTextures()
 	}
 
 	mTexturesChanged = false;
+
+	CheckGLError();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -840,6 +917,16 @@ void RenderDevice_SetPixels(RenderDevice* device, Texture* texture, const void* 
 void RenderDevice_SetCubePixels(RenderDevice* device, Texture* texture, CubeMapFace face, const void* data)
 {
 	device->SetCubePixels(texture, face, data);
+}
+
+void* RenderDevice_MapPBO(RenderDevice* device, Texture* texture)
+{
+	return device->MapPBO(texture);
+}
+
+void RenderDevice_UnmapPBO(RenderDevice* device, Texture* texture)
+{
+	device->UnmapPBO(texture);
 }
 
 }

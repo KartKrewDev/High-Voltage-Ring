@@ -80,6 +80,7 @@ public:
 	void MakeCurrent() override;
 	void ClearCurrent() override;
 	void SwapBuffers() override;
+	bool IsCurrent() override;
 
 	int GetWidth() const override;
 	int GetHeight() const override;
@@ -141,6 +142,11 @@ OpenGLContext::~OpenGLContext()
 void OpenGLContext::MakeCurrent()
 {
 	wglMakeCurrent(dc, context);
+}
+
+bool OpenGLContext::IsCurrent()
+{
+	return (wglGetCurrentContext() == context);
 }
 
 void OpenGLContext::ClearCurrent()

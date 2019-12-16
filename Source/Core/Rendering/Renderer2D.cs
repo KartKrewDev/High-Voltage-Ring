@@ -348,6 +348,8 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			// Destroy rendertargets
 			DestroyRendertargets();
+
+            graphics.ClearError();
 			
 			// Get new width and height
 			windowsize.Width = graphics.RenderTarget.ClientSize.Width;
