@@ -968,9 +968,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				pos.y = y;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
 
-				// Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
-				gridplotter.DrawGridLineH((int)pos.y, (int)from, (int)to, ref c);
-			}
+                gridplotter.DrawGridLineH((int)pos.y, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), ref c);
+            }
 
 			// Draw all vertical grid lines
 			float xstart = ltpos.x > General.Map.Config.LeftBoundary ? ltpos.x : General.Map.Config.LeftBoundary;
@@ -987,9 +986,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				pos.x = x;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
 
-                // Note: I'm not using Math.Ceiling in this case, because that doesn't work right.
-                gridplotter.DrawGridLineV((int)pos.x, (int)from, (int)to, ref c);
-			}
+                gridplotter.DrawGridLineV((int)pos.x, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), ref c);
+            }
 		}
 
 		//mxd
