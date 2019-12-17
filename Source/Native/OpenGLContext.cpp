@@ -156,6 +156,7 @@ void OpenGLContext::ClearCurrent()
 
 void OpenGLContext::SwapBuffers()
 {
+	wglMakeCurrent(dc, context);
 	::SwapBuffers(dc);
 }
 
