@@ -97,7 +97,7 @@ public:
 	void SetZWriteEnable(bool value);
 	void SetTexture(Texture* texture);
 	void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
-	void SetSamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
+	void SetSamplerState(TextureAddress address);
 	void Draw(PrimitiveType type, int startIndex, int primitiveCount);
 	void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
 	void DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
@@ -142,13 +142,29 @@ public:
 	struct TextureUnit
 	{
 		Texture* Tex = nullptr;
-		GLuint MinFilter = GL_NEAREST;
-		GLuint MagFilter = GL_NEAREST;
-		float MaxAnisotropy = 0.0f;
-		TextureAddress AddressU = TextureAddress::Wrap;
-		TextureAddress AddressV = TextureAddress::Wrap;
-		TextureAddress AddressW = TextureAddress::Wrap;
+		TextureAddress WrapMode = TextureAddress::Wrap;
+		GLuint SamplerHandle = 0;
 	} mTextureUnit;
+
+	struct SamplerFilterKey
+	{
+		GLuint MinFilter = 0;
+		GLuint MagFilter = 0;
+		float MaxAnisotropy = 0.0f;
+
+		bool operator<(const SamplerFilterKey& b) const { return memcmp(this, &b, sizeof(SamplerFilterKey)) < 0; }
+		bool operator==(const SamplerFilterKey& b) const { return memcmp(this, &b, sizeof(SamplerFilterKey)) == 0; }
+		bool operator!=(const SamplerFilterKey& b) const { return memcmp(this, &b, sizeof(SamplerFilterKey)) != 0; }
+	};
+
+	struct SamplerFilter
+	{
+		GLuint WrapModes[2] = { 0, 0 };
+	};
+
+	std::map<SamplerFilterKey, SamplerFilter> mSamplers;
+	SamplerFilterKey mSamplerFilterKey;
+	SamplerFilter* mSamplerFilter = nullptr;
 
 	int mVertexBuffer = -1;
 	int64_t mVertexBufferStartIndex = 0;

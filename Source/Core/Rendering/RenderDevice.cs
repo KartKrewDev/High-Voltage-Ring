@@ -230,13 +230,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetSamplerState(TextureAddress address)
         {
-            SetSamplerState(address, address, address);
-            CheckAndThrow();
-        }
-
-        public void SetSamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
-        {
-            RenderDevice_SetSamplerState(Handle, addressU, addressV, addressW);
+            RenderDevice_SetSamplerState(Handle, address);
             CheckAndThrow();
         }
 
@@ -480,7 +474,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_SetSamplerFilter(IntPtr handle, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetSamplerState(IntPtr handle, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW);
+        static extern void RenderDevice_SetSamplerState(IntPtr handle, TextureAddress address);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_Draw(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);

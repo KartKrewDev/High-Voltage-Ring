@@ -74,6 +74,14 @@ RenderDevice::~RenderDevice()
 			handle = sharedbuf->GetVAO();
 			glDeleteVertexArrays(1, &handle);
 		}
+		for (auto& it : mSamplers)
+		{
+			for (GLuint handle : it.second.WrapModes)
+			{
+				if (handle != 0)
+					glDeleteSamplers(1, &handle);
+			}
+		}
 		mShaderManager->ReleaseResources();
 		Context->ClearCurrent();
 	}
@@ -220,13 +228,15 @@ void RenderDevice::SetTexture(Texture* texture)
 
 void RenderDevice::SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
 {
-	auto glminfilter = GetGLMinFilter(minfilter, mipfilter);
-	auto glmagfilter = (magfilter == TextureFilter::Point || magfilter == TextureFilter::None) ? GL_NEAREST : GL_LINEAR;
-	if (mTextureUnit.MinFilter != glminfilter || mTextureUnit.MagFilter != glmagfilter || mTextureUnit.MaxAnisotropy != maxanisotropy)
+	SamplerFilterKey key;
+	key.MinFilter = GetGLMinFilter(minfilter, mipfilter);
+	key.MagFilter = (magfilter == TextureFilter::Point || magfilter == TextureFilter::None) ? GL_NEAREST : GL_LINEAR;
+	key.MaxAnisotropy = maxanisotropy;
+	if (mSamplerFilterKey != key)
 	{
-		mTextureUnit.MinFilter = glminfilter;
-		mTextureUnit.MagFilter = glmagfilter;
-		mTextureUnit.MaxAnisotropy = maxanisotropy;
+		mSamplerFilterKey = key;
+		mSamplerFilter = &mSamplers[mSamplerFilterKey];
+
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -257,13 +267,11 @@ GLint RenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter
 	}
 }
 
-void RenderDevice::SetSamplerState(TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
+void RenderDevice::SetSamplerState(TextureAddress address)
 {
-	if (mTextureUnit.AddressU != addressU || mTextureUnit.AddressV != addressV || mTextureUnit.AddressW != addressW)
+	if (mTextureUnit.WrapMode != address)
 	{
-		mTextureUnit.AddressU = addressU;
-		mTextureUnit.AddressV = addressV;
-		mTextureUnit.AddressW = addressW;
+		mTextureUnit.WrapMode = address;
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -777,19 +785,31 @@ void RenderDevice::ApplyUniforms()
 
 void RenderDevice::ApplyTextures()
 {
-	static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
-
 	glActiveTexture(GL_TEXTURE0);
 	if (mTextureUnit.Tex)
 	{
 		GLenum target = mTextureUnit.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
 		glBindTexture(target, mTextureUnit.Tex->GetTexture());
-		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, mTextureUnit.MinFilter);
-		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, mTextureUnit.MagFilter);
-		glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapMode[(int)mTextureUnit.AddressU]);
-		glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapMode[(int)mTextureUnit.AddressV]);
-		glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapMode[(int)mTextureUnit.AddressW]);
+
+		GLuint& samplerHandle = mSamplerFilter->WrapModes[(int)mTextureUnit.WrapMode];
+		if (samplerHandle == 0)
+		{
+			static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
+
+			glGenSamplers(1, &samplerHandle);
+			glSamplerParameteri(samplerHandle, GL_TEXTURE_MIN_FILTER, mSamplerFilterKey.MinFilter);
+			glSamplerParameteri(samplerHandle, GL_TEXTURE_MAG_FILTER, mSamplerFilterKey.MagFilter);
+			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)mTextureUnit.WrapMode]);
+			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)mTextureUnit.WrapMode]);
+			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)mTextureUnit.WrapMode]);
+		}
+
+		if (mTextureUnit.SamplerHandle != samplerHandle)
+		{
+			mTextureUnit.SamplerHandle = samplerHandle;
+			glBindSampler(0, samplerHandle);
+		}
 	}
 	else
 	{
@@ -910,9 +930,9 @@ void RenderDevice_SetSamplerFilter(RenderDevice* device, TextureFilter minfilter
 	device->SetSamplerFilter(minfilter, magfilter, mipfilter, maxanisotropy);
 }
 
-void RenderDevice_SetSamplerState(RenderDevice* device, TextureAddress addressU, TextureAddress addressV, TextureAddress addressW)
+void RenderDevice_SetSamplerState(RenderDevice* device, TextureAddress address)
 {
-	device->SetSamplerState(addressU, addressV, addressW);
+	device->SetSamplerState(address);
 }
 
 void RenderDevice_Draw(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount)
