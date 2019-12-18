@@ -7,6 +7,7 @@
 #include "ShaderManager.h"
 #include <stdexcept>
 #include <cstdarg>
+#include <algorithm>
 
 static bool GLLogStarted = false;
 static void APIENTRY GLLogCallback(GLenum source, GLenum type, GLuint id,
@@ -39,7 +40,17 @@ RenderDevice::RenderDevice(void* disp, void* window)
 		glGenBuffers(1, &mStreamVertexBuffer);
 		glBindVertexArray(mStreamVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
-		VertexBuffer::SetupFlatVAO();
+		SharedVertexBuffer::SetupFlatVAO();
+
+		int i = 0;
+		for (auto& sharedbuf : mSharedVertexBuffers)
+		{
+			sharedbuf.reset(new SharedVertexBuffer((VertexFormat)i, (int64_t)16 * 1024 * 1024));
+			glBindBuffer(GL_ARRAY_BUFFER, sharedbuf->GetBuffer());
+			glBufferData(GL_ARRAY_BUFFER, sharedbuf->Size, nullptr, GL_STATIC_DRAW);
+			i++;
+		}
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		mShaderManager = std::make_unique<ShaderManager>();
@@ -56,6 +67,13 @@ RenderDevice::~RenderDevice()
 		Context->MakeCurrent();
 		glDeleteBuffers(1, &mStreamVertexBuffer);
 		glDeleteVertexArrays(1, &mStreamVAO);
+		for (auto& sharedbuf : mSharedVertexBuffers)
+		{
+			GLuint handle = sharedbuf->GetBuffer();
+			glDeleteBuffers(1, &handle);
+			handle = sharedbuf->GetVAO();
+			glDeleteVertexArrays(1, &handle);
+		}
 		mShaderManager->ReleaseResources();
 		Context->ClearCurrent();
 	}
@@ -63,11 +81,25 @@ RenderDevice::~RenderDevice()
 
 void RenderDevice::SetVertexBuffer(VertexBuffer* buffer)
 {
-	if (mVertexBuffer != buffer)
+	if (buffer != nullptr)
 	{
-		mVertexBuffer = buffer;
-		mNeedApply = true;
-		mVertexBufferChanged = true;
+		mVertexBufferStartIndex = buffer->BufferStartIndex;
+		if (mVertexBuffer != (int)buffer->Format)
+		{
+			mVertexBuffer = (int)buffer->Format;
+			mNeedApply = true;
+			mVertexBufferChanged = true;
+		}
+	}
+	else
+	{
+		mVertexBufferStartIndex = 0;
+		if (mVertexBuffer != -1)
+		{
+			mVertexBuffer = -1;
+			mNeedApply = true;
+			mVertexBufferChanged = true;
+		}
 	}
 }
 
@@ -249,9 +281,8 @@ void RenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount)
 	static const int toVertexCount[] = { 2, 3, 1 };
 	static const int toVertexStart[] = { 0, 0, 2 };
 
-	ApplyViewport();
 	if (mNeedApply) ApplyChanges();
-	glDrawArrays(modes[(int)type], startIndex, toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type]);
+	glDrawArrays(modes[(int)type], mVertexBufferStartIndex + startIndex, toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type]);
 	CheckGLError();
 }
 
@@ -261,9 +292,8 @@ void RenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitive
 	static const int toVertexCount[] = { 2, 3, 1 };
 	static const int toVertexStart[] = { 0, 0, 2 };
 
-	ApplyViewport();
 	if (mNeedApply) ApplyChanges();
-	glDrawElements(modes[(int)type], toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type], GL_UNSIGNED_INT, (const void*)(startIndex * sizeof(uint32_t)));
+	glDrawElementsBaseVertex(modes[(int)type], toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type], GL_UNSIGNED_INT, (const void*)(startIndex * sizeof(uint32_t)), mVertexBufferStartIndex);
 	CheckGLError();
 }
 
@@ -275,11 +305,10 @@ void RenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCou
 
 	int vertcount = toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type];
 
-	ApplyViewport();
 	if (mNeedApply) ApplyChanges();
 
 	glBindBuffer(GL_ARRAY_BUFFER, mStreamVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertcount * (size_t)VertexBuffer::FlatStride, static_cast<const uint8_t*>(data) + startIndex * (size_t)VertexBuffer::FlatStride, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertcount * (size_t)SharedVertexBuffer::FlatStride, static_cast<const uint8_t*>(data) + startIndex * (size_t)SharedVertexBuffer::FlatStride, GL_STREAM_DRAW);
 	glBindVertexArray(mStreamVAO);
 	glDrawArrays(modes[(int)type], 0, vertcount);
 	ApplyVertexBuffer();
@@ -389,11 +418,43 @@ void RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 void RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format)
 {
 	if (!mContextIsCurrent) Context->MakeCurrent();
-	buffer->Format = format;
+
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
-	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+
+	auto& sharedbuf = mSharedVertexBuffers[(int)format];
+	if (sharedbuf->NextPos + size > sharedbuf->Size)
+	{
+		std::unique_ptr<SharedVertexBuffer> old = std::move(sharedbuf);
+		sharedbuf.reset(new SharedVertexBuffer(format, old->Size * 2));
+		sharedbuf->NextPos = old->NextPos;
+
+		glBindBuffer(GL_ARRAY_BUFFER, sharedbuf->GetBuffer());
+		glBufferData(GL_ARRAY_BUFFER, sharedbuf->Size, nullptr, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_COPY_READ_BUFFER, old->GetBuffer());
+		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_ARRAY_BUFFER, 0, 0, old->Size);
+		glBindBuffer(GL_COPY_READ_BUFFER, 0);
+
+		GLuint handle = old->GetBuffer();
+		glDeleteBuffers(1, &handle);
+		handle = old->GetVAO();
+		glDeleteVertexArrays(1, &handle);
+
+		mVertexBufferChanged = true;
+		mNeedApply = true;
+	}
+	else
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, sharedbuf->GetBuffer());
+	}
+
+	buffer->Format = format;
+	buffer->BufferOffset = sharedbuf->NextPos;
+	buffer->BufferStartIndex = buffer->BufferOffset / (format == VertexFormat::Flat ? SharedVertexBuffer::FlatStride : SharedVertexBuffer::WorldStride);
+	sharedbuf->NextPos += size;
+
+	glBufferSubData(GL_ARRAY_BUFFER, buffer->BufferOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
 	CheckGLError();
 	if (!mContextIsCurrent) Context->ClearCurrent();
@@ -404,8 +465,8 @@ void RenderDevice::SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffs
 	if (!mContextIsCurrent) Context->MakeCurrent();
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer->GetBuffer());
-	glBufferSubData(GL_ARRAY_BUFFER, destOffset, size, data);
+	glBindBuffer(GL_ARRAY_BUFFER, mSharedVertexBuffers[(int)buffer->Format]->GetBuffer());
+	glBufferSubData(GL_ARRAY_BUFFER, buffer->BufferOffset + destOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
 	CheckGLError();
 	if (!mContextIsCurrent) Context->ClearCurrent();
@@ -671,8 +732,8 @@ void RenderDevice::ApplyIndexBuffer()
 
 void RenderDevice::ApplyVertexBuffer()
 {
-	if (mVertexBuffer)
-		glBindVertexArray(mVertexBuffer->GetVAO());
+	if (mVertexBuffer != -1)
+		glBindVertexArray(mSharedVertexBuffers[mVertexBuffer]->GetVAO());
 
 	mVertexBufferChanged = false;
 

@@ -9,17 +9,23 @@ VertexBuffer::VertexBuffer()
 
 VertexBuffer::~VertexBuffer()
 {
-	// To do: move mBuffer to a delete list as this might be called by a finalizer in a different thread
+	// To do: release its slot in RenderDevice (note: this might be called by a finalizer in a different thread)
 }
 
-GLuint VertexBuffer::GetBuffer()
+/////////////////////////////////////////////////////////////////////////////
+
+SharedVertexBuffer::SharedVertexBuffer(VertexFormat format, int64_t size) : Format(format), Size(size)
+{
+}
+
+GLuint SharedVertexBuffer::GetBuffer()
 {
 	if (mBuffer == 0)
 		glGenBuffers(1, &mBuffer);
 	return mBuffer;
 }
 
-GLuint VertexBuffer::GetVAO()
+GLuint SharedVertexBuffer::GetVAO()
 {
 	if (!mVAO)
 	{
@@ -35,7 +41,7 @@ GLuint VertexBuffer::GetVAO()
 	return mVAO;
 }
 
-void VertexBuffer::SetupFlatVAO()
+void SharedVertexBuffer::SetupFlatVAO()
 {
 	glEnableVertexAttribArray((int)DeclarationUsage::Position);
 	glEnableVertexAttribArray((int)DeclarationUsage::Color);
@@ -45,7 +51,7 @@ void VertexBuffer::SetupFlatVAO()
 	glVertexAttribPointer((int)DeclarationUsage::TextureCoordinate, 2, GL_FLOAT, GL_FALSE, FlatStride, (const void*)16);
 }
 
-void VertexBuffer::SetupWorldVAO()
+void SharedVertexBuffer::SetupWorldVAO()
 {
 	glEnableVertexAttribArray((int)DeclarationUsage::Position);
 	glEnableVertexAttribArray((int)DeclarationUsage::Color);

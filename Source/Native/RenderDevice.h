@@ -2,6 +2,7 @@
 
 #include "OpenGLContext.h"
 
+class SharedVertexBuffer;
 class VertexBuffer;
 class IndexBuffer;
 class Texture;
@@ -149,8 +150,12 @@ public:
 		TextureAddress AddressW = TextureAddress::Wrap;
 	} mTextureUnit;
 
-	VertexBuffer* mVertexBuffer = nullptr;
+	int mVertexBuffer = -1;
+	int64_t mVertexBufferStartIndex = 0;
+
 	IndexBuffer* mIndexBuffer = nullptr;
+
+	std::unique_ptr<SharedVertexBuffer> mSharedVertexBuffers[2];
 
 	std::unique_ptr<ShaderManager> mShaderManager;
 	ShaderName mShaderName = ShaderName::display2d_normal;
