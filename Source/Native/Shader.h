@@ -12,16 +12,17 @@ public:
 	void ReleaseResources();
 
 	void Setup(const std::string& identifier, const std::string& vertexShader, const std::string& fragmentShader, bool alphatest);
-	bool CheckCompile();
+	bool CheckCompile(RenderDevice *device);
 	void Bind();
 
 	std::string GetIdentifier();
 	std::string GetCompileError();
 
+	int UniformLastUpdates[(int)UniformName::NumUniforms] = { 0 };
 	GLuint UniformLocations[(int)UniformName::NumUniforms] = { 0 };
 
 private:
-	void CreateProgram();
+	void CreateProgram(RenderDevice* device);
 	GLuint CompileShader(const std::string& code, GLenum type);
 
 	std::string mIdentifier;

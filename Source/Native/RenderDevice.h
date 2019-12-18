@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OpenGLContext.h"
+#include <string>
 
 class SharedVertexBuffer;
 class VertexBuffer;
@@ -176,13 +177,26 @@ public:
 	std::unique_ptr<ShaderManager> mShaderManager;
 	ShaderName mShaderName = ShaderName::display2d_normal;
 
+	enum class UniformType { Matrix, Vec4f, Vec3f, Vec2f, Float };
+
+	struct UniformInfo
+	{
+		std::string Name;
+		UniformType Type = {};
+		int Offset = 0;
+		int LastUpdate = 0;
+	};
+
+	UniformInfo mUniformInfo[(int)UniformName::NumUniforms];
+	std::vector<float> mUniformData;
+
+	void DeclareUniform(UniformName name, const char* glslname, UniformType type);
+
 	union UniformEntry
 	{
 		float valuef;
 		int32_t valuei;
 	};
-
-	UniformEntry mUniforms[4 * 16 + 15 * 4];
 
 	GLuint mStreamVertexBuffer = 0;
 	GLuint mStreamVAO = 0;

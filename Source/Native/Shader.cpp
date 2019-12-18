@@ -12,13 +12,13 @@ void Shader::Setup(const std::string& identifier, const std::string& vertexShade
 	mAlphatest = alphatest;
 }
 
-bool Shader::CheckCompile()
+bool Shader::CheckCompile(RenderDevice* device)
 {
 	bool firstCall = !mProgramBuilt;
 	if (firstCall)
 	{
 		mProgramBuilt = true;
-		CreateProgram();
+		CreateProgram(device);
 		glUseProgram(mProgram);
 		glUniform1i(glGetUniformLocation(mProgram, "texture1"), 0);
 		glUseProgram(0);
@@ -54,7 +54,7 @@ void Shader::Bind()
 	glUseProgram(mProgram);
 }
 
-void Shader::CreateProgram()
+void Shader::CreateProgram(RenderDevice* device)
 {
 	const char* prefixNAT = R"(
 		#version 150
@@ -104,32 +104,12 @@ void Shader::CreateProgram()
 		return;
 	}
 
-	static const char* names[(int)UniformName::NumUniforms] = {
-		"rendersettings",
-		"projection",
-		"desaturation",
-		"highlightcolor",
-		"view",
-		"world",
-		"modelnormal",
-		"fillColor",
-		"vertexColor",
-		"stencilColor",
-		"lightPosAndRadius",
-		"lightOrientation",
-		"light2Radius",
-		"lightColor",
-		"ignoreNormals",
-		"spotLight",
-		"campos",
-		"texturefactor",
-		"fogsettings",
-		"fogcolor"
-	};
-
 	for (int i = 0; i < (int)UniformName::NumUniforms; i++)
 	{
-		UniformLocations[i] = glGetUniformLocation(mProgram, names[i]);
+		if (!device->mUniformInfo[i].Name.empty())
+			UniformLocations[i] = glGetUniformLocation(mProgram, device->mUniformInfo[i].Name.c_str());
+		else
+			UniformLocations[i] = (GLuint)-1;
 	}
 }
 
