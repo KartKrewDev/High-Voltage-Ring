@@ -550,7 +550,11 @@ namespace CodeImp.DoomBuilder.Controls
 				// Select specific item?
 				if(keepselected > -1)
 				{
-					list.SetSelectedItem(list.Items[keepselected]);
+					// If the last item doesn't exist anymore select the new last item
+					if(keepselected >= list.Items.Count)
+						list.SetSelectedItem(list.Items[list.Items.Count-1]);
+					else
+						list.SetSelectedItem(list.Items[keepselected]);
 				}
 				// Select first item?
 				else if(selectfirst)
