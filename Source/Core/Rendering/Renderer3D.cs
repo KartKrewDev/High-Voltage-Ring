@@ -275,14 +275,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			view2d = translate * scaling;
 		}
 		
-		// This applies the matrices
-		private void ApplyMatrices3D(bool projectionChanged, bool worldChanged, bool viewChanged)
-		{
-            graphics.SetUniform(UniformName.projection, projection);
-            graphics.SetUniform(UniformName.world, world);
-            graphics.SetUniform(UniformName.view, view3d);
-		}
-		
 		#endregion
 
 		#region ================== Start / Finish
@@ -311,7 +303,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Matrices
 			world = Matrix.Identity;
-			ApplyMatrices3D(true, true, true);
+            graphics.SetUniform(UniformName.projection, ref projection);
+            graphics.SetUniform(UniformName.world, ref world);
+            graphics.SetUniform(UniformName.view, ref view3d);
 
 			// Highlight
 			if(General.Settings.AnimateVisualSelection)
@@ -377,13 +371,13 @@ namespace CodeImp.DoomBuilder.Rendering
             if (skygeo.Count > 0)
 			{
 				world = Matrix.Identity;
-				ApplyMatrices3D(false, true, false);
+                graphics.SetUniform(UniformName.world, ref world);
 				RenderSky(skygeo);
 			}
 
 			// SOLID PASS
 			world = Matrix.Identity;
-            ApplyMatrices3D(false, true, false);
+            graphics.SetUniform(UniformName.world, ref world);
             RenderSinglePass(solidgeo, solidthings);
 
 			//mxd. Render models, without backface culling
@@ -399,7 +393,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(maskedgeo.Count > 0 || maskedthings.Count > 0)
 			{
 				world = Matrix.Identity;
-                ApplyMatrices3D(false, true, false);
+                graphics.SetUniform(UniformName.world, ref world);
                 graphics.SetAlphaTestEnable(true);
 				RenderSinglePass(maskedgeo, maskedthings);
 			}
@@ -408,7 +402,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0)
 			{
 				world = Matrix.Identity;
-                ApplyMatrices3D(false, true, false);
+                graphics.SetUniform(UniformName.world, ref world);
                 graphics.SetAlphaBlendEnable(true);
 				graphics.SetAlphaTestEnable(false);
 				graphics.SetZWriteEnable(false);
@@ -432,7 +426,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(translucentgeo.Count > 0 || translucentthings.Count > 0)
 			{
 				world = Matrix.Identity;
-                ApplyMatrices3D(false, true, false);
+                graphics.SetUniform(UniformName.world, ref world);
                 graphics.SetAlphaBlendEnable(true);
 				graphics.SetAlphaTestEnable(false);
 				graphics.SetZWriteEnable(false);
@@ -444,7 +438,7 @@ namespace CodeImp.DoomBuilder.Rendering
             if(General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0 && translucentgeo.Count > 0)
             {
                 world = Matrix.Identity;
-                ApplyMatrices3D(false, true, false);
+                graphics.SetUniform(UniformName.world, ref world);
                 graphics.SetAlphaBlendEnable(true);
                 graphics.SetAlphaTestEnable(false);
                 graphics.SetZWriteEnable(false);
@@ -475,7 +469,7 @@ namespace CodeImp.DoomBuilder.Rendering
             if (renderthingcages)
 			{
 				world = Matrix.Identity;
-                ApplyMatrices3D(false, true, false);
+                graphics.SetUniform(UniformName.world, ref world);
                 RenderThingCages();
 			}
 
@@ -617,7 +611,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			foreach(VisualVertex v in visualvertices) 
 			{
 				world = v.Position;
-                ApplyMatrices3D(false, true, false);
+                graphics.SetUniform(UniformName.world, ref world);
 
                 // Setup color
                 Color4 color;
@@ -709,7 +703,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetShader(ShaderName.world3d_vertex_color);
 
 			world = Matrix.Identity;
-            ApplyMatrices3D(false, true, false);
+            graphics.SetUniform(UniformName.world, ref world);
 
             //render
             graphics.SetVertexBuffer(vb);
@@ -919,7 +913,7 @@ namespace CodeImp.DoomBuilder.Rendering
                             else graphics.SetUniform(UniformName.desaturation, 0.0f);
 
                             // Apply changes
-                            ApplyMatrices3D(false, true, false);
+                            graphics.SetUniform(UniformName.world, world);
 
                             // Apply buffer
                             graphics.SetVertexBuffer(t.GeometryBuffer);
@@ -1225,7 +1219,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetUniform(UniformName.desaturation, t.Thing.Sector.Desaturation);
 
                         // Apply changes
-                        ApplyMatrices3D(false, true, false);
+                        graphics.SetUniform(UniformName.world, world);
 
                         // Apply buffer
                         graphics.SetVertexBuffer(t.GeometryBuffer);
@@ -1578,7 +1572,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				Matrix modelrotation = Matrix.RotationY(-t.Thing.RollRad) * Matrix.RotationX(-t.Thing.PitchRad) * Matrix.RotationZ(t.Thing.Angle);
 
 				world = General.Map.Data.ModeldefEntries[t.Thing.Type].Transform * modelscale * modelrotation * t.Position;
-                ApplyMatrices3D(false, true, false);
+                graphics.SetUniform(UniformName.world, world);
 
                 // Set variables for fog rendering
                 if (wantedshaderpass > ShaderName.world3d_p7)
@@ -1983,7 +1977,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			//mxd
 			world = Matrix.Identity;
-            ApplyMatrices3D(false, true, false);
+            graphics.SetUniform(UniformName.world, world);
 
             // Set renderstates
             graphics.SetCullMode(Cull.None);

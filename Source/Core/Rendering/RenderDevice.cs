@@ -129,12 +129,13 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetUniform(UniformName uniform, Matrix matrix)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] {
-                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
-                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
-                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
-                matrix.M41, matrix.M42, matrix.M43, matrix.M44
-            }, 16);
+            RenderDevice_SetUniform(Handle, uniform, ref matrix, 16);
+            CheckAndThrow();
+        }
+
+        public void SetUniform(UniformName uniform, ref Matrix matrix)
+        {
+            RenderDevice_SetUniform(Handle, uniform, ref matrix, 16);
             CheckAndThrow();
         }
 
@@ -430,6 +431,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr RenderDevice_SetUniform(IntPtr handle, UniformName name, float[] data, int count);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr RenderDevice_SetUniform(IntPtr handle, UniformName name, ref Matrix data, int count);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBuffer(IntPtr handle, IntPtr buffer);

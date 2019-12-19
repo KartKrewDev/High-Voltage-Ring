@@ -48,3 +48,11 @@ EXPORTS
 	RawMouse_Delete
 	RawMouse_GetX
 	RawMouse_GetY
+	Matrix_Null
+	Matrix_Identity
+	Matrix_Translation
+	Matrix_RotationX
+	Matrix_RotationY
+	Matrix_RotationZ
+	Matrix_Scaling
+	Matrix_Multiply

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +14,8 @@ namespace CodeImp.DoomBuilder.Rendering
         public float M21, M22, M23, M24;
         public float M31, M32, M33, M34;
         public float M41, M42, M43, M44;
+
+#if USE_CSHARP_MATH
 
         public static Matrix Null
         {
@@ -135,6 +138,144 @@ namespace CodeImp.DoomBuilder.Rendering
             return result;
         }
 
+        public static Matrix Multiply(Matrix left, Matrix right)
+        {
+            Matrix result = new Matrix();
+            result.M11 = (left.M11 * right.M11) + (left.M12 * right.M21) + (left.M13 * right.M31) + (left.M14 * right.M41);
+            result.M12 = (left.M11 * right.M12) + (left.M12 * right.M22) + (left.M13 * right.M32) + (left.M14 * right.M42);
+            result.M13 = (left.M11 * right.M13) + (left.M12 * right.M23) + (left.M13 * right.M33) + (left.M14 * right.M43);
+            result.M14 = (left.M11 * right.M14) + (left.M12 * right.M24) + (left.M13 * right.M34) + (left.M14 * right.M44);
+            result.M21 = (left.M21 * right.M11) + (left.M22 * right.M21) + (left.M23 * right.M31) + (left.M24 * right.M41);
+            result.M22 = (left.M21 * right.M12) + (left.M22 * right.M22) + (left.M23 * right.M32) + (left.M24 * right.M42);
+            result.M23 = (left.M21 * right.M13) + (left.M22 * right.M23) + (left.M23 * right.M33) + (left.M24 * right.M43);
+            result.M24 = (left.M21 * right.M14) + (left.M22 * right.M24) + (left.M23 * right.M34) + (left.M24 * right.M44);
+            result.M31 = (left.M31 * right.M11) + (left.M32 * right.M21) + (left.M33 * right.M31) + (left.M34 * right.M41);
+            result.M32 = (left.M31 * right.M12) + (left.M32 * right.M22) + (left.M33 * right.M32) + (left.M34 * right.M42);
+            result.M33 = (left.M31 * right.M13) + (left.M32 * right.M23) + (left.M33 * right.M33) + (left.M34 * right.M43);
+            result.M34 = (left.M31 * right.M14) + (left.M32 * right.M24) + (left.M33 * right.M34) + (left.M34 * right.M44);
+            result.M41 = (left.M41 * right.M11) + (left.M42 * right.M21) + (left.M43 * right.M31) + (left.M44 * right.M41);
+            result.M42 = (left.M41 * right.M12) + (left.M42 * right.M22) + (left.M43 * right.M32) + (left.M44 * right.M42);
+            result.M43 = (left.M41 * right.M13) + (left.M42 * right.M23) + (left.M43 * right.M33) + (left.M44 * right.M43);
+            result.M44 = (left.M41 * right.M14) + (left.M42 * right.M24) + (left.M43 * right.M34) + (left.M44 * right.M44);
+            return result;
+        }
+
+        public static Matrix operator *(Matrix a, Matrix b)
+        {
+            return Matrix.Multiply(a, b);
+        }
+
+#else
+
+        public static Matrix Null
+        {
+            get
+            {
+                Matrix result = new Matrix();
+                Matrix_Null(out result);
+                return result;
+            }
+        }
+
+        public static Matrix Identity
+        {
+            get
+            {
+                Matrix result = new Matrix();
+                Matrix_Identity(out result);
+                return result;
+            }
+        }
+
+        public static Matrix Translation(Vector3 v)
+        {
+            Matrix result = new Matrix();
+            Matrix_Translation(v.X, v.Y, v.Z, out result);
+            return result;
+        }
+
+        public static Matrix Translation(float x, float y, float z)
+        {
+            Matrix result = new Matrix();
+            Matrix_Translation(x, y, z, out result);
+            return result;
+        }
+
+        public static Matrix RotationX(float angle)
+        {
+            Matrix result = new Matrix();
+            Matrix_RotationX(angle, out result);
+            return result;
+        }
+
+        public static Matrix RotationY(float angle)
+        {
+            Matrix result = new Matrix();
+            Matrix_RotationY(angle, out result);
+            return result;
+        }
+
+        public static Matrix RotationZ(float angle)
+        {
+            Matrix result = new Matrix();
+            Matrix_RotationZ(angle, out result);
+            return result;
+        }
+
+        public static Matrix Scaling(float x, float y, float z)
+        {
+            Matrix result = new Matrix();
+            Matrix_Scaling(x, y, z, out result);
+            return result;
+        }
+
+        public static Matrix Scaling(Vector3 v)
+        {
+            Matrix result = new Matrix();
+            Matrix_Scaling(v.X, v.Y, v.Z, out result);
+            return result;
+        }
+
+        public static Matrix Multiply(Matrix left, Matrix right)
+        {
+            Matrix result = new Matrix();
+            Matrix_Multiply(ref left, ref right, out result);
+            return result;
+        }
+
+        public static Matrix operator *(Matrix a, Matrix b)
+        {
+            Matrix result = new Matrix();
+            Matrix_Multiply(ref a, ref b, out result);
+            return result;
+        }
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Matrix_Null(out Matrix c);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Matrix_Identity(out Matrix c);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Matrix_Translation(float x, float y, float z, out Matrix c);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Matrix_RotationX(float angle, out Matrix c);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Matrix_RotationY(float angle, out Matrix c);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Matrix_RotationZ(float angle, out Matrix c);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Matrix_Scaling(float x, float y, float z, out Matrix c);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void Matrix_Multiply(ref Matrix a, ref Matrix b, out Matrix c);
+
+#endif
+
         public static Matrix LookAt(Vector3 eye, Vector3 target, Vector3 up)
         {
             Vector3 zaxis = Vector3.Normalize(target - eye);
@@ -166,33 +307,6 @@ namespace CodeImp.DoomBuilder.Rendering
             result.M34 = 2.0f * zfar * znear / (znear - zfar);
             result.M43 = -1.0f;
             return result;
-        }
-
-        public static Matrix Multiply(Matrix left, Matrix right)
-        {
-            Matrix result = new Matrix();
-            result.M11 = (left.M11 * right.M11) + (left.M12 * right.M21) + (left.M13 * right.M31) + (left.M14 * right.M41);
-            result.M12 = (left.M11 * right.M12) + (left.M12 * right.M22) + (left.M13 * right.M32) + (left.M14 * right.M42);
-            result.M13 = (left.M11 * right.M13) + (left.M12 * right.M23) + (left.M13 * right.M33) + (left.M14 * right.M43);
-            result.M14 = (left.M11 * right.M14) + (left.M12 * right.M24) + (left.M13 * right.M34) + (left.M14 * right.M44);
-            result.M21 = (left.M21 * right.M11) + (left.M22 * right.M21) + (left.M23 * right.M31) + (left.M24 * right.M41);
-            result.M22 = (left.M21 * right.M12) + (left.M22 * right.M22) + (left.M23 * right.M32) + (left.M24 * right.M42);
-            result.M23 = (left.M21 * right.M13) + (left.M22 * right.M23) + (left.M23 * right.M33) + (left.M24 * right.M43);
-            result.M24 = (left.M21 * right.M14) + (left.M22 * right.M24) + (left.M23 * right.M34) + (left.M24 * right.M44);
-            result.M31 = (left.M31 * right.M11) + (left.M32 * right.M21) + (left.M33 * right.M31) + (left.M34 * right.M41);
-            result.M32 = (left.M31 * right.M12) + (left.M32 * right.M22) + (left.M33 * right.M32) + (left.M34 * right.M42);
-            result.M33 = (left.M31 * right.M13) + (left.M32 * right.M23) + (left.M33 * right.M33) + (left.M34 * right.M43);
-            result.M34 = (left.M31 * right.M14) + (left.M32 * right.M24) + (left.M33 * right.M34) + (left.M34 * right.M44);
-            result.M41 = (left.M41 * right.M11) + (left.M42 * right.M21) + (left.M43 * right.M31) + (left.M44 * right.M41);
-            result.M42 = (left.M41 * right.M12) + (left.M42 * right.M22) + (left.M43 * right.M32) + (left.M44 * right.M42);
-            result.M43 = (left.M41 * right.M13) + (left.M42 * right.M23) + (left.M43 * right.M33) + (left.M44 * right.M43);
-            result.M44 = (left.M41 * right.M14) + (left.M42 * right.M24) + (left.M43 * right.M34) + (left.M44 * right.M44);
-            return result;
-        }
-
-        public static Matrix operator *(Matrix a, Matrix b)
-        {
-            return Matrix.Multiply(a, b);
         }
 
         public override bool Equals(object o)
