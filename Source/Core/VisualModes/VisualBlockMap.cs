@@ -35,16 +35,20 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public const int BLOCK_SIZE_SHIFT = 7;
 		public const int BLOCK_SIZE = 1 << BLOCK_SIZE_SHIFT;
 		public const float BLOCK_RADIUS = BLOCK_SIZE * Angle2D.SQRT2;
-		
-		#endregion
-		
-		#region ================== Variables
-		
-		// Blocks
-		private Dictionary<ulong, VisualBlockEntry> blockmap;
-		
-		// State
-		private bool isdisposed;
+
+        #endregion
+
+        #region ================== Variables
+
+        // Blocks
+#if DICTIONARY_BLOCKMAP
+        private Dictionary<ulong, VisualBlockEntry> blockmap;
+#else
+        private VisualBlockEntry[,] blockmap;
+#endif
+
+        // State
+        private bool isdisposed;
 		
 		#endregion
 		
@@ -59,9 +63,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// Constructor
 		internal VisualBlockMap()
 		{
+#if DICTIONARY_BLOCKMAP
 			// Initialize
 			blockmap = new Dictionary<ulong,VisualBlockEntry>();
-		}
+#else
+            blockmap = new VisualBlockEntry[(1 << 16) / BLOCK_SIZE, (1 << 16) / BLOCK_SIZE]; // 1 megabyte per blockmap
+#endif
+        }
 		
 		// Disposer
 		internal void Dispose()
@@ -106,6 +114,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// Creates the block if it doesn't exist yet
 		public VisualBlockEntry GetBlock(Point p)
 		{
+#if DICTIONARY_BLOCKMAP
 			ulong k = GetBlockKey(p);
 			VisualBlockEntry vbe;
 			
@@ -113,13 +122,26 @@ namespace CodeImp.DoomBuilder.VisualModes
 				return vbe;
 			else
 				return (blockmap[k] = new VisualBlockEntry());
-		}
+#else
+            int blockX = p.X % blockmap.GetLength(0);
+            int blockY = p.Y % blockmap.GetLength(1);
+            if (blockX < 0) blockX += blockmap.GetLength(0);
+            if (blockY < 0) blockY += blockmap.GetLength(1);
+            if (blockmap[blockX, blockY] == null)
+                blockmap[blockX, blockY] = new VisualBlockEntry();
+            return blockmap[blockX, blockY];
+#endif
+        }
 		
 		// This clears the blockmap
 		public void Clear()
 		{
+#if DICTIONARY_BLOCKMAP
 			blockmap = new Dictionary<ulong,VisualBlockEntry>();
-		}
+#else
+            blockmap = new VisualBlockEntry[(1 << 16) / BLOCK_SIZE, (1 << 16) / BLOCK_SIZE]; // ok this a little bit expensive..
+#endif
+        }
 		
 		// This returns a range of blocks in a square
 		public List<VisualBlockEntry> GetSquareRange(RectangleF rect)
@@ -453,6 +475,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 			}
 		}
 		
-		#endregion
+#endregion
 	}
 }
