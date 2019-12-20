@@ -119,12 +119,17 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		//mxd. Event lines
 		private List<Line3D> eventlines;
-		
-		#endregion
 
-		#region ================== Properties
+        // FPS-related
+        private int fps = 0;
+        private System.Diagnostics.Stopwatch fpsWatch;
+        private TextLabel fpsLabel;
 
-		public ProjectedFrustum2D Frustum2D { get { return frustum; } }
+        #endregion
+
+        #region ================== Properties
+
+        public ProjectedFrustum2D Frustum2D { get { return frustum; } }
 		public bool DrawThingCages { get { return renderthingcages; } set { renderthingcages = value; } }
 		public bool ShowSelection { get { return showselection; } set { showselection = value; } }
 		public bool ShowHighlight { get { return showhighlight; } set { showhighlight = value; } }
@@ -148,8 +153,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			frustum = new ProjectedFrustum2D(new Vector2D(), 0.0f, 0.0f, PROJ_NEAR_PLANE,
 				General.Settings.ViewDistance, Angle2D.DegToRad(General.Settings.VisualFOV));
 
-			// We have no destructor
-			GC.SuppressFinalize(this);
+            fpsLabel = new TextLabel();
+            fpsLabel.AlignX = TextAlignmentX.Left;
+            fpsLabel.AlignY = TextAlignmentY.Top;
+            fpsLabel.Text = "(FPS unavailable)";
+            fpsWatch = new System.Diagnostics.Stopwatch();
+
+            // We have no destructor
+            GC.SuppressFinalize(this);
 		}
 
 		// Disposer
@@ -304,8 +315,11 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This starts rendering
 		public bool Start()
 		{
-			// Start drawing
-			if(graphics.StartRendering(true, General.Colors.Background.ToColorValue(), graphics.BackBuffer, graphics.DepthBuffer))
+            if (!fpsWatch.IsRunning)
+                fpsWatch.Start();
+
+            // Start drawing
+            if (graphics.StartRendering(true, General.Colors.Background.ToColorValue(), graphics.BackBuffer, graphics.DepthBuffer))
 			{
 				// Beginning renderstates
 				graphics.Device.SetRenderState(RenderState.CullMode, Cull.None);
@@ -534,7 +548,16 @@ namespace CodeImp.DoomBuilder.Rendering
 			translucentmodelthings = null;
 
 			visualvertices = null;
-		}
+
+            //
+            fps++;
+            if (fpsWatch.ElapsedMilliseconds > 1000)
+            {
+                fpsLabel.Text = string.Format("{0} FPS", fps);
+                fps = 0;
+                fpsWatch.Restart();
+            }
+        }
 
         // [ZZ] black renderer magic here.
         //      todo maybe implement proper frustum culling eventually?
@@ -2101,7 +2124,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.Device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
 			graphics.Shaders.Display2D.EndPass();
 			graphics.Shaders.Display2D.End();
-		}
+
+            General.Map.Renderer2D.RenderText(fpsLabel);
+        }
 
 		// This switches fog on and off
 		public void SetFogMode(bool usefog)
