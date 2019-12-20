@@ -141,7 +141,8 @@ OpenGLContext::~OpenGLContext()
 
 void OpenGLContext::MakeCurrent()
 {
-	wglMakeCurrent(dc, context);
+	if (!IsCurrent())
+		wglMakeCurrent(dc, context);
 }
 
 bool OpenGLContext::IsCurrent()

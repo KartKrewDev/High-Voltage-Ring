@@ -79,7 +79,6 @@ RenderDevice::RenderDevice(void* disp, void* window)
 		mShaderManager = std::make_unique<ShaderManager>();
 
 		CheckGLError();
-		Context->ClearCurrent();
 	}
 }
 
@@ -400,7 +399,6 @@ bool RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 
 bool RenderDevice::FinishRendering()
 {
-	Context->ClearCurrent();
 	mContextIsCurrent = false;
 	return true;
 }
@@ -439,7 +437,6 @@ bool RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, oldTexture);
 	bool result = CheckGLError();
-	if (!mContextIsCurrent) Context->ClearCurrent();
 	return result;
 }
 
@@ -485,7 +482,6 @@ bool RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t
 	glBufferSubData(GL_ARRAY_BUFFER, buffer->BufferOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
 	bool result = CheckGLError();
-	if (!mContextIsCurrent) Context->ClearCurrent();
 	return result;
 }
 
@@ -498,7 +494,6 @@ bool RenderDevice::SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffs
 	glBufferSubData(GL_ARRAY_BUFFER, buffer->BufferOffset + destOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
 	bool result = CheckGLError();
-	if (!mContextIsCurrent) Context->ClearCurrent();
 	return result;
 }
 
@@ -511,7 +506,6 @@ bool RenderDevice::SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t s
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oldbinding);
 	bool result = CheckGLError();
-	if (!mContextIsCurrent) Context->ClearCurrent();
 	return result;
 }
 
@@ -539,7 +533,6 @@ void* RenderDevice::MapPBO(Texture* texture)
 		glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 		buf = nullptr;
 	}
-	if (!mContextIsCurrent) Context->ClearCurrent();
 	return buf;
 }
 
@@ -552,7 +545,6 @@ bool RenderDevice::UnmapPBO(Texture* texture)
 	glBindTexture(GL_TEXTURE_2D, texture->GetTexture());
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture->GetWidth(), texture->GetHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 	bool result = CheckGLError();
-	if (!mContextIsCurrent) Context->ClearCurrent();
 	mNeedApply = true;
 	mTexturesChanged = true;
 	return result;
@@ -565,7 +557,6 @@ bool RenderDevice::InvalidateTexture(Texture* texture)
 		if (!mContextIsCurrent) Context->MakeCurrent();
 		texture->Invalidate();
 		bool result = CheckGLError();
-		if (!mContextIsCurrent) Context->ClearCurrent();
 		mNeedApply = true;
 		mTexturesChanged = true;
 		return result;
