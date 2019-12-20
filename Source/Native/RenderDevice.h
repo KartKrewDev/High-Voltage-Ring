@@ -99,36 +99,36 @@ public:
 	void SetTexture(Texture* texture);
 	void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
 	void SetSamplerState(TextureAddress address);
-	void Draw(PrimitiveType type, int startIndex, int primitiveCount);
-	void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
-	void DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
-	void StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer);
-	void FinishRendering();
-	void Present();
-	void ClearTexture(int backcolor, Texture* texture);
-	void CopyTexture(Texture* dst, CubeMapFace face);
+	bool Draw(PrimitiveType type, int startIndex, int primitiveCount);
+	bool DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
+	bool DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
+	bool StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer);
+	bool FinishRendering();
+	bool Present();
+	bool ClearTexture(int backcolor, Texture* texture);
+	bool CopyTexture(Texture* dst, CubeMapFace face);
 
-	void SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format);
-	void SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size);
-	void SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size);
+	bool SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format);
+	bool SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size);
+	bool SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size);
 
-	void SetPixels(Texture* texture, const void* data);
-	void SetCubePixels(Texture* texture, CubeMapFace face, const void* data);
+	bool SetPixels(Texture* texture, const void* data);
+	bool SetCubePixels(Texture* texture, CubeMapFace face, const void* data);
 	void* MapPBO(Texture* texture);
-	void UnmapPBO(Texture* texture);
+	bool UnmapPBO(Texture* texture);
 
-	void InvalidateTexture(Texture* texture);
+	bool InvalidateTexture(Texture* texture);
 
-	void ApplyViewport();
-	void ApplyChanges();
-	void ApplyVertexBuffer();
-	void ApplyIndexBuffer();
-	void ApplyShader();
-	void ApplyUniforms();
-	void ApplyTextures();
-	void ApplyRasterizerState();
-	void ApplyBlendState();
-	void ApplyDepthState();
+	bool ApplyViewport();
+	bool ApplyChanges();
+	bool ApplyVertexBuffer();
+	bool ApplyIndexBuffer();
+	bool ApplyShader();
+	bool ApplyUniforms();
+	bool ApplyTextures();
+	bool ApplyRasterizerState();
+	bool ApplyBlendState();
+	bool ApplyDepthState();
 
 	bool CheckGLError();
 	void SetError(const char* fmt, ...);
@@ -225,8 +225,9 @@ public:
 
 	bool mContextIsCurrent = false;
 
-	char mLastError[4096];
-	char mReturnError[4096];
+	std::string mLastError;
+	std::string mReturnError;
+	char mSetErrorBuffer[4096];
 
 	int mViewportWidth = 0;
 	int mViewportHeight = 0;
