@@ -113,6 +113,11 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		//mxd. Event lines
 		private List<Line3D> eventlines;
+
+        // FPS-related
+        private int fps = 0;
+        private System.Diagnostics.Stopwatch fpsWatch;
+        private TextLabel fpsLabel;
 		
 		#endregion
 
@@ -141,6 +146,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Dummy frustum
 			frustum = new ProjectedFrustum2D(new Vector2D(), 0.0f, 0.0f, PROJ_NEAR_PLANE,
 				General.Settings.ViewDistance, Angle2D.DegToRad(General.Settings.VisualFOV));
+
+            fpsLabel = new TextLabel();
+            fpsLabel.AlignX = TextAlignmentX.Left;
+            fpsLabel.AlignY = TextAlignmentY.Top;
+            fpsLabel.Text = "(FPS unavailable)";
+            fpsWatch = new System.Diagnostics.Stopwatch();
 
 			// We have no destructor
 			GC.SuppressFinalize(this);
@@ -282,6 +293,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This starts rendering
 		public bool Start()
 		{
+            if (!fpsWatch.IsRunning)
+                fpsWatch.Start();
+
             // Start drawing
             graphics.StartRendering(true, General.Colors.Background.ToColorValue());
 
@@ -498,6 +512,15 @@ namespace CodeImp.DoomBuilder.Rendering
 			translucentmodelthings = null;
 
 			visualvertices = null;
+
+            //
+            fps++;
+            if (fpsWatch.ElapsedMilliseconds > 1000)
+            {
+                fpsLabel.Text = string.Format("{0} FPS", fps);
+                fps = 0;
+                fpsWatch.Restart();
+            }
 		}
 
         // [ZZ] black renderer magic here.
@@ -2006,7 +2029,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			// Draw
             graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
-		}
+
+            General.Map.Renderer2D.RenderText(fpsLabel);
+        }
 
         // This switches fog on and off
         public void SetFogMode(bool usefog)
