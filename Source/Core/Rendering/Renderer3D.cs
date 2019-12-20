@@ -118,12 +118,12 @@ namespace CodeImp.DoomBuilder.Rendering
         private int fps = 0;
         private System.Diagnostics.Stopwatch fpsWatch;
         private TextLabel fpsLabel;
-		
-		#endregion
 
-		#region ================== Properties
+        #endregion
 
-		public ProjectedFrustum2D Frustum2D { get { return frustum; } }
+        #region ================== Properties
+
+        public ProjectedFrustum2D Frustum2D { get { return frustum; } }
 		public bool DrawThingCages { get { return renderthingcages; } set { renderthingcages = value; } }
 		public bool ShowSelection { get { return showselection; } set { showselection = value; } }
 		public bool ShowHighlight { get { return showhighlight; } set { showhighlight = value; } }
@@ -153,8 +153,8 @@ namespace CodeImp.DoomBuilder.Rendering
             fpsLabel.Text = "(FPS unavailable)";
             fpsWatch = new System.Diagnostics.Stopwatch();
 
-			// We have no destructor
-			GC.SuppressFinalize(this);
+            // We have no destructor
+            GC.SuppressFinalize(this);
 		}
 
 		// Disposer
@@ -521,7 +521,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 fps = 0;
                 fpsWatch.Restart();
             }
-		}
+        }
 
         // [ZZ] black renderer magic here.
         //      todo maybe implement proper frustum culling eventually?
