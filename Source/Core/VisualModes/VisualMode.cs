@@ -503,15 +503,18 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		//mxd. Should move selected things in specified direction
 		protected virtual void MoveSelectedThings(Vector2D direction, bool absolutePosition) { }
-		
-		#endregion
 
-		#region ================== Visibility Culling
-		
+        #endregion
+
+        #region ================== Visibility Culling
+
+        int lastProcessed = 0;
+
 		// This preforms visibility culling
 		protected void DoCulling()
 		{
-			HashSet<Linedef> visiblelines = new HashSet<Linedef>();
+            lastProcessed++;
+			List<Linedef> visiblelines = new List<Linedef>();
 			Vector2D campos2d = General.Map.VisualCamera.Position;
 			
 			// Make collections
@@ -531,10 +534,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 					foreach(Linedef ld in block.Lines)
 					{
 						// Line not already processed?
-						if(!visiblelines.Contains(ld))
+						if (ld.LastProcessed != lastProcessed)//if(!visiblelines.Contains(ld))
 						{
-							// Add line if not added yet
-							visiblelines.Add(ld);
+                            // Add line if not added yet
+                            ld.LastProcessed = lastProcessed;
+                            visiblelines.Add(ld);
 
 							// Which side of the line is the camera on?
 							if(ld.SideOfLine(campos2d) < 0)
