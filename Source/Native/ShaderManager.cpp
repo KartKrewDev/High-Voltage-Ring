@@ -2,7 +2,7 @@
 #include "Precomp.h"
 #include "ShaderManager.h"
 
-void ShaderManager::DeclareShader(int i, const char* vs, const char* ps)
+void ShaderManager::DeclareShader(int i, const char* name, const char* vs, const char* ps)
 {
 	if (Shaders.size() <= (size_t)i)
 	{
@@ -10,8 +10,8 @@ void ShaderManager::DeclareShader(int i, const char* vs, const char* ps)
 		AlphaTestShaders.resize((size_t)i + 1);
 	}
 
-	Shaders[i].Setup(vs, ps, false);
-	AlphaTestShaders[i].Setup(vs, ps, true);
+	Shaders[i].Setup(name, vs, ps, false);
+	AlphaTestShaders[i].Setup(name, vs, ps, true);
 }
 
 void ShaderManager::ReleaseResources()

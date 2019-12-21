@@ -105,7 +105,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void DeclareShader(ShaderName name, string vertResourceName, string fragResourceName)
         {
-            RenderDevice_DeclareShader(Handle, name, GetResourceText(vertResourceName), GetResourceText(fragResourceName));
+            RenderDevice_DeclareShader(Handle, name, name.ToString(), GetResourceText(vertResourceName), GetResourceText(fragResourceName));
         }
 
         static string GetResourceText(string name)
@@ -426,7 +426,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_Delete(IntPtr handle);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        static extern void RenderDevice_DeclareShader(IntPtr handle, ShaderName name, string vertexShader, string fragShader);
+        static extern void RenderDevice_DeclareShader(IntPtr handle, ShaderName index, string name, string vertexShader, string fragShader);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr RenderDevice_GetError(IntPtr handle);

@@ -54,7 +54,7 @@ public:
 	RenderDevice(void* disp, void* window);
 	~RenderDevice();
 
-	void DeclareShader(ShaderName shadername, const char* vertexshader, const char* fragmentshader);
+	void DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader);
 	void SetShader(ShaderName name);
 	void SetUniform(UniformName name, const void* values, int count);
 	void SetVertexBuffer(VertexBuffer* buffer);
