@@ -36,7 +36,7 @@ void main()
 	vec4 c = texture(texture1, UV);
 	
 	// If this pixel is not drawn on...
-	if(c.a < 0.1f)
+	if(c.a < 0.1)
 	{
 		// Mix the colors of nearby pixels
 		vec4 n = vec4(0.0);

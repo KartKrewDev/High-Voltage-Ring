@@ -20,5 +20,5 @@ void main()
 	if (FragColor.a < 0.5) discard;
 	#endif
 
-	if (fogsettings.x >= 0.0f) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
+	if (fogsettings.x >= 0.0) FragColor = mix(FragColor, fogcolor, clamp((-viewpos.z - fogsettings.x) / (fogsettings.y - fogsettings.x), 0.0, 1.0));
 }

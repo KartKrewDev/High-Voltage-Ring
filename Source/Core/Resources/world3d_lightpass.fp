@@ -56,7 +56,7 @@ void main()
 		lightColorMod.rgb *= df;
 	}
 
-	if (lightColor.a > 0.979f && lightColor.a < 0.981f) // attenuated light 98%
+	if (lightColor.a > 0.979 && lightColor.a < 0.981) // attenuated light 98%
 		lightColorMod.rgb *= diffuseContribution;
 
 	if (lightColorMod.r <= 0.0 && lightColorMod.g <= 0.0 && lightColorMod.b <= 0.0)
