@@ -28,3 +28,4 @@ obj
 /Source/Plugins/vpo_dll/Release
 /Source/Core/*.user
 /Build/libBuilderNative.so
+/Build/OpenGLDebug.log
