@@ -86,11 +86,14 @@ namespace CodeImp.DoomBuilder.Map
 		private bool fixedsize;
 		private bool directional; //mxd. If true, we need to render an arrow
 
-		#endregion
+        // Rendering
+        private int lastProcessed;
 
-		#region ================== Properties
+        #endregion
 
-		public MapSet Map { get { return map; } }
+        #region ================== Properties
+
+        public MapSet Map { get { return map; } }
 		public int Type { get { return type; } set { BeforePropsChange(); type = value; } } //mxd
         public GZGeneral.LightData DynamicLightType { get { return dynamiclighttype; } internal set { BeforePropsChange(); dynamiclighttype = value; } }
 		public Vector3D Position { get { return pos; } }
@@ -116,13 +119,14 @@ namespace CodeImp.DoomBuilder.Map
 		public ThingRenderMode RenderMode { get { return rendermode; } } //mxd
 		public bool IsDirectional { get { return directional; } } //mxd
 		public bool Highlighted { get { return highlighted; } set { highlighted = value; } } //mxd
+        internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
 
-		#endregion
+        #endregion
 
-		#region ================== Constructor / Disposer
+        #region ================== Constructor / Disposer
 
-		// Constructor
-		internal Thing(MapSet map, int listindex)
+        // Constructor
+        internal Thing(MapSet map, int listindex)
 		{
 			// Initialize
 			this.elementtype = MapElementType.THING; //mxd

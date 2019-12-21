@@ -1340,7 +1340,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					renderer.DrawThingCages = ((BuilderPlug.Me.ShowVisualThings & 2) != 0);
 					
 					// Render all visible things
-					foreach(VisualThing t in visiblethings.Values)
+					foreach(VisualThing t in visiblethings)
 						renderer.AddThingGeometry(t);
 				}
 
@@ -1551,9 +1551,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(sectordata != null && sectordata.Count > 0) RebuildElementData();
 
 			//mxd. As well as geometry...
-			foreach(KeyValuePair<Sector, VisualSector> group in visiblesectors)
+			foreach(VisualSector sector in visiblesectors)
 			{
-				BaseVisualSector vs = (BaseVisualSector)group.Value;
+				BaseVisualSector vs = (BaseVisualSector)sector;
 				if(vs != null) vs.Rebuild();
 			}
 
@@ -1572,9 +1572,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(sectordata != null && sectordata.Count > 0) RebuildElementData();
 
 			//mxd. As well as geometry...
-			foreach(KeyValuePair<Sector, VisualSector> group in visiblesectors) 
+			foreach(VisualSector sector in visiblesectors) 
 			{
-				BaseVisualSector vs = (BaseVisualSector)group.Value;
+				BaseVisualSector vs = (BaseVisualSector)sector;
 				if(vs != null) vs.Rebuild();
 			}
 
@@ -3264,7 +3264,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
             foreach (IVisualEventReceiver i in objs)
             {
                 if (i is BaseVisualThing)
-                    visiblethings.Remove(((BaseVisualThing)i).Thing); // [ZZ] if any
+                    visiblethings.Remove((BaseVisualThing)i); // [ZZ] if any
                 i.OnDelete();
             }
             PostAction();
@@ -3305,7 +3305,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			foreach(IVisualEventReceiver i in objs) 
 			{
 				BaseVisualThing thing = (BaseVisualThing)i;
-                visiblethings.Remove(thing.Thing); // [ZZ] if any
+                visiblethings.Remove(thing); // [ZZ] if any
                 thing.Thing.Fields.BeforeFieldsChange();
 				thing.Thing.Dispose();
 				thing.Dispose();

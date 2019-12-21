@@ -87,6 +87,7 @@ namespace CodeImp.DoomBuilder.Map
 		//mxd. Rendering
 		private Color4 fogcolor;
 		private SectorFogMode fogmode;
+        private int lastProcessed;
 
 		//mxd. Slopes
 		private Vector3D floorslope;
@@ -142,6 +143,7 @@ namespace CodeImp.DoomBuilder.Map
 		public float FloorSlopeOffset { get { return flooroffset; } set { BeforePropsChange(); flooroffset = value; updateneeded = true; } }
 		public Vector3D CeilSlope { get { return ceilslope; } set { BeforePropsChange(); ceilslope = value; updateneeded = true; } }
 		public float CeilSlopeOffset { get { return ceiloffset; } set { BeforePropsChange(); ceiloffset = value; updateneeded = true; } }
+        internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
 
 		#endregion
 

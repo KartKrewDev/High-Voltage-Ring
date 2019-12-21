@@ -57,6 +57,9 @@ namespace CodeImp.DoomBuilder.Map
 
 		// Clone
 		private int serializedindex;
+
+        // Rendering
+        private int lastProcessed;
 		
 		#endregion
 
@@ -78,6 +81,7 @@ namespace CodeImp.DoomBuilder.Map
 		public long LongMiddleTexture { get { return longtexnamemid; } }
 		public long LongLowTexture { get { return longtexnamelow; } }
 		internal int SerializedIndex { get { return serializedindex; } set { serializedindex = value; } }
+        internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
 		
 		#endregion
 
