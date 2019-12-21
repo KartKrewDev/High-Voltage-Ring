@@ -41,18 +41,30 @@ namespace CodeImp.DoomBuilder.Rendering
     {
 		public RenderDevice(RenderTargetControl rendertarget)
 		{
-            // Grab the X11 Display handle by abusing reflection to access internal classes in the mono implementation.
-            // That's par for the course for everything in Linux, so yeah..
-            IntPtr display = IntPtr.Zero;
-            Type xplatui = Type.GetType("System.Windows.Forms.XplatUIX11, System.Windows.Forms");
-            if (xplatui != null)
-            {
-                display = (IntPtr)xplatui.GetField("DisplayHandle", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
-            }
-		
-            Handle = RenderDevice_New(display, rendertarget.Handle);
-            if (Handle == IntPtr.Zero)
-                throw new Exception("RenderDevice_New failed");
+            RenderTarget = rendertarget;
+
+            CreateDevice();
+
+            DeclareUniform(UniformName.rendersettings, "rendersettings", UniformType.Vec4);
+            DeclareUniform(UniformName.projection, "projection", UniformType.Mat4);
+            DeclareUniform(UniformName.desaturation, "desaturation", UniformType.Float);
+            DeclareUniform(UniformName.highlightcolor, "highlightcolor", UniformType.Vec4);
+            DeclareUniform(UniformName.view, "view", UniformType.Mat4);
+            DeclareUniform(UniformName.world, "world", UniformType.Mat4);
+            DeclareUniform(UniformName.modelnormal, "modelnormal", UniformType.Mat4);
+            DeclareUniform(UniformName.FillColor, "FillColor", UniformType.Vec4);
+            DeclareUniform(UniformName.vertexColor, "vertexColor", UniformType.Vec4);
+            DeclareUniform(UniformName.stencilColor, "stencilColor", UniformType.Vec4);
+            DeclareUniform(UniformName.lightPosAndRadius, "lightPosAndRadius", UniformType.Vec4);
+            DeclareUniform(UniformName.lightOrientation, "lightOrientation", UniformType.Vec3);
+            DeclareUniform(UniformName.light2Radius, "light2Radius", UniformType.Vec2);
+            DeclareUniform(UniformName.lightColor, "lightColor", UniformType.Vec4);
+            DeclareUniform(UniformName.ignoreNormals, "ignoreNormals", UniformType.Float);
+            DeclareUniform(UniformName.spotLight, "spotLight", UniformType.Float);
+            DeclareUniform(UniformName.campos, "campos", UniformType.Vec4);
+            DeclareUniform(UniformName.texturefactor, "texturefactor", UniformType.Vec4);
+            DeclareUniform(UniformName.fogsettings, "fogsettings", UniformType.Vec4);
+            DeclareUniform(UniformName.fogcolor, "fogcolor", UniformType.Vec4);
 
             DeclareShader(ShaderName.display2d_fsaa, "display2d.vp", "display2d_fsaa.fp");
             DeclareShader(ShaderName.display2d_normal, "display2d.vp", "display2d_normal.fp");
@@ -76,14 +88,28 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareShader(ShaderName.world3d_constant_color, "world3d_customvertexcolor.vp", "world3d_constant_color.fp");
             DeclareShader(ShaderName.world3d_lightpass, "world3d_lightpass.vp", "world3d_lightpass.fp");
 
-            RenderTarget = rendertarget;
-
             SetupSettings();
         }
 
         ~RenderDevice()
         {
             Dispose();
+        }
+
+        void CreateDevice()
+        {
+            // Grab the X11 Display handle by abusing reflection to access internal classes in the mono implementation.
+            // That's par for the course for everything in Linux, so yeah..
+            IntPtr display = IntPtr.Zero;
+            Type xplatui = Type.GetType("System.Windows.Forms.XplatUIX11, System.Windows.Forms");
+            if (xplatui != null)
+            {
+                display = (IntPtr)xplatui.GetField("DisplayHandle", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            }
+
+            Handle = RenderDevice_New(display, RenderTarget.Handle);
+            if (Handle == IntPtr.Zero)
+                throw new Exception("RenderDevice_New failed");
         }
 
         public bool Disposed { get { return Handle == IntPtr.Zero; } }
@@ -101,6 +127,11 @@ namespace CodeImp.DoomBuilder.Rendering
                 RenderDevice_Delete(Handle);
                 Handle = IntPtr.Zero;
             }
+        }
+
+        public void DeclareUniform(UniformName name, string variablename, UniformType type)
+        {
+            RenderDevice_DeclareUniform(Handle, name, variablename, type);
         }
 
         public void DeclareShader(ShaderName name, string vertResourceName, string fragResourceName)
@@ -426,6 +457,9 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_Delete(IntPtr handle);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        static extern void RenderDevice_DeclareUniform(IntPtr handle, UniformName name, string variablename, UniformType type);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         static extern void RenderDevice_DeclareShader(IntPtr handle, ShaderName index, string name, string vertexShader, string fragShader);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
@@ -599,6 +633,15 @@ namespace CodeImp.DoomBuilder.Rendering
         world3d_vertex_color,
         world3d_constant_color,
         world3d_lightpass
+    }
+
+    public enum UniformType : int
+    {
+        Vec4,
+        Vec3,
+        Vec2,
+        Float,
+        Mat4
     }
 
     public enum UniformName : int

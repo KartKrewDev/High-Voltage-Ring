@@ -21,31 +21,16 @@ enum class ShaderFlags : int { None, Debug };
 enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };
 enum class TextureFilter : int { None, Point, Linear, Anisotropic };
 
+typedef int UniformName;
 typedef int ShaderName;
 
-enum class UniformName : int
+enum class UniformType : int
 {
-	rendersettings,
-	projection,
-	desaturation,
-	highlightcolor,
-	view,
-	world,
-	modelnormal,
-	FillColor,
-	vertexColor,
-	stencilColor,
-	lightPosAndRadius,
-	lightOrientation,
-	light2Radius,
-	lightColor,
-	ignoreNormals,
-	spotLight,
-	campos,
-	texturefactor,
-	fogsettings,
-	fogcolor,
-	NumUniforms
+	Vec4f,
+	Vec3f,
+	Vec2f,
+	Float,
+	Mat4
 };
 
 class RenderDevice
@@ -54,6 +39,7 @@ public:
 	RenderDevice(void* disp, void* window);
 	~RenderDevice();
 
+	void DeclareUniform(UniformName name, const char* glslname, UniformType type);
 	void DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader);
 	void SetShader(ShaderName name);
 	void SetUniform(UniformName name, const void* values, int count);
@@ -150,8 +136,6 @@ public:
 	std::unique_ptr<ShaderManager> mShaderManager;
 	ShaderName mShaderName = {};
 
-	enum class UniformType { Matrix, Vec4f, Vec3f, Vec2f, Float };
-
 	struct UniformInfo
 	{
 		std::string Name;
@@ -160,16 +144,8 @@ public:
 		int LastUpdate = 0;
 	};
 
-	UniformInfo mUniformInfo[(int)UniformName::NumUniforms];
+	std::vector<UniformInfo> mUniformInfo;
 	std::vector<float> mUniformData;
-
-	void DeclareUniform(UniformName name, const char* glslname, UniformType type);
-
-	union UniformEntry
-	{
-		float valuef;
-		int32_t valuei;
-	};
 
 	GLuint mStreamVertexBuffer = 0;
 	GLuint mStreamVAO = 0;

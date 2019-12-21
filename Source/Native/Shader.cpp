@@ -104,12 +104,15 @@ void Shader::CreateProgram(RenderDevice* device)
 		return;
 	}
 
-	for (int i = 0; i < (int)UniformName::NumUniforms; i++)
+	UniformLastUpdates.resize(device->mUniformInfo.size());
+	UniformLocations.resize(device->mUniformInfo.size(), (GLuint)-1);
+
+	int count = (int)UniformLocations.size();
+	for (int i = 0; i < count; i++)
 	{
-		if (!device->mUniformInfo[i].Name.empty())
-			UniformLocations[i] = glGetUniformLocation(mProgram, device->mUniformInfo[i].Name.c_str());
-		else
-			UniformLocations[i] = (GLuint)-1;
+		const auto& name = device->mUniformInfo[i].Name;
+		if (!name.empty())
+			UniformLocations[i] = glGetUniformLocation(mProgram, name.c_str());
 	}
 }
 

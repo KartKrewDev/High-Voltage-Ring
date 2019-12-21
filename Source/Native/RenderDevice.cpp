@@ -28,27 +28,6 @@ static void APIENTRY GLLogCallback(GLenum source, GLenum type, GLuint id,
 
 RenderDevice::RenderDevice(void* disp, void* window)
 {
-	DeclareUniform(UniformName::projection, "projection", UniformType::Matrix);
-	DeclareUniform(UniformName::view, "view", UniformType::Matrix);
-	DeclareUniform(UniformName::world, "world", UniformType::Matrix);
-	DeclareUniform(UniformName::modelnormal, "modelnormal", UniformType::Matrix);
-	DeclareUniform(UniformName::rendersettings, "rendersettings", UniformType::Vec4f);
-	DeclareUniform(UniformName::highlightcolor, "highlightcolor", UniformType::Vec4f);
-	DeclareUniform(UniformName::FillColor, "fillColor", UniformType::Vec4f);
-	DeclareUniform(UniformName::vertexColor, "vertexColor", UniformType::Vec4f);
-	DeclareUniform(UniformName::stencilColor, "stencilColor", UniformType::Vec4f);
-	DeclareUniform(UniformName::lightPosAndRadius, "lightPosAndRadius", UniformType::Vec4f);
-	DeclareUniform(UniformName::lightColor, "lightColor", UniformType::Vec4f);
-	DeclareUniform(UniformName::campos, "campos", UniformType::Vec4f);
-	DeclareUniform(UniformName::texturefactor, "texturefactor", UniformType::Vec4f);
-	DeclareUniform(UniformName::fogsettings, "fogsettings", UniformType::Vec4f);
-	DeclareUniform(UniformName::fogcolor, "fogcolor", UniformType::Vec4f);
-	DeclareUniform(UniformName::lightOrientation, "lightOrientation", UniformType::Vec3f);
-	DeclareUniform(UniformName::light2Radius, "light2Radius", UniformType::Vec2f);
-	DeclareUniform(UniformName::desaturation, "desaturation", UniformType::Float);
-	DeclareUniform(UniformName::ignoreNormals, "ignoreNormals", UniformType::Float);
-	DeclareUniform(UniformName::spotLight, "spotLight", UniformType::Float);
-
 	Context = IOpenGLContext::Create(disp, window);
 	if (Context)
 	{
@@ -760,23 +739,28 @@ bool RenderDevice::ApplyVertexBuffer()
 
 void RenderDevice::DeclareUniform(UniformName name, const char* glslname, UniformType type)
 {
-	UniformInfo& info = mUniformInfo[(int)name];
+	size_t index = (size_t)name;
+	if (mUniformInfo.size() <= index)
+		mUniformInfo.resize(index + 1);
+
+	UniformInfo& info = mUniformInfo[index];
 	info.Name = glslname;
 	info.Type = type;
 	info.Offset = (int)mUniformData.size();
 
-	mUniformData.resize(mUniformData.size() + (type == UniformType::Matrix ? 16 : 4));
+	mUniformData.resize(mUniformData.size() + (type == UniformType::Mat4 ? 16 : 4));
 }
 
 bool RenderDevice::ApplyUniforms()
 {
 	Shader* shader = GetActiveShader();
-	auto& locations = shader->UniformLocations;
-	auto& lastupdates = shader->UniformLastUpdates;
+	GLuint* locations = shader->UniformLocations.data();
+	int* lastupdates = shader->UniformLastUpdates.data();
 
-	for (int i = 0; i < (int)UniformName::NumUniforms; i++)
+	int count = (int)mUniformInfo.size();
+	for (int i = 0; i < count; i++)
 	{
-		if (lastupdates[i] != mUniformInfo[i].LastUpdate)
+		if (lastupdates[i] != mUniformInfo.data()[i].LastUpdate)
 		{
 			float* data = mUniformData.data() + mUniformInfo[i].Offset;
 			GLuint location = locations[i];
@@ -787,7 +771,7 @@ bool RenderDevice::ApplyUniforms()
 			case UniformType::Vec3f: glUniform3fv(location, 1, data); break;
 			case UniformType::Vec2f: glUniform2fv(location, 1, data); break;
 			case UniformType::Float: glUniform1fv(location, 1, data); break;
-			case UniformType::Matrix: glUniformMatrix4fv(location, 1, GL_FALSE, data); break;
+			case UniformType::Mat4: glUniformMatrix4fv(location, 1, GL_FALSE, data); break;
 			}
 			lastupdates[i] = mUniformInfo[i].LastUpdate;
 		}
@@ -863,6 +847,11 @@ void RenderDevice_Delete(RenderDevice* device)
 const char* RenderDevice_GetError(RenderDevice* device)
 {
 	return device->GetError();
+}
+
+void RenderDevice_DeclareUniform(RenderDevice* device, UniformName name, const char* variablename, UniformType type)
+{
+	device->DeclareUniform(name, variablename, type);
 }
 
 void RenderDevice_DeclareShader(RenderDevice* device, ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader)

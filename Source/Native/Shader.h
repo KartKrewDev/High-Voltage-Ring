@@ -14,11 +14,10 @@ public:
 	bool CheckCompile(RenderDevice *device);
 	void Bind();
 
-	std::string GetIdentifier();
 	std::string GetCompileError();
 
-	int UniformLastUpdates[(int)UniformName::NumUniforms] = { 0 };
-	GLuint UniformLocations[(int)UniformName::NumUniforms] = { 0 };
+	std::vector<int> UniformLastUpdates;
+	std::vector<GLuint> UniformLocations;
 
 private:
 	void CreateProgram(RenderDevice* device);
