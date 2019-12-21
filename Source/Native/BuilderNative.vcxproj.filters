@@ -28,12 +28,7 @@
     <ClInclude Include="OpenGLContext.h" />
     <ClInclude Include="Precomp.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderThings2D.h" />
-    <ClInclude Include="ShaderWorld3D.h" />
-    <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="ShaderDisplay2D.h" />
     <ClInclude Include="RawMouse.h" />
-    <ClInclude Include="ShaderPlotter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

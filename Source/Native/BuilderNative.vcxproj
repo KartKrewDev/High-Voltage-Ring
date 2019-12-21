@@ -222,11 +222,6 @@
     <ClInclude Include="RawMouse.h" />
     <ClInclude Include="RenderDevice.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderDisplay2D.h" />
-    <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="ShaderPlotter.h" />
-    <ClInclude Include="ShaderThings2D.h" />
-    <ClInclude Include="ShaderWorld3D.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
