@@ -1,14 +1,15 @@
 
 #include "Precomp.h"
 #include "IndexBuffer.h"
-
-IndexBuffer::IndexBuffer()
-{
-}
+#include "RenderDevice.h"
 
 IndexBuffer::~IndexBuffer()
 {
-	// To do: move mBuffer to a delete list as this might be called by a finalizer in a different thread
+	if (Device && mBuffer != 0)
+	{
+		glDeleteBuffers(1, &mBuffer);
+		mBuffer = 0;
+	}
 }
 
 GLuint IndexBuffer::GetBuffer()
@@ -30,7 +31,7 @@ IndexBuffer* IndexBuffer_New()
 
 void IndexBuffer_Delete(IndexBuffer* buffer)
 {
-	//delete buffer;
+	RenderDevice::DeleteObject(buffer);
 }
 
 }

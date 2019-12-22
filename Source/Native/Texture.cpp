@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "Texture.h"
+#include "RenderDevice.h"
 #include <stdexcept>
 
 Texture::Texture()
@@ -9,7 +10,8 @@ Texture::Texture()
 
 Texture::~Texture()
 {
-	// To do: move mTexture to a delete list as this might be called by a finalizer in a different thread
+	if (Device)
+		Invalidate();
 }
 
 void Texture::Set2DImage(int width, int height)
@@ -48,12 +50,15 @@ void Texture::Invalidate()
 	mFramebuffer = 0;
 	mTexture = 0;
 	mPBO = 0;
+	Device = nullptr;
 }
 
-GLuint Texture::GetTexture()
+GLuint Texture::GetTexture(RenderDevice* device)
 {
 	if (mTexture == 0)
 	{
+		Device = device;
+
 		GLint oldActiveTex = GL_TEXTURE0;
 		glGetIntegerv(GL_ACTIVE_TEXTURE, &oldActiveTex);
 		glActiveTexture(GL_TEXTURE0);
@@ -97,13 +102,13 @@ GLuint Texture::GetTexture()
 	return mTexture;
 }
 
-GLuint Texture::GetFramebuffer(bool usedepthbuffer)
+GLuint Texture::GetFramebuffer(RenderDevice* device, bool usedepthbuffer)
 {
 	if (!usedepthbuffer)
 	{
 		if (mFramebuffer == 0)
 		{
-			GLuint texture = GetTexture();
+			GLuint texture = GetTexture(Device);
 			glGenFramebuffers(1, &mFramebuffer);
 			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
@@ -116,6 +121,8 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 	{
 		if (mDepthRenderbuffer == 0)
 		{
+			Device = device;
+
 			glGenRenderbuffers(1, &mDepthRenderbuffer);
 			glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderbuffer);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWidth, mHeight);
@@ -124,7 +131,7 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 
 		if (mFramebuffer == 0)
 		{
-			GLuint texture = GetTexture();
+			GLuint texture = GetTexture(Device);
 			glGenFramebuffers(1, &mFramebuffer);
 			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
@@ -137,10 +144,12 @@ GLuint Texture::GetFramebuffer(bool usedepthbuffer)
 	}
 }
 
-GLuint Texture::GetPBO()
+GLuint Texture::GetPBO(RenderDevice* device)
 {
 	if (mPBO == 0)
 	{
+		Device = device;
+
 		glGenBuffers(1, &mPBO);
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, mPBO);
 		glBufferData(GL_PIXEL_UNPACK_BUFFER, mWidth*mHeight * 4, NULL, GL_STREAM_DRAW);
@@ -161,7 +170,7 @@ Texture* Texture_New()
 
 void Texture_Delete(Texture* tex)
 {
-	//delete tex;
+	RenderDevice::DeleteObject(tex);
 }
 
 void Texture_Set2DImage(Texture* handle, int width, int height)

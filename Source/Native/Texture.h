@@ -10,6 +10,8 @@ enum class CubeMapFace : int
 	NegativeZ
 };
 
+class RenderDevice;
+
 class Texture
 {
 public:
@@ -29,9 +31,11 @@ public:
 	bool IsTextureCreated() const { return mTexture; }
 	void Invalidate();
 
-	GLuint GetTexture();
-	GLuint GetFramebuffer(bool usedepthbuffer);
-	GLuint GetPBO();
+	GLuint GetTexture(RenderDevice* device);
+	GLuint GetFramebuffer(RenderDevice* device, bool usedepthbuffer);
+	GLuint GetPBO(RenderDevice* device);
+
+	RenderDevice* Device = nullptr;
 
 private:
 	int mWidth = 0;

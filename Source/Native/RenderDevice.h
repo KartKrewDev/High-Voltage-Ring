@@ -2,6 +2,7 @@
 
 #include "OpenGLContext.h"
 #include <string>
+#include <mutex>
 
 class SharedVertexBuffer;
 class VertexBuffer;
@@ -78,6 +79,8 @@ public:
 
 	bool InvalidateTexture(Texture* texture);
 
+	void GarbageCollectBuffer(int size, VertexFormat format);
+
 	bool ApplyViewport();
 	bool ApplyChanges();
 	bool ApplyVertexBuffer();
@@ -97,7 +100,21 @@ public:
 
 	GLint GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter);
 
+	static std::mutex& GetMutex();
+	static void DeleteObject(VertexBuffer* buffer);
+	static void DeleteObject(IndexBuffer* buffer);
+	static void DeleteObject(Texture* texture);
+
+	void ProcessDeleteList();
+
 	std::unique_ptr<IOpenGLContext> Context;
+
+	struct DeleteList
+	{
+		std::vector<VertexBuffer*> VertexBuffers;
+		std::vector<IndexBuffer*> IndexBuffers;
+		std::vector<Texture*> Textures;
+	} mDeleteList;
 
 	struct TextureUnit
 	{

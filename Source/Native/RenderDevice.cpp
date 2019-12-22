@@ -61,15 +61,23 @@ RenderDevice::~RenderDevice()
 	if (Context)
 	{
 		Context->MakeCurrent();
+
+		ProcessDeleteList();
+
 		glDeleteBuffers(1, &mStreamVertexBuffer);
 		glDeleteVertexArrays(1, &mStreamVAO);
+
 		for (auto& sharedbuf : mSharedVertexBuffers)
 		{
+			for (VertexBuffer* buf : sharedbuf->VertexBuffers)
+				buf->Device = nullptr;
+
 			GLuint handle = sharedbuf->GetBuffer();
 			glDeleteBuffers(1, &handle);
 			handle = sharedbuf->GetVAO();
 			glDeleteVertexArrays(1, &handle);
 		}
+
 		for (auto& it : mSamplers)
 		{
 			for (GLuint handle : it.second.WrapModes)
@@ -78,6 +86,7 @@ RenderDevice::~RenderDevice()
 					glDeleteSamplers(1, &handle);
 			}
 		}
+
 		mShaderManager->ReleaseResources();
 		Context->ClearCurrent();
 	}
@@ -330,7 +339,7 @@ bool RenderDevice::StartRendering(bool clear, int backcolor, Texture* target, bo
 		GLuint framebuffer = 0;
 		try
 		{
-			framebuffer = target->GetFramebuffer(usedepthbuffer);
+			framebuffer = target->GetFramebuffer(this, usedepthbuffer);
 		}
 		catch (std::runtime_error& e)
 		{
@@ -385,7 +394,9 @@ bool RenderDevice::FinishRendering()
 
 bool RenderDevice::Present()
 {
+	Context->MakeCurrent();
 	Context->SwapBuffers();
+	ProcessDeleteList();
 	return CheckGLError();
 }
 
@@ -410,7 +421,7 @@ bool RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 	GLint oldTexture = 0;
 	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldTexture);
 
-	glBindTexture(GL_TEXTURE_CUBE_MAP, dst->GetTexture());
+	glBindTexture(GL_TEXTURE_CUBE_MAP, dst->GetTexture(this));
 	glCopyTexSubImage2D(facegl[(int)face], 0, 0, 0, 0, 0, dst->GetWidth(), dst->GetHeight());
 	if (face == CubeMapFace::NegativeZ)
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
@@ -420,40 +431,94 @@ bool RenderDevice::CopyTexture(Texture* dst, CubeMapFace face)
 	return result;
 }
 
+void RenderDevice::GarbageCollectBuffer(int size, VertexFormat format)
+{
+	auto& sharedbuf = mSharedVertexBuffers[(int)format];
+	if (sharedbuf->NextPos + size <= sharedbuf->Size)
+		return;
+
+	GLint oldarray = 0, oldvao = 0;
+	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldarray);
+	glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &oldvao);
+
+	int totalSize = size;
+	for (VertexBuffer* buf : sharedbuf->VertexBuffers)
+		totalSize += buf->Size;
+
+	// If buffer is only half full we only need to GC. Otherwise we also need to expand the buffer size.
+	int newSize = std::max(totalSize, sharedbuf->Size);
+	if (newSize < totalSize * 2) newSize *= 2;
+
+	std::unique_ptr<SharedVertexBuffer> old = std::move(sharedbuf);
+	sharedbuf.reset(new SharedVertexBuffer(format, newSize));
+
+	glBindBuffer(GL_ARRAY_BUFFER, sharedbuf->GetBuffer());
+	glBufferData(GL_ARRAY_BUFFER, sharedbuf->Size, nullptr, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_COPY_READ_BUFFER, old->GetBuffer());
+
+	// Copy all ranges still in use to the new buffer
+	int stride = (format == VertexFormat::Flat ? SharedVertexBuffer::FlatStride : SharedVertexBuffer::WorldStride);
+	int readPos = 0;
+	int writePos = 0;
+	int copySize = 0;
+	for (VertexBuffer* buf : old->VertexBuffers)
+	{
+		if (buf->BufferOffset != readPos + copySize)
+		{
+			if (copySize != 0)
+				glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_ARRAY_BUFFER, readPos, writePos, copySize);
+			readPos = buf->BufferOffset;
+			writePos += copySize;
+			copySize = 0;
+		}
+
+		buf->BufferOffset = sharedbuf->NextPos;
+		buf->BufferStartIndex = buf->BufferOffset / stride;
+		sharedbuf->NextPos += buf->Size;
+		copySize += buf->Size;
+	}
+	if (copySize != 0)
+		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_ARRAY_BUFFER, readPos, writePos, copySize);
+	sharedbuf->VertexBuffers.swap(old->VertexBuffers);
+	glBindBuffer(GL_COPY_READ_BUFFER, 0);
+
+	GLuint handle = old->GetVAO();
+	glDeleteVertexArrays(1, &handle);
+	if (handle == oldvao) oldvao = sharedbuf->GetVAO();
+
+	handle = old->GetBuffer();
+	glDeleteBuffers(1, &handle);
+	if (handle == oldarray) oldarray = sharedbuf->GetBuffer();
+
+	glBindBuffer(GL_ARRAY_BUFFER, oldarray);
+	glBindVertexArray(oldvao);
+
+	mVertexBufferChanged = true;
+	mNeedApply = true;
+}
+
 bool RenderDevice::SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format)
 {
 	if (!mContextIsCurrent) Context->MakeCurrent();
 
-	GLint oldbinding = 0;
-	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
+	if (buffer->Device)
+	{
+		buffer->Device->mSharedVertexBuffers[(int)buffer->Format]->VertexBuffers.erase(buffer->ListIt);
+		buffer->Device = nullptr;
+	}
+
+	GarbageCollectBuffer(size, format);
 
 	auto& sharedbuf = mSharedVertexBuffers[(int)format];
-	if (sharedbuf->NextPos + size > sharedbuf->Size)
-	{
-		std::unique_ptr<SharedVertexBuffer> old = std::move(sharedbuf);
-		sharedbuf.reset(new SharedVertexBuffer(format, old->Size * 2));
-		sharedbuf->NextPos = old->NextPos;
 
-		glBindBuffer(GL_ARRAY_BUFFER, sharedbuf->GetBuffer());
-		glBufferData(GL_ARRAY_BUFFER, sharedbuf->Size, nullptr, GL_STATIC_DRAW);
+	GLint oldbinding = 0;
+	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
+	glBindBuffer(GL_ARRAY_BUFFER, sharedbuf->GetBuffer());
 
-		glBindBuffer(GL_COPY_READ_BUFFER, old->GetBuffer());
-		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_ARRAY_BUFFER, 0, 0, old->Size);
-		glBindBuffer(GL_COPY_READ_BUFFER, 0);
-
-		GLuint handle = old->GetBuffer();
-		glDeleteBuffers(1, &handle);
-		handle = old->GetVAO();
-		glDeleteVertexArrays(1, &handle);
-
-		mVertexBufferChanged = true;
-		mNeedApply = true;
-	}
-	else
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, sharedbuf->GetBuffer());
-	}
-
+	buffer->ListIt = sharedbuf->VertexBuffers.insert(sharedbuf->VertexBuffers.end(), buffer);
+	buffer->Device = this;
+	buffer->Size = size;
 	buffer->Format = format;
 	buffer->BufferOffset = sharedbuf->NextPos;
 	buffer->BufferStartIndex = buffer->BufferOffset / (format == VertexFormat::Flat ? SharedVertexBuffer::FlatStride : SharedVertexBuffer::WorldStride);
@@ -504,7 +569,7 @@ bool RenderDevice::SetCubePixels(Texture* texture, CubeMapFace face, const void*
 void* RenderDevice::MapPBO(Texture* texture)
 {
 	if (!mContextIsCurrent) Context->MakeCurrent();
-	GLint pbo = texture->GetPBO();
+	GLint pbo = texture->GetPBO(this);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
 	void* buf = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 	bool result = CheckGLError();
@@ -519,10 +584,10 @@ void* RenderDevice::MapPBO(Texture* texture)
 bool RenderDevice::UnmapPBO(Texture* texture)
 {
 	if (!mContextIsCurrent) Context->MakeCurrent();
-	GLint pbo = texture->GetPBO();
+	GLint pbo = texture->GetPBO(this);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
 	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-	glBindTexture(GL_TEXTURE_2D, texture->GetTexture());
+	glBindTexture(GL_TEXTURE_2D, texture->GetTexture(this));
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture->GetWidth(), texture->GetHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 	bool result = CheckGLError();
 	mNeedApply = true;
@@ -784,7 +849,7 @@ bool RenderDevice::ApplyTextures()
 	{
 		GLenum target = mTextureUnit.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
-		glBindTexture(target, mTextureUnit.Tex->GetTexture());
+		glBindTexture(target, mTextureUnit.Tex->GetTexture(this));
 
 		GLuint& samplerHandle = mSamplerFilter->WrapModes[(int)mTextureUnit.WrapMode];
 		if (samplerHandle == 0)
@@ -813,6 +878,50 @@ bool RenderDevice::ApplyTextures()
 	mTexturesChanged = false;
 
 	return CheckGLError();
+}
+
+std::mutex& RenderDevice::GetMutex()
+{
+	static std::mutex m;
+	return m;
+}
+
+void RenderDevice::DeleteObject(VertexBuffer* buffer)
+{
+	std::unique_lock<std::mutex> lock(RenderDevice::GetMutex());
+	if (buffer->Device)
+		buffer->Device->mDeleteList.VertexBuffers.push_back(buffer);
+	else
+		delete buffer;
+}
+
+void RenderDevice::DeleteObject(IndexBuffer* buffer)
+{
+	std::unique_lock<std::mutex> lock(RenderDevice::GetMutex());
+	if (buffer->Device)
+		buffer->Device->mDeleteList.IndexBuffers.push_back(buffer);
+	else
+		delete buffer;
+}
+
+void RenderDevice::DeleteObject(Texture* texture)
+{
+	std::unique_lock<std::mutex> lock(RenderDevice::GetMutex());
+	if (texture->Device)
+		texture->Device->mDeleteList.Textures.push_back(texture);
+	else
+		delete texture;
+}
+
+void RenderDevice::ProcessDeleteList()
+{
+	std::unique_lock<std::mutex> lock(RenderDevice::GetMutex());
+	for (auto buffer : mDeleteList.IndexBuffers) delete buffer;
+	for (auto buffer : mDeleteList.VertexBuffers) delete buffer;
+	for (auto texture : mDeleteList.Textures) delete texture;
+	mDeleteList.IndexBuffers.clear();
+	mDeleteList.VertexBuffers.clear();
+	mDeleteList.Textures.clear();
 }
 
 /////////////////////////////////////////////////////////////////////////////

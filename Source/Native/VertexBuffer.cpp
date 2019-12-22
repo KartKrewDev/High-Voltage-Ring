@@ -2,19 +2,9 @@
 #include "Precomp.h"
 #include "VertexBuffer.h"
 #include "Shader.h"
+#include "RenderDevice.h"
 
-VertexBuffer::VertexBuffer()
-{
-}
-
-VertexBuffer::~VertexBuffer()
-{
-	// To do: release its slot in RenderDevice (note: this might be called by a finalizer in a different thread)
-}
-
-/////////////////////////////////////////////////////////////////////////////
-
-SharedVertexBuffer::SharedVertexBuffer(VertexFormat format, int64_t size) : Format(format), Size(size)
+SharedVertexBuffer::SharedVertexBuffer(VertexFormat format, int size) : Format(format), Size(size)
 {
 }
 
@@ -65,6 +55,17 @@ void SharedVertexBuffer::SetupWorldVAO()
 
 /////////////////////////////////////////////////////////////////////////////
 
+VertexBuffer::~VertexBuffer()
+{
+	if (Device)
+	{
+		Device->mSharedVertexBuffers[(int)Format]->VertexBuffers.erase(ListIt);
+		Device = nullptr;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
 extern "C"
 {
 
@@ -75,7 +76,7 @@ VertexBuffer* VertexBuffer_New()
 
 void VertexBuffer_Delete(VertexBuffer* buffer)
 {
-	//delete buffer;
+	RenderDevice::DeleteObject(buffer);
 }
 
 }
