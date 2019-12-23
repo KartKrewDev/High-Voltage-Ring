@@ -19,24 +19,22 @@
 **  3. This notice may not be removed or altered from any source distribution.
 */
 
-#pragma once
+#include "Precomp.h"
+#include "GLIndexBuffer.h"
+#include "GLRenderDevice.h"
 
-#define _CRT_SECURE_NO_WARNINGS
+GLIndexBuffer::~GLIndexBuffer()
+{
+	if (Device && mBuffer != 0)
+	{
+		glDeleteBuffers(1, &mBuffer);
+		mBuffer = 0;
+	}
+}
 
-#include <cstdint>
-#include <vector>
-#include <map>
-#include <memory>
-
-#ifdef WIN32
-#include <Windows.h>
-#undef min
-#undef max
-#endif
-
-#include "OpenGL/gl_load/gl_system.h"
-
-#define APART(x) (static_cast<uint32_t>(x) >> 24)
-#define RPART(x) ((static_cast<uint32_t>(x) >> 16)  & 0xff)
-#define GPART(x) ((static_cast<uint32_t>(x) >> 8)  & 0xff)
-#define BPART(x) (static_cast<uint32_t>(x) & 0xff)
+GLuint GLIndexBuffer::GetBuffer()
+{
+	if (mBuffer == 0)
+		glGenBuffers(1, &mBuffer);
+	return mBuffer;
+}

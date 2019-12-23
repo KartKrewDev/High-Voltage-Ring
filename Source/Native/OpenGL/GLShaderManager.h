@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Shader.h"
+#include "GLShader.h"
 
-class ShaderManager
+class GLShaderManager
 {
 public:
 	void ReleaseResources();
 
 	void DeclareShader(int index, const char* name, const char* vs, const char* ps);
 
-	std::vector<Shader> AlphaTestShaders;
-	std::vector<Shader> Shaders;
+	std::vector<GLShader> AlphaTestShaders;
+	std::vector<GLShader> Shaders;
 };

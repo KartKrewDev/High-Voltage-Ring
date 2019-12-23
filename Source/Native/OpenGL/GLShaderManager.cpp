@@ -20,9 +20,9 @@
 */
 
 #include "Precomp.h"
-#include "ShaderManager.h"
+#include "GLShaderManager.h"
 
-void ShaderManager::DeclareShader(int i, const char* name, const char* vs, const char* ps)
+void GLShaderManager::DeclareShader(int i, const char* name, const char* vs, const char* ps)
 {
 	if (Shaders.size() <= (size_t)i)
 	{
@@ -34,7 +34,7 @@ void ShaderManager::DeclareShader(int i, const char* name, const char* vs, const
 	AlphaTestShaders[i].Setup(name, vs, ps, true);
 }
 
-void ShaderManager::ReleaseResources()
+void GLShaderManager::ReleaseResources()
 {
 	for (size_t i = 0; i < Shaders.size(); i++)
 	{

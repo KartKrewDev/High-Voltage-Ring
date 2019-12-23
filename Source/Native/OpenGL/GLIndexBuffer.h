@@ -21,37 +21,19 @@
 
 #pragma once
 
-#include <string>
-#include "RenderDevice.h"
+#include "../Backend.h"
 
-enum class DeclarationUsage : int32_t { Position, Color, TextureCoordinate, Normal };
+class GLRenderDevice;
 
-class Shader
+class GLIndexBuffer : public IndexBuffer
 {
 public:
-	void ReleaseResources();
+	~GLIndexBuffer();
 
-	void Setup(const std::string& identifier, const std::string& vertexShader, const std::string& fragmentShader, bool alphatest);
-	bool CheckCompile(RenderDevice *device);
-	void Bind();
+	GLuint GetBuffer();
 
-	std::string GetCompileError();
-
-	std::vector<int> UniformLastUpdates;
-	std::vector<GLuint> UniformLocations;
+	GLRenderDevice* Device = nullptr;
 
 private:
-	void CreateProgram(RenderDevice* device);
-	GLuint CompileShader(const std::string& code, GLenum type);
-
-	std::string mIdentifier;
-	std::string mVertexText;
-	std::string mFragmentText;
-	bool mAlphatest = false;
-	bool mProgramBuilt = false;
-
-	GLuint mProgram = 0;
-	GLuint mVertexShader = 0;
-	GLuint mFragmentShader = 0;
-	std::string mErrors;
+	GLuint mBuffer = 0;
 };

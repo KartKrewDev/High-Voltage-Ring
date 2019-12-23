@@ -21,84 +21,60 @@
 
 #pragma once
 
+#include "../Backend.h"
 #include "OpenGLContext.h"
-#include <string>
-#include <mutex>
 
-class SharedVertexBuffer;
-class VertexBuffer;
-class IndexBuffer;
-class Texture;
-class ShaderManager;
-class Shader;
-enum class CubeMapFace;
-enum class VertexFormat;
+class GLSharedVertexBuffer;
+class GLShader;
+class GLShaderManager;
+class GLVertexBuffer;
+class GLIndexBuffer;
+class GLTexture;
 
-enum class Cull : int { None, Clockwise };
-enum class Blend : int { InverseSourceAlpha, SourceAlpha, One };
-enum class BlendOperation : int { Add, ReverseSubtract };
-enum class FillMode : int { Solid, Wireframe };
-enum class TextureAddress : int { Wrap, Clamp };
-enum class ShaderFlags : int { None, Debug };
-enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };
-enum class TextureFilter : int { None, Point, Linear, Anisotropic };
-
-typedef int UniformName;
-typedef int ShaderName;
-
-enum class UniformType : int
-{
-	Vec4f,
-	Vec3f,
-	Vec2f,
-	Float,
-	Mat4
-};
-
-class RenderDevice
+class GLRenderDevice : public RenderDevice
 {
 public:
-	RenderDevice(void* disp, void* window);
-	~RenderDevice();
+	GLRenderDevice(void* disp, void* window);
+	~GLRenderDevice();
 
-	void DeclareUniform(UniformName name, const char* glslname, UniformType type);
-	void DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader);
-	void SetShader(ShaderName name);
-	void SetUniform(UniformName name, const void* values, int count);
-	void SetVertexBuffer(VertexBuffer* buffer);
-	void SetIndexBuffer(IndexBuffer* buffer);
-	void SetAlphaBlendEnable(bool value);
-	void SetAlphaTestEnable(bool value);
-	void SetCullMode(Cull mode);
-	void SetBlendOperation(BlendOperation op);
-	void SetSourceBlend(Blend blend);
-	void SetDestinationBlend(Blend blend);
-	void SetFillMode(FillMode mode);
-	void SetMultisampleAntialias(bool value);
-	void SetZEnable(bool value);
-	void SetZWriteEnable(bool value);
-	void SetTexture(Texture* texture);
-	void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
-	void SetSamplerState(TextureAddress address);
-	bool Draw(PrimitiveType type, int startIndex, int primitiveCount);
-	bool DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount);
-	bool DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data);
-	bool StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer);
-	bool FinishRendering();
-	bool Present();
-	bool ClearTexture(int backcolor, Texture* texture);
-	bool CopyTexture(Texture* dst, CubeMapFace face);
+	void DeclareUniform(UniformName name, const char* glslname, UniformType type) override;
+	void DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader) override;
+	void SetShader(ShaderName name) override;
+	void SetUniform(UniformName name, const void* values, int count) override;
+	void SetVertexBuffer(VertexBuffer* buffer) override;
+	void SetIndexBuffer(IndexBuffer* buffer) override;
+	void SetAlphaBlendEnable(bool value) override;
+	void SetAlphaTestEnable(bool value) override;
+	void SetCullMode(Cull mode) override;
+	void SetBlendOperation(BlendOperation op) override;
+	void SetSourceBlend(Blend blend) override;
+	void SetDestinationBlend(Blend blend) override;
+	void SetFillMode(FillMode mode) override;
+	void SetMultisampleAntialias(bool value) override;
+	void SetZEnable(bool value) override;
+	void SetZWriteEnable(bool value) override;
+	void SetTexture(Texture* texture) override;
+	void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy) override;
+	void SetSamplerState(TextureAddress address) override;
+	bool Draw(PrimitiveType type, int startIndex, int primitiveCount) override;
+	bool DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount) override;
+	bool DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data) override;
+	bool StartRendering(bool clear, int backcolor, Texture* target, bool usedepthbuffer) override;
+	bool FinishRendering() override;
+	bool Present() override;
+	bool ClearTexture(int backcolor, Texture* texture) override;
+	bool CopyTexture(Texture* dst, CubeMapFace face) override;
 
-	bool SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format);
-	bool SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size);
-	bool SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size);
+	bool SetVertexBufferData(VertexBuffer* buffer, void* data, int64_t size, VertexFormat format) override;
+	bool SetVertexBufferSubdata(VertexBuffer* buffer, int64_t destOffset, void* data, int64_t size) override;
+	bool SetIndexBufferData(IndexBuffer* buffer, void* data, int64_t size) override;
 
-	bool SetPixels(Texture* texture, const void* data);
-	bool SetCubePixels(Texture* texture, CubeMapFace face, const void* data);
-	void* MapPBO(Texture* texture);
-	bool UnmapPBO(Texture* texture);
+	bool SetPixels(Texture* texture, const void* data) override;
+	bool SetCubePixels(Texture* texture, CubeMapFace face, const void* data) override;
+	void* MapPBO(Texture* texture) override;
+	bool UnmapPBO(Texture* texture) override;
 
-	bool InvalidateTexture(Texture* texture);
+	bool InvalidateTexture(GLTexture* texture);
 
 	void GarbageCollectBuffer(int size, VertexFormat format);
 
@@ -117,14 +93,14 @@ public:
 	void SetError(const char* fmt, ...);
 	const char* GetError();
 
-	Shader* GetActiveShader();
+	GLShader* GetActiveShader();
 
 	GLint GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter);
 
 	static std::mutex& GetMutex();
-	static void DeleteObject(VertexBuffer* buffer);
-	static void DeleteObject(IndexBuffer* buffer);
-	static void DeleteObject(Texture* texture);
+	static void DeleteObject(GLVertexBuffer* buffer);
+	static void DeleteObject(GLIndexBuffer* buffer);
+	static void DeleteObject(GLTexture* texture);
 
 	void ProcessDeleteList();
 
@@ -132,14 +108,14 @@ public:
 
 	struct DeleteList
 	{
-		std::vector<VertexBuffer*> VertexBuffers;
-		std::vector<IndexBuffer*> IndexBuffers;
-		std::vector<Texture*> Textures;
+		std::vector<GLVertexBuffer*> VertexBuffers;
+		std::vector<GLIndexBuffer*> IndexBuffers;
+		std::vector<GLTexture*> Textures;
 	} mDeleteList;
 
 	struct TextureUnit
 	{
-		Texture* Tex = nullptr;
+		GLTexture* Tex = nullptr;
 		TextureAddress WrapMode = TextureAddress::Wrap;
 		GLuint SamplerHandle = 0;
 	} mTextureUnit;
@@ -167,11 +143,11 @@ public:
 	int mVertexBuffer = -1;
 	int64_t mVertexBufferStartIndex = 0;
 
-	IndexBuffer* mIndexBuffer = nullptr;
+	GLIndexBuffer* mIndexBuffer = nullptr;
 
-	std::unique_ptr<SharedVertexBuffer> mSharedVertexBuffers[2];
+	std::unique_ptr<GLSharedVertexBuffer> mSharedVertexBuffers[2];
 
-	std::unique_ptr<ShaderManager> mShaderManager;
+	std::unique_ptr<GLShaderManager> mShaderManager;
 	ShaderName mShaderName = {};
 
 	struct UniformInfo

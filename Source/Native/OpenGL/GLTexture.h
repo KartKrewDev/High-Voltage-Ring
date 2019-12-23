@@ -21,50 +21,43 @@
 
 #pragma once
 
-#include <list>
+#include "../Backend.h"
 
-enum class VertexFormat : int32_t { Flat, World };
+class GLRenderDevice;
 
-class RenderDevice;
-class VertexBuffer;
-
-class SharedVertexBuffer
+class GLTexture : public Texture
 {
 public:
-	SharedVertexBuffer(VertexFormat format, int size);
+	GLTexture();
+	~GLTexture();
 
-	GLuint GetBuffer();
-	GLuint GetVAO();
+	void Set2DImage(int width, int height) override;
+	void SetCubeImage(int size) override;
 
-	VertexFormat Format = VertexFormat::Flat;
+	void SetPixels(const void* data);
+	void SetCubePixels(CubeMapFace face, const void* data);
 
-	int NextPos = 0;
-	int Size = 0;
+	bool IsCubeTexture() const { return mCubeTexture; }
+	int GetWidth() const { return mWidth; }
+	int GetHeight() const { return mHeight; }
 
-	std::list<VertexBuffer*> VertexBuffers;
+	bool IsTextureCreated() const { return mTexture; }
+	void Invalidate();
 
-	static const int FlatStride = 24;
-	static const int WorldStride = 36;
+	GLuint GetTexture(GLRenderDevice* device);
+	GLuint GetFramebuffer(GLRenderDevice* device, bool usedepthbuffer);
+	GLuint GetPBO(GLRenderDevice* device);
 
-	static void SetupFlatVAO();
-	static void SetupWorldVAO();
-	
+	GLRenderDevice* Device = nullptr;
+
 private:
-	GLuint mBuffer = 0;
-	GLuint mVAO = 0;
-};
-
-class VertexBuffer
-{
-public:
-	~VertexBuffer();
-
-	VertexFormat Format = VertexFormat::Flat;
-
-	RenderDevice* Device = nullptr;
-	std::list<VertexBuffer*>::iterator ListIt;
-
-	int BufferOffset = 0;
-	int BufferStartIndex = 0;
-	int Size = 0;
+	int mWidth = 0;
+	int mHeight = 0;
+	bool mCubeTexture = false;
+	bool mPBOTexture = false;
+	std::map<int, std::vector<uint32_t>> mPixels;
+	GLuint mTexture = 0;
+	GLuint mFramebuffer = 0;
+	GLuint mDepthRenderbuffer = 0;
+	GLuint mPBO = 0;
 };

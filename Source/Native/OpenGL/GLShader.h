@@ -21,17 +21,35 @@
 
 #pragma once
 
-class RenderDevice;
+#include <string>
+#include "GLRenderDevice.h"
 
-class IndexBuffer
+class GLShader
 {
 public:
-	~IndexBuffer();
+	void ReleaseResources();
 
-	GLuint GetBuffer();
+	void Setup(const std::string& identifier, const std::string& vertexShader, const std::string& fragmentShader, bool alphatest);
+	bool CheckCompile(GLRenderDevice *device);
+	void Bind();
 
-	RenderDevice* Device = nullptr;
+	std::string GetCompileError();
+
+	std::vector<int> UniformLastUpdates;
+	std::vector<GLuint> UniformLocations;
 
 private:
-	GLuint mBuffer = 0;
+	void CreateProgram(GLRenderDevice* device);
+	GLuint CompileShader(const std::string& code, GLenum type);
+
+	std::string mIdentifier;
+	std::string mVertexText;
+	std::string mFragmentText;
+	bool mAlphatest = false;
+	bool mProgramBuilt = false;
+
+	GLuint mProgram = 0;
+	GLuint mVertexShader = 0;
+	GLuint mFragmentShader = 0;
+	std::string mErrors;
 };

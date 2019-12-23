@@ -24,7 +24,7 @@
 #include <fcntl.h>
 
 //GL headers
-#include "gl_load/gl_load.h"
+#include "OpenGL/gl_load/gl_load.h"
 
 #if defined(__APPLE__)
 	#include <OpenGL/OpenGL.h>

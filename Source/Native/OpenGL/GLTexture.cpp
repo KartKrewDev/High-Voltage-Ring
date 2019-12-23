@@ -20,47 +20,47 @@
 */
 
 #include "Precomp.h"
-#include "Texture.h"
-#include "RenderDevice.h"
+#include "GLTexture.h"
+#include "GLRenderDevice.h"
 #include <stdexcept>
 
-Texture::Texture()
+GLTexture::GLTexture()
 {
 }
 
-Texture::~Texture()
+GLTexture::~GLTexture()
 {
 	if (Device)
 		Invalidate();
 }
 
-void Texture::Set2DImage(int width, int height)
+void GLTexture::Set2DImage(int width, int height)
 {
 	mCubeTexture = false;
 	mWidth = width;
 	mHeight = height;
 }
 
-void Texture::SetCubeImage(int size)
+void GLTexture::SetCubeImage(int size)
 {
 	mCubeTexture = true;
 	mWidth = size;
 	mHeight = size;
 }
 
-void Texture::SetPixels(const void* data)
+void GLTexture::SetPixels(const void* data)
 {
 	mPixels[0].resize(mWidth * (size_t)mHeight);
 	memcpy(mPixels[0].data(), data, sizeof(uint32_t) * mWidth * mHeight);
 }
 
-void Texture::SetCubePixels(CubeMapFace face, const void* data)
+void GLTexture::SetCubePixels(CubeMapFace face, const void* data)
 {
 	mPixels[(int)face].resize(mWidth * (size_t)mHeight);
 	memcpy(mPixels[(int)face].data(), data, sizeof(uint32_t) * mWidth * mHeight);
 }
 
-void Texture::Invalidate()
+void GLTexture::Invalidate()
 {
 	if (mDepthRenderbuffer) glDeleteRenderbuffers(1, &mDepthRenderbuffer);
 	if (mFramebuffer) glDeleteFramebuffers(1, &mFramebuffer);
@@ -73,7 +73,7 @@ void Texture::Invalidate()
 	Device = nullptr;
 }
 
-GLuint Texture::GetTexture(RenderDevice* device)
+GLuint GLTexture::GetTexture(GLRenderDevice* device)
 {
 	if (mTexture == 0)
 	{
@@ -122,7 +122,7 @@ GLuint Texture::GetTexture(RenderDevice* device)
 	return mTexture;
 }
 
-GLuint Texture::GetFramebuffer(RenderDevice* device, bool usedepthbuffer)
+GLuint GLTexture::GetFramebuffer(GLRenderDevice* device, bool usedepthbuffer)
 {
 	if (!usedepthbuffer)
 	{
@@ -164,7 +164,7 @@ GLuint Texture::GetFramebuffer(RenderDevice* device, bool usedepthbuffer)
 	}
 }
 
-GLuint Texture::GetPBO(RenderDevice* device)
+GLuint GLTexture::GetPBO(GLRenderDevice* device)
 {
 	if (mPBO == 0)
 	{
@@ -176,31 +176,4 @@ GLuint Texture::GetPBO(RenderDevice* device)
 	}
 
 	return mPBO;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-
-extern "C"
-{
-
-Texture* Texture_New()
-{
-	return new Texture();
-}
-
-void Texture_Delete(Texture* tex)
-{
-	RenderDevice::DeleteObject(tex);
-}
-
-void Texture_Set2DImage(Texture* handle, int width, int height)
-{
-	handle->Set2DImage(width, height);
-}
-
-void Texture_SetCubeImage(Texture* handle, int size)
-{
-	handle->SetCubeImage(size);
-}
-
 }

@@ -21,52 +21,20 @@
 
 #pragma once
 
-enum class CubeMapFace : int
-{
-	PositiveX,
-	PositiveY,
-	PositiveZ,
-	NegativeX,
-	NegativeY,
-	NegativeZ
-};
+#include "../Backend.h"
 
-class RenderDevice;
-
-class Texture
+class GLBackend : public Backend
 {
 public:
-	Texture();
-	~Texture();
+	RenderDevice* NewRenderDevice(void* disp, void* window) override;
+	void DeleteRenderDevice(RenderDevice* device) override;
 
-	void Set2DImage(int width, int height);
-	void SetCubeImage(int size);
+	VertexBuffer* NewVertexBuffer() override;
+	void DeleteVertexBuffer(VertexBuffer* buffer) override;
 
-	void SetPixels(const void* data);
-	void SetCubePixels(CubeMapFace face, const void* data);
+	IndexBuffer* NewIndexBuffer() override;
+	void DeleteIndexBuffer(IndexBuffer* buffer) override;
 
-	bool IsCubeTexture() const { return mCubeTexture; }
-	int GetWidth() const { return mWidth; }
-	int GetHeight() const { return mHeight; }
-
-	bool IsTextureCreated() const { return mTexture; }
-	void Invalidate();
-
-	GLuint GetTexture(RenderDevice* device);
-	GLuint GetFramebuffer(RenderDevice* device, bool usedepthbuffer);
-	GLuint GetPBO(RenderDevice* device);
-
-	RenderDevice* Device = nullptr;
-
-private:
-	int mWidth = 0;
-	int mHeight = 0;
-	bool mCubeTexture = false;
-	bool mPBOTexture = false;
-	std::map<int, std::vector<uint32_t>> mPixels;
-	GLuint mTexture = 0;
-	GLuint mFramebuffer = 0;
-	GLuint mDepthRenderbuffer = 0;
-	//
-	GLuint mPBO = 0;
+	Texture* NewTexture() override;
+	void DeleteTexture(Texture* texture) override;
 };

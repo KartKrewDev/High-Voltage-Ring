@@ -1,4 +1,4 @@
-/*
+﻿/*
 **  BuilderNative Renderer
 **  Copyright (c) 2019 Magnus Norddahl
 **
@@ -20,38 +20,57 @@
 */
 
 #include "Precomp.h"
-#include "IndexBuffer.h"
-#include "RenderDevice.h"
+#include "GLBackend.h"
+#include "GLRenderDevice.h"
+#include "GLVertexBuffer.h"
+#include "GLIndexBuffer.h"
+#include "GLTexture.h"
 
-IndexBuffer::~IndexBuffer()
+RenderDevice* GLBackend::NewRenderDevice(void* disp, void* window)
 {
-	if (Device && mBuffer != 0)
+	GLRenderDevice* device = new GLRenderDevice(disp, window);
+	if (!device->Context)
 	{
-		glDeleteBuffers(1, &mBuffer);
-		mBuffer = 0;
+		delete device;
+		return nullptr;
+	}
+	else
+	{
+		return device;
 	}
 }
 
-GLuint IndexBuffer::GetBuffer()
+void GLBackend::DeleteRenderDevice(RenderDevice* device)
 {
-	if (mBuffer == 0)
-		glGenBuffers(1, &mBuffer);
-	return mBuffer;
+	delete device;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-
-extern "C"
+VertexBuffer* GLBackend::NewVertexBuffer()
 {
-
-IndexBuffer* IndexBuffer_New()
-{
-	return new IndexBuffer();
+	return new GLVertexBuffer();
 }
 
-void IndexBuffer_Delete(IndexBuffer* buffer)
+void GLBackend::DeleteVertexBuffer(VertexBuffer* buffer)
 {
-	RenderDevice::DeleteObject(buffer);
+	GLRenderDevice::DeleteObject(static_cast<GLVertexBuffer*>(buffer));
 }
 
+IndexBuffer* GLBackend::NewIndexBuffer()
+{
+	return new GLIndexBuffer();
+}
+
+void GLBackend::DeleteIndexBuffer(IndexBuffer* buffer)
+{
+	GLRenderDevice::DeleteObject(static_cast<GLIndexBuffer*>(buffer));
+}
+
+Texture* GLBackend::NewTexture()
+{
+	return new GLTexture();
+}
+
+void GLBackend::DeleteTexture(Texture* texture)
+{
+	GLRenderDevice::DeleteObject(static_cast<GLTexture*>(texture));
 }

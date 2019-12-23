@@ -21,22 +21,47 @@
 
 #pragma once
 
-#define _CRT_SECURE_NO_WARNINGS
+#include <list>
 
-#include <cstdint>
-#include <vector>
-#include <map>
-#include <memory>
+#include "../Backend.h"
 
-#ifdef WIN32
-#include <Windows.h>
-#undef min
-#undef max
-#endif
+class GLRenderDevice;
+class GLVertexBuffer;
 
-#include "OpenGL/gl_load/gl_system.h"
+class GLSharedVertexBuffer
+{
+public:
+	GLSharedVertexBuffer(VertexFormat format, int size) : Format(format), Size(size) { }
 
-#define APART(x) (static_cast<uint32_t>(x) >> 24)
-#define RPART(x) ((static_cast<uint32_t>(x) >> 16)  & 0xff)
-#define GPART(x) ((static_cast<uint32_t>(x) >> 8)  & 0xff)
-#define BPART(x) (static_cast<uint32_t>(x) & 0xff)
+	GLuint GetBuffer();
+	GLuint GetVAO();
+
+	VertexFormat Format = VertexFormat::Flat;
+
+	int NextPos = 0;
+	int Size = 0;
+
+	std::list<GLVertexBuffer*> VertexBuffers;
+
+	static void SetupFlatVAO();
+	static void SetupWorldVAO();
+	
+private:
+	GLuint mBuffer = 0;
+	GLuint mVAO = 0;
+};
+
+class GLVertexBuffer : public VertexBuffer
+{
+public:
+	~GLVertexBuffer();
+
+	VertexFormat Format = VertexFormat::Flat;
+
+	GLRenderDevice* Device = nullptr;
+	std::list<GLVertexBuffer*>::iterator ListIt;
+
+	int BufferOffset = 0;
+	int BufferStartIndex = 0;
+	int Size = 0;
+};

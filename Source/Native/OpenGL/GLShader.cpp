@@ -20,11 +20,11 @@
 */
 
 #include "Precomp.h"
-#include "Shader.h"
-#include "RenderDevice.h"
+#include "GLShader.h"
+#include "GLRenderDevice.h"
 #include <stdexcept>
 
-void Shader::Setup(const std::string& identifier, const std::string& vertexShader, const std::string& fragmentShader, bool alphatest)
+void GLShader::Setup(const std::string& identifier, const std::string& vertexShader, const std::string& fragmentShader, bool alphatest)
 {
 	mIdentifier = identifier;
 	mVertexText = vertexShader;
@@ -32,7 +32,7 @@ void Shader::Setup(const std::string& identifier, const std::string& vertexShade
 	mAlphatest = alphatest;
 }
 
-bool Shader::CheckCompile(RenderDevice* device)
+bool GLShader::CheckCompile(GLRenderDevice* device)
 {
 	bool firstCall = !mProgramBuilt;
 	if (firstCall)
@@ -47,7 +47,7 @@ bool Shader::CheckCompile(RenderDevice* device)
 	return !mErrors.size();
 }
 
-std::string Shader::GetCompileError()
+std::string GLShader::GetCompileError()
 {
 	std::string lines = "Error compiling ";
 	if (!mVertexShader)
@@ -66,7 +66,7 @@ std::string Shader::GetCompileError()
 	return lines;
 }
 
-void Shader::Bind()
+void GLShader::Bind()
 {
 	if (!mProgram || !mProgramBuilt || mErrors.size())
 		return;
@@ -74,7 +74,7 @@ void Shader::Bind()
 	glUseProgram(mProgram);
 }
 
-void Shader::CreateProgram(RenderDevice* device)
+void GLShader::CreateProgram(GLRenderDevice* device)
 {
 	const char* prefixNAT = R"(
 		#version 150
@@ -136,7 +136,7 @@ void Shader::CreateProgram(RenderDevice* device)
 	}
 }
 
-GLuint Shader::CompileShader(const std::string& code, GLenum type)
+GLuint GLShader::CompileShader(const std::string& code, GLenum type)
 {
 	GLuint shader = glCreateShader(type);
 	const GLchar* sources[] = { (GLchar*)code.data() };
@@ -159,7 +159,7 @@ GLuint Shader::CompileShader(const std::string& code, GLenum type)
 	return shader;
 }
 
-void Shader::ReleaseResources()
+void GLShader::ReleaseResources()
 {
 	if (mProgram)
 		glDeleteProgram(mProgram);

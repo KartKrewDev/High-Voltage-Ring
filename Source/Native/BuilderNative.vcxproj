@@ -192,15 +192,21 @@
     <None Include="exports.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gl_load\gl_load.c">
+    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="OpenGL\GLBackend.cpp" />
+    <ClCompile Include="OpenGL\GLRenderDevice.cpp" />
+    <ClCompile Include="OpenGL\GLIndexBuffer.cpp" />
+    <ClCompile Include="OpenGL\GLShader.cpp" />
+    <ClCompile Include="OpenGL\GLShaderManager.cpp" />
+    <ClCompile Include="OpenGL\GLTexture.cpp" />
+    <ClCompile Include="OpenGL\GLVertexBuffer.cpp" />
+    <ClCompile Include="OpenGL\gl_load\gl_load.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="IndexBuffer.cpp" />
-    <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="OpenGLContext.cpp" />
+    <ClCompile Include="OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="Precomp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -208,26 +214,25 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="RawMouse.cpp" />
-    <ClCompile Include="RenderDevice.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="Backend.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gl_load\gl_load.h" />
-    <ClInclude Include="gl_load\gl_system.h" />
-    <ClInclude Include="IndexBuffer.h" />
-    <ClInclude Include="OpenGLContext.h" />
+    <ClInclude Include="OpenGL\GLBackend.h" />
+    <ClInclude Include="OpenGL\GLRenderDevice.h" />
+    <ClInclude Include="OpenGL\GLIndexBuffer.h" />
+    <ClInclude Include="OpenGL\GLShader.h" />
+    <ClInclude Include="OpenGL\GLShaderManager.h" />
+    <ClInclude Include="OpenGL\GLTexture.h" />
+    <ClInclude Include="OpenGL\GLVertexBuffer.h" />
+    <ClInclude Include="OpenGL\gl_load\gl_load.h" />
+    <ClInclude Include="OpenGL\gl_load\gl_system.h" />
+    <ClInclude Include="OpenGL\OpenGLContext.h" />
     <ClInclude Include="Precomp.h" />
     <ClInclude Include="RawMouse.h" />
-    <ClInclude Include="RenderDevice.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="VertexBuffer.h" />
+    <ClInclude Include="Backend.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="gl_load\gl_extlist.txt" />
+    <Text Include="OpenGL\gl_load\gl_extlist.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
