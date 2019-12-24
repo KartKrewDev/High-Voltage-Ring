@@ -152,7 +152,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			//create mtl
 			StringBuilder mtl = new StringBuilder();
 			mtl.Append("# MTL for " + General.Map.FileTitle + ", map " + General.Map.Options.LevelName + Environment.NewLine);
-			mtl.Append("# Created by GZDoom Builder " + Application.ProductVersion + Environment.NewLine + Environment.NewLine);
+			mtl.Append("# Created by Ultimate Doom Builder " + Application.ProductVersion + Environment.NewLine + Environment.NewLine);
 
 			if(settings.Textures != null) 
 			{

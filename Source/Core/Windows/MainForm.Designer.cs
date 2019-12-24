@@ -1339,7 +1339,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.itemhelpabout.Image = global::CodeImp.DoomBuilder.Properties.Resources.About;
 			this.itemhelpabout.Name = "itemhelpabout";
 			this.itemhelpabout.Size = new System.Drawing.Size(232, 22);
-			this.itemhelpabout.Text = "&About GZDoom Builder...";
+			this.itemhelpabout.Text = "&About Ultimate Doom Builder...";
 			this.itemhelpabout.Click += new System.EventHandler(this.itemhelpabout_Click);
 			// 
 			// toolbar

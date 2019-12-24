@@ -77,5 +77,5 @@ namespace CodeImp.DoomBuilder.Windows
 				General.Interface.DisplayStatus(StatusType.Warning, "Failed to perform a Clipboard operation...");
 			}
 		}
-	}
+    }
 }

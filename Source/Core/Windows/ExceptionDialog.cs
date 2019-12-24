@@ -72,7 +72,7 @@ namespace CodeImp.DoomBuilder.Windows
 				"At least it's not BSoD...",
 				"User Error. Please Replace User",
 				"Brought to you by MaxED!",
-				"GZDoom Builder proudly presents:",
+				"Ultimate Doom Builder proudly presents:",
 				"You aren't expected to understand this",
 				"Back to the drawing board...",
 				"I'm sorry... :(",
@@ -103,7 +103,7 @@ namespace CodeImp.DoomBuilder.Windows
 				"Freeze mode enabled",
 				"You feel strange...",
 				"That doesn't seem to work",
-				"This function is only available in the retail version of GZDoom Builder",
+				"This function is only available in the retail version of Ultimate Doom Builder",
 				"You picked up the Random Exception.",
 				"Pinky says that you're the new hope. Bear that in mind.",
 				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
@@ -132,7 +132,8 @@ namespace CodeImp.DoomBuilder.Windows
 				"WARNING: PROGRAMMING BUG IN GZDB!",
 				"Something happened",
 				"The Device is Error",
-                "Worship me, and I may yet be merciful... then again, maybe not."
+				"Worship me, and I may yet be merciful... then again, maybe not.",
+ 				"EXTERMINATE"
 			};
 
 			this.Text = titles[new Random().Next(0, titles.Length - 1)];

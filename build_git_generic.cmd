@@ -84,7 +84,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "Build\Updater.exe" GOTO FILEFAIL
 
 ECHO.
-ECHO Compiling GZDoom Builder core...
+ECHO Compiling Doom Builder core...
 ECHO.
 IF EXIST "Build\Builder.exe" DEL /F /Q "Build\Builder.exe" > NUL
 IF EXIST "Source\Core\obj" RD /S /Q "Source\Core\obj"
@@ -226,16 +226,16 @@ IF %ERRORLEVEL% NEQ 0 GOTO LOGFAIL
 ECHO.
 ECHO Packing release...
 ECHO.
-IF NOT "%PLATFORM%" == "x86" (SET DEL_PATHSPEC="GIT_Build\GZDoom_Builder*-%PLATFORM%.7z") ELSE (SET DEL_PATHSPEC="GIT_Build\GZDoom_Builder*.7z")
+SET DEL_PATHSPEC="GIT_Build\UltimateDoomBuilder*-%PLATFORM%.7z"
 IF EXIST %DEL_PATHSPEC% DEL /F /Q %DEL_PATHSPEC% > NUL
-IF EXIST "GIT_Build\GZDB_Updater-%PLATFORM%.7z" DEL /F /Q "GIT_Build\GZDB_Updater-%PLATFORM%.7z" > NUL
-"%SEVENZIPDIR%\7z" a .\GIT_Build\gzdb.7z .\Build\* -xr!*.xml -xr!JetBrains.Profiler.Core.Api.dll -xr!ScintillaNET.3.5.pdb -x!Setup
-"%SEVENZIPDIR%\7z" a .\GIT_Build\GZDB_Updater-%PLATFORM%.7z .\Build\Updater.exe .\Build\Updater.ini
+IF EXIST "GIT_Build\UDB_Updater-%PLATFORM%.7z" DEL /F /Q "GIT_Build\UDB_Updater-%PLATFORM%.7z" > NUL
+"%SEVENZIPDIR%\7z" a .\GIT_Build\udb.7z .\Build\* -xr!*.xml -xr!JetBrains.Profiler.Core.Api.dll -xr!ScintillaNET.3.5.pdb -x!Setup
+"%SEVENZIPDIR%\7z" a .\GIT_Build\UDB_Updater-%PLATFORM%.7z .\Build\Updater.exe .\Build\Updater.ini
 IF %ERRORLEVEL% NEQ 0 GOTO PACKFAIL
-IF NOT EXIST .\GIT_Build\gzdb.7z GOTO FILEFAIL
-IF NOT EXIST .\GIT_Build\GZDB_Updater-%PLATFORM%.7z GOTO FILEFAIL
+IF NOT EXIST .\GIT_Build\udb.7z GOTO FILEFAIL
+IF NOT EXIST .\GIT_Build\UDB_Updater-%PLATFORM%.7z GOTO FILEFAIL
 
-IF NOT "%PLATFORM%" == "x86" (REN "GIT_Build\gzdb.7z" GZDoom_Builder_Bugfix-r%REVISIONNUMBER%-%PLATFORM%.7z) ELSE (REN "GIT_Build\gzdb.7z" GZDoom_Builder_Bugfix-r%REVISIONNUMBER%.7z)
+REN "GIT_Build\udb.7z" UltimateDoomBuilder-r%REVISIONNUMBER%-%PLATFORM%.7z
 
 IF EXIST "Build\Changelog.txt" DEL /F /Q "Build\Changelog.txt" > NUL
 

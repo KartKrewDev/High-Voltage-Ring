@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("GZDoom Builder Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("GZDoom Builder Updater")]
-[assembly: AssemblyCopyright("Copyright © MaxED 2016")]
+[assembly: AssemblyCompany("CodeImp, MaxED, ZZYZX, boris, dpJudas and others")]
+[assembly: AssemblyProduct("Ultimate Doom Builder")]
+[assembly: AssemblyCopyright("Copyright В© 2007, 2016, 2017-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -33,7 +33,7 @@ namespace mxd.GZDBUpdater
 	    private static BackgroundWorker worker;
 	    private static bool appclosing;
 	    private static MainForm me;
-		private const string MESSAGEBOX_TITLE = "GZDoom Builder Updater";
+		private const string MESSAGEBOX_TITLE = "Ultimate Doom Builder Updater";
 
 		#endregion
 
