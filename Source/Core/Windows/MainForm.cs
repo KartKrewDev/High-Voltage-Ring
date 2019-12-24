@@ -3164,7 +3164,7 @@ namespace CodeImp.DoomBuilder.Windows
 		//mxd. Check updates clicked
 		private void itemhelpcheckupdates_Click(object sender, EventArgs e)
 		{
-			UpdateChecker.PerformCheck(true);
+            UpdateChecker.PerformCheck(true);
 		}
 
 		//mxd. Github issues clicked
