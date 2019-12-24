@@ -52,7 +52,7 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareUniform(UniformName.view, "view", UniformType.Mat4);
             DeclareUniform(UniformName.world, "world", UniformType.Mat4);
             DeclareUniform(UniformName.modelnormal, "modelnormal", UniformType.Mat4);
-            DeclareUniform(UniformName.FillColor, "FillColor", UniformType.Vec4);
+            DeclareUniform(UniformName.FillColor, "fillColor", UniformType.Vec4);
             DeclareUniform(UniformName.vertexColor, "vertexColor", UniformType.Vec4);
             DeclareUniform(UniformName.stencilColor, "stencilColor", UniformType.Vec4);
             DeclareUniform(UniformName.lightPosAndRadius, "lightPosAndRadius", UniformType.Vec4);
