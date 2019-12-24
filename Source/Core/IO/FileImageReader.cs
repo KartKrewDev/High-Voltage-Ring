@@ -77,7 +77,7 @@ namespace CodeImp.DoomBuilder.IO
 
     internal unsafe class FileImageReader : IImageReader
 	{
-		#region ================== APIs
+#region ================== APIs
 
 		[DllImport("devil.dll")]
 		private static extern void ilGenImages(int num, IntPtr images);
@@ -388,9 +388,9 @@ namespace CodeImp.DoomBuilder.IO
         private readonly Playpal guesspalette;
         private IImageReader proxyreader;
 		
-		#endregion
+#endregion
 
-		#region ================== Constructor / Disposer
+#region ================== Constructor / Disposer
 
 		// Constructor
 		public FileImageReader()
@@ -421,9 +421,9 @@ namespace CodeImp.DoomBuilder.IO
             GC.SuppressFinalize(this);
         }
 
-		#endregion
+#endregion
 
-		#region ================== Methods
+#region ================== Methods
 
 		// This creates a Bitmap from the given data
 		// Returns null on failure
@@ -686,6 +686,6 @@ namespace CodeImp.DoomBuilder.IO
             return true;
         }
 		
-		#endregion
+#endregion
 	}
 }

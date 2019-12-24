@@ -53,16 +53,16 @@ namespace CodeImp.DoomBuilder.Windows
 			General.OpenWebsite("http://" + codeimplink.Text);
 		}
 
-		//mxd
+		// UDB thread
 		private void zdoomorglink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) 
 		{
-			General.OpenWebsite("http://forum.zdoom.org/viewtopic.php?f=44&t=54957");
+			General.OpenWebsite("https://forum.zdoom.org/viewtopic.php?f=232&t=66745");
 		}
 
-		//mxd
+		// UDB repo
 		private void gitlink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			General.OpenWebsite("https://github.com/jewalky/GZDoom-Builder-Bugfix");
+			General.OpenWebsite("https://github.com/jewalky/UltimateDoomBuilder");
 		}
 
 		// This copies the version number to clipboard
@@ -77,5 +77,17 @@ namespace CodeImp.DoomBuilder.Windows
 				General.Interface.DisplayStatus(StatusType.Warning, "Failed to perform a Clipboard operation...");
 			}
 		}
-	}
+
+        // mxd's GZDB thread
+        private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            General.OpenWebsite("https://forum.zdoom.org/viewtopic.php?f=44&t=32392");
+        }
+
+        // mxd's GZDB repo
+        private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            General.OpenWebsite("https://github.com/m-x-d/GZDoom-Builder");
+        }
+    }
 }

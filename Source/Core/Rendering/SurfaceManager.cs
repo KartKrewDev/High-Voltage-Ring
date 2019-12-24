@@ -22,14 +22,12 @@ using System.Drawing;
 using System.IO;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Map;
-using SlimDX;
-using SlimDX.Direct3D9;
 
 #endregion
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal class SurfaceManager : ID3DResource
+	internal class SurfaceManager : IRenderResource
 	{
 		#region ================== Constants
 		
@@ -141,26 +139,19 @@ namespace CodeImp.DoomBuilder.Rendering
 				for(int i = 0; i < set.Value.buffersizes.Count; i++)
 				{
 					// Make the new buffer!
-					VertexBuffer b = new VertexBuffer(General.Map.Graphics.Device, FlatVertex.Stride * set.Value.buffersizes[i],
-													Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+					VertexBuffer b = new VertexBuffer();
+                    General.Map.Graphics.SetBufferData(b, set.Value.buffersizes[i], VertexFormat.Flat);
 
-					// Start refilling the buffer with sector geometry
-					DataStream bstream = b.Lock(0, FlatVertex.Stride * set.Value.buffersizes[i], LockFlags.Discard);
-					foreach(SurfaceEntry e in set.Value.entries)
+                    // Start refilling the buffer with sector geometry
+                    foreach (SurfaceEntry e in set.Value.entries)
 					{
 						if(e.bufferindex == i)
 						{
-							// Fill buffer
-							bstream.Seek(e.vertexoffset * FlatVertex.Stride, SeekOrigin.Begin);
-							bstream.WriteRange(e.floorvertices);
-							bstream.WriteRange(e.ceilvertices);
+                            General.Map.Graphics.SetBufferSubdata(b, e.vertexoffset, e.floorvertices);
+                            General.Map.Graphics.SetBufferSubdata(b, e.vertexoffset + e.floorvertices.Length, e.ceilvertices);
 						}
 					}
 
-					// Unlock buffer
-					b.Unlock();
-					bstream.Dispose();
-					
 					// Add to list
 					set.Value.buffers[i] = b;
 				}
@@ -249,7 +240,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This ensures there is enough space for a given number of free entries (also adds new bufers if needed)
 		private void EnsureFreeBufferSpace(SurfaceBufferSet set, int freeentries)
 		{
-			DataStream bstream = null;
 			VertexBuffer vb = null;
 			
 			// Check if we have to add entries
@@ -282,8 +272,8 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!resourcesunloaded)
 					{
 						// Make the new buffer!
-						vb = new VertexBuffer(General.Map.Graphics.Device, FlatVertex.Stride * buffernumvertices,
-												Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+						vb = new VertexBuffer();
+                        General.Map.Graphics.SetBufferData(vb, buffernumvertices, VertexFormat.Flat);
 
 						// Add it.
 						set.buffers.Add(vb);
@@ -305,15 +295,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Reallocate a buffer
 				else
 				{
-					// Trash the old buffer
-					if(set.buffers[bufferindex].Tag != null)
-					{
-						bstream = (DataStream)set.buffers[bufferindex].Tag;
-						set.buffers[bufferindex].Unlock();
-						bstream.Dispose();
-						set.buffers[bufferindex].Tag = null;
-					}
-
 					if((set.buffers[bufferindex] != null) && !resourcesunloaded)
 						set.buffers[bufferindex].Dispose();
 
@@ -334,20 +315,19 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(!resourcesunloaded)
 					{
 						// Make the new buffer and lock it
-						vb = new VertexBuffer(General.Map.Graphics.Device, FlatVertex.Stride * buffernumvertices,
-												Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
-						bstream = vb.Lock(0, FlatVertex.Stride * theseentries.Count * verticesperentry, LockFlags.Discard);
-					}
-					
-					// Start refilling the buffer with sector geometry
-					int vertexoffset = 0;
+						vb = new VertexBuffer();
+                        General.Map.Graphics.SetBufferData(vb, buffernumvertices, VertexFormat.Flat);
+                    }
+
+                    // Start refilling the buffer with sector geometry
+                    int vertexoffset = 0;
 					foreach(SurfaceEntry e in theseentries)
 					{
 						if(!resourcesunloaded)
 						{
 							// Fill buffer
-							bstream.WriteRange(e.floorvertices);
-							bstream.WriteRange(e.ceilvertices);
+							General.Map.Graphics.SetBufferSubdata(vb, vertexoffset, e.floorvertices);
+							General.Map.Graphics.SetBufferSubdata(vb, vertexoffset + e.floorvertices.Length, e.ceilvertices);
 						}
 
 						// Set the new location in the buffer
@@ -359,9 +339,6 @@ namespace CodeImp.DoomBuilder.Rendering
 
 					if(!resourcesunloaded)
 					{
-						// Unlock buffer
-						vb.Unlock();
-						bstream.Dispose();
 						set.buffers[bufferindex] = vb;
 					}
 					else
@@ -470,26 +447,9 @@ namespace CodeImp.DoomBuilder.Rendering
 				
 				if(!resourcesunloaded)
 				{
-					// Lock the buffer
-					DataStream bstream;
 					VertexBuffer vb = set.buffers[e.bufferindex];
-					if(vb.Tag == null)
-					{
-						// Note: DirectX warns me that I am not using LockFlags.Discard or LockFlags.NoOverwrite here,
-						// but we don't have much of a choice since we want to update our data and not destroy other data
-						bstream = vb.Lock(0, set.buffersizes[e.bufferindex] * FlatVertex.Stride, LockFlags.None);
-						vb.Tag = bstream;
-						lockedbuffers.Add(vb);
-					}
-					else
-					{
-						bstream = (DataStream)vb.Tag;
-					}
-
-					// Write the vertices to buffer
-					bstream.Seek(e.vertexoffset * FlatVertex.Stride, SeekOrigin.Begin);
-					bstream.WriteRange(e.floorvertices);
-					bstream.WriteRange(e.ceilvertices);
+                    General.Map.Graphics.SetBufferSubdata(vb, e.vertexoffset, e.floorvertices);
+                    General.Map.Graphics.SetBufferSubdata(vb, e.vertexoffset + e.floorvertices.Length, e.ceilvertices);
 				}
 			}
 		}
@@ -516,17 +476,6 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			if(!resourcesunloaded)
 			{
-				foreach(VertexBuffer vb in lockedbuffers)
-				{
-					if(vb.Tag != null)
-					{
-						DataStream bstream = (DataStream)vb.Tag;
-						vb.Unlock();
-						bstream.Dispose();
-						vb.Tag = null;
-					}
-				}
-
 				// Clear list
 				lockedbuffers = new List<VertexBuffer>();
 			}
@@ -657,43 +606,35 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 		
 		// This renders the sorted sector surfaces
-		internal void RenderSectorSurfaces(D3DDevice graphics)
+		internal void RenderSectorSurfaces(RenderDevice graphics)
 		{
 			if(!resourcesunloaded)
 			{
-				int pass = Renderer.FullBrightness ? 2 : 1; //mxd
-				graphics.Shaders.Display2D.Begin();
+				ShaderName pass = Renderer.FullBrightness ? ShaderName.display2d_fullbright : ShaderName.display2d_normal; //mxd
 				foreach(KeyValuePair<ImageData, List<SurfaceEntry>> imgsurfaces in surfaces)
 				{
-					// Set texture
-					graphics.Shaders.Display2D.Texture1 = imgsurfaces.Key.Texture;
-
-					graphics.Shaders.Display2D.BeginPass(pass);
+                    graphics.SetShader(pass);
+                    graphics.SetTexture(imgsurfaces.Key.Texture);
 					
 					// Go for all surfaces
 					VertexBuffer lastbuffer = null;
 					foreach(SurfaceEntry entry in imgsurfaces.Value)
 					{
-                        graphics.Shaders.Display2D.Desaturation = entry.desaturation;
-                        graphics.Shaders.Display2D.ApplySettings();
+                        graphics.SetUniform(UniformName.desaturation, entry.desaturation);
                         
 						// Set the vertex buffer
 						SurfaceBufferSet set = sets[entry.numvertices];
 						if(set.buffers[entry.bufferindex] != lastbuffer)
 						{
 							lastbuffer = set.buffers[entry.bufferindex];
-							graphics.Device.SetStreamSource(0, lastbuffer, 0, FlatVertex.Stride);
+							graphics.SetVertexBuffer(lastbuffer);
 						}
 
 						// Draw
-						graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, entry.vertexoffset + (entry.numvertices * surfacevertexoffsetmul), entry.numvertices / 3);
+						graphics.Draw(PrimitiveType.TriangleList, entry.vertexoffset + (entry.numvertices * surfacevertexoffsetmul), entry.numvertices / 3);
 					}
-					
-					graphics.Shaders.Display2D.EndPass();
 				}
-				graphics.Shaders.Display2D.End();
-                graphics.Shaders.Display2D.Desaturation = 0;
-                graphics.Shaders.Display2D.ApplySettings();
+                graphics.SetUniform(UniformName.desaturation, 0.0f);
             }
 		}
 		

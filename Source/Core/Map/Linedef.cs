@@ -76,6 +76,9 @@ namespace CodeImp.DoomBuilder.Map
 
 		// Clone
 		private int serializedindex;
+
+        // Rendering
+        private int lastProcessed;
 		
 		#endregion
 
@@ -101,7 +104,8 @@ namespace CodeImp.DoomBuilder.Map
 		public RectangleF Rect { get { return rect; } }
 		public int[] Args { get { return args; } }
 		internal int SerializedIndex { get { return serializedindex; } set { serializedindex = value; } }
-		internal bool FrontInterior { get { return frontinterior; } set { frontinterior = value; } }
+        internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
+        internal bool FrontInterior { get { return frontinterior; } set { frontinterior = value; } }
 		internal bool ImpassableFlag { get { return impassableflag; } }
 		internal int ColorPresetIndex { get { return colorPresetIndex; } } //mxd
 		internal bool ExtraFloorFlag; //mxd

@@ -121,7 +121,7 @@ namespace CodeImp.DoomBuilder.Plugins
 				if((thisrevision != 0) && (plug.MinimumRevision > thisrevision))
 				{
 					// Can't load this plugin because it is meant for a newer version
-					General.ErrorLogger.Add(ErrorType.Error, "Could not load plugin \"" + shortfilename + "\", the Plugin is made for GZDoom Builder R" + plug.MinimumRevision + " or newer and you are running R" + thisrevision + ".");
+					General.ErrorLogger.Add(ErrorType.Error, "Could not load plugin \"" + shortfilename + "\", the Plugin is made for Ultimate Doom Builder R" + plug.MinimumRevision + " or newer and you are running R" + thisrevision + ".");
 					throw new InvalidProgramException();
 				}
 			}

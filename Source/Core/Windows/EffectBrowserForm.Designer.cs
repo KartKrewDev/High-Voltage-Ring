@@ -257,7 +257,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(293, 457);
+            this.cancel.Location = new System.Drawing.Point(293, 453);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(112, 27);
             this.cancel.TabIndex = 2;
@@ -268,7 +268,7 @@ namespace CodeImp.DoomBuilder.Windows
             // apply
             // 
             this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.apply.Location = new System.Drawing.Point(175, 457);
+            this.apply.Location = new System.Drawing.Point(175, 453);
             this.apply.Name = "apply";
             this.apply.Size = new System.Drawing.Size(112, 27);
             this.apply.TabIndex = 1;
@@ -289,7 +289,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabs.Name = "tabs";
             this.tabs.Padding = new System.Drawing.Point(24, 3);
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(399, 436);
+            this.tabs.Size = new System.Drawing.Size(399, 432);
             this.tabs.TabIndex = 0;
             // 
             // tabeffects
@@ -297,10 +297,10 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabeffects.Controls.Add(this.filterPanel);
             this.tabeffects.Controls.Add(this.effects);
             this.tabeffects.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabeffects.Location = new System.Drawing.Point(4, 22);
+            this.tabeffects.Location = new System.Drawing.Point(4, 24);
             this.tabeffects.Name = "tabeffects";
             this.tabeffects.Padding = new System.Windows.Forms.Padding(3);
-            this.tabeffects.Size = new System.Drawing.Size(391, 410);
+            this.tabeffects.Size = new System.Drawing.Size(391, 404);
             this.tabeffects.TabIndex = 0;
             this.tabeffects.Text = "Predefined Effects";
             this.tabeffects.UseVisualStyleBackColor = true;
@@ -376,10 +376,10 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.tabgeneralized.Controls.Add(groupBox2);
             this.tabgeneralized.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabgeneralized.Location = new System.Drawing.Point(4, 22);
+            this.tabgeneralized.Location = new System.Drawing.Point(4, 24);
             this.tabgeneralized.Name = "tabgeneralized";
             this.tabgeneralized.Padding = new System.Windows.Forms.Padding(3);
-            this.tabgeneralized.Size = new System.Drawing.Size(391, 410);
+            this.tabgeneralized.Size = new System.Drawing.Size(391, 408);
             this.tabgeneralized.TabIndex = 1;
             this.tabgeneralized.Text = "Generalized Effects";
             this.tabgeneralized.UseVisualStyleBackColor = true;
@@ -390,7 +390,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(419, 496);
+            this.ClientSize = new System.Drawing.Size(419, 488);
             this.Controls.Add(this.tabs);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.apply);

@@ -1,0 +1,26 @@
+
+in vec3 AttrPosition;
+in vec4 AttrColor;
+in vec2 AttrUV;
+in vec3 AttrNormal;
+
+out vec4 Color;
+out vec2 UV;
+out vec3 PosW;
+out vec3 Normal;
+out vec4 viewpos;
+
+uniform mat4 world;
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 modelnormal;
+
+void main()
+{
+	viewpos = view * world * vec4(AttrPosition, 1.0);
+	gl_Position = projection * viewpos;
+	PosW = (world * vec4(AttrPosition, 1.0)).xyz;
+	Color = AttrColor;
+	UV = AttrUV;
+	Normal = normalize((modelnormal * vec4(AttrNormal, 1.0)).xyz);
+}

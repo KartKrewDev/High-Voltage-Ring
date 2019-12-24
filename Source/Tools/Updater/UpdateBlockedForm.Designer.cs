@@ -116,7 +116,7 @@
 			this.Name = "UpdateBlockedForm";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "GZDoom Builder Updater";
+			this.Text = "Ultimate Doom Builder Updater";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.UpdateBlockedForm_FormClosing);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();

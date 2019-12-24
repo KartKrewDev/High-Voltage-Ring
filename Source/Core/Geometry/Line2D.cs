@@ -226,70 +226,83 @@ namespace CodeImp.DoomBuilder.Geometry
 			return new Vector2D(v1.x + u * (v2.x - v1.x), v1.y + u * (v2.y - v1.y));
 		}
 
-		// Cohen-Sutherland algorithm
-		public static Line2D ClipToRectangle(Line2D line, RectangleF rect, out bool intersects)
+        private static bool IsEqualFloat(float a, float b)
+        {
+            return Math.Abs(a - b) < 0.0001f;
+        }
+
+        // Some random self-written aglrithm instead of Cohen-Sutherland algorithm which used to hang up randomly
+        public static Line2D ClipToRectangle(Line2D line, RectangleF rect, out bool intersects)
 		{
-			int flags1 = MapSet.GetCSFieldBits(line.v1, rect);
-			int flags2 = MapSet.GetCSFieldBits(line.v2, rect);
-			intersects = false;
+            float rateXY = 0f;
+            if (line.v2.y != line.v1.y)
+            {
+                float dx = line.v2.x - line.v1.x;
+                float dy = line.v2.y - line.v1.y;
+                rateXY = dx / dy;
+            }
 
-			Line2D result = line;
-			while (true)
-			{
-				if (flags1 == 0 && flags2 == 0)
-				{
-					// Line is fully inside the box
-					intersects = true;
-					return result;
-				}
-				
-				if ((flags1 & flags2) != 0)
-				{
-					// Both points are in the same outer area
-					intersects = false;
-					return new Line2D();
-				}
+            float x1 = line.v1.x, y1 = line.v1.y;
+            float x2 = line.v2.x, y2 = line.v2.y;
 
-				float x, y;
-				int outFlags = flags1 != 0 ? flags1 : flags2;
-				if ((outFlags & 0x1) > 0) // Top
-				{
-					x = result.v1.x + (result.v2.x - result.v1.x) * (rect.Top - result.v1.y) / (result.v2.y - result.v1.y);
-					y = rect.Top;
-				}
-				else if ((outFlags & 0x2) > 0) // Bottom
-				{
-					x = result.v1.x + (result.v2.x - result.v1.x) * (rect.Bottom - result.v1.y) / (result.v2.y - result.v1.y);
-					y = rect.Bottom;
-				}
-				else if ((outFlags & 0x4) > 0) // Left
-				{
-					y = result.v1.y + (result.v2.y - result.v1.y) * (rect.Left - result.v1.x) / (result.v2.x - result.v1.x);
-					x = rect.Left;
-				}
-				else if ((outFlags & 0x8) > 0) // Right
-				{
-					y = result.v1.y + (result.v2.y - result.v1.y) * (rect.Right - result.v1.x) / (result.v2.x - result.v1.x);
-					x = rect.Right;
-				} 
-				else
-				{
-					intersects = true;
-					return result;
-				}
+            for (int i = 0; i < 2; i++)
+            {
+                // check x1,y1
+                if (y1 < rect.Top)
+                {
+                    x1 += (rect.Top - y1) * rateXY;
+                    y1 = rect.Top;
+                }
+                if (x1 < rect.Left)
+                {
+                    if (rateXY != 0) y1 += (rect.Left - x1) / rateXY;
+                    x1 = rect.Left;
+                }
+                // check x2,y2
+                if (y2 < rect.Top)
+                {
+                    x2 += (rect.Top - y2) * rateXY;
+                    y2 = rect.Top;
+                }
+                if (x2 < rect.Left)
+                {
+                    if (rateXY != 0) y2 += (rect.Left - x2) / rateXY;
+                    x2 = rect.Left;
+                }
+                // check x1,y1
+                if (y1 > rect.Bottom)
+                {
+                    x1 -= (y1 - rect.Bottom) * rateXY;
+                    y1 = rect.Bottom;
+                }
+                if (x1 > rect.Right)
+                {
+                    if (rateXY != 0) y1 -= (x1 - rect.Right) / rateXY;
+                    x1 = rect.Right;
+                }
+                // check x2,y2
+                if (y2 > rect.Bottom)
+                {
+                    x2 -= (y2 - rect.Bottom) * rateXY;
+                    y2 = rect.Bottom;
+                }
+                if (x2 > rect.Right)
+                {
+                    if (rateXY != 0) y2 -= (x2 - rect.Right) / rateXY;
+                    x2 = rect.Right;
+                }
+            }
 
-				if (outFlags == flags1)
-				{
-					result.v1 = new Vector2D(x, y);
-					flags1 = MapSet.GetCSFieldBits(result.v1, rect);
-				}
-				else
-				{
-					result.v2 = new Vector2D(x, y);
-					flags2 = MapSet.GetCSFieldBits(result.v2, rect);
-				}
-			}
-		}
+            if ((IsEqualFloat(x1, x2) && (IsEqualFloat(x1, rect.Left) || IsEqualFloat(x1, rect.Right)) ||
+                (IsEqualFloat(y1, y2) && (IsEqualFloat(y1, rect.Bottom) || IsEqualFloat(y1, rect.Top)))))
+            {
+                intersects = false;
+                return new Line2D();
+            }
+
+            intersects = true;
+            return new Line2D(x1, y1, x2, y2);
+        }
 		
 		#endregion
 

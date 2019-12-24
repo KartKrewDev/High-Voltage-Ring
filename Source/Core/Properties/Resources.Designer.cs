@@ -19,7 +19,7 @@ namespace CodeImp.DoomBuilder.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -66,6 +66,16 @@ namespace CodeImp.DoomBuilder.Properties {
         internal static System.Drawing.Bitmap About {
             get {
                 object obj = ResourceManager.GetObject("About", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AboutBack {
+            get {
+                object obj = ResourceManager.GetObject("AboutBack", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -357,6 +367,46 @@ namespace CodeImp.DoomBuilder.Properties {
             get {
                 object obj = ResourceManager.GetObject("Cut", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] display2d_fsaa {
+            get {
+                object obj = ResourceManager.GetObject("display2d_fsaa", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] display2d_fullbright {
+            get {
+                object obj = ResourceManager.GetObject("display2d_fullbright", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] display2d_normal {
+            get {
+                object obj = ResourceManager.GetObject("display2d_normal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] display2d_vp {
+            get {
+                object obj = ResourceManager.GetObject("display2d_vp", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -1021,6 +1071,26 @@ namespace CodeImp.DoomBuilder.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] plotter {
+            get {
+                object obj = ResourceManager.GetObject("plotter", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] plotter_vp {
+            get {
+                object obj = ResourceManager.GetObject("plotter_vp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Prefab {
@@ -1511,6 +1581,46 @@ namespace CodeImp.DoomBuilder.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] things2d_fill {
+            get {
+                object obj = ResourceManager.GetObject("things2d_fill", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] things2d_sprite {
+            get {
+                object obj = ResourceManager.GetObject("things2d_sprite", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] things2d_thing {
+            get {
+                object obj = ResourceManager.GetObject("things2d_thing", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] things2d_vp {
+            get {
+                object obj = ResourceManager.GetObject("things2d_vp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ThingStatistics {
@@ -1527,6 +1637,16 @@ namespace CodeImp.DoomBuilder.Properties {
             get {
                 object obj = ResourceManager.GetObject("treeview", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon UDB2 {
+            get {
+                object obj = ResourceManager.GetObject("UDB2", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -1687,6 +1807,156 @@ namespace CodeImp.DoomBuilder.Properties {
             get {
                 object obj = ResourceManager.GetObject("WordWrap", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_constant_color {
+            get {
+                object obj = ResourceManager.GetObject("world3d_constant_color", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_customvertexcolor_fog_vp {
+            get {
+                object obj = ResourceManager.GetObject("world3d_customvertexcolor_fog_vp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_customvertexcolor_vp {
+            get {
+                object obj = ResourceManager.GetObject("world3d_customvertexcolor_vp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_fullbright {
+            get {
+                object obj = ResourceManager.GetObject("world3d_fullbright", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_fullbright_highlight {
+            get {
+                object obj = ResourceManager.GetObject("world3d_fullbright_highlight", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_lightpass {
+            get {
+                object obj = ResourceManager.GetObject("world3d_lightpass", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_lightpass_vp {
+            get {
+                object obj = ResourceManager.GetObject("world3d_lightpass_vp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_main {
+            get {
+                object obj = ResourceManager.GetObject("world3d_main", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_main_fog {
+            get {
+                object obj = ResourceManager.GetObject("world3d_main_fog", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_main_highlight {
+            get {
+                object obj = ResourceManager.GetObject("world3d_main_highlight", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_main_highlight_fog {
+            get {
+                object obj = ResourceManager.GetObject("world3d_main_highlight_fog", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_main_vp {
+            get {
+                object obj = ResourceManager.GetObject("world3d_main_vp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_skybox {
+            get {
+                object obj = ResourceManager.GetObject("world3d_skybox", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_skybox_vp {
+            get {
+                object obj = ResourceManager.GetObject("world3d_skybox_vp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] world3d_vertex_color {
+            get {
+                object obj = ResourceManager.GetObject("world3d_vertex_color", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

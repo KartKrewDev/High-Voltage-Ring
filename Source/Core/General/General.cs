@@ -40,7 +40,6 @@ using CodeImp.DoomBuilder.Plugins;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.Windows;
-using SlimDX.Direct3D9;
 
 #endregion
 
@@ -48,12 +47,20 @@ namespace CodeImp.DoomBuilder
 {
 	public static class General
 	{
-		#region ================== API Declarations
+        #region ================== API Declarations
 
-		[DllImport("devil.dll")]
+        [DllImport("devil.dll")]
 		private static extern void ilInit();
 
-		[DllImport("user32.dll")]
+#if NO_WIN32
+
+	internal static bool LockWindowUpdate(IntPtr hwnd) { return true; }
+	internal static bool MessageBeep(MessageBeepType type) { return true; }
+	internal static void ZeroMemory(IntPtr dest, int size) { }
+	internal static int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam) { return 0; }
+
+#else
+        [DllImport("user32.dll")]
 		internal static extern bool LockWindowUpdate(IntPtr hwnd);
 
 		[DllImport("kernel32.dll", EntryPoint = "RtlZeroMemory", SetLastError = false)]
@@ -93,6 +100,7 @@ namespace CodeImp.DoomBuilder
 
 		//[DllImport("user32.dll")]
 		//internal static extern int GetScrollInfo(IntPtr windowptr, int bar, IntPtr scrollinfo);
+#endif
 
 		#endregion
 
@@ -544,9 +552,6 @@ namespace CodeImp.DoomBuilder
 			//mxd. Set CultureInfo
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 			
-			// Hook to DLL loading failure event
-			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-			
 			// Set current thread name
 			Thread.CurrentThread.Name = "Main Application";
 
@@ -594,7 +599,7 @@ namespace CodeImp.DoomBuilder
 			// Remove the previous log file and start logging
 			if(File.Exists(logfile)) File.Delete(logfile);
             string platform = Environment.Is64BitProcess ? "x64" : "x86";
-			General.WriteLogLine("GZDoom Builder R" + thisasm.GetName().Version.Revision + " (" + platform + ", " + commithash + ") startup"); //mxd
+			General.WriteLogLine("Ultimate Doom Builder R" + thisasm.GetName().Version.Revision + " (" + platform + ", " + commithash + ") startup"); //mxd
 			General.WriteLogLine("Application path:        \"" + apppath + "\"");
 			General.WriteLogLine("Temporary path:          \"" + temppath + "\"");
 			General.WriteLogLine("Local settings path:     \"" + settingspath + "\"");
@@ -621,6 +626,7 @@ namespace CodeImp.DoomBuilder
 
 				// Initialize static classes
 				MapSet.Initialize();
+
 				ilInit();
 
 				// Create main window
@@ -637,12 +643,6 @@ namespace CodeImp.DoomBuilder
 					mainwindow.Show();
 					mainwindow.Update();
 				}
-				
-				// Start Direct3D
-				General.WriteLogLine("Starting Direct3D graphics driver...");
-				try { D3DDevice.Startup(); }
-				catch(Direct3D9NotFoundException e) { AskDownloadDirectX(e.Message); return; }
-				catch(Direct3DX9NotFoundException e) { AskDownloadDirectX(e.Message); return; }
 				
 				// Load plugin manager
 				General.WriteLogLine("Loading plugins...");
@@ -739,58 +739,6 @@ namespace CodeImp.DoomBuilder
 				// Terminate
 				Terminate(false);
 			}
-		}
-
-		// This handles DLL linking errors
-		private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-		{
-			// Check if SlimDX failed loading
-			if(args.Name.Contains("SlimDX")) AskDownloadSlimDX();
-
-			// Return null
-			return null;
-		}
-		
-		// This asks the user to download DirectX
-		private static void AskDownloadDirectX(string message)
-		{
-			// Cancel loading map from command-line parameters, if any.
-			// This causes problems, because when the window is shown, the map will
-			// be loaded and DirectX is initialized (which we seem to be missing)
-			CancelAutoMapLoad();
-			
-			// Ask the user to download DirectX
-			if(MessageBox.Show("Unable to initialize DirectX: " + message + Environment.NewLine + Environment.NewLine +
-				"Do you want to install and/or update Microsoft DirectX 9.0 now?", "DirectX 9.0 Error", MessageBoxButtons.YesNo,
-				MessageBoxIcon.Exclamation) == DialogResult.Yes)
-			{
-				// Go to DirectX End-User Runtime Web Installer page (mxd)
-				OpenWebsite("https://www.microsoft.com/en-us/download/details.aspx?id=35&44F86079-8679-400C-BFF2-9CA5F2BCBDFC=1");
-			}
-
-			// End program here
-			Terminate(false);
-		}
-
-		// This asks the user to download SlimDX (mxd)
-		private static void AskDownloadSlimDX() 
-		{
-			// Cancel loading map from command-line parameters, if any.
-			// This causes problems, because when the window is shown, the map will
-			// be loaded and SlimDX is initialized (which we seem to be missing)
-			CancelAutoMapLoad();
-
-			// Ask the user to download SlimDX
-			if(MessageBox.Show("This application requires the latest version of SlimDX for .NET 2.0 installed on your computer." + Environment.NewLine +
-				"Do you want to install SlimDX now?", "SlimDX Error", MessageBoxButtons.YesNo,
-				MessageBoxIcon.Exclamation) == DialogResult.Yes) 
-			{
-				// Go to SlimDX download page
-				OpenWebsite("http://slimdx.org/download.php");
-			}
-
-			// End program here
-			Terminate(false);
 		}
 
 		// This parses the command line arguments
@@ -979,9 +927,9 @@ namespace CodeImp.DoomBuilder
 			autoloadfile = null;
 		}
 		
-		#endregion
+#endregion
 		
-		#region ================== Terminate
+#region ================== Terminate
 
 		// This is for plugins to use
 		public static void Exit(bool properexit)
@@ -1034,7 +982,6 @@ namespace CodeImp.DoomBuilder
 				if(mainwindow != null) { mainwindow.Dispose(); mainwindow = null; }
 				if(actions != null) { actions.Dispose(); actions = null; }
 				if(types != null) { types.Dispose(); types = null; }
-				try { D3DDevice.Terminate(); } catch { }
 
 				// Application ends here and now
 				General.WriteLogLine("Termination done");
@@ -1051,9 +998,9 @@ namespace CodeImp.DoomBuilder
 			Process.GetCurrentProcess().Kill();
 		}
 		
-		#endregion
+#endregion
 		
-		#region ================== Management
+#region ================== Management
 		
 		// This creates a new map
 		[BeginAction("newmap")]
@@ -1676,9 +1623,9 @@ namespace CodeImp.DoomBuilder
 			}
 		}
 		
-		#endregion
+#endregion
 
-		#region ================== Debug
+#region ================== Debug
 		
 		// This shows a major failure
 		public static void Fail(string message)
@@ -1720,9 +1667,9 @@ namespace CodeImp.DoomBuilder
 			catch(Exception) { }
 		}
 		
-		#endregion
+#endregion
 
-		#region ================== Tools
+#region ================== Tools
 		
 		// This swaps two pointers
 		public static void Swap<T>(ref T a, ref T b)
@@ -2103,10 +2050,14 @@ namespace CodeImp.DoomBuilder
 		// This returns the short path name for a file
 		public static string GetShortFilePath(string longpath)
 		{
+#if NO_WIN32
+			return longpath;
+#else
 			const int maxlen = 256;
 			StringBuilder shortname = new StringBuilder(maxlen);
 			GetShortPathName(longpath, shortname, maxlen);
 			return shortname.ToString();
+#endif
 		}
 
 		//mxd
@@ -2152,9 +2103,9 @@ namespace CodeImp.DoomBuilder
             }
         }
 		
-		#endregion
+#endregion
 
-		#region ==================  mxd. Uncaught exceptions handling
+#region ==================  mxd. Uncaught exceptions handling
 
 		// In some cases the program can remain operational after these
 		private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e) 
@@ -2217,7 +2168,7 @@ namespace CodeImp.DoomBuilder
 			}
 		}
 
-		#endregion
+#endregion
 
 	}
 }

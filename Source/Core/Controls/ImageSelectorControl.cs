@@ -21,7 +21,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Data;
-using SlimDX;
+using CodeImp.DoomBuilder.Rendering;
 
 #endregion
 

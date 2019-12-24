@@ -17,13 +17,15 @@
 #region ================== Namespaces
 
 using CodeImp.DoomBuilder.Geometry;
+using System.Runtime.InteropServices;
 
 #endregion
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	// WorldVertex
-	public struct WorldVertex
+    // WorldVertex
+    [StructLayout(LayoutKind.Sequential)]
+    public struct WorldVertex
 	{
 		// Vertex format
 		public const int Stride = 36; //mxd: 9 * 4, was 6 * 4

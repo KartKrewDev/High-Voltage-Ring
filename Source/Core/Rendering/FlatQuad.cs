@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing;
-using SlimDX.Direct3D9;
 
 #endregion
 
@@ -256,10 +255,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Rendering
 
 		// This renders the quad
-		public void Render(D3DDevice device)
+		public void Render(RenderDevice device)
 		{
 			// Render the quad
-			device.Device.DrawUserPrimitives(type, 0, 2, vertices);
+			device.Draw(type, 0, 2, vertices);
 		}
 		
 		#endregion

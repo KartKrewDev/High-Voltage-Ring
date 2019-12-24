@@ -15,13 +15,14 @@
 #endregion
 
 #region ================== Namespaces
-
+using System.Runtime.InteropServices;
 #endregion
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	// FlatVertex
-	public struct FlatVertex
+    // FlatVertex
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FlatVertex
 	{
 		// Vertex format
 		public const int Stride = 24; //6 * 4

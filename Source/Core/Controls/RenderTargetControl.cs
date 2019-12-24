@@ -71,14 +71,6 @@ namespace CodeImp.DoomBuilder.Controls
 
 		#region ================== Overrides
 		
-		// Paint method
-		protected override void OnPaint(PaintEventArgs pe)
-		{
-			// Pass on to base
-			// Do we really want this?
-			if(!D3DDevice.IsRendering) base.RaisePaintEvent(this, pe); //mxd. Dont raise event when in the middle of rendering
-		}
-
 		//mxd
 		protected override void OnKeyUp(KeyEventArgs e) 
 		{
@@ -100,7 +92,7 @@ namespace CodeImp.DoomBuilder.Controls
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			this.SetStyle(ControlStyles.Opaque, false);
 			this.UpdateStyles();
-			this.BackColor = SystemColors.ControlDarkDark;
+            this.BackColor = Color.FromArgb(32, 32, 40);
 			this.BackgroundImage = Properties.Resources.Splash3_trans;
 			this.BackgroundImageLayout = ImageLayout.Center;
 		}

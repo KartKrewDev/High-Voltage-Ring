@@ -26,7 +26,6 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.VisualModes;
-using SlimDX;
 
 #endregion
 
@@ -2462,7 +2461,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		/// </summary>
 		public static Vector2D HermiteSpline(Vector2D p1, Vector2D t1, Vector2D p2, Vector2D t2, float u)
 		{
-			return D3DDevice.V2D(Vector2.Hermite(D3DDevice.V2(p1), D3DDevice.V2(t1), D3DDevice.V2(p2), D3DDevice.V2(t2), u));
+			return RenderDevice.V2D(Vector2.Hermite(RenderDevice.V2(p1), RenderDevice.V2(t1), RenderDevice.V2(p2), RenderDevice.V2(t2), u));
 		}
 
 		/// <summary>
@@ -2471,7 +2470,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		/// </summary>
 		public static Vector3D HermiteSpline(Vector3D p1, Vector3D t1, Vector3D p2, Vector3D t2, float u)
 		{
-			return D3DDevice.V3D(Vector3.Hermite(D3DDevice.V3(p1), D3DDevice.V3(t1), D3DDevice.V3(p2), D3DDevice.V3(t2), u));
+			return RenderDevice.V3D(Vector3.Hermite(RenderDevice.V3(p1), RenderDevice.V3(t1), RenderDevice.V3(p2), RenderDevice.V3(t2), u));
 		}
 
 		//mxd

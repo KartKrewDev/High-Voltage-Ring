@@ -77,9 +77,9 @@ namespace CodeImp.DoomBuilder.Config
 			{
 				if(de.Key.ToString() != "interface" && de.Key.ToString() != "program")
 				{
-					//mxd
-					string include = de.Value.ToString().Replace(System.IO.Path.AltDirectorySeparatorChar, System.IO.Path.DirectorySeparatorChar);
-					if(files.Contains(include))
+                    //mxd
+                    string include = de.Value.ToString().Replace('\\', '/');
+                    if (files.Contains(include))
 						General.ErrorLogger.Add(ErrorType.Warning, "Include file \"" + de.Value + "\" is double defined in \"" + name + "\" compiler configuration");
 					else
 						files.Add(include);

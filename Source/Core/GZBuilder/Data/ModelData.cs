@@ -3,8 +3,6 @@
 using System.Collections.Generic;
 using CodeImp.DoomBuilder.GZBuilder.MD3;
 using CodeImp.DoomBuilder.Rendering;
-using SlimDX;
-using SlimDX.Direct3D9;
 
 #endregion
 

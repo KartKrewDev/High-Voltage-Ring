@@ -19,15 +19,13 @@
 using System;
 using System.Collections.Generic;
 using CodeImp.DoomBuilder.Map;
-using SlimDX.Direct3D9;
-using SlimDX;
 using CodeImp.DoomBuilder.Rendering;
 
 #endregion
 
 namespace CodeImp.DoomBuilder.VisualModes
 {
-	public class VisualSector : ID3DResource, IDisposable
+	public class VisualSector : IRenderResource, IDisposable
 	{
 		#region ================== Constants
 
@@ -123,7 +121,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public virtual void UpdateSectorGeometry(bool includeneighbours) { }
 		
 		// This updates the visual sector
-		public void Update()
+		public void Update(RenderDevice graphics)
 		{
 			int numverts = 0;
 			int v = 0;
@@ -139,22 +137,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if(numverts > 0)
 			{
 				// Make a new buffer
-				geobuffer = new VertexBuffer(General.Map.Graphics.Device, WorldVertex.Stride * numverts,
-											 Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+				geobuffer = new VertexBuffer();
+                graphics.SetBufferData(geobuffer, numverts, VertexFormat.World);
 
 				// Fill the buffer
-				DataStream bufferstream = geobuffer.Lock(0, WorldVertex.Stride * numverts, LockFlags.Discard);
 				foreach(VisualGeometry g in allgeometry)
 				{
 					if((g.Vertices != null) && (g.Vertices.Length > 0))
 					{
-						bufferstream.WriteRange(g.Vertices);
+                        graphics.SetBufferSubdata(geobuffer, v, g.Vertices);
 						g.VertexOffset = v;
 						v += g.Vertices.Length;
 					}
 				}
-				geobuffer.Unlock();
-				bufferstream.Dispose();
 			}
 
 			this.sector.UpdateFogColor(); //mxd

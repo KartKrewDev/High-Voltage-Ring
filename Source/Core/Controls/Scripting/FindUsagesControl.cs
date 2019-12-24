@@ -251,9 +251,11 @@ namespace CodeImp.DoomBuilder.Controls.Scripting
 				{
 					// Show target text
 					t.MoveToLine(result.LineIndex);
+#if !NO_SCINTILLA
 					int pos = t.Editor.Scintilla.Lines[result.LineIndex].Position + result.MatchStart;
 					t.SelectionStart = pos;
 					t.SelectionEnd = pos;
+#endif
 					t.Focus();
 
 					// Show in resources control

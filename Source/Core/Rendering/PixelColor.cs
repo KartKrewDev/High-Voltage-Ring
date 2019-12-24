@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing;
-using SlimDX;
 
 #endregion
 
@@ -93,6 +92,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			return FromColor(Color.FromArgb(c));
 		}
 		
+        // Return color multiplied by alpha
+        public PixelColor ApplyAlpha()
+        {
+            return new PixelColor(255, (byte)(r * a / 255), (byte)(g * a / 255), (byte)(b * a / 255));
+        }
+
 		// Return the inverse color
 		public PixelColor Inverse()
 		{
@@ -126,19 +131,19 @@ namespace CodeImp.DoomBuilder.Rendering
 		// To ColorValue
 		public Color4 ToColorValue()
 		{
-			return new Color4(a * BYTE_TO_FLOAT,
-							  r * BYTE_TO_FLOAT,
+			return new Color4(r * BYTE_TO_FLOAT,
 							  g * BYTE_TO_FLOAT,
-							  b * BYTE_TO_FLOAT);
+							  b * BYTE_TO_FLOAT,
+                              a * BYTE_TO_FLOAT);
 		}
 
 		// To ColorValue
 		public Color4 ToColorValue(float withalpha)
 		{
-			return new Color4(withalpha,
-							  r * BYTE_TO_FLOAT,
+			return new Color4(r * BYTE_TO_FLOAT,
 							  g * BYTE_TO_FLOAT,
-							  b * BYTE_TO_FLOAT);
+							  b * BYTE_TO_FLOAT,
+                              withalpha);
 		}
 		
 		// This returns a new PixelColor with adjusted alpha

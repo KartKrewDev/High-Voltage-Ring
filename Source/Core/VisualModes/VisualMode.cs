@@ -73,8 +73,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		protected Dictionary<Thing, VisualThing> allthings;
 		protected Dictionary<Sector, VisualSector> allsectors;
 		protected List<VisualBlockEntry> visibleblocks;
-		protected Dictionary<Thing, VisualThing> visiblethings;
-		protected Dictionary<Sector, VisualSector> visiblesectors;
+		protected List<VisualThing> visiblethings;
+		protected List<VisualSector> visiblesectors;
 		protected List<VisualGeometry> visiblegeometry;
 		
 		#endregion
@@ -104,9 +104,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.allsectors = new Dictionary<Sector, VisualSector>(General.Map.Map.Sectors.Count);
 			this.allthings = new Dictionary<Thing, VisualThing>(General.Map.Map.Things.Count);
 			this.visibleblocks = new List<VisualBlockEntry>();
-			this.visiblesectors = new Dictionary<Sector, VisualSector>(50);
+			this.visiblesectors = new List<VisualSector>(50);
 			this.visiblegeometry = new List<VisualGeometry>(200);
-			this.visiblethings = new Dictionary<Thing, VisualThing>(100);
+			this.visiblethings = new List<VisualThing>(100);
 			this.processgeometry = true;
 			this.processthings = true;
 			this.vertices = new Dictionary<Vertex, VisualVertexPair>(); //mxd
@@ -489,7 +489,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 
 			VisualThing vt = target.picked as VisualThing;
-			if(vt != null) return GetIntersection(start, start + delta, vt.CenterV3D, D3DDevice.V3D(vt.Center - vt.PositionV3));
+			if(vt != null) return GetIntersection(start, start + delta, vt.CenterV3D, RenderDevice.V3D(vt.Center - vt.PositionV3));
 
 			return new Vector2D(float.NaN, float.NaN);
 		}
@@ -503,21 +503,24 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		//mxd. Should move selected things in specified direction
 		protected virtual void MoveSelectedThings(Vector2D direction, bool absolutePosition) { }
-		
-		#endregion
 
-		#region ================== Visibility Culling
-		
+        #endregion
+
+        #region ================== Visibility Culling
+
+        int lastProcessed = 0;
+
 		// This preforms visibility culling
 		protected void DoCulling()
 		{
-			HashSet<Linedef> visiblelines = new HashSet<Linedef>();
+            lastProcessed++;
+			List<Linedef> visiblelines = new List<Linedef>();
 			Vector2D campos2d = General.Map.VisualCamera.Position;
 			
 			// Make collections
-			visiblesectors = new Dictionary<Sector, VisualSector>(visiblesectors.Count);
-			visiblegeometry = new List<VisualGeometry>(visiblegeometry.Capacity);
-			visiblethings = new Dictionary<Thing, VisualThing>(visiblethings.Count);
+			visiblesectors = new List<VisualSector>(visiblesectors.Count * 2);
+			visiblegeometry = new List<VisualGeometry>(visiblegeometry.Count * 2);
+			visiblethings = new List<VisualThing>(visiblethings.Count * 2);
 
 			// Get the blocks within view range
 			visibleblocks = blockmap.GetFrustumRange(renderer.Frustum2D);
@@ -531,10 +534,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 					foreach(Linedef ld in block.Lines)
 					{
 						// Line not already processed?
-						if(!visiblelines.Contains(ld))
+						if (ld.LastProcessed != lastProcessed)
 						{
-							// Add line if not added yet
-							visiblelines.Add(ld);
+                            // Add line if not added yet
+                            ld.LastProcessed = lastProcessed;
+                            visiblelines.Add(ld);
 
 							// Which side of the line is the camera on?
 							if(ld.SideOfLine(campos2d) < 0)
@@ -556,6 +560,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 					// Things
 					foreach(Thing t in block.Things)
 					{
+                        if (t.LastProcessed == lastProcessed) continue;
+
+                        t.LastProcessed = lastProcessed;
+
 						// Not filtered out?
 						if(!General.Map.ThingsFilter.IsThingVisible(t)) continue;
 
@@ -571,9 +579,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 							allthings[t] = vt;
 						}
 
-						if(vt != null && !visiblethings.ContainsKey(vt.Thing))
+						if(vt != null)
 						{
-							visiblethings[vt.Thing] = vt;
+							visiblethings.Add(vt);
 						}
 					}
 				}
@@ -626,7 +634,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// This finds and adds visible sectors
 		private void ProcessSidedefCulling(Sidedef sd)
 		{
-			VisualSector vs;
+            // Do nothing if we already added it.
+			if (sd.LastProcessed == lastProcessed)
+                return;
+
+            sd.LastProcessed = lastProcessed;
+
+            VisualSector vs;
 			
 			// Find the visualsector and make it if needed
 			if(allsectors.ContainsKey(sd.Sector))
@@ -643,12 +657,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 			
 			if(vs != null)
 			{
-				// Add to visible sectors if not added yet
-				if(!visiblesectors.ContainsKey(sd.Sector))
-				{
-					visiblesectors.Add(sd.Sector, vs);
-					visiblegeometry.AddRange(vs.FixedGeometry);
-				}
+                if (sd.Sector.LastProcessed != lastProcessed)
+                {
+                    sd.Sector.LastProcessed = lastProcessed;
+                    visiblesectors.Add(vs);
+                    visiblegeometry.AddRange(vs.FixedGeometry);
+                }
 				
 				// Add sidedef geometry
 				visiblegeometry.AddRange(vs.GetSidedefGeometry(sd));
@@ -801,7 +815,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			}
 			
 			// Add all the visible things
-			foreach(VisualThing vt in visiblethings.Values) pickables.Add(vt);
+			foreach(VisualThing vt in visiblethings) pickables.Add(vt);
 
 			//mxd. And all visual vertices
 			if(General.Map.UDMF && General.Settings.GZShowVisualVertices) 

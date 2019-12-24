@@ -440,8 +440,9 @@ namespace CodeImp.DoomBuilder.Windows
 		private void UpdateTitle()
 		{
 			string programname = this.Text = Application.ProductName + " R" + General.ThisAssembly.GetName().Version.Revision;
-			if (Environment.Is64BitProcess)
-				programname += " (64-bit)";
+            if (Environment.Is64BitProcess)
+                programname += " (64-bit)";
+            else programname += " (32-bit)";
 
 			// Map opened?
 			if (General.Map != null)
@@ -1060,9 +1061,6 @@ namespace CodeImp.DoomBuilder.Windows
 				// Display was resized?
 				if(displayresized)
 				{
-					// Reset graphics to match changes
-					General.Map.Graphics.Reset();
-
 					//mxd. Aspect ratio may've been changed
 					General.Map.CRenderer3D.CreateProjection();
 				}

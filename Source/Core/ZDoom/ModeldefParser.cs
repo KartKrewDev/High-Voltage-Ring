@@ -6,7 +6,7 @@ using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.GZBuilder.Data;
-using SlimDX;
+using CodeImp.DoomBuilder.Rendering;
 using System.IO;
 using System.Globalization;
 

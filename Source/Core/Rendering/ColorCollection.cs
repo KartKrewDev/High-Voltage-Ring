@@ -19,7 +19,6 @@
 using System;
 using System.Globalization;
 using System.Drawing;
-using SlimDX;
 using Configuration = CodeImp.DoomBuilder.IO.Configuration;
 
 #endregion
@@ -299,7 +298,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public PixelColor CreateBrightVariant(PixelColor pc)
 		{
 			Color4 o = pc.ToColorValue();
-			Color4 c = new Color4(1f, 0f, 0f, 0f);
+			Color4 c = new Color4(0f, 0f, 0f, 1f);
 						
 			// Create brighter color
 			c.Red = Saturate(o.Red * BRIGHT_MULTIPLIER + BRIGHT_ADDITION);
@@ -312,7 +311,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public PixelColor CreateDarkVariant(PixelColor pc)
 		{
 			Color4 o = pc.ToColorValue();
-			Color4 c = new Color4(1f, 0f, 0f, 0f);
+			Color4 c = new Color4(0f, 0f, 0f, 1f);
 
 			// Create darker color
 			c.Red = Saturate(o.Red * DARK_MULTIPLIER + DARK_ADDITION);

@@ -17,7 +17,7 @@
 #region ================== Namespaces
 
 using System;
-using SlimDX;
+using CodeImp.DoomBuilder.Rendering;
 
 #endregion
 

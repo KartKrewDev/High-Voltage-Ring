@@ -22,8 +22,6 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Drawing;
-using SlimDX.Direct3D9;
-using SlimDX;
 using CodeImp.DoomBuilder.Geometry;
 using Font = System.Drawing.Font;
 
@@ -44,10 +42,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		PixelColor Color { get; set; }
 		PixelColor BackColor { get; set; }
 
-		void Update(float translatex, float translatey, float scalex, float scaley);
+		void Update(RenderDevice graphics, float translatex, float translatey, float scalex, float scaley);
 	}
 	
-	public class TextLabel : IDisposable, ID3DResource, ITextLabel
+	public class TextLabel : IDisposable, IRenderResource, ITextLabel
 	{
 		#region ================== Constants
 
@@ -108,7 +106,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public string Text { get { return text; } set { if(text != value) { text = value; textsize = Size.Empty; textureupdateneeded = true; } } }
 		public Font Font { get { return font; } set { font.Dispose(); font = value; textsize = Size.Empty; textureupdateneeded = true; } } //mxd
 		public bool TransformCoords { get { return transformcoords; } set { transformcoords = value; updateneeded = true; } }
-		public SizeF TextSize { get { if(textureupdateneeded) Update(General.Map.Renderer2D.TranslateX, General.Map.Renderer2D.TranslateY, General.Map.Renderer2D.Scale, -General.Map.Renderer2D.Scale); return textsize; } }
+		public SizeF TextSize { get { if(textureupdateneeded) Update(General.Map.Graphics, General.Map.Renderer2D.TranslateX, General.Map.Renderer2D.TranslateY, General.Map.Renderer2D.Scale, -General.Map.Renderer2D.Scale); return textsize; } }
 		public TextAlignmentX AlignX { get { return alignx; } set { alignx = value; updateneeded = true; } }
 		public TextAlignmentY AlignY { get { return aligny; } set { aligny = value; updateneeded = true; } }
 		public PixelColor Color { get { return color; } set { if(!color.Equals(value)) { color = value; textureupdateneeded = true; } } }
@@ -241,7 +239,7 @@ namespace CodeImp.DoomBuilder.Rendering
         }
 
 		// This updates the text if needed
-		public void Update(float translatex, float translatey, float scalex, float scaley)
+		public void Update(RenderDevice graphics, float translatex, float translatey, float scalex, float scaley)
 		{
 			// Check if transformation changed and needs to be updated
 			if(transformcoords && (translatex != lasttranslatex || translatey != lasttranslatey ||
@@ -328,36 +326,21 @@ namespace CodeImp.DoomBuilder.Rendering
 							texture = null;
 						}
 
-						// Create label image
-						Bitmap img = CreateLabelImage(text, font, color, backcolor, drawbg, textrect, bgrect, texturesize, textorigin);
-						//texturesize = img.Size;
-
-						// Create texture
-						MemoryStream memstream = new MemoryStream((img.Size.Width * img.Size.Height * 4) + 4096);
-						img.Save(memstream, ImageFormat.Bmp);
-						memstream.Seek(0, SeekOrigin.Begin);
-
-						texture = Texture.FromStream(General.Map.Graphics.Device, memstream, (int)memstream.Length,
-								img.Size.Width, img.Size.Height, 1, Usage.None, Format.Unknown,
-								Pool.Managed, General.Map.Graphics.PostFilter, General.Map.Graphics.MipGenerateFilter, 0);
+                        // Create label image
+                        using (Bitmap img = CreateLabelImage(text, font, color, backcolor, drawbg, textrect, bgrect, texturesize, textorigin))
+                        {
+                            texture = new Texture(graphics, img);
+                        }
 					}
 
 					//mxd. Create the buffer
 					if(textbuffer == null || textbuffer.Disposed)
 					{
-						textbuffer = new VertexBuffer(General.Map.Graphics.Device, 4 * FlatVertex.Stride,
-												  Usage.Dynamic | Usage.WriteOnly, VertexFormat.None, Pool.Default);
+						textbuffer = new VertexBuffer();
 					}
 
-					//mxd. Lock the buffer
-					using(DataStream stream = textbuffer.Lock(0, 4 * FlatVertex.Stride, LockFlags.Discard | LockFlags.NoSystemLock))
-					{
-						FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, beginx, beginy, beginx + texturesize.Width, beginy + texturesize.Height);
-						stream.WriteRange(quad.Vertices);
-					}
-
-					// Done filling the vertex buffer
-					textbuffer.Unlock();
+					FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, beginx, beginy, beginx + texturesize.Width, beginy + texturesize.Height);
+                    graphics.SetBufferData(textbuffer, quad.Vertices);
 				}
 				else
 				{

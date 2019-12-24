@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Precomp.cpp" />
+    <ClCompile Include="RawMouse.cpp" />
+    <ClCompile Include="OpenGL\GLIndexBuffer.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\GLShader.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\GLShaderManager.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\GLTexture.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\GLVertexBuffer.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\OpenGLContext.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\gl_load\gl_load.c">
+      <Filter>OpenGL\gl_load</Filter>
+    </ClCompile>
+    <ClCompile Include="Backend.cpp" />
+    <ClCompile Include="OpenGL\GLRenderDevice.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\GLBackend.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Precomp.h" />
+    <ClInclude Include="RawMouse.h" />
+    <ClInclude Include="OpenGL\GLIndexBuffer.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\GLShader.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\GLShaderManager.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\GLTexture.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\GLVertexBuffer.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\OpenGLContext.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\gl_load\gl_load.h">
+      <Filter>OpenGL\gl_load</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\gl_load\gl_system.h">
+      <Filter>OpenGL\gl_load</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend.h" />
+    <ClInclude Include="OpenGL\GLRenderDevice.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\GLBackend.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="exports.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{116db6ea-72bb-4d44-8563-ba39091f2f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\gl_load">
+      <UniqueIdentifier>{0acc1cd1-c19f-4410-95aa-718746ce8eaf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="OpenGL\gl_load\gl_extlist.txt">
+      <Filter>OpenGL\gl_load</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

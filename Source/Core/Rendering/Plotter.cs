@@ -23,104 +23,130 @@ using CodeImp.DoomBuilder.Geometry;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal unsafe sealed class Plotter
-	{
-		#region ================== Constants
+    internal unsafe sealed class Plotter : IDisposable
+    {
+        #region ================== Constants
 
-		private const int DASH_INTERVAL = 16; //mxd
+        private const int DASH_INTERVAL = 16; //mxd
 
-		#endregion
+        #endregion
 
-		#region ================== Variables
+        #region ================== Variables
 
-		// Memory
-		private PixelColor* pixels;
-		private int width;
-		private int height;
-		private int visiblewidth;
-		private int visibleheight;
+        // Memory
+        private PixelColor[] pixels;
+        private int width;
+        private int height;
+        private int visiblewidth;
+        private int visibleheight;
+        // GL
+        public Texture Texture { get; private set; }
 
-		#endregion
+        #endregion
 
-		#region ================== Properties
+        #region ================== Properties
 
-		public int VisibleWidth { get { return visiblewidth; } }
-		public int VisibleHeight { get { return visibleheight; } }
-		public int Width { get { return width; } }
-		public int Height { get { return height; } }
+        public int VisibleWidth { get { return visiblewidth; } }
+        public int VisibleHeight { get { return visibleheight; } }
+        public int Width { get { return width; } }
+        public int Height { get { return height; } }
 
-		#endregion
+        #endregion
 
-		#region ================== Constructor / Disposer
+        #region ================== Constructor / Disposer
 
-		// Constructor
-		public Plotter(PixelColor* pixels, int width, int height, int visiblewidth, int visibleheight)
-		{
-			// Initialize
-			this.pixels = pixels;
-			this.width = width;
-			this.height = height;
-			this.visiblewidth = width;
-			this.visibleheight = height;
-			
-			// We have no destructor
-			GC.SuppressFinalize(this);
-		}
+        // Constructor
+        public Plotter(int width, int height)
+        {
+            // Initialize
+            Texture = new Texture(width, height);
+            this.pixels = new PixelColor[width*height];
+            this.width = width;
+            this.height = height;
+            this.visiblewidth = width;
+            this.visibleheight = height;
+        }
 
-		#endregion
+        public void Dispose()
+        {
+            if (Texture != null)
+            {
+                Texture.Dispose();
+                Texture = null;
+            }
+        }
 
-		#region ================== Pixel Rendering
-		
-		// This clears all pixels black
-		public void Clear()
-		{
-			// Clear memory
-			General.ZeroMemory(new IntPtr(pixels), width * height * sizeof(PixelColor));
-		}
-		
-		// This draws a pixel normally
-		public void DrawPixelSolid(int x, int y, ref PixelColor c)
-		{
-			// Draw pixel when within range
-			if((x >= 0) && (x < visiblewidth) && (y >= 0) && (y < visibleheight))
-				pixels[y * width + x] = c;
-		}
+        #endregion
 
-		// This draws a pixel normally
-		public void DrawVertexSolid(int x, int y, int size, ref PixelColor c, ref PixelColor l, ref PixelColor d)
-		{
-			int x1 = x - size;
-			int x2 = x + size;
-			int y1 = y - size;
-			int y2 = y + size;
+        #region ================== Pixel Rendering
 
-			// Do unchecked?
-			if((x1 >= 0) && (x2 < visiblewidth) && (y1 >= 0) && (y2 < visibleheight))
-			{
-				// Filled square
-				for(int yp = y1; yp <= y2; yp++)
-					for(int xp = x1; xp <= x2; xp++)
-						pixels[yp * width + xp] = c;
+        private int TransformY(int y)
+        {
+            return height - y;
+        }
 
-				// Vertical edges
-				for(int yp = y1 + 1; yp <= y2 - 1; yp++)
-				{
-					pixels[yp * width + x1] = l;
-					pixels[yp * width + x2] = d;
-				}
+        // This clears all pixels black
+        public void Clear()
+        {
+            // Clear memory
+            fixed(PixelColor* pixel = pixels)
+            {
+                PixelColor* op = pixel;
+                for (int i = 0; i < pixels.Length; i++)
+                {
+                    op->a = 0;
+                    op++;
+                }
+            }
+        }
 
-				// Horizontal edges
-				for(int xp = x1 + 1; xp <= x2 - 1; xp++)
-				{
-					pixels[y1 * width + xp] = l;
-					pixels[y2 * width + xp] = d;
-				}
+        // This draws a pixel normally
+        public void DrawPixelSolid(int x, int y, ref PixelColor c)
+        {
+            y = TransformY(y);
 
-				// Corners
-				pixels[y2 * width + x2] = d;
-				pixels[y1 * width + x1] = l;
-			}
-			/*
+            // Draw pixel when within range
+            if ((x >= 0) && (x < visiblewidth) && (y >= 0) && (y < visibleheight))
+                pixels[y * width + x] = c;
+        }
+
+        // This draws a pixel normally
+        public void DrawVertexSolid(int x, int y, int size, ref PixelColor c, ref PixelColor l, ref PixelColor d)
+        {
+            y = TransformY(y);
+
+            int x1 = x - size;
+            int x2 = x + size;
+            int y1 = y - size;
+            int y2 = y + size;
+
+            // Do unchecked?
+            if ((x1 >= 0) && (x2 < visiblewidth) && (y1 >= 0) && (y2 < visibleheight))
+            {
+                // Filled square
+                for (int yp = y1; yp <= y2; yp++)
+                    for (int xp = x1; xp <= x2; xp++)
+                        pixels[yp * width + xp] = c;
+
+                // Vertical edges
+                for (int yp = y1 + 1; yp <= y2 - 1; yp++)
+                {
+                    pixels[yp * width + x1] = l;
+                    pixels[yp * width + x2] = d;
+                }
+
+                // Horizontal edges
+                for (int xp = x1 + 1; xp <= x2 - 1; xp++)
+                {
+                    pixels[y1 * width + xp] = l;
+                    pixels[y2 * width + xp] = d;
+                }
+
+                // Corners
+                pixels[y2 * width + x2] = d;
+                pixels[y1 * width + x1] = l;
+            }
+            /*
 			else
 			{
 				// Filled square
@@ -147,219 +173,254 @@ namespace CodeImp.DoomBuilder.Rendering
 				DrawPixelSolid(x - size, y - size, l);
 			}
 			*/
-		}
+        }
 
-		// This draws a dotted grid line horizontally
-		public void DrawGridLineH(int y, int x1, int x2, ref PixelColor c)
-		{
-			int numpixels = visiblewidth >> 1;
-			int offset = y & 0x01;
-			int ywidth = y * width;
-			x1 = General.Clamp(x1 >> 1, 0, numpixels - 1);
-			x2 = General.Clamp(x2 >> 1, 0, numpixels - 1);
-			
-			if((y >= 0) && (y < height))
-			{
-				// Draw all pixels on this line
-				for(int i = x1; i < x2; i++) pixels[ywidth + ((i << 1) | offset)] = c;
-			}
-		}
+        // This draws a dotted grid line horizontally
+        public void DrawGridLineH(int y, int x1, int x2, ref PixelColor c)
+        {
+            y = TransformY(y);
 
-		// This draws a dotted grid line vertically
-		public void DrawGridLineV(int x, int y1, int y2, ref PixelColor c)
-		{
-			int numpixels = visibleheight >> 1;
-			int offset = x & 0x01;
-			y1 = General.Clamp(y1 >> 1, 0, numpixels - 1);
-			y2 = General.Clamp(y2 >> 1, 0, numpixels - 1);
-			
-			if((x >= 0) && (x < width))
-			{
-				// Draw all pixels on this line
-				for(int i = y1; i < y2; i++) pixels[((i << 1) | offset) * width + x] = c;
-			}
-		}
+            int numpixels = visiblewidth >> 1;
+            int offset = y & 0x01;
+            int ywidth = y * width;
+            x1 = General.Clamp(x1 >> 1, 0, numpixels - 1);
+            x2 = General.Clamp(x2 >> 1, 0, numpixels - 1);
 
-		// This draws a pixel alpha blended
-		public void DrawPixelAlpha(int x, int y, ref PixelColor c)
-		{
-			// Draw only when within range
-			if((x >= 0) && (x < visiblewidth) && (y >= 0) && (y < visibleheight))
-			{
-				// Get the target pixel
-				PixelColor* p = pixels + (y * width + x);
+            if ((y >= 0) && (y < height))
+            {
+                // Draw all pixels on this line
+                for (int i = x1; i < x2; i++) pixels[ywidth + ((i << 1) | offset)] = c;
+            }
+        }
 
-				// Not drawn on target yet?
-				if(*(int*)p == 0)
-				{
-					// Simply apply color to pixel
-					*p = c;
-				}
-				else
-				{
-					// Blend with pixel
-					float a = c.a * 0.003921568627450980392156862745098f;
-					if(p->a + c.a > 255) p->a = 255; else p->a += c.a;
-					p->r = (byte)(p->r * (1f - a) + c.r * a);
-					p->g = (byte)(p->g * (1f - a) + c.g * a);
-					p->b = (byte)(p->b * (1f - a) + c.b * a);
-				}
-			}
-		}
+        // This draws a dotted grid line vertically
+        public void DrawGridLineV(int x, int y1, int y2, ref PixelColor c)
+        {
+            y1 = TransformY(y1);
+            y2 = TransformY(y2);
 
-		// This draws a line normally
-		// See: http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
-		public void DrawLineSolid(int x1, int y1, int x2, int y2, ref PixelColor c, uint mask = 0xffffffff)
-		{
-			// Check if the line is outside the screen for sure.
-			// This is quickly done by checking in which area both points are. When this
-			// is above, below, right or left of the screen, then skip drawing the line.
-			if(((x1 < 0) && (x2 < 0)) ||
-			   ((x1 > visiblewidth) && (x2 > visiblewidth)) ||
-			   ((y1 < 0) && (y2 < 0)) ||
-			   ((y1 > visibleheight) && (y2 > visibleheight))) return;
+            int numpixels = visibleheight >> 1;
+            int offset = x & 0x01;
+            y1 = General.Clamp(y1 >> 1, 0, numpixels - 1);
+            y2 = General.Clamp(y2 >> 1, 0, numpixels - 1);
 
-			// Distance of the line
-			int dx = x2 - x1;
-			int dy = y2 - y1;
+            if ((x >= 0) && (x < width))
+            {
+                // Draw all pixels on this line
+                for (int i = y2; i < y1; i++) pixels[((i << 1) | offset) * width + x] = c;
+            }
+        }
 
-			// Positive (absolute) distance
-			int dxabs = Math.Abs(dx);
-			int dyabs = Math.Abs(dy);
+        // This draws a pixel alpha blended
+        public void DrawPixelAlpha(int x, int y, ref PixelColor c)
+        {
+            y = TransformY(y);
 
-			// Half distance
-			int x = dyabs >> 1;
-			int y = dxabs >> 1;
+            fixed (PixelColor* pixels = this.pixels)
+            {
+                // Draw only when within range
+                if ((x >= 0) && (x < visiblewidth) && (y >= 0) && (y < visibleheight))
+                {
+                    // Get the target pixel
+                    PixelColor* p = pixels + (y * width + x);
 
-			// Direction
-			int sdx = Math.Sign(dx);
-			int sdy = Math.Sign(dy);
+                    // Not drawn on target yet?
+                    if (*(int*)p == 0)
+                    {
+                        // Simply apply color to pixel
+                        *p = c;
+                    }
+                    else
+                    {
+                        // Blend with pixel
+                        float a = c.a * 0.003921568627450980392156862745098f;
+                        if (p->a + c.a > 255) p->a = 255; else p->a += c.a;
+                        p->r = (byte)(p->r * (1f - a) + c.r * a);
+                        p->g = (byte)(p->g * (1f - a) + c.g * a);
+                        p->b = (byte)(p->b * (1f - a) + c.b * a);
+                    }
+                }
+            }
+        }
 
-			// Start position
-			int px = x1;
-			int py = y1;
+        // This draws a line normally
+        // See: http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+        public void DrawLineSolid(int x1, int y1, int x2, int y2, ref PixelColor c, uint mask = 0xffffffff)
+        {
+            y1 = TransformY(y1);
+            y2 = TransformY(y2);
 
-			// When the line is completely inside screen,
-			// then do an unchecked draw, because all of its pixels are
-			// guaranteed to be within the memory range
-			if((x1 >= 0) && (x2 >= 0) && (x1 < visiblewidth) && (x2 < visiblewidth) &&
-			   (y1 >= 0) && (y2 >= 0) && (y1 < visibleheight) && (y2 < visibleheight))
-			{
-				// Draw first pixel
-				pixels[py * width + px] = c;
+            // Check if the line is outside the screen for sure.
+            // This is quickly done by checking in which area both points are. When this
+            // is above, below, right or left of the screen, then skip drawing the line.
+            if (((x1 < 0) && (x2 < 0)) ||
+               ((x1 > visiblewidth) && (x2 > visiblewidth)) ||
+               ((y1 < 0) && (y2 < 0)) ||
+               ((y1 > visibleheight) && (y2 > visibleheight))) return;
 
-				// Check if the line is more horizontal than vertical
-				if(dxabs >= dyabs)
-				{
-					for(int i = 0; i < dxabs; i++)
-					{
-						y += dyabs;
-						if(y >= dxabs)
-						{
-							y -= dxabs;
-							py += sdy;
-						}
-						px += sdx;
+            // Distance of the line
+            int dx = x2 - x1;
+            int dy = y2 - y1;
 
-						// Draw pixel
-						if ((mask & (1 << (i & 0x7))) != 0) {
-							pixels[py * width + px] = c;
-						}
-					}
-				}
-				// Else the line is more vertical than horizontal
-				else
-				{
-					for(int i = 0; i < dyabs; i++)
-					{
-						x += dxabs;
-						if(x >= dyabs)
-						{
-							x -= dyabs;
-							px += sdx;
-						}
-						py += sdy;
+            // Positive (absolute) distance
+            int dxabs = Math.Abs(dx);
+            int dyabs = Math.Abs(dy);
 
-						// Draw pixel
-						if ((mask & (1 << (i & 0x7))) != 0) {
-							pixels[py * width + px] = c;
-						}
-					}
-				}
-			}
-			else
-			{
-				// Draw first pixel
-				if((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
-					pixels[py * width + px] = c;
-				
-				// Check if the line is more horizontal than vertical
-				if(dxabs >= dyabs)
-				{
-					for(int i = 0; i < dxabs; i++)
-					{
-						y += dyabs;
-						if(y >= dxabs)
-						{
-							y -= dxabs;
-							py += sdy;
-						}
-						px += sdx;
-						
-						// Draw pixel
-						if ((mask & (1 << (i & 0x7))) != 0) {
-							if((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
-								pixels[py * width + px] = c;
-						}
-					}
-				}
-				// Else the line is more vertical than horizontal
-				else
-				{
-					for(int i = 0; i < dyabs; i++)
-					{
-						x += dxabs;
-						if(x >= dyabs)
-						{
-							x -= dyabs;
-							px += sdx;
-						}
-						py += sdy;
-						
-						// Draw pixel
-						if ((mask & (1 << (i & 0x7))) != 0) {
-							if((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
-								pixels[py * width + px] = c;
-						}
-					}
-				}
-			}
-		}
+            // Half distance
+            int x = dyabs >> 1;
+            int y = dxabs >> 1;
 
-		//mxd
-		public void DrawLine3DFloor(Vector2D start, Vector2D end, ref PixelColor c, PixelColor c2) 
-		{
-			Vector2D delta = end - start;
-			float length = delta.GetLength();
+            // Direction
+            int sdx = Math.Sign(dx);
+            int sdy = Math.Sign(dy);
 
-			if(length < DASH_INTERVAL * 2) 
-			{
-				DrawLineSolid((int)start.x, (int)start.y, (int)end.x, (int)end.y, ref c2);
-			} 
-			else 
-			{
-				float d1 = DASH_INTERVAL / length;
-				float d2 = 1.0f - d1;
+            // Start position
+            int px = x1;
+            int py = y1;
 
-				Vector2D p1 = CurveTools.GetPointOnLine(start, end, d1);
-				Vector2D p2 = CurveTools.GetPointOnLine(start, end, d2);
+            // When the line is completely inside screen,
+            // then do an unchecked draw, because all of its pixels are
+            // guaranteed to be within the memory range
+            if ((x1 >= 0) && (x2 >= 0) && (x1 < visiblewidth) && (x2 < visiblewidth) &&
+               (y1 >= 0) && (y2 >= 0) && (y1 < visibleheight) && (y2 < visibleheight))
+            {
+                // Draw first pixel
+                pixels[py * width + px] = c;
 
-				DrawLineSolid((int)start.x, (int)start.y, (int)p1.x, (int)p1.y, ref c2);
-				DrawLineSolid((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y, ref c);
-				DrawLineSolid((int)p2.x, (int)p2.y, (int)end.x, (int)end.y, ref c2);
-			}
-		}
+                // Check if the line is more horizontal than vertical
+                if (dxabs >= dyabs)
+                {
+                    for (int i = 0; i < dxabs; i++)
+                    {
+                        y += dyabs;
+                        if (y >= dxabs)
+                        {
+                            y -= dxabs;
+                            py += sdy;
+                        }
+                        px += sdx;
 
-		#endregion
-	}
+                        // Draw pixel
+                        if ((mask & (1 << (i & 0x7))) != 0)
+                        {
+                            pixels[py * width + px] = c;
+                        }
+                    }
+                }
+                // Else the line is more vertical than horizontal
+                else
+                {
+                    for (int i = 0; i < dyabs; i++)
+                    {
+                        x += dxabs;
+                        if (x >= dyabs)
+                        {
+                            x -= dyabs;
+                            px += sdx;
+                        }
+                        py += sdy;
+
+                        // Draw pixel
+                        if ((mask & (1 << (i & 0x7))) != 0)
+                        {
+                            pixels[py * width + px] = c;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Draw first pixel
+                if ((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+                    pixels[py * width + px] = c;
+
+                // Check if the line is more horizontal than vertical
+                if (dxabs >= dyabs)
+                {
+                    for (int i = 0; i < dxabs; i++)
+                    {
+                        y += dyabs;
+                        if (y >= dxabs)
+                        {
+                            y -= dxabs;
+                            py += sdy;
+                        }
+                        px += sdx;
+
+                        // Draw pixel
+                        if ((mask & (1 << (i & 0x7))) != 0)
+                        {
+                            if ((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+                                pixels[py * width + px] = c;
+                        }
+                    }
+                }
+                // Else the line is more vertical than horizontal
+                else
+                {
+                    for (int i = 0; i < dyabs; i++)
+                    {
+                        x += dxabs;
+                        if (x >= dyabs)
+                        {
+                            x -= dyabs;
+                            px += sdx;
+                        }
+                        py += sdy;
+
+                        // Draw pixel
+                        if ((mask & (1 << (i & 0x7))) != 0)
+                        {
+                            if ((px >= 0) && (px < visiblewidth) && (py >= 0) && (py < visibleheight))
+                                pixels[py * width + px] = c;
+                        }
+                    }
+                }
+            }
+        }
+
+        //mxd
+        public void DrawLine3DFloor(Vector2D start, Vector2D end, ref PixelColor c, PixelColor c2)
+        {
+            Vector2D delta = end - start;
+            float length = delta.GetLength();
+
+            if (length < DASH_INTERVAL * 2)
+            {
+                DrawLineSolid((int)start.x, (int)start.y, (int)end.x, (int)end.y, ref c2);
+            }
+            else
+            {
+                float d1 = DASH_INTERVAL / length;
+                float d2 = 1.0f - d1;
+
+                Vector2D p1 = CurveTools.GetPointOnLine(start, end, d1);
+                Vector2D p2 = CurveTools.GetPointOnLine(start, end, d2);
+
+                DrawLineSolid((int)start.x, (int)start.y, (int)p1.x, (int)p1.y, ref c2);
+                DrawLineSolid((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y, ref c);
+                DrawLineSolid((int)p2.x, (int)p2.y, (int)end.x, (int)end.y, ref c2);
+            }
+        }
+
+        #endregion
+
+        #region ================== Drawing to rendertarget
+
+        public void DrawContents(RenderDevice graphics)
+        {
+            // set pixels of texture
+            // convert from pixelcolor to uint
+            fixed (PixelColor* pixels = this.pixels)
+            {
+                uint* uintpixels = (uint*)pixels;
+                uint* targetpixels = (uint*)graphics.MapPBO(Texture);
+                for (int i = 0; i < this.pixels.Length; i++)
+                    *targetpixels++ = *uintpixels++;
+                graphics.UnmapPBO(Texture);
+            }
+        }
+
+        #endregion
+    }
 }

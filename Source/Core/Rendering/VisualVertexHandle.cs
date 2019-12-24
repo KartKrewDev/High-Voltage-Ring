@@ -2,13 +2,12 @@
 
 using System;
 using CodeImp.DoomBuilder.VisualModes;
-using SlimDX.Direct3D9;
 
 #endregion
 
 namespace CodeImp.DoomBuilder.Rendering
 {
-	internal sealed class VisualVertexHandle : IDisposable, ID3DResource
+	internal sealed class VisualVertexHandle : IDisposable, IRenderResource
 	{
 		#region ================== Variables
 
@@ -85,9 +84,8 @@ namespace CodeImp.DoomBuilder.Rendering
 									   v2, v3,
 									   v3, v0 };
 
-			upper = new VertexBuffer(General.Map.Graphics.Device, WorldVertex.Stride * vu.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
-			upper.Lock(0, WorldVertex.Stride * vu.Length, LockFlags.None).WriteRange(vu);
-			upper.Unlock();
+			upper = new VertexBuffer();
+            General.Map.Graphics.SetBufferData(upper, vu);
 
 			WorldVertex[] vl = new[]{ c, v4,
 									  c, v5,
@@ -99,9 +97,8 @@ namespace CodeImp.DoomBuilder.Rendering
 									  v6, v7,
 									  v7, v4 };
 
-			lower = new VertexBuffer(General.Map.Graphics.Device, WorldVertex.Stride * vl.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
-			lower.Lock(0, WorldVertex.Stride * vl.Length, LockFlags.None).WriteRange(vl);
-			lower.Unlock();
+			lower = new VertexBuffer();
+            General.Map.Graphics.SetBufferData(lower, vl);
 		}
 
 		// This is called before a device is reset

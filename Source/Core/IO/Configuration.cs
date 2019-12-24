@@ -844,9 +844,10 @@ namespace CodeImp.DoomBuilder.IO
 			
 			// Determine the full path of the file to include
 			string includefile = Path.GetDirectoryName(file) + Path.DirectorySeparatorChar + args[0];
+            includefile = includefile.Replace('\\', '/');
 
-			//mxd. Caching
-			if(cfgcache.ContainsKey(includefile)) 
+            //mxd. Caching
+            if (cfgcache.ContainsKey(includefile)) 
 			{
 				IDictionary cinc = cfgcache[includefile];
 				

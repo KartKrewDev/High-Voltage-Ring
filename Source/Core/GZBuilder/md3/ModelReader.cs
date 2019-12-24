@@ -11,9 +11,8 @@ using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.GZBuilder.Data;
-using SlimDX;
-using SlimDX.Direct3D9;
 using CodeImp.DoomBuilder.Geometry;
+using System.Linq;
 
 #endregion
 
@@ -37,26 +36,17 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			}
 		}
 
-		private static readonly VertexElement[] vertexElements = new[]
-		{
-			new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-			new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
-			new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
-			new VertexElement(0, 24, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
-			VertexElement.VertexDeclarationEnd
-		};
-
 		#endregion
 
 		#region ================== Load
 
-		public static void Load(ModelData mde, List<DataReader> containers, Device device)
+		public static void Load(ModelData mde, List<DataReader> containers)
 		{
-			if(mde.IsVoxel) LoadKVX(mde, containers, device);
-			else LoadModel(mde, containers, device);
+			if(mde.IsVoxel) LoadKVX(mde, containers);
+			else LoadModel(mde, containers);
 		}
 
-		private static void LoadKVX(ModelData mde, List<DataReader> containers, Device device)
+		private static void LoadKVX(ModelData mde, List<DataReader> containers)
 		{
 			mde.Model = new GZModel();
 			string unused = string.Empty;
@@ -69,7 +59,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					if(ms == null) continue;
 
 					//load kvx
-					ReadKVX(mde, ms, device);
+					ReadKVX(mde, ms);
 
 					//done
 					ms.Close();
@@ -87,7 +77,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			}
 		}
 
-		private static void LoadModel(ModelData mde, List<DataReader> containers, Device device)
+		private static void LoadModel(ModelData mde, List<DataReader> containers)
 		{
 			mde.Model = new GZModel();
 			BoundingBoxSizes bbs = new BoundingBoxSizes();
@@ -121,13 +111,13 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 							General.ErrorLogger.Add(ErrorType.Error, "Error while loading \"" + mde.ModelNames[i] + "\": frame names are not supported for MD3 models!");
 							continue;
 						}
-						result = ReadMD3Model(ref bbs, skins, ms, device, mde.FrameIndices[i]);
+						result = ReadMD3Model(ref bbs, skins, ms, mde.FrameIndices[i]);
 						break;
 					case ".md2":
-						result = ReadMD2Model(ref bbs, ms, device, mde.FrameIndices[i], mde.FrameNames[i]);
+						result = ReadMD2Model(ref bbs, ms, mde.FrameIndices[i], mde.FrameNames[i]);
 						break;
                     case ".3d":
-                        result = Read3DModel(ref bbs, skins, ms, device, mde.FrameIndices[i], mde.ModelNames[i], containers);
+                        result = Read3DModel(ref bbs, skins, ms, mde.FrameIndices[i], mde.ModelNames[i], containers);
                         break;
 					case ".obj":
 						// OBJ doesn't support frames, so print out an error
@@ -136,7 +126,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 							General.ErrorLogger.Add(ErrorType.Error, "Trying to load frame " + mde.FrameIndices[i] + " of model \"" + mde.ModelNames[i] + "\", but OBJ doesn't support frames!");
 							continue;
 						}
-						result = ReadOBJModel(ref bbs, skins, ms, device, mde.ModelNames[i]);
+						result = ReadOBJModel(ref bbs, skins, ms, mde.ModelNames[i]);
 						break;
 					default:
 						result.Errors = "model format is not supported";
@@ -190,7 +180,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 							if(!String.IsNullOrEmpty(mde.Path))
 								path = Path.Combine(mde.Path, path);
 
-							Texture t = GetTexture(containers, path, device);
+							Texture t = GetTexture(containers, path);
 
 							if(t != null)
 							{
@@ -200,7 +190,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 							// That didn't work, let's try to load the texture without the additional path
 							path = result.Skins[m].Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-							t = GetTexture(containers, path, device);
+							t = GetTexture(containers, path);
 
 							if (t == null)
 							{
@@ -215,7 +205,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					//Try to use texture loaded from MODELDEFS
 					else
 					{
-						Texture t = GetTexture(containers, mde.SkinNames[i], device);
+						Texture t = GetTexture(containers, mde.SkinNames[i]);
 
 						if(t == null)
 						{
@@ -257,7 +247,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			mde.Model.Radius = Math.Max(Math.Max(Math.Abs(bbs.MinY), Math.Abs(bbs.MaxY)), Math.Max(Math.Abs(bbs.MinX), Math.Abs(bbs.MaxX)));
 		}
 
-		private static Texture GetTexture(List<DataReader> containers, string texturename, Device device)
+		private static Texture GetTexture(List<DataReader> containers, string texturename)
 		{
 			Texture t = null;
 			string[] extensions = new string[ModelData.SUPPORTED_TEXTURE_EXTENSIONS.Length + 1];
@@ -273,7 +263,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					string name = Path.ChangeExtension(texturename, null) + extension;
 					name = name.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
-					t = LoadTexture(containers, name, device);
+					t = LoadTexture(containers, name);
 
 					if (t != null)
 						break;
@@ -379,7 +369,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
             public Vector3D Normal;
         }
 
-        internal static MD3LoadResult Read3DModel(ref BoundingBoxSizes bbs, Dictionary<int, string> skins, Stream s, Device device, int frame, string filename, List<DataReader> containers)
+        internal static MD3LoadResult Read3DModel(ref BoundingBoxSizes bbs, Dictionary<int, string> skins, Stream s, int frame, string filename, List<DataReader> containers)
         {
             Stream stream_d;
             Stream stream_a;
@@ -579,7 +569,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                     }
                 }
 
-                CreateMesh(device, ref result, out_verts, out_polys);
+                CreateMesh(ref result, out_verts, out_polys);
                 result.Skins.Add("");
             }
             else
@@ -613,7 +603,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                         }
                     }
 
-                    CreateMesh(device, ref result, out_verts, out_polys);
+                    CreateMesh(ref result, out_verts, out_polys);
                     result.Skins.Add(skins.ContainsKey(k)?skins[k].ToLowerInvariant():string.Empty);
                 }
             }
@@ -625,7 +615,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
         #region ================== MD3
 
-        internal static MD3LoadResult ReadMD3Model(ref BoundingBoxSizes bbs, Dictionary<int, string> skins, Stream s, Device device, int frame)
+        internal static MD3LoadResult ReadMD3Model(ref BoundingBoxSizes bbs, Dictionary<int, string> skins, Stream s, int frame)
 		{
 			long start = s.Position;
 			MD3LoadResult result = new MD3LoadResult();
@@ -710,7 +700,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				if(!useskins)
 				{
 					//create mesh
-					CreateMesh(device, ref result, vertList, polyIndecesList);
+					CreateMesh(ref result, vertList, polyIndecesList);
 					result.Skins.Add("");
 				}
 				else
@@ -734,7 +724,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 							polyIndecesList.AddRange(group.Value[i].ToArray());
 						}
 
-						CreateMesh(device, ref result, vertListsPerTexture[group.Key], polyIndecesList);
+						CreateMesh(ref result, vertListsPerTexture[group.Key], polyIndecesList);
 						result.Skins.Add(group.Key.ToLowerInvariant());
 					}
 				}
@@ -831,7 +821,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 		#region ================== MD2
 
-		private static MD3LoadResult ReadMD2Model(ref BoundingBoxSizes bbs, Stream s, Device device, int frame, string framename)
+		private static MD3LoadResult ReadMD2Model(ref BoundingBoxSizes bbs, Stream s, int frame, string framename)
 		{
 			long start = s.Position;
 			MD3LoadResult result = new MD3LoadResult();
@@ -991,21 +981,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				}
 
 				//mesh
-				Mesh mesh = new Mesh(device, polyIndecesList.Count / 3, vertList.Count, MeshFlags.Use32Bit | MeshFlags.IndexBufferManaged | MeshFlags.VertexBufferManaged, vertexElements);
-
-				using(DataStream stream = mesh.LockVertexBuffer(LockFlags.None))
-				{
-					stream.WriteRange(vertList.ToArray());
-				}
-				mesh.UnlockVertexBuffer();
-
-				using(DataStream stream = mesh.LockIndexBuffer(LockFlags.None))
-				{
-					stream.WriteRange(polyIndecesList.ToArray());
-				}
-				mesh.UnlockIndexBuffer();
-
-				mesh.OptimizeInPlace(MeshOptimizeFlags.AttributeSort);
+				Mesh mesh = new Mesh(General.Map.Graphics, vertList.ToArray(), polyIndecesList.ToArray());
 
 				//store in result
 				result.Meshes.Add(mesh);
@@ -1019,7 +995,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 		#region ================== KVX
 
-		private static void ReadKVX(ModelData mde, Stream stream, Device device)
+		private static void ReadKVX(ModelData mde, Stream stream)
 		{
 			PixelColor[] palette = new PixelColor[256];
 			List<WorldVertex> verts = new List<WorldVertex>();
@@ -1176,37 +1152,14 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			// Calculate model radius
 			mde.Model.Radius = Math.Max(Math.Max(Math.Abs(minY), Math.Abs(maxY)), Math.Max(Math.Abs(minX), Math.Abs(maxX)));
 
-			// Create texture
-			MemoryStream memstream = new MemoryStream((4096 * 4) + 4096);
-			using(Bitmap bmp = CreateVoxelTexture(palette)) bmp.Save(memstream, ImageFormat.Bmp);
-			memstream.Seek(0, SeekOrigin.Begin);
-
-			Texture texture = Texture.FromStream(device, memstream, (int)memstream.Length, 64, 64, 0, Usage.None, Format.Unknown, Pool.Managed, Filter.Point, Filter.Box, 0);
-			memstream.Dispose();
-
-			// Add texture
-			mde.Model.Textures.Add(texture);
+			// Create texture new Texture(bmp.Width)
+            using(Bitmap bmp = CreateVoxelTexture(palette))
+            {
+                mde.Model.Textures.Add(new Texture(General.Map.Graphics, bmp));
+            }
 
 			// Create mesh
-			MeshFlags meshflags = MeshFlags.Managed;
-			if(indices.Count > ushort.MaxValue - 1) meshflags |= MeshFlags.Use32Bit;
-
-			Mesh mesh = new Mesh(device, facescount, verts.Count, meshflags, vertexElements);
-
-			DataStream mstream = mesh.VertexBuffer.Lock(0, 0, LockFlags.None);
-			mstream.WriteRange(verts.ToArray());
-			mesh.VertexBuffer.Unlock();
-
-			mstream = mesh.IndexBuffer.Lock(0, 0, LockFlags.None);
-
-			if(indices.Count > ushort.MaxValue - 1)
-				mstream.WriteRange(indices.ToArray());
-			else
-				foreach(int index in indices) mstream.Write((ushort)index);
-
-			mesh.IndexBuffer.Unlock();
-
-			mesh.OptimizeInPlace(MeshOptimizeFlags.AttributeSort);
+			Mesh mesh = new Mesh(General.Map.Graphics, verts.ToArray(), indices.ToArray());
 
 			// Add mesh
 			mde.Model.Meshes.Add(mesh);
@@ -1333,7 +1286,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 		#region ================== OBJ
 
-		private static MD3LoadResult ReadOBJModel(ref BoundingBoxSizes bbs, Dictionary<int, string> skins, Stream s, Device device, string name)
+		private static MD3LoadResult ReadOBJModel(ref BoundingBoxSizes bbs, Dictionary<int, string> skins, Stream s, string name)
 		{
 			MD3LoadResult result = new MD3LoadResult();
 
@@ -1473,7 +1426,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 							// start a gather new faces for the next mesh
 							if(worldvertices.Count > 0)
 							{
-								CreateMesh(device, ref result, worldvertices, polyindiceslist);
+								CreateMesh(ref result, worldvertices, polyindiceslist);
 								worldvertices.Clear();
 								polyindiceslist.Clear();
 							}
@@ -1494,7 +1447,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					linenum++;
 				}
 
-				CreateMesh(device, ref result, worldvertices, polyindiceslist);
+				CreateMesh(ref result, worldvertices, polyindiceslist);
 
 				// Overwrite internal textures with SurfaceSkin definitions if necessary
 				if (skins != null)
@@ -1690,7 +1643,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			return null;
 		}
 
-		private static Texture LoadTexture(List<DataReader> containers, string path, Device device)
+		private static Texture LoadTexture(List<DataReader> containers, string path)
 		{
 			if(string.IsNullOrEmpty(path)) return null;
 
@@ -1700,55 +1653,23 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			Texture texture = null;
 
 			//create texture
-			if(Path.GetExtension(path) == ".pcx") //pcx format requires special handling...
+			FileImageReader fir = new FileImageReader();
+			Bitmap bitmap = fir.ReadAsBitmap(ms);
+            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+			ms.Close();
+
+			if(bitmap != null)
 			{
-				FileImageReader fir = new FileImageReader();
-				Bitmap bitmap = fir.ReadAsBitmap(ms);
-
-				ms.Close();
-
-				if(bitmap != null)
-				{
-					BitmapData bmlock = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-					texture = new Texture(device, bitmap.Width, bitmap.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-
-					DataRectangle textureLock = texture.LockRectangle(0, LockFlags.None);
-					textureLock.Data.WriteRange(bmlock.Scan0, bmlock.Height * bmlock.Stride);
-
-					bitmap.UnlockBits(bmlock);
-					texture.UnlockRectangle(0);
-				}
-			}
-			else
-			{
-				texture = Texture.FromStream(device, ms);
-
-				ms.Close();
+                texture = new Texture(General.Map.Graphics, bitmap);
 			}
 
 			return texture;
 		}
 
-		private static void CreateMesh(Device device, ref MD3LoadResult result, List<WorldVertex> verts, List<int> indices)
+		private static void CreateMesh(ref MD3LoadResult result, List<WorldVertex> verts, List<int> indices)
 		{
 			//create mesh
-			Mesh mesh = new Mesh(device, indices.Count / 3, verts.Count, MeshFlags.Use32Bit | MeshFlags.IndexBufferManaged | MeshFlags.VertexBufferManaged, vertexElements);
-
-			TextureAddress ta = (TextureAddress)device.GetSamplerState(0, SamplerState.AddressU);
-
-			using (DataStream stream = mesh.LockVertexBuffer(LockFlags.None))
-			{
-				stream.WriteRange(verts.ToArray());
-			}
-			mesh.UnlockVertexBuffer();
-
-			using(DataStream stream = mesh.LockIndexBuffer(LockFlags.None))
-			{
-				stream.WriteRange(indices.ToArray());
-			}
-			mesh.UnlockIndexBuffer();
-
-			mesh.OptimizeInPlace(MeshOptimizeFlags.AttributeSort);
+			Mesh mesh = new Mesh(General.Map.Graphics, verts.ToArray(), indices.ToArray());
 
 			//store in result
 			result.Meshes.Add(mesh);

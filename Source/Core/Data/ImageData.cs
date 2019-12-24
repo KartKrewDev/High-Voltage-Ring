@@ -26,8 +26,6 @@ using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Windows;
-using SlimDX;
-using SlimDX.Direct3D9;
 
 #endregion
 
@@ -466,30 +464,14 @@ namespace CodeImp.DoomBuilder.Data
 				// Only do this when texture is not created yet
 				if(((texture == null) || (texture.Disposed)) && this.IsImageLoaded && !loadfailed)
 				{
-					Image img = bitmap;
+					Bitmap img = bitmap;
 					if(loadfailed) img = Properties.Resources.Failed;
-					
-					// Write to memory stream and read from memory
-					MemoryStream memstream = new MemoryStream((img.Size.Width * img.Size.Height * 4) + 4096);
-					img.Save(memstream, ImageFormat.Bmp);
-					memstream.Seek(0, SeekOrigin.Begin);
-					if(dynamictexture)
-					{
-						texture = Texture.FromStream(General.Map.Graphics.Device, memstream, (int)memstream.Length,
-										img.Size.Width, img.Size.Height, mipmaplevels, Usage.Dynamic, Format.A8R8G8B8,
-										Pool.Default, General.Map.Graphics.PostFilter, General.Map.Graphics.MipGenerateFilter, 0);
-					}
-					else
-					{
-						texture = Texture.FromStream(General.Map.Graphics.Device, memstream, (int)memstream.Length,
-										img.Size.Width, img.Size.Height, mipmaplevels, Usage.None, Format.Unknown,
-										Pool.Managed, General.Map.Graphics.PostFilter, General.Map.Graphics.MipGenerateFilter, 0);
-					}
-					memstream.Dispose();
+
+                    texture = new Texture(General.Map.Graphics, img);
 					
 					if(dynamictexture)
 					{
-						if((width != texture.GetLevelDescription(0).Width) || (height != texture.GetLevelDescription(0).Height))
+						if((width != texture.Width) || (height != texture.Height))
 							throw new Exception("Could not create a texture with the same size as the image.");
 					}
 
@@ -510,30 +492,7 @@ namespace CodeImp.DoomBuilder.Data
             {
 				if((texture != null) && !texture.Disposed)
 				{
-					// Lock the bitmap and texture
-					BitmapData bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-					DataRectangle texdata = texture.LockRectangle(0, LockFlags.Discard);
-
-					// Copy data
-					int* bp = (int*)bmpdata.Scan0.ToPointer();
-					int* tp = (int*)texdata.Data.DataPointer.ToPointer();
-					for(int y = 0; y < bmpdata.Height; y++)
-					{
-						for(int x = 0; x < bmpdata.Width; x++)
-						{
-							*tp = *bp;
-							bp++;
-							tp++;
-						}
-
-						// Skip extra data in texture
-						int extrapitch = (texdata.Pitch >> 2) - bmpdata.Width;
-						tp += extrapitch;
-					}
-
-					// Unlock
-					texture.UnlockRectangle(0);
-					bitmap.UnlockBits(bmpdata);
+                    General.Map.Graphics.SetPixels(texture, bitmap);
 				}
 			}
 		}

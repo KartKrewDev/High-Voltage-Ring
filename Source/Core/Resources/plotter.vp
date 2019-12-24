@@ -1,0 +1,16 @@
+
+in vec3 AttrPosition;
+in vec4 AttrColor;
+in vec2 AttrUV;
+
+out vec4 Color;
+out vec2 UV;
+
+uniform mat4 projection;
+
+void main()
+{
+	gl_Position = projection * vec4(AttrPosition, 1.0f);
+	Color = AttrColor;
+	UV = AttrUV;
+}

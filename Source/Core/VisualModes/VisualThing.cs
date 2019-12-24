@@ -24,8 +24,6 @@ using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.GZBuilder.Data; //mxd
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
-using SlimDX;
-using SlimDX.Direct3D9;
 using Plane = CodeImp.DoomBuilder.Geometry.Plane;
 using CodeImp.DoomBuilder.GZBuilder;
 
@@ -33,7 +31,7 @@ using CodeImp.DoomBuilder.GZBuilder;
 
 namespace CodeImp.DoomBuilder.VisualModes
 {
-	public abstract class VisualThing : IVisualPickable, ID3DResource, IDisposable
+	public abstract class VisualThing : IVisualPickable, IRenderResource, IDisposable
 	{
 		#region ================== Constants
 
@@ -127,7 +125,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				return new Vector3(position_v3.X, position_v3.Y, position_v3.Z + thingheight / 2f); 
 			} 
 		}
-		public Vector3D CenterV3D { get { return D3DDevice.V3D(Center); } }
+		public Vector3D CenterV3D { get { return RenderDevice.V3D(Center); } }
 		public float LocalCenterZ { get { return thingheight / 2f; } } //mxd
 		public Vector3 PositionV3 { get { return position_v3; } }
 		public Vector3D[] BoundingBox { get { return boundingBox; } }
@@ -273,7 +271,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		public void SetPosition(Vector3D pos)
 		{
-			position_v3 = D3DDevice.V3(pos); //mxd
+			position_v3 = RenderDevice.V3(pos); //mxd
 			position = Matrix.Translation(position_v3);
 			updategeo = true;
 			updatecage = true; //mxd
@@ -513,6 +511,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// This updates the visual thing
 		public virtual void Update()
 		{
+            RenderDevice graphics = General.Map.Graphics;
+
 			// Do we need to update the geometry buffer?
 			if(updategeo)
 			{
@@ -527,14 +527,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 					for(int i = 0; i < vertices.Length; i++)
 					{
 						// Make a new buffer
-						geobuffers[i] = new VertexBuffer(General.Map.Graphics.Device, WorldVertex.Stride * vertices[i].Length,
-													 Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
+						geobuffers[i] = new VertexBuffer();
 
-						// Fill the buffer
-						DataStream bufferstream = geobuffers[i].Lock(0, WorldVertex.Stride * vertices[i].Length, LockFlags.Discard);
-						bufferstream.WriteRange(vertices[i]);
-						geobuffers[i].Unlock();
-						bufferstream.Dispose();
+                        // Fill the buffer
+                        graphics.SetBufferData(geobuffers[i], vertices[i]);
 					}
 				}
 				
@@ -618,9 +614,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 				// Create buffer
 				WorldVertex[] cv = cageverts.ToArray();
 				cagelength = cv.Length / 2;
-				cagebuffer = new VertexBuffer(General.Map.Graphics.Device, WorldVertex.Stride * cv.Length, Usage.WriteOnly | Usage.Dynamic, VertexFormat.None, Pool.Default);
-				cagebuffer.Lock(0, WorldVertex.Stride * cv.Length, LockFlags.None).WriteRange(cv);
-				cagebuffer.Unlock();
+				cagebuffer = new VertexBuffer();
+                graphics.SetBufferData(cagebuffer, cv);
 
 				// Done
 				updatecage = false;
@@ -673,17 +668,19 @@ namespace CodeImp.DoomBuilder.VisualModes
                     if (ld.LightDef != GZGeneral.LightDef.POINT_SUBTRACTIVE) // normal, additive, attenuated
                     {
                         //lightColor.Alpha used in shader to perform some calculations based on light type
-                        lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
+                        lightColor = new Color4(
                             thing.Args[0] / DYNLIGHT_INTENSITY_SCALER,
                             thing.Args[1] / DYNLIGHT_INTENSITY_SCALER,
-                            thing.Args[2] / DYNLIGHT_INTENSITY_SCALER);
+                            thing.Args[2] / DYNLIGHT_INTENSITY_SCALER,
+                            (float)ld.LightRenderStyle / 100.0f);
                     }
                     else // negative
                     {
-                        lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
+                        lightColor = new Color4(
                             thing.Args[0] / SUBLIGHT_INTENSITY_SCALER,
                             thing.Args[1] / SUBLIGHT_INTENSITY_SCALER,
-                            thing.Args[2] / SUBLIGHT_INTENSITY_SCALER);
+                            thing.Args[2] / SUBLIGHT_INTENSITY_SCALER,
+                            (float)ld.LightRenderStyle / 100.0f);
                     }
                 }
                 else
@@ -706,17 +703,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 
                     if (ld.LightDef != GZGeneral.LightDef.SPOT_SUBTRACTIVE)
                     {
-                        lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
+                        lightColor = new Color4(
                             c1 / DYNLIGHT_INTENSITY_SCALER,
                             c2 / DYNLIGHT_INTENSITY_SCALER,
-                            c3 / DYNLIGHT_INTENSITY_SCALER);
+                            c3 / DYNLIGHT_INTENSITY_SCALER,
+                            (float)ld.LightRenderStyle / 100.0f);
                     }
                     else
                     {
-                        lightColor = new Color4((float)ld.LightRenderStyle / 100.0f,
+                        lightColor = new Color4(
                             c1 / SUBLIGHT_INTENSITY_SCALER,
                             c2 / SUBLIGHT_INTENSITY_SCALER,
-                            c3 / SUBLIGHT_INTENSITY_SCALER);
+                            c3 / SUBLIGHT_INTENSITY_SCALER,
+                            (float)ld.LightRenderStyle / 100.0f);
                     }
                 }
 
@@ -743,14 +742,15 @@ namespace CodeImp.DoomBuilder.VisualModes
 			{ 
 				if(lightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED)
 				{
-					lightColor = new Color4((float)ld.LightRenderStyle / 100.0f, 
+					lightColor = new Color4(
 						thing.Args[1] / DYNLIGHT_INTENSITY_SCALER,
 						thing.Args[2] / DYNLIGHT_INTENSITY_SCALER,
-						thing.Args[3] / DYNLIGHT_INTENSITY_SCALER);
+						thing.Args[3] / DYNLIGHT_INTENSITY_SCALER,
+                        (float)ld.LightRenderStyle / 100.0f);
 				}
 				else
 				{
-					lightColor = new Color4((float)ld.LightRenderStyle / 100.0f, 0.5f, 0.5f, 0.5f);
+					lightColor = new Color4(0.5f, 0.5f, 0.5f, (float)ld.LightRenderStyle / 100.0f);
 				}
 					
 				lightPrimaryRadius = (thing.Args[0] * 8);
@@ -767,7 +767,7 @@ namespace CodeImp.DoomBuilder.VisualModes
             GZGeneral.LightData ld = light.Type;
 
             //apply settings
-			lightColor = new Color4((float)ld.LightRenderStyle / 100.0f, light.Color.Red, light.Color.Green, light.Color.Blue);
+			lightColor = new Color4(light.Color.Red, light.Color.Green, light.Color.Blue, (float)ld.LightRenderStyle / 100.0f);
 			Vector2D o = new Vector2D(light.Offset.X, light.Offset.Y).GetRotated(thing.Angle - Angle2D.PIHALF);
 			lightOffset = new Vector3(o.x, o.y, light.Offset.Z);
 			lightType = light.Type;

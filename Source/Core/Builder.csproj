@@ -11,7 +11,7 @@
     <RootNamespace>CodeImp.DoomBuilder</RootNamespace>
     <AssemblyName>Builder</AssemblyName>
     <StartupObject>CodeImp.DoomBuilder.General</StartupObject>
-    <ApplicationIcon>Resources\GZDB2.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\UDB2.ico</ApplicationIcon>
     <Win32Resource>
     </Win32Resource>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -20,9 +20,24 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -220,6 +235,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Color3.cs" />
+    <Compile Include="Rendering\Color4.cs" />
+    <Compile Include="Rendering\IndexBuffer.cs" />
+    <Compile Include="Rendering\IRenderResource.cs" />
+    <Compile Include="Rendering\Matrix.cs" />
+    <Compile Include="Rendering\Mesh.cs" />
+    <Compile Include="Rendering\RenderDevice.cs" />
+    <Compile Include="Rendering\Texture.cs" />
+    <Compile Include="Rendering\Vector2.cs" />
+    <Compile Include="Rendering\Vector3.cs" />
+    <Compile Include="Rendering\Vector4.cs" />
+    <Compile Include="Rendering\VertexBuffer.cs" />
     <Compile Include="Windows\ThingStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -543,15 +570,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Presentation.cs" />
-    <Compile Include="Rendering\Display2DShader.cs" />
     <Compile Include="Rendering\ColorCollection.cs" />
     <Compile Include="Rendering\ColorSetting.cs" />
-    <Compile Include="Rendering\D3DDevice.cs" />
     <Compile Include="Data\ImageData.cs" />
-    <Compile Include="Rendering\D3DShader.cs" />
     <Compile Include="Rendering\FlatQuad.cs" />
     <Compile Include="Rendering\FlatVertex.cs" />
-    <Compile Include="Rendering\ID3DResource.cs" />
     <Compile Include="Rendering\IRenderer2D.cs" />
     <Compile Include="Rendering\IRenderer3D.cs" />
     <Compile Include="Rendering\RenderLayers.cs" />
@@ -564,10 +587,7 @@
     <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Rendering\Renderer2D.cs" />
     <Compile Include="Rendering\Renderer3D.cs" />
-    <Compile Include="Rendering\ShaderManager.cs" />
-    <Compile Include="Rendering\Things2DShader.cs" />
     <Compile Include="VisualModes\VisualSector.cs" />
-    <Compile Include="Rendering\World3DShader.cs" />
     <Compile Include="Rendering\WorldVertex.cs" />
     <Compile Include="ZDoom\DecorateActorStructure.cs" />
     <Compile Include="ZDoom\DecorateStateGoto.cs" />
@@ -590,10 +610,6 @@
     <Reference Include="SharpCompress, Version=0.20.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Build\SharpCompress.dll</HintPath>
-    </Reference>
-    <Reference Include="SlimDX, Version=v4.0.30319, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\SlimDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -648,7 +664,17 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <EmbeddedResource Include="Resources\display2d.vp" />
+    <EmbeddedResource Include="Resources\display2d_fsaa.fp" />
+    <EmbeddedResource Include="Resources\display2d_fullbright.fp" />
+    <EmbeddedResource Include="Resources\display2d_normal.fp" />
     <None Include="Resources\MissingTexture.png" />
+    <EmbeddedResource Include="Resources\plotter.fp" />
+    <EmbeddedResource Include="Resources\plotter.vp" />
+    <EmbeddedResource Include="Resources\things2d.vp" />
+    <EmbeddedResource Include="Resources\things2d_fill.fp" />
+    <EmbeddedResource Include="Resources\things2d_sprite.fp" />
+    <EmbeddedResource Include="Resources\things2d_thing.fp" />
     <None Include="Resources\UnknownImage.png" />
     <None Include="Resources\treeview.png" />
     <None Include="Resources\Folder.png" />
@@ -664,6 +690,21 @@
     <None Include="Resources\Status2.png" />
     <None Include="Resources\Status0.png" />
     <None Include="Resources\ColorPick.png" />
+    <EmbeddedResource Include="Resources\world3d_constant_color.fp" />
+    <EmbeddedResource Include="Resources\world3d_customvertexcolor.vp" />
+    <EmbeddedResource Include="Resources\world3d_customvertexcolor_fog.vp" />
+    <EmbeddedResource Include="Resources\world3d_fullbright.fp" />
+    <EmbeddedResource Include="Resources\world3d_fullbright_highlight.fp" />
+    <EmbeddedResource Include="Resources\world3d_lightpass.fp" />
+    <EmbeddedResource Include="Resources\world3d_lightpass.vp" />
+    <EmbeddedResource Include="Resources\world3d_main.fp" />
+    <EmbeddedResource Include="Resources\world3d_main.vp" />
+    <EmbeddedResource Include="Resources\world3d_main_fog.fp" />
+    <EmbeddedResource Include="Resources\world3d_main_highlight.fp" />
+    <EmbeddedResource Include="Resources\world3d_main_highlight_fog.fp" />
+    <EmbeddedResource Include="Resources\world3d_skybox.fp" />
+    <EmbeddedResource Include="Resources\world3d_skybox.vp" />
+    <EmbeddedResource Include="Resources\world3d_vertex_color.fp" />
     <None Include="Resources\Zoom.png" />
     <None Include="Resources\Properties.png" />
     <None Include="Resources\NewMap2.png" />
@@ -753,15 +794,13 @@
       <DependentUpon>VertexInfoPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Actions.cfg" />
-    <EmbeddedResource Include="Resources\display2d.fx" />
     <EmbeddedResource Include="Resources\ThingTexture2D.png" />
-    <EmbeddedResource Include="Resources\things2d.fx" />
-    <EmbeddedResource Include="Resources\world3d.fx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\MissingTexture3D.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\UDB2.ico" />
     <None Include="app.manifest" />
     <EmbeddedResource Include="Controls\Scripting\FindUsagesControl.resx">
       <DependentUpon>FindUsagesControl.cs</DependentUpon>
@@ -1102,7 +1141,7 @@
     <Compile Include="Windows\LinedefEditFormUDMF.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Windows\LinedefEditFormUDMF.designer.cs">
+    <Compile Include="Windows\LinedefEditFormUDMF.Designer.cs">
       <DependentUpon>LinedefEditFormUDMF.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\MenuSection.cs" />
@@ -1260,8 +1299,10 @@
     <None Include="Resources\Angle5.png" />
     <None Include="Resources\Angle6.png" />
     <None Include="Resources\Angle7.png" />
+    <None Include="Resources\AboutBack.png" />
     <Content Include="Resources\DB2.ico" />
     <None Include="Resources\GZDB2.ico" />
+    <None Include="Resources\UDB.ico" />
     <None Include="Resources\fog.png" />
     <None Include="Resources\GZDB_Logo_small.png" />
     <None Include="Resources\InfoLine.png" />
@@ -1506,47 +1547,18 @@
       <DependentUpon>VertexEditForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <PropertyGroup>
     <PreBuildEvent>echo Current Output Directory: %25cd%25
 echo Copying platform-appropriate DevIL.dll file.
 copy /Y ..\DevIL\$(PlatformName)\DevIL.dll .\
-echo Copying platform-appropriate SlimDX.dll file.
-copy /Y ..\SlimDX\$(PlatformName)\SlimDX.dll .\
 echo Copying platform-appropriate Updater.ini.
 copy /Y ..\UpdaterConfig\Updater-$(PlatformName).ini Updater.ini</PreBuildEvent>
-    <PostBuildEvent>if exist "%25VSAPPIDDIR%25" goto tools17
-if exist "%25VS140COMNTOOLS%25" goto tools140 
-if exist "%25VS120COMNTOOLS%25" goto tools120 
-if exist "%25VS110COMNTOOLS%25" goto tools110 
-if exist "%25VS100COMNTOOLS%25" goto tools100
-if exist "%25VS90COMNTOOLS%25" goto tools90 
-
-:tools17
-call "%25VSAPPIDDIR%25..\Tools\vsdevcmd" -arch=x86
-goto end
-
-:tools140
-call "%25VS140COMNTOOLS%25vsvars32.bat"
-goto end
-
-:tools120
-call "%25VS120COMNTOOLS%25vsvars32.bat"
-goto end
-
-:tools110
-call "%25VS110COMNTOOLS%25vsvars32.bat"
-goto end
-
-:tools100
-call "%25VS100COMNTOOLS%25vsvars32.bat"
-goto end
-
-:tools90
-call "%25VS90COMNTOOLS%25vsvars32.bat"
-goto end
-
-:end
-editbin.exe /NOLOGO /LARGEADDRESSAWARE "$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
