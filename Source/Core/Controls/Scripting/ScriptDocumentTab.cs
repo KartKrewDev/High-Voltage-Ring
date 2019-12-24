@@ -381,7 +381,7 @@ namespace CodeImp.DoomBuilder.Controls
 			
 			// Text must be exactly the same
 			long hash = MurmurHash2.Hash(Text);
-			bool applyfolding = General.Settings.ScriptShowFolding && (editor.Scintilla.Lexer == Lexer.Cpp /*|| editor.Scintilla.Lexer == Lexer.CppNoCase*/);
+			bool applyfolding = General.Settings.ScriptShowFolding && (editor.Scintilla.Lexer == Lexer.Cpp || (int)editor.Scintilla.Lexer == 35); // 35 - custom CPP case insensitive style lexer
 			if(hash == settings.Hash)
 			{
 				// Restore fold levels
@@ -402,7 +402,7 @@ namespace CodeImp.DoomBuilder.Controls
 
 		internal void SetDefaultViewSettings()
 		{
-			if(General.Settings.ScriptShowFolding && (editor.Scintilla.Lexer == Lexer.Cpp /*|| editor.Scintilla.Lexer == Lexer.CppNoCase*/))
+			if(General.Settings.ScriptShowFolding && (editor.Scintilla.Lexer == Lexer.Cpp || (int)editor.Scintilla.Lexer == 35)) // 35 - custom CPP case insensitive style lexer
 				ApplyFolding(GetFoldLevels());
 		}
 

@@ -479,7 +479,7 @@ namespace CodeImp.DoomBuilder.Controls
 			handler.SetKeywords(lexercfg, lexername);
 
 			// Setup folding (https://github.com/jacobslusser/ScintillaNET/wiki/Automatic-Code-Folding)
-			if(General.Settings.ScriptShowFolding && (scriptconfig.Lexer == Lexer.Cpp /*|| scriptconfig.Lexer == Lexer.CppNoCase*/))
+			if(General.Settings.ScriptShowFolding && (scriptconfig.Lexer == Lexer.Cpp || (int)scriptconfig.Lexer == 35)) // 35 - custom CPP case insensitive style lexer
 			{
 				// Instruct the lexer to calculate folding
 				scriptedit.SetProperty("fold", "1");
