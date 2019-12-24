@@ -1655,7 +1655,6 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			//create texture
 			FileImageReader fir = new FileImageReader();
 			Bitmap bitmap = fir.ReadAsBitmap(ms);
-            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
 			ms.Close();
 
 			if(bitmap != null)

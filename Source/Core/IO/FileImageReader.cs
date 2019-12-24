@@ -77,7 +77,10 @@ namespace CodeImp.DoomBuilder.IO
 
     internal unsafe class FileImageReader : IImageReader
 	{
-#region ================== APIs
+        #region ================== APIs
+
+        [DllImport("devil.dll")]
+        private static extern void ilEnable(int num);
 
 		[DllImport("devil.dll")]
 		private static extern void ilGenImages(int num, IntPtr images);
@@ -87,6 +90,9 @@ namespace CodeImp.DoomBuilder.IO
 
 		[DllImport("devil.dll")]
 		private static extern void ilDeleteImages(int num, IntPtr images);
+
+        [DllImport("devil.dll")]
+        private static extern void ilOriginFunc(int func);
 
 		[DllImport("devil.dll")]
 		private static extern bool ilLoadL(uint type, IntPtr lump, uint size);
@@ -102,17 +108,22 @@ namespace CodeImp.DoomBuilder.IO
 
 		[DllImport("devil.dll")]
 		private static extern uint ilCopyPixels(uint xoff, uint yoff, uint zoff, uint width, uint height, uint depth, uint format, uint type, IntPtr data);
-		
-		//mxd. Look's like we don't need many of those...
-		//  Matches OpenGL's right now.
-		//! Data formats \link Formats Formats\endlink
-		//private const int IL_COLOUR_INDEX     = 0x1900;
-		//private const int IL_COLOR_INDEX      = 0x1900;
-		//private const int IL_ALPHA			= 0x1906;
-		//private const int IL_RGB              = 0x1907;
-		//private const int IL_RGBA             = 0x1908;
-		//private const int IL_BGR              = 0x80E0;
-		private const int IL_BGRA             = 0x80E1;
+
+        //
+        private const int IL_ORIGIN_SET = 0x0600;
+        private const int IL_ORIGIN_LOWER_LEFT = 0x0601;
+        private const int IL_ORIGIN_UPPER_LEFT = 0x0602;
+
+        //mxd. Look's like we don't need many of those...
+        //  Matches OpenGL's right now.
+        //! Data formats \link Formats Formats\endlink
+        //private const int IL_COLOUR_INDEX     = 0x1900;
+        //private const int IL_COLOR_INDEX      = 0x1900;
+        //private const int IL_ALPHA			= 0x1906;
+        //private const int IL_RGB              = 0x1907;
+        //private const int IL_RGBA             = 0x1908;
+        //private const int IL_BGR              = 0x80E0;
+        private const int IL_BGRA             = 0x80E1;
 		//private const int IL_LUMINANCE        = 0x1909;
 		//private const int IL_LUMINANCE_ALPHA  = 0x190A;
 
@@ -496,6 +507,9 @@ namespace CodeImp.DoomBuilder.IO
                     imagebytes = bytes;
                 }
                 else bytes = imagebytes;
+
+                ilEnable(IL_ORIGIN_SET);
+                ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
 
                 fixed (byte* bptr = bytes)
 				{
