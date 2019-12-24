@@ -206,7 +206,7 @@ namespace CodeImp.DoomBuilder.Windows
 
 		private void newissue_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) 
 		{
-			try { System.Diagnostics.Process.Start("https://github.com/jewalky/GZDoom-Builder-Bugfix/issues"); } 
+			try { System.Diagnostics.Process.Start("https://github.com/jewalky/UltimateDoomBuilder/issues"); } 
 			catch { MessageBox.Show("Unable to open URL..."); }
 			newissue.LinkVisited = true;
 		}
