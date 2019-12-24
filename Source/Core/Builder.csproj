@@ -800,6 +800,7 @@
     <EmbeddedResource Include="Resources\MissingTexture3D.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Updater.ico" />
     <None Include="Resources\UDB2.ico" />
     <None Include="app.manifest" />
     <EmbeddedResource Include="Controls\Scripting\FindUsagesControl.resx">

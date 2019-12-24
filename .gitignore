@@ -1,6 +1,7 @@
 /GIT_Build
 /Release
 obj
+bin
 /Build/Builder.xml
 /Build/Builder.exe
 /Build/Refmanual.chm
