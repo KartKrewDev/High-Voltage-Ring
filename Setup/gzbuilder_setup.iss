@@ -8,8 +8,8 @@ AppPublisher=ZZYZX
 AppPublisherURL=https://forum.zdoom.org/memberlist.php?mode=viewprofile&u=7527
 AppSupportURL=https://forum.zdoom.org/viewtopic.php?f=232&t=66745
 AppUpdatesURL=https://devbuilds.drdteam.org/ultimatedoombuilder/
-DefaultDirName={pf}\GZDoom Builder
-DefaultGroupName=GZDoom Builder
+DefaultDirName={pf}\Ultimate Doom Builder
+DefaultGroupName=Ultimate Doom Builder
 AllowNoIcons=true
 LicenseFile=..\LICENSE.txt
 OutputDir=..\Release
@@ -18,7 +18,7 @@ Compression=lzma/ultra64
 SolidCompression=true
 SourceDir=..\Build
 SetupLogging=false
-AppMutex=gzdoombuilder
+AppMutex=ultimatedoombuilder
 PrivilegesRequired=admin
 ShowLanguageDialog=no
 LanguageDetectionMethod=none
@@ -42,6 +42,7 @@ Source: Updater.exe; DestDir: {app}; Flags: ignoreversion
 Source: Updater.ini; DestDir: {app}; Flags: ignoreversion
 Source: Refmanual.chm; DestDir: {app}; Flags: ignoreversion
 Source: DevIL.dll; DestDir: {app}; Flags: ignoreversion
+Source: BuilderNative.dll; DestDir: {app}; Flags: ignoreversion
 Source: SharpCompress.dll; DestDir: {app}; Flags: ignoreversion
 Source: ScintillaNET.dll; DestDir: {app}; Flags: ignoreversion
 Source: TabControlEX.dll; DestDir: {app}; Flags: ignoreversion
@@ -66,9 +67,9 @@ Source: Sprites\*; DestDir: {app}\Sprites; Flags: ignoreversion recursesubdirs
 Source: Textures\*; DestDir: {app}\Textures; Flags: ignoreversion
 
 [Icons]
-Name: {group}\GZDoom Builder; Filename: {app}\Builder.exe
-Name: {group}\{cm:UninstallProgram,GZDoom Builder}; Filename: {uninstallexe}
-Name: {commondesktop}\GZDoom Builder; Filename: {app}\Builder.exe; Tasks: desktopicon
+Name: {group}\Ultimate Doom Builder; Filename: {app}\Builder.exe
+Name: {group}\{cm:UninstallProgram,Ultimate Doom Builder}; Filename: {uninstallexe}
+Name: {commondesktop}\Ultimate Doom Builder; Filename: {app}\Builder.exe; Tasks: desktopicon
 
 [UninstallDelete]
 Name: {app}; Type: filesandordirs
@@ -78,7 +79,7 @@ Name: {app}\Builder.pdb; Type: files
 Name: {app}\Builder.xml; Type: files
 
 [Registry]
-Root: HKLM; Subkey: SOFTWARE\MaxED\GZDoom Builder\; ValueType: string; ValueName: Location; ValueData: {app}; Flags: uninsdeletevalue
+Root: HKLM; Subkey: SOFTWARE\UDB\Ultimate Doom Builder\; ValueType: string; ValueName: Location; ValueData: {app}; Flags: uninsdeletevalue
 
 [Messages]
 ReadyLabel2a=Continue to begin with the installation, or click Back if you want to review or change any settings.
