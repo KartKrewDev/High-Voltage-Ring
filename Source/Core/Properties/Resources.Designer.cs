@@ -19,7 +19,7 @@ namespace CodeImp.DoomBuilder.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -66,6 +66,16 @@ namespace CodeImp.DoomBuilder.Properties {
         internal static System.Drawing.Bitmap About {
             get {
                 object obj = ResourceManager.GetObject("About", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AboutBack {
+            get {
+                object obj = ResourceManager.GetObject("AboutBack", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -666,16 +676,6 @@ namespace CodeImp.DoomBuilder.Properties {
         internal static System.Drawing.Icon GZDB2 {
             get {
                 object obj = ResourceManager.GetObject("GZDB2", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon UDB {
-            get {
-                object obj = ResourceManager.GetObject("UDB", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -1637,6 +1637,16 @@ namespace CodeImp.DoomBuilder.Properties {
             get {
                 object obj = ResourceManager.GetObject("treeview", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon UDB2 {
+            get {
+                object obj = ResourceManager.GetObject("UDB2", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
