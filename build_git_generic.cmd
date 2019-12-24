@@ -16,15 +16,21 @@ ECHO.
 SET STUDIODIR=c:\Program Files (x86)\Microsoft Visual Studio 14.0
 SET HHWDIR=c:\Program Files (x86)\HTML Help Workshop
 SET SEVENZIPDIR=c:\Program Files\7-Zip
+SET ISSDIR=c:\Program Files (x86)\Inno Setup 6
 
 IF NOT DEFINED PLATFORM SET PLATFORM=x86
+
+SET DB_OUTDIR="%CD%\GIT_Build"
+IF DEFINED BUILD_RELEASE SET DB_OUTDIR="%CD%\Release"
+
+ECHO %DB_OUTDIR%
 
 CALL "%STUDIODIR%\Common7\Tools\vsdevcmd.bat" %PLATFORM%
 ECHO.
 ECHO Building for platform %PLATFORM%
 ECHO.
 
-MKDIR "GIT_Build"
+MKDIR %DB_OUTDIR%
 
 git.exe checkout "Source/Core/Properties/AssemblyInfo.cs" > NUL
 git.exe checkout "Source/Plugins/BuilderModes/Properties/AssemblyInfo.cs" > NUL
@@ -32,15 +38,15 @@ git.exe checkout "Source/Plugins/BuilderModes/Properties/AssemblyInfo.cs" > NUL
 ECHO.
 ECHO Writing GIT log file...
 ECHO.
-IF EXIST "GIT_Build\Changelog.xml" DEL /F /Q "GIT_Build\Changelog.xml" > NUL
+IF EXIST "%DB_OUTDIR%\Changelog.xml" DEL /F /Q "%DB_OUTDIR%\Changelog.xml" > NUL
 (
 echo [OB]?xml version="1.0" encoding="UTF-8"?[CB]
 echo [OB]log[CB]
 git.exe log master --since=2012-04-17 --pretty=format:"[OB]logentry commit=\"%%h\"[CB]%%n[OB]author[CB]%%an[OB]/author[CB]%%n[OB]date[CB]%%aI[OB]/date[CB]%%n[OB]msg[CB]%%B[OB]/msg[CB]%%n[OB]/logentry[CB]"
 echo [OB]/log[CB]
-) >"GIT_Build\Changelog.xml"
+) >"%DB_OUTDIR%\Changelog.xml"
 IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
-IF NOT EXIST "GIT_Build\Changelog.xml" GOTO FILEFAIL
+IF NOT EXIST "%DB_OUTDIR%\Changelog.xml" GOTO FILEFAIL
 
 ECHO.
 ECHO Compiling HTML Help file...
@@ -220,31 +226,46 @@ IF NOT EXIST "Build\Plugins\VisplaneExplorer.dll" GOTO FILEFAIL
 ECHO.
 ECHO Creating changelog...
 ECHO.
-ChangelogMaker.exe "GIT_Build\Changelog.xml" "Build" "m-x-d>MaxED" %REVISIONNUMBER%
+ChangelogMaker.exe "%DB_OUTDIR%\Changelog.xml" "Build" "m-x-d>MaxED" %REVISIONNUMBER%
 IF %ERRORLEVEL% NEQ 0 GOTO LOGFAIL
 
 ECHO.
 ECHO Packing release...
 ECHO.
-SET DEL_PATHSPEC="GIT_Build\UltimateDoomBuilder*-%PLATFORM%.7z"
-IF EXIST %DEL_PATHSPEC% DEL /F /Q %DEL_PATHSPEC% > NUL
-IF EXIST "GIT_Build\UDB_Updater-%PLATFORM%.7z" DEL /F /Q "GIT_Build\UDB_Updater-%PLATFORM%.7z" > NUL
-"%SEVENZIPDIR%\7z" a .\GIT_Build\udb.7z .\Build\* -xr!*.xml -xr!JetBrains.Profiler.Core.Api.dll -xr!ScintillaNET.3.5.pdb -x!Setup
-"%SEVENZIPDIR%\7z" a .\GIT_Build\UDB_Updater-%PLATFORM%.7z .\Build\Updater.exe .\Build\Updater.ini
-IF %ERRORLEVEL% NEQ 0 GOTO PACKFAIL
-IF NOT EXIST .\GIT_Build\udb.7z GOTO FILEFAIL
-IF NOT EXIST .\GIT_Build\UDB_Updater-%PLATFORM%.7z GOTO FILEFAIL
 
-REN "GIT_Build\udb.7z" UltimateDoomBuilder-r%REVISIONNUMBER%-%PLATFORM%.7z
+IF NOT DEFINED BUILD_RELEASE GOTO PACKGIT
+
+set DEL_PATHSPEC="%DB_OUTDIR%\UltimateDoomBuilder-Setup*-%PLATFORM%.exe"
+IF EXIST %DEL_PATHSPEC% DEL /F /Q %DEL_PATHSPEC% > NUL
+"%ISSDIR%\iscc.exe" "Setup\gzbuilder_setup.iss"
+IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+IF NOT EXIST "%DB_OUTDIR%\Setup.exe" GOTO FILEFAIL
+
+REN "%DB_OUTDIR%\Setup.exe" "UltimateDoomBuilder-Setup-R%REVISIONNUMBER%-%PLATFORM%.exe"
+
+GOTO BUILDDONE
+
+:PACKGIT
+SET DEL_PATHSPEC="%DB_OUTDIR%\UltimateDoomBuilder*-%PLATFORM%.7z"
+IF EXIST %DEL_PATHSPEC% DEL /F /Q %DEL_PATHSPEC% > NUL
+IF EXIST "%DB_OUTDIR%\UDB_Updater-%PLATFORM%.7z" DEL /F /Q "%DB_OUTDIR%\UDB_Updater-%PLATFORM%.7z" > NUL
+"%SEVENZIPDIR%\7z" a %DB_OUTDIR%\udb.7z .\Build\* -xr!*.xml -xr!JetBrains.Profiler.Core.Api.dll -xr!ScintillaNET.3.5.pdb -x!Setup
+"%SEVENZIPDIR%\7z" a %DB_OUTDIR%\UDB_Updater-%PLATFORM%.7z .\Build\Updater.exe .\Build\Updater.ini
+IF %ERRORLEVEL% NEQ 0 GOTO PACKFAIL
+IF NOT EXIST %DB_OUTDIR%\udb.7z GOTO FILEFAIL
+IF NOT EXIST %DB_OUTDIR%\UDB_Updater-%PLATFORM%.7z GOTO FILEFAIL
+
+REN "%DB_OUTDIR%\udb.7z" UltimateDoomBuilder-r%REVISIONNUMBER%-%PLATFORM%.7z
 
 IF EXIST "Build\Changelog.txt" DEL /F /Q "Build\Changelog.txt" > NUL
 
-@ECHO %REVISIONNUMBER%> .\GIT_Build\Version.txt
-@ (ECHO %REVISIONNUMBER% && ECHO %EXEREVISIONNUMBER%) > .\GIT_Build\Versions.txt
+@ECHO %REVISIONNUMBER%> %DB_OUTDIR%\Version.txt
+@ (ECHO %REVISIONNUMBER% && ECHO %EXEREVISIONNUMBER%) > %DB_OUTDIR%\Versions.txt
 
 git.exe checkout "Source\Core\Properties\AssemblyInfo.cs" > NUL
 git.exe checkout "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" > NUL
 
+:BUILDDONE
 ECHO.
 ECHO.     BUILD DONE !
 ECHO.

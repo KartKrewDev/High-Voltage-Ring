@@ -2,18 +2,18 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 [Setup]
-AppName=GZDoom Builder
-AppVerName=GZDoom Builder 2.4
-AppPublisher=MaxED
+AppName=Ultimate Doom Builder
+AppVerName=Ultimate Doom Builder
+AppPublisher=ZZYZX
 AppPublisherURL=http://forum.zdoom.org/memberlist.php?mode=viewprofile&u=7012
 AppSupportURL=http://forum.zdoom.org/viewtopic.php?f=3&t=32392
 AppUpdatesURL=http://devbuilds.drdteam.org/doombuilder2-gzdb/
 DefaultDirName={pf}\GZDoom Builder
 DefaultGroupName=GZDoom Builder
 AllowNoIcons=true
-InfoBeforeFile=..\LICENSE.txt
+LicenseFile=..\LICENSE.txt
 OutputDir=..\Release
-OutputBaseFilename=GZDB-Bugfix Setup
+OutputBaseFilename=Setup
 Compression=lzma/ultra64
 SolidCompression=true
 SourceDir=..\Build
@@ -22,7 +22,7 @@ AppMutex=gzdoombuilder
 PrivilegesRequired=admin
 ShowLanguageDialog=no
 LanguageDetectionMethod=none
-MinVersion=0,5.01.2600
+MinVersion=0,6.0
 UninstallDisplayIcon={app}\Updater.exe
 WizardImageFile=..\Setup\WizModernImage-IS.bmp
 WizardSmallImageFile=..\Setup\WizModernSmallImage-IS.bmp
@@ -35,7 +35,6 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 
 [Files]
 Source: Setup\dotnetfx35setup.exe; DestDir: {tmp}; Flags: dontcopy
-Source: Setup\dxwebsetup.exe; DestDir: {tmp}; Flags: dontcopy
 Source: Setup\vcredist_x86.exe; DestDir: {tmp}; Flags: dontcopy
 Source: Builder.exe; DestDir: {app}; Flags: ignoreversion
 Source: GZBuilder.default.cfg; DestDir: {app}; Flags: ignoreversion
@@ -43,9 +42,8 @@ Source: Updater.exe; DestDir: {app}; Flags: ignoreversion
 Source: Updater.ini; DestDir: {app}; Flags: ignoreversion
 Source: Refmanual.chm; DestDir: {app}; Flags: ignoreversion
 Source: DevIL.dll; DestDir: {app}; Flags: ignoreversion
-Source: SharpCompress.3.5.dll; DestDir: {app}; Flags: ignoreversion
-Source: ScintillaNET.3.5.dll; DestDir: {app}; Flags: ignoreversion
-Source: SlimDX.dll; DestDir: {app}; Flags: ignoreversion
+Source: SharpCompress.dll; DestDir: {app}; Flags: ignoreversion
+Source: ScintillaNET.dll; DestDir: {app}; Flags: ignoreversion
 Source: TabControlEX.dll; DestDir: {app}; Flags: ignoreversion
 Source: GPL.txt; DestDir: {app}; Flags: ignoreversion
 Source: Compilers\*; DestDir: {app}\Compilers; Flags: ignoreversion recursesubdirs
@@ -91,17 +89,12 @@ var
 	page_info_net: TOutputMsgWizardPage;
 	page_info_netfailed: TOutputMsgWizardPage;
 	page_setup_net: TOutputProgressWizardPage;
-	page_info_dx: TOutputMsgWizardPage;
-	page_info_dxfailed: TOutputMsgWizardPage;
-	page_setup_dx: TOutputProgressWizardPage;
 	page_info_vc: TOutputMsgWizardPage;
 	page_info_vcfailed: TOutputMsgWizardPage;
 	page_setup_vc: TOutputProgressWizardPage;
 	restartneeded: Boolean;
 	netinstallfailed: Boolean;
 	netisinstalled: Boolean;
-	dxinstallfailed: Boolean;
-	dxisinstalled: Boolean;
 	vcinstallfailed: Boolean;
 	vcisinstalled: Boolean;
 
@@ -110,34 +103,6 @@ function CheckNetIsInstalled(): Boolean;
 begin
 	Result := RegKeyExists(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5') or
 					  RegKeyExists(HKLM, 'SOFTWARE\Wow6432Node\Microsoft\NET Framework Setup\NDP\v3.5');
-end;
-
-function CheckDXVersion(): Boolean;
-var
-	MajorVer, MinorVer: Integer;
-	StartPos: Integer;
-	TempStr, VerStr: string;
-	HasRequiredDll : Boolean;
-begin
-	if (RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\DirectX', 'Version', VerStr)) then begin
-		(* Extract major version *)
-		StartPos := Pos('.', VerStr);
-		MajorVer := StrToInt(Copy(VerStr, 1, StartPos - 1));
-		(* Remove major version and decimal point that follows *)
-		TempStr := Copy(VerStr, StartPos + 1, MaxInt);
-		(* Find next decimal point *)
-		StartPos := Pos('.', TempStr); 
-		(* Extract minor version *)
-		MinorVer := StrToInt(Copy(TempStr, 1, StartPos - 1));
-
-		//mxd. The DX version alone is not accurate enough...
-		HasRequiredDll := FileExists(ExpandConstant('{syswow64}\d3dx9_43.dll'));
-
-		Result := ((MajorVer > 4) or ((MajorVer = 4) and (MinorVer >= 9))) and HasRequiredDll;
-	end
-	else begin
-		Result := false;
-	end;
 end;
 
 function CheckVCIsInstalled(): Boolean;
@@ -155,8 +120,6 @@ begin
 	restartneeded := false;
 	netinstallfailed := false;
 	netisinstalled := CheckNetIsInstalled();
-	dxinstallfailed := false;
-	dxisinstalled := CheckDXVersion();
 	vcinstallfailed := false;
 	vcisinstalled := CheckVCIsInstalled();
 
@@ -175,22 +138,6 @@ begin
 		'Click Back to try again, or Cancel to exit Setup.');
 
 	page_setup_net := CreateOutputProgressPage('Installing Microsoft .NET Framework 3.5', 'Setup is installing Microsoft .NET Framework 3.5, please wait...');
-
-	// Create DirectX pages
-	page_info_dx := CreateOutputMsgPage(wpPreparing,
-		'Installing DirectX 9.0', '',
-		'Setup has detected that your system is missing the required version of the DirectX. ' +
-		'Setup will now install or update your DirectX. This may take several minutes to complete.' + #10 + #10 +
-		'WARNING: The installer will download DirectX from the internet, but the progress bar will not ' +
-		'go forward until the download is complete. You may send Microsoft an angry letter about that.' + #10 + #10 +
-		'Click Install to begin.');
-
-	page_info_dxfailed := CreateOutputMsgPage(page_info_net.ID,
-		'Installing DirectX 9.0', '',
-		'Setup could not install DirectX 9.0.' + #10 + #10 +
-		'Click Back to try again, or Cancel to exit Setup.');
-
-	page_setup_dx := CreateOutputProgressPage('Installing DirectX 9.0', 'Setup is installing DirectX 9.0, please wait...');
 
 	// Create VC++ 2008 pages
 	page_info_vc := CreateOutputMsgPage(wpPreparing,
@@ -214,10 +161,6 @@ begin
 		Result := netisinstalled
 	else if(PageID = page_info_netfailed.ID) then
 		Result := (not netinstallfailed) and netisinstalled
-	else if(PageID = page_info_dx.ID) then // Skip DX pages?
-		Result := dxisinstalled
-	else if(PageID = page_info_dxfailed.ID) then
-		Result := (not dxinstallfailed) and dxisinstalled
 	else if(PageID = page_info_vc.ID) then // Skip VC++ pages?
 		Result := vcisinstalled
 	else if(PageID = page_info_vcfailed.ID) then
@@ -236,13 +179,13 @@ end;
 procedure CurPageChanged(CurPageID: Integer);
 begin
 	if(CurPageID = wpReady) then begin
-		if(netisinstalled = false) or (dxisinstalled = false) or (vcisinstalled = false) then
+		if(netisinstalled = false) or (vcisinstalled = false) then
 			WizardForm.NextButton.Caption := 'Next';
 	end
-	else if(CurPageID = page_info_net.ID) or (CurPageID = page_info_dx.ID) or (CurPageID = page_info_vc.ID) then begin
+	else if(CurPageID = page_info_net.ID) or (CurPageID = page_info_vc.ID) then begin
 		WizardForm.NextButton.Caption := 'Install';
 	end
-	else if(CurPageID = page_info_netfailed.ID) or (CurPageID = page_info_dxfailed.ID) or (CurPageID = page_info_vcfailed.ID) then begin
+	else if(CurPageID = page_info_netfailed.ID) or (CurPageID = page_info_vcfailed.ID) then begin
 		WizardForm.NextButton.Visible := true;
 		WizardForm.NextButton.Enabled := false;
 		WizardForm.BackButton.Visible := true;
@@ -286,35 +229,6 @@ begin
 		end
 		finally
 			page_setup_net.Hide;
-		end;
-	end
-	// Next pressed on DX info page?
-	else if(CurPage = page_info_dx.ID) then begin
-		// Show progress page and run setup
-		page_setup_dx.Show;
-		try
-		begin
-			dxinstallfailed := false;
-			ExtractTemporaryFile('dxwebsetup.exe');
-			// We copy the file to the real temp directory so that it isn't removed when Setup is closed.
-			// Judging from the return codes, this installer may want to run again after a reboot.
-			// See the return codes here: http://support.microsoft.com/kb/177430
-			tempfile := RemoveBackslash(GetTempDir()) + '\dxwebsetup.exe';
-			FileCopy(ExpandConstant('{tmp}\dxwebsetup.exe'), tempfile, false);
-			Exec(tempfile, '/Q', '', SW_SHOW, ewWaitUntilTerminated, errorcode);
-
-			if(errorcode = 1) then begin
-				// Success, but restart needed!
-				restartneeded := true;
-			end
-			else if(errorcode <> 0) then begin
-				dxinstallfailed := true;
-			end;
-
-			dxisinstalled := CheckDXVersion();
-		end
-		finally
-			page_setup_dx.Hide;
 		end;
 	end
 	// Next pressed on VC info page?
