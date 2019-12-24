@@ -5,9 +5,9 @@
 AppName=Ultimate Doom Builder
 AppVerName=Ultimate Doom Builder
 AppPublisher=ZZYZX
-AppPublisherURL=http://forum.zdoom.org/memberlist.php?mode=viewprofile&u=7012
-AppSupportURL=http://forum.zdoom.org/viewtopic.php?f=3&t=32392
-AppUpdatesURL=http://devbuilds.drdteam.org/doombuilder2-gzdb/
+AppPublisherURL=https://forum.zdoom.org/memberlist.php?mode=viewprofile&u=7527
+AppSupportURL=https://forum.zdoom.org/viewtopic.php?f=232&t=66745
+AppUpdatesURL=https://devbuilds.drdteam.org/ultimatedoombuilder/
 DefaultDirName={pf}\GZDoom Builder
 DefaultGroupName=GZDoom Builder
 AllowNoIcons=true
