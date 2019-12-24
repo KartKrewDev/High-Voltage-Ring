@@ -45,7 +45,7 @@ Source: DevIL.dll; DestDir: {app}; Flags: ignoreversion
 Source: SharpCompress.dll; DestDir: {app}; Flags: ignoreversion
 Source: ScintillaNET.dll; DestDir: {app}; Flags: ignoreversion
 Source: TabControlEX.dll; DestDir: {app}; Flags: ignoreversion
-Source: GPL.txt; DestDir: {app}; Flags: ignoreversion
+Source: LICENSE.txt; DestDir: {app}; Flags: ignoreversion
 Source: Compilers\*; DestDir: {app}\Compilers; Flags: ignoreversion recursesubdirs
 Source: Configurations\*; DestDir: {app}\Configurations; Flags: ignoreversion recursesubdirs
 Source: Scripting\*; DestDir: {app}\Scripting; Flags: ignoreversion recursesubdirs
