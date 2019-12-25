@@ -98,6 +98,8 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 			if (!mPixels[0].empty())
 				glGenerateMipmap(GL_TEXTURE_2D);
 
+			mPixels[0].clear();
+
 			glBindTexture(GL_TEXTURE_2D, oldBinding);
 		}
 		else
@@ -115,6 +117,8 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[5].empty() ? mPixels[5].data() : nullptr);
 			if (!mPixels[0].empty())
 				glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+			mPixels.clear();
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, oldBinding);
 		}
