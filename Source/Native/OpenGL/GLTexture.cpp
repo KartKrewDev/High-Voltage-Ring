@@ -118,7 +118,8 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 			if (!mPixels[0].empty())
 				glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-			mPixels.clear();
+			for (int i = 0; i < 6; i++)
+				mPixels[i].clear();
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, oldBinding);
 		}
