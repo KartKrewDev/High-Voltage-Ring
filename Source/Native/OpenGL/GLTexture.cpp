@@ -36,6 +36,8 @@ GLTexture::~GLTexture()
 
 void GLTexture::Set2DImage(int width, int height)
 {
+	if (width < 1) width = 1;
+	if (height < 1) height = 1;
 	mCubeTexture = false;
 	mWidth = width;
 	mHeight = height;
