@@ -379,6 +379,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			lastgridx = 0.0f;
 			lastgridy = 0.0f;
 			UpdateTransformations();
+
+            if (General.Map != null && General.Map.Config != null)
+            {
+                // [ZZ] old texture is Gone here. Redraw
+                StartPlotter(true);
+                gridplotter.DrawContents(graphics);
+                plotter.DrawContents(graphics);
+            }
 		}
 
 		// This makes screen vertices for display
