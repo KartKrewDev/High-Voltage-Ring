@@ -2032,7 +2032,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			if((v2 - v1).GetLengthSq() < linenormalsize * lengthscaler) return;
 
 			// Draw line
-			plotter.DrawLineSolid((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y, ref c);
+			plotter.DrawLineSolid((int)v1.x, TransformY((int)v1.y), (int)v2.x, TransformY((int)v2.y), ref c);
 		}
 		
         private Vector2D TransformY(Vector2D v)
