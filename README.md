@@ -4,7 +4,7 @@
 - Graphics card with Pixel Shader model 2.0 support
 
 **Required software:**
-- [Microsoft .Net Framework 4.6.1](https://www.microsoft.com/en-ca/download/details.aspx?id=49981)
+- [Microsoft .Net Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472)
 
 **Links:**
 - [Official thread link](https://forum.zdoom.org/viewtopic.php?f=232&t=66745)
