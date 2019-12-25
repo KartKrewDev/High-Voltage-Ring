@@ -3952,14 +3952,7 @@ namespace CodeImp.DoomBuilder.Map
 		/// <summary>This returns a sector if given coordinates are inside one.</summary>
 		public Sector GetSectorByCoordinates(Vector2D pos, VisualBlockMap blockmap) 
 		{
-			// Find nearest sectors using the blockmap
-			List<Sector> possiblesectors = blockmap.GetBlock(blockmap.GetBlockCoordinates(pos)).Sectors;
-			foreach(Sector s in possiblesectors) 
-			{
-				if(s.Intersect(pos)) return s;
-			}
-
-			return null;
+            return blockmap.GetSectorAt(pos);
 		}
 
 		//mxd

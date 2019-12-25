@@ -32,6 +32,7 @@ using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.Data;
 using System.Linq;
+using System.Drawing;
 
 #endregion
 
@@ -1025,19 +1026,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						Vertex v = sd.IsFront ? sd.Line.End : sd.Line.Start;
 
-						// Check if a thing is at this vertex
-						VisualBlockEntry b = blockmap.GetBlock(blockmap.GetBlockCoordinates(v.Position));
-						foreach (Thing t in b.Things)
-						{
-							if ((Vector2D)t.Position == v.Position)
-							{
-								switch (t.Type)
-								{
-									case 1504: slopefloorthings.Add(t); break;
-									case 1505: slopeceilingthings.Add(t); break;
-								}
-							}
-						}
+                        // Check if a thing is at this vertex
+                        foreach (VisualBlockEntry block in blockmap.GetBlocks(v.Position))
+                        {
+                            foreach (Thing t in block.Things)
+                            {
+                                if ((Vector2D)t.Position == v.Position)
+                                {
+                                    switch (t.Type)
+                                    {
+                                        case 1504: slopefloorthings.Add(t); break;
+                                        case 1505: slopeceilingthings.Add(t); break;
+                                    }
+                                }
+                            }
+                        }
 					}
 
 					// Slope any floor vertices?

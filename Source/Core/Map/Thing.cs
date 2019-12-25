@@ -277,19 +277,7 @@ namespace CodeImp.DoomBuilder.Map
 		// This determines which sector the thing is in and links it
 		public void DetermineSector(VisualBlockMap blockmap)
 		{
-			// Find nearest sectors using the blockmap
-			List<Sector> possiblesectors = blockmap.GetBlock(blockmap.GetBlockCoordinates(pos)).Sectors;
-
-			// Check in which sector we are
-			sector = null;
-			foreach(Sector s in possiblesectors)
-			{
-				if(s.Intersect(pos))
-				{
-					sector = s;
-					break;
-				}
-			}
+            sector = blockmap.GetSectorAt(pos);
 		}
 
 		// This translates the flags into UDMF fields
