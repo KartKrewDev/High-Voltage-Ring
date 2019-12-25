@@ -128,8 +128,11 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 {
 	if (mTexture == 0)
 	{
-		Device = device;
-		ItTexture = Device->mTextures.insert(Device->mTextures.end(), this);
+		if (Device == nullptr)
+		{
+			Device = device;
+			ItTexture = Device->mTextures.insert(Device->mTextures.end(), this);
+		}
 
 		GLint oldActiveTex = GL_TEXTURE0;
 		glGetIntegerv(GL_ACTIVE_TEXTURE, &oldActiveTex);
@@ -189,7 +192,11 @@ GLuint GLTexture::GetFramebuffer(GLRenderDevice* device, bool usedepthbuffer)
 	{
 		if (mDepthRenderbuffer == 0)
 		{
-			Device = device;
+			if (Device == nullptr)
+			{
+				Device = device;
+				ItTexture = Device->mTextures.insert(Device->mTextures.end(), this);
+			}
 
 			glGenRenderbuffers(1, &mDepthRenderbuffer);
 			glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderbuffer);
@@ -216,7 +223,11 @@ GLuint GLTexture::GetPBO(GLRenderDevice* device)
 {
 	if (mPBO == 0)
 	{
-		Device = device;
+		if (Device == nullptr)
+		{
+			Device = device;
+			ItTexture = Device->mTextures.insert(Device->mTextures.end(), this);
+		}
 
 		glGenBuffers(1, &mPBO);
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, mPBO);
