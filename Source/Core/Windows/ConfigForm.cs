@@ -239,6 +239,7 @@ namespace CodeImp.DoomBuilder.Windows
 				testapplication.Text = "";
 				testparameters.Text = "";
 				shortpaths.Checked = false;
+				linuxpaths.Checked = false;
 				skill.Value = 0;
 				skill.ClearInfo();
 				customparameters.Checked = false;
@@ -352,7 +353,7 @@ namespace CodeImp.DoomBuilder.Windows
 			if(General.Map != null)
 			{
 				// Make converted parameters
-				testresult.Text = General.Map.Launcher.ConvertParameters(testparameters.Text, skill.Value, shortpaths.Checked);
+				testresult.Text = General.Map.Launcher.ConvertParameters(testparameters.Text, skill.Value, shortpaths.Checked, linuxpaths.Checked);
 			}
 		}
 
@@ -449,6 +450,7 @@ namespace CodeImp.DoomBuilder.Windows
 			labelparameters.Visible = customparameters.Checked;
 			testparameters.Visible = customparameters.Checked;
 			shortpaths.Visible = customparameters.Checked;
+			linuxpaths.Visible = customparameters.Checked;
 
 			// Check if a map is loaded
 			if(General.Map != null)
@@ -472,14 +474,31 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			// Leave when no configuration selected
 			if(configinfo == null) return;
-			
+			if (linuxpaths.Checked && shortpaths.Checked)
+			{
+				linuxpaths.Checked = false;
+			}
 			// Apply to selected configuration
 			configinfo.TestShortPaths = shortpaths.Checked;
 			configinfo.Changed = true; //mxd
 			
 			CreateParametersExample();
 		}
-		
+        private void Linuxpaths_CheckedChanged(object sender, EventArgs e)
+        {
+            // Leave when no configuration selected
+            if (configinfo == null) return;
+			if (linuxpaths.Checked && shortpaths.Checked)
+			{
+				shortpaths.Checked = false;
+			}
+            // Apply to selected configuration
+            configinfo.TestLinuxPaths = linuxpaths.Checked;
+            configinfo.Changed = true; //mxd
+
+            CreateParametersExample();
+
+        }
 		// Skill changes
 		private void skill_ValueChanges(object sender, EventArgs e)
 		{
@@ -778,13 +797,15 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				configinfo.TestParameters = gameconfig.TestParameters;
 				configinfo.TestShortPaths = gameconfig.TestShortPaths;
+				configinfo.TestLinuxPaths = gameconfig.TestLinuxPaths;
 			}
 
 			configinfo.TestProgramName = cbEngineSelector.Text;
 			testapplication.Text = configinfo.TestProgram;
 			testparameters.Text = configinfo.TestParameters;
 			shortpaths.Checked = configinfo.TestShortPaths;
-			
+			linuxpaths.Checked = configinfo.TestLinuxPaths;
+
 			int skilllevel = configinfo.TestSkill;
 			skill.Value = skilllevel - 1; //mxd. WHY???
 			skill.Value = skilllevel;
