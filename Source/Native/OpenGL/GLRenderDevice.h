@@ -23,6 +23,7 @@
 
 #include "../Backend.h"
 #include "OpenGLContext.h"
+#include <list>
 
 class GLSharedVertexBuffer;
 class GLShader;
@@ -149,6 +150,9 @@ public:
 	GLIndexBuffer* mIndexBuffer = nullptr;
 
 	std::unique_ptr<GLSharedVertexBuffer> mSharedVertexBuffers[2];
+
+	std::list<GLTexture*> mTextures;
+	std::list<GLIndexBuffer*> mIndexBuffers;
 
 	std::unique_ptr<GLShaderManager> mShaderManager;
 	ShaderName mShaderName = {};

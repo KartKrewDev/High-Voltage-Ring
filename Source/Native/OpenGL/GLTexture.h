@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../Backend.h"
+#include <list>
 
 class GLRenderDevice;
 
@@ -49,6 +50,7 @@ public:
 	GLuint GetPBO(GLRenderDevice* device);
 
 	GLRenderDevice* Device = nullptr;
+	std::list<GLTexture*>::iterator ItTexture;
 
 private:
 	int mWidth = 0;

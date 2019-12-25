@@ -120,6 +120,7 @@ void GLTexture::Invalidate()
 	mFramebuffer = 0;
 	mTexture = 0;
 	mPBO = 0;
+	if (Device) Device->mTextures.erase(ItTexture);
 	Device = nullptr;
 }
 
@@ -128,6 +129,7 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 	if (mTexture == 0)
 	{
 		Device = device;
+		ItTexture = Device->mTextures.insert(Device->mTextures.end(), this);
 
 		GLint oldActiveTex = GL_TEXTURE0;
 		glGetIntegerv(GL_ACTIVE_TEXTURE, &oldActiveTex);
@@ -174,7 +176,7 @@ GLuint GLTexture::GetFramebuffer(GLRenderDevice* device, bool usedepthbuffer)
 	{
 		if (mFramebuffer == 0)
 		{
-			GLuint texture = GetTexture(Device);
+			GLuint texture = GetTexture(device);
 			glGenFramebuffers(1, &mFramebuffer);
 			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
@@ -197,7 +199,7 @@ GLuint GLTexture::GetFramebuffer(GLRenderDevice* device, bool usedepthbuffer)
 
 		if (mFramebuffer == 0)
 		{
-			GLuint texture = GetTexture(Device);
+			GLuint texture = GetTexture(device);
 			glGenFramebuffers(1, &mFramebuffer);
 			glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);

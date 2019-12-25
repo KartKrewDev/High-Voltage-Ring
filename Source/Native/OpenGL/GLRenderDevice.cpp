@@ -83,15 +83,17 @@ GLRenderDevice::~GLRenderDevice()
 		Context->MakeCurrent();
 
 		ProcessDeleteList();
+		for (GLTexture* tex : mTextures) mDeleteList.Textures.push_back(tex);
+		for (GLIndexBuffer* buffer : mIndexBuffers) mDeleteList.IndexBuffers.push_back(buffer);
+		for (GLVertexBuffer* buffer : mSharedVertexBuffers[0]->VertexBuffers) mDeleteList.VertexBuffers.push_back(buffer);
+		for (GLVertexBuffer* buffer : mSharedVertexBuffers[1]->VertexBuffers) mDeleteList.VertexBuffers.push_back(buffer);
+		ProcessDeleteList();
 
 		glDeleteBuffers(1, &mStreamVertexBuffer);
 		glDeleteVertexArrays(1, &mStreamVAO);
 
 		for (auto& sharedbuf : mSharedVertexBuffers)
 		{
-			for (GLVertexBuffer* buf : sharedbuf->VertexBuffers)
-				buf->Device = nullptr;
-
 			GLuint handle = sharedbuf->GetBuffer();
 			glDeleteBuffers(1, &handle);
 			handle = sharedbuf->GetVAO();
@@ -106,6 +108,7 @@ GLRenderDevice::~GLRenderDevice()
 					glDeleteSamplers(1, &handle);
 			}
 		}
+
 
 		mShaderManager->ReleaseResources();
 		Context->ClearCurrent();
@@ -584,6 +587,11 @@ bool GLRenderDevice::SetIndexBufferData(IndexBuffer* ibuffer, void* data, int64_
 {
 	CheckContext();
 	GLIndexBuffer* buffer = static_cast<GLIndexBuffer*>(ibuffer);
+	if (buffer->Device == nullptr)
+	{
+		buffer->ItBuffer = mIndexBuffers.insert(mIndexBuffers.end(), buffer);
+		buffer->Device = this;
+	}
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->GetBuffer());
@@ -960,9 +968,11 @@ void GLRenderDevice::DeleteObject(GLTexture* texture)
 void GLRenderDevice::ProcessDeleteList()
 {
 	std::unique_lock<std::mutex> lock(GLRenderDevice::GetMutex());
+
 	for (auto buffer : mDeleteList.IndexBuffers) delete buffer;
 	for (auto buffer : mDeleteList.VertexBuffers) delete buffer;
 	for (auto texture : mDeleteList.Textures) delete texture;
+
 	mDeleteList.IndexBuffers.clear();
 	mDeleteList.VertexBuffers.clear();
 	mDeleteList.Textures.clear();
