@@ -50,16 +50,64 @@ void GLTexture::SetCubeImage(int size)
 	mHeight = size;
 }
 
-void GLTexture::SetPixels(const void* data)
+bool GLTexture::SetPixels(GLRenderDevice* device, const void* data)
 {
-	mPixels[0].resize(mWidth * (size_t)mHeight);
-	memcpy(mPixels[0].data(), data, sizeof(uint32_t) * mWidth * mHeight);
+	GLint texture = GetTexture(device);
+	if (!texture) return false;
+
+	GLint oldActiveTex = GL_TEXTURE0;
+	glGetIntegerv(GL_ACTIVE_TEXTURE, &oldActiveTex);
+	glActiveTexture(GL_TEXTURE0);
+	GLint oldBinding = 0;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+
+	//
+	
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, mTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	if (data != nullptr)
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+	//
+
+	glBindTexture(GL_TEXTURE_2D, oldBinding);
+	glActiveTexture(oldActiveTex);
+
+	return true;
 }
 
-void GLTexture::SetCubePixels(CubeMapFace face, const void* data)
+bool GLTexture::SetCubePixels(GLRenderDevice* device, CubeMapFace face, const void* data)
 {
-	mPixels[(int)face].resize(mWidth * (size_t)mHeight);
-	memcpy(mPixels[(int)face].data(), data, sizeof(uint32_t) * mWidth * mHeight);
+	static GLint cubeMapFaceToGL[] =
+	{
+		GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+	};
+
+	GLint texture = GetTexture(device);
+	if (!texture) return false;
+
+	GLint oldActiveTex = GL_TEXTURE0;
+	glGetIntegerv(GL_ACTIVE_TEXTURE, &oldActiveTex);
+	glActiveTexture(GL_TEXTURE0);
+	GLint oldBinding = 0;
+	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldBinding);
+
+	//
+
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
+	glTexImage2D(cubeMapFaceToGL[(int)face], 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	if (data != nullptr && face == CubeMapFace::NegativeZ)
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+	//
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, oldBinding);
+	glActiveTexture(oldActiveTex);
+
+	return true;
 }
 
 void GLTexture::Invalidate()
@@ -94,11 +142,7 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 			glBindTexture(GL_TEXTURE_2D, mTexture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[0].empty() ? mPixels[0].data() : nullptr);
-			if (!mPixels[0].empty())
-				glGenerateMipmap(GL_TEXTURE_2D);
-
-			mPixels[0].clear();
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 
 			glBindTexture(GL_TEXTURE_2D, oldBinding);
 		}
@@ -109,17 +153,12 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[0].empty() ? mPixels[0].data() : nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[1].empty() ? mPixels[1].data() : nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[2].empty() ? mPixels[2].data() : nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[3].empty() ? mPixels[3].data() : nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[4].empty() ? mPixels[4].data() : nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, !mPixels[5].empty() ? mPixels[5].data() : nullptr);
-			if (!mPixels[0].empty())
-				glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
-			for (int i = 0; i < 6; i++)
-				mPixels[i].clear();
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, oldBinding);
 		}

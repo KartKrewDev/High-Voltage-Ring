@@ -89,6 +89,9 @@ public:
 	bool ApplyBlendState();
 	bool ApplyDepthState();
 
+	void CheckContext();
+	void RequireContext();
+
 	bool CheckGLError();
 	void SetError(const char* fmt, ...);
 	const char* GetError();

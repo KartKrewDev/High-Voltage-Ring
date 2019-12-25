@@ -114,7 +114,7 @@ GLRenderDevice::~GLRenderDevice()
 
 void GLRenderDevice::DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader)
 {
-	if (!mContextIsCurrent) Context->MakeCurrent();
+	CheckContext();
 	mShaderManager->DeclareShader(index, name, vertexshader, fragmentshader);
 }
 
@@ -350,10 +350,21 @@ bool GLRenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveC
 	return ApplyVertexBuffer();
 }
 
-bool GLRenderDevice::StartRendering(bool clear, int backcolor, Texture* itarget, bool usedepthbuffer)
+void GLRenderDevice::RequireContext()
 {
 	Context->MakeCurrent();
 	mContextIsCurrent = true;
+}
+
+void GLRenderDevice::CheckContext()
+{
+	if (!mContextIsCurrent) Context->MakeCurrent();
+	mContextIsCurrent = true;
+}
+
+bool GLRenderDevice::StartRendering(bool clear, int backcolor, Texture* itarget, bool usedepthbuffer)
+{
+	RequireContext();
 
 	GLTexture* target = static_cast<GLTexture*>(itarget);
 	if (target)
@@ -441,7 +452,7 @@ bool GLRenderDevice::CopyTexture(Texture* idst, CubeMapFace face)
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 
-	if (!mContextIsCurrent) Context->MakeCurrent();
+	CheckContext();
 	GLint oldTexture = 0;
 	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &oldTexture);
 
@@ -524,7 +535,7 @@ void GLRenderDevice::GarbageCollectBuffer(int size, VertexFormat format)
 
 bool GLRenderDevice::SetVertexBufferData(VertexBuffer* ibuffer, void* data, int64_t size, VertexFormat format)
 {
-	if (!mContextIsCurrent) Context->MakeCurrent();
+	CheckContext();
 
 	GLVertexBuffer* buffer = static_cast<GLVertexBuffer*>(ibuffer);
 
@@ -558,7 +569,7 @@ bool GLRenderDevice::SetVertexBufferData(VertexBuffer* ibuffer, void* data, int6
 
 bool GLRenderDevice::SetVertexBufferSubdata(VertexBuffer* ibuffer, int64_t destOffset, void* data, int64_t size)
 {
-	if (!mContextIsCurrent) Context->MakeCurrent();
+	CheckContext();
 	GLVertexBuffer* buffer = static_cast<GLVertexBuffer*>(ibuffer);
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &oldbinding);
@@ -571,7 +582,7 @@ bool GLRenderDevice::SetVertexBufferSubdata(VertexBuffer* ibuffer, int64_t destO
 
 bool GLRenderDevice::SetIndexBufferData(IndexBuffer* ibuffer, void* data, int64_t size)
 {
-	if (!mContextIsCurrent) Context->MakeCurrent();
+	CheckContext();
 	GLIndexBuffer* buffer = static_cast<GLIndexBuffer*>(ibuffer);
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &oldbinding);
@@ -584,21 +595,22 @@ bool GLRenderDevice::SetIndexBufferData(IndexBuffer* ibuffer, void* data, int64_
 
 bool GLRenderDevice::SetPixels(Texture* itexture, const void* data)
 {
+	CheckContext();
 	GLTexture* texture = static_cast<GLTexture*>(itexture);
-	texture->SetPixels(data);
-	return InvalidateTexture(texture);
+	texture->SetPixels(this, data);
+	return CheckGLError();
 }
 
 bool GLRenderDevice::SetCubePixels(Texture* itexture, CubeMapFace face, const void* data)
 {
 	GLTexture* texture = static_cast<GLTexture*>(itexture);
-	texture->SetCubePixels(face, data);
-	return InvalidateTexture(texture);
+	texture->SetCubePixels(this, face, data);
+	return CheckGLError();
 }
 
 void* GLRenderDevice::MapPBO(Texture* itexture)
 {
-	if (!mContextIsCurrent) Context->MakeCurrent();
+	CheckContext();
 	GLTexture* texture = static_cast<GLTexture*>(itexture);
 	GLint pbo = texture->GetPBO(this);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
@@ -614,7 +626,7 @@ void* GLRenderDevice::MapPBO(Texture* itexture)
 
 bool GLRenderDevice::UnmapPBO(Texture* itexture)
 {
-	if (!mContextIsCurrent) Context->MakeCurrent();
+	CheckContext();
 	GLTexture* texture = static_cast<GLTexture*>(itexture);
 	GLint pbo = texture->GetPBO(this);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
@@ -631,7 +643,7 @@ bool GLRenderDevice::InvalidateTexture(GLTexture* texture)
 {
 	if (texture->IsTextureCreated())
 	{
-		if (!mContextIsCurrent) Context->MakeCurrent();
+		CheckContext();
 		texture->Invalidate();
 		bool result = CheckGLError();
 		mNeedApply = true;

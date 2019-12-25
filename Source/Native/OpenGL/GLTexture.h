@@ -34,8 +34,8 @@ public:
 	void Set2DImage(int width, int height) override;
 	void SetCubeImage(int size) override;
 
-	void SetPixels(const void* data);
-	void SetCubePixels(CubeMapFace face, const void* data);
+	bool SetPixels(GLRenderDevice* device, const void* data);
+	bool SetCubePixels(GLRenderDevice* device, CubeMapFace face, const void* data);
 
 	bool IsCubeTexture() const { return mCubeTexture; }
 	int GetWidth() const { return mWidth; }
@@ -55,7 +55,6 @@ private:
 	int mHeight = 0;
 	bool mCubeTexture = false;
 	bool mPBOTexture = false;
-	std::map<int, std::vector<uint32_t>> mPixels;
 	GLuint mTexture = 0;
 	GLuint mFramebuffer = 0;
 	GLuint mDepthRenderbuffer = 0;
