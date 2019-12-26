@@ -592,45 +592,55 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			if(processgeometry)
 			{
-				// Find camera sector
-				Linedef nld = MapSet.NearestLinedef(visiblelines, campos2d);
-				if(nld != null)
-				{
-					General.Map.VisualCamera.Sector = GetCameraSectorFromLinedef(nld);
-				}
-				else
-				{
-					// Exceptional case: no lines found in any nearby blocks!
-					// This could happen in the middle of an extremely large sector and in this case
-					// the above code will not have found any sectors/sidedefs for rendering.
-					// Here we handle this special case with brute-force. Let's find the sector
-					// the camera is in by searching the entire map and render that sector only.
-					nld = General.Map.Map.NearestLinedef(campos2d);
-					if(nld != null)
-					{
-						General.Map.VisualCamera.Sector = GetCameraSectorFromLinedef(nld);
-						if(General.Map.VisualCamera.Sector != null)
-						{
-							foreach(Sidedef sd in General.Map.VisualCamera.Sector.Sidedefs)
-							{
-								float side = sd.Line.SideOfLine(campos2d);
-								if(((side < 0) && sd.IsFront) ||
-								   ((side > 0) && !sd.IsFront))
-									ProcessSidedefCulling(sd);
-							}
-						}
-						else
-						{
-							// Too far away from the map to see anything
-							General.Map.VisualCamera.Sector = null;
-						}
-					}
-					else
-					{
-						// Map is empty
-						General.Map.VisualCamera.Sector = null;
-					}
-				}
+                // Find camera sector
+                Sector camsector = blockmap.GetSectorAt(campos2d);
+                if (camsector != null)
+                {
+                    General.Map.VisualCamera.Sector = camsector;
+                }
+                else
+                {
+                    // To do: fix this code. It is retarded. Walking over all visible lines is extremely expensive.
+
+                    Linedef nld = MapSet.NearestLinedef(visiblelines, campos2d);
+                    if (nld != null)
+                    {
+                        General.Map.VisualCamera.Sector = GetCameraSectorFromLinedef(nld);
+                    }
+                    else
+                    {
+                        // Exceptional case: no lines found in any nearby blocks!
+                        // This could happen in the middle of an extremely large sector and in this case
+                        // the above code will not have found any sectors/sidedefs for rendering.
+                        // Here we handle this special case with brute-force. Let's find the sector
+                        // the camera is in by searching the entire map and render that sector only.
+                        nld = General.Map.Map.NearestLinedef(campos2d);
+                        if (nld != null)
+                        {
+                            General.Map.VisualCamera.Sector = GetCameraSectorFromLinedef(nld);
+                            if (General.Map.VisualCamera.Sector != null)
+                            {
+                                foreach (Sidedef sd in General.Map.VisualCamera.Sector.Sidedefs)
+                                {
+                                    float side = sd.Line.SideOfLine(campos2d);
+                                    if (((side < 0) && sd.IsFront) ||
+                                       ((side > 0) && !sd.IsFront))
+                                        ProcessSidedefCulling(sd);
+                                }
+                            }
+                            else
+                            {
+                                // Too far away from the map to see anything
+                                General.Map.VisualCamera.Sector = null;
+                            }
+                        }
+                        else
+                        {
+                            // Map is empty
+                            General.Map.VisualCamera.Sector = null;
+                        }
+                    }
+                }
 			}
 		}
 
