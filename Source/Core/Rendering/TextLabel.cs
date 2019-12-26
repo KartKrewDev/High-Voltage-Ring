@@ -128,6 +128,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				scale = value;
 				font.Dispose();
+
                 FontFamily ff;
                 try
                 {
@@ -137,6 +138,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 {
                     ff = General.MainWindow.Font.FontFamily;
                 }
+
 				font = new Font(ff, (float)Math.Round(scale * 0.75f), (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular));
 				textsize = Size.Empty; 
 				textureupdateneeded = true;
