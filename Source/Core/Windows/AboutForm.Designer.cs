@@ -64,6 +64,8 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             // pictureBox5
             // 
+            pictureBox5.BackgroundImage = global::CodeImp.DoomBuilder.Properties.Resources.GZDB_Logo_small;
+            pictureBox5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             pictureBox5.Location = new System.Drawing.Point(12, 10);
             pictureBox5.Name = "pictureBox5";
             pictureBox5.Size = new System.Drawing.Size(226, 80);
@@ -73,6 +75,8 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             // pictureBox3
             // 
+            pictureBox3.BackgroundImage = global::CodeImp.DoomBuilder.Properties.Resources.Splash3_small;
+            pictureBox3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             pictureBox3.Location = new System.Drawing.Point(12, 129);
             pictureBox3.Name = "pictureBox3";
             pictureBox3.Size = new System.Drawing.Size(226, 80);
@@ -263,6 +267,8 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             // pictureBox4
             // 
+            this.pictureBox4.BackgroundImage = global::CodeImp.DoomBuilder.Properties.Resources.CLogo;
+            this.pictureBox4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox4.Location = new System.Drawing.Point(474, 129);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(88, 80);
@@ -295,6 +301,8 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             // pictureBox6
             // 
+            this.pictureBox6.BackgroundImage = global::CodeImp.DoomBuilder.Properties.Resources.MLogo;
+            this.pictureBox6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox6.Location = new System.Drawing.Point(476, 6);
             this.pictureBox6.Name = "pictureBox6";
             this.pictureBox6.Size = new System.Drawing.Size(86, 88);
