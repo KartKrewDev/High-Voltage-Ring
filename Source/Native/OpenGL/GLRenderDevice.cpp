@@ -282,7 +282,7 @@ GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilt
 	if (mipfilter == TextureFilter::Linear)
 	{
 		if (filter == TextureFilter::Point || filter == TextureFilter::None)
-			return GL_LINEAR_MIPMAP_NEAREST;
+			return GL_NEAREST_MIPMAP_LINEAR;
 		else
 			return GL_LINEAR_MIPMAP_LINEAR;
 	}
@@ -291,7 +291,7 @@ GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilt
 		if (filter == TextureFilter::Point || filter == TextureFilter::None)
 			return GL_NEAREST_MIPMAP_NEAREST;
 		else
-			return GL_NEAREST_MIPMAP_LINEAR;
+			return GL_LINEAR_MIPMAP_NEAREST;
 	}
 	else
 	{
@@ -914,6 +914,8 @@ bool GLRenderDevice::ApplyTextures()
 			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)mTextureUnit.WrapMode]);
 			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)mTextureUnit.WrapMode]);
 			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)mTextureUnit.WrapMode]);
+			if (mSamplerFilterKey.MaxAnisotropy > 0.0f)
+				glSamplerParameterf(samplerHandle, GL_TEXTURE_MAX_ANISOTROPY_EXT, mSamplerFilterKey.MaxAnisotropy);
 		}
 
 		if (mTextureUnit.SamplerHandle != samplerHandle)
