@@ -128,7 +128,16 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				scale = value;
 				font.Dispose();
-				font = new Font(new FontFamily(General.Settings.TextLabelFontName), (float)Math.Round(scale * 0.75f), (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular));
+                FontFamily ff;
+                try
+                {
+                    ff = new FontFamily(General.Settings.TextLabelFontName);
+                }
+                catch (Exception)
+                {
+                    ff = General.MainWindow.Font.FontFamily;
+                }
+				font = new Font(ff, (float)Math.Round(scale * 0.75f), (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular));
 				textsize = Size.Empty; 
 				textureupdateneeded = true;
 			} 

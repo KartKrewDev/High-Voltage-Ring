@@ -363,7 +363,7 @@ namespace CodeImp.DoomBuilder.Config
 				scriptautoshowautocompletion = cfg.ReadSetting("scriptautoshowautocompletion", true);
 
 				//mxd. Text labels
-				textlabelfontname = cfg.ReadSetting("textlabelfontname", "Arial");
+				textlabelfontname = cfg.ReadSetting("textlabelfontname", "Microsoft Sans Serif");
 				textlabelfontsize = cfg.ReadSetting("textlabelfontsize", 10);
 				textlabelfontbold = cfg.ReadSetting("textlabelfontbold", false);
 
