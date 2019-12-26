@@ -383,7 +383,10 @@ namespace CodeImp.DoomBuilder.Rendering
             if (General.Map != null && General.Map.Config != null)
             {
                 // [ZZ] old texture is Gone here. Redraw
-                StartPlotter(true);
+                plotter.Clear();
+                gridplotter.Clear();
+                RenderBackgroundGrid();
+                SetupBackground();
                 gridplotter.DrawContents(graphics);
                 plotter.DrawContents(graphics);
             }
