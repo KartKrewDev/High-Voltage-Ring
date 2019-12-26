@@ -25,7 +25,6 @@ using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Actions;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Editing;
-using System.Linq;
 
 #endregion
 
@@ -71,6 +70,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		// Map
 		protected VisualBlockMap blockmap;
+		protected Dictionary<Thing, VisualThing> allthings;
+		protected Dictionary<Sector, VisualSector> allsectors;
 		protected List<VisualBlockEntry> visibleblocks;
 		protected List<VisualThing> visiblethings;
 		protected List<VisualSector> visiblesectors;
@@ -100,6 +101,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 			// Initialize
 			this.renderer = General.Map.Renderer3D;
 			this.blockmap = new VisualBlockMap();
+			this.allsectors = new Dictionary<Sector, VisualSector>(General.Map.Map.Sectors.Count);
+			this.allthings = new Dictionary<Thing, VisualThing>(General.Map.Map.Things.Count);
 			this.visibleblocks = new List<VisualBlockEntry>();
 			this.visiblesectors = new List<VisualSector>(50);
 			this.visiblegeometry = new List<VisualGeometry>(200);
@@ -126,20 +129,15 @@ namespace CodeImp.DoomBuilder.VisualModes
 			// Not already disposed?
 			if(!isdisposed)
 			{
-                // Clean up
-                foreach (Sector sector in General.Map.Map.Sectors)
-                {
-                    if (sector.VisualSector != null)
-                    {
-                        sector.VisualSector.Dispose();
-                        sector.VisualSector = null;
-                    }
-                }
+				// Clean up
+				foreach(KeyValuePair<Sector, VisualSector> s in allsectors) s.Value.Dispose();
 				blockmap.Dispose();
 				visiblesectors = null;
 				visiblegeometry = null;
 				visibleblocks = null;
 				visiblethings = null;
+				allsectors = null;
+				allthings = null;
 				blockmap = null;
 
 				//mxd
@@ -218,26 +216,14 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public override void OnDisengage()
 		{
 			base.OnDisengage();
+			
+			// Dispose
+			foreach(KeyValuePair<Sector, VisualSector> vs in allsectors)
+				if(vs.Value != null) vs.Value.Dispose();
 
-            // Dispose
-            foreach (Sector sector in General.Map.Map.Sectors)
-            {
-                if (sector.VisualSector != null)
-                {
-                    sector.VisualSector.Dispose();
-                    sector.VisualSector = null;
-                }
-            }
-
-            // Dispose
-            foreach (Thing thing in General.Map.Map.Things)
-            {
-                if (thing.VisualThing != null)
-                {
-                    thing.VisualThing.Dispose();
-                    thing.VisualThing = null;
-                }
-            }
+			// Dispose
+			foreach(KeyValuePair<Thing, VisualThing> vt in allthings)
+				if(vt.Value != null) vt.Value.Dispose();	
 			
 			// Apply camera position to thing
 			General.Map.VisualCamera.ApplyToThing();
@@ -581,11 +567,22 @@ namespace CodeImp.DoomBuilder.VisualModes
 						// Not filtered out?
 						if(!General.Map.ThingsFilter.IsThingVisible(t)) continue;
 
-                        if (t.VisualThing == null)
-                            t.VisualThing = CreateVisualThing(t);
+						VisualThing vt;
+						if(allthings.ContainsKey(t))
+						{
+							vt = allthings[t];
+						}
+						else
+						{
+							// Create new visual thing
+							vt = CreateVisualThing(t);
+							allthings[t] = vt;
+						}
 
-						if(t.VisualThing != null)
-							visiblethings.Add(t.VisualThing);
+						if(vt != null)
+						{
+							visiblethings.Add(vt);
+						}
 					}
 				}
 			}
@@ -653,20 +650,32 @@ namespace CodeImp.DoomBuilder.VisualModes
 
             sd.LastProcessed = lastProcessed;
 
-            if (sd.Sector.VisualSector == null)
-                sd.Sector.VisualSector = CreateVisualSector(sd.Sector);
+            VisualSector vs;
 			
-			if(sd.Sector.VisualSector != null)
+			// Find the visualsector and make it if needed
+			if(allsectors.ContainsKey(sd.Sector))
+			{
+				// Take existing visualsector
+				vs = allsectors[sd.Sector];
+			}
+			else
+			{
+				// Make new visualsector
+				vs = CreateVisualSector(sd.Sector);
+				//if(vs != null) allsectors.Add(sd.Sector, vs); //mxd
+			}
+			
+			if(vs != null)
 			{
                 if (sd.Sector.LastProcessed != lastProcessed)
                 {
                     sd.Sector.LastProcessed = lastProcessed;
-                    visiblesectors.Add(sd.Sector.VisualSector);
-                    visiblegeometry.AddRange(sd.Sector.VisualSector.FixedGeometry);
+                    visiblesectors.Add(vs);
+                    visiblegeometry.AddRange(vs.FixedGeometry);
                 }
 				
 				// Add sidedef geometry
-				visiblegeometry.AddRange(sd.Sector.VisualSector.GetSidedefGeometry(sd));
+				visiblegeometry.AddRange(vs.GetSidedefGeometry(sd));
 			}
 		}
 
@@ -706,9 +715,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 			List<IVisualPickable> pickables = new List<IVisualPickable>(blocks.Count * 10);
 			
 			// Add geometry from the camera sector
-			if(General.Map.VisualCamera.Sector != null && General.Map.VisualCamera.Sector.VisualSector != null)
+			if((General.Map.VisualCamera.Sector != null) && allsectors.ContainsKey(General.Map.VisualCamera.Sector))
 			{
-				VisualSector vs = General.Map.VisualCamera.Sector.VisualSector;
+				VisualSector vs = allsectors[General.Map.VisualCamera.Sector];
 				sectors.Add(General.Map.VisualCamera.Sector, vs);
 				foreach(VisualGeometry g in vs.FixedGeometry) pickables.Add(g);
 			}
@@ -741,9 +750,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 							if(ld.Front != null)
 							{
 								// Find the visualsector
-								if(ld.Front.Sector.VisualSector != null)
+								if(allsectors.ContainsKey(ld.Front.Sector))
 								{
-									VisualSector vs = ld.Front.Sector.VisualSector;
+									VisualSector vs = allsectors[ld.Front.Sector];
 									
 									// Add sector if not already added
 									if(!sectors.ContainsKey(ld.Front.Sector))
@@ -778,9 +787,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 							if(ld.Back != null)
 							{
 								// Find the visualsector
-								if(ld.Back.Sector.VisualSector != null)
+								if(allsectors.ContainsKey(ld.Back.Sector))
 								{
-									VisualSector vs = ld.Back.Sector.VisualSector;
+									VisualSector vs = allsectors[ld.Back.Sector];
 
 									// Add sector if not already added
 									if(!sectors.ContainsKey(ld.Back.Sector))
@@ -868,26 +877,16 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		protected virtual void ResourcesReloaded()
 		{
-            // Dispose
-            foreach (Sector sector in General.Map.Map.Sectors)
-            {
-                if (sector.VisualSector != null)
-                {
-                    sector.VisualSector.Dispose();
-                    sector.VisualSector = null;
-                }
-            }
-
-            foreach (Thing thing in General.Map.Map.Things)
-            {
-                if (thing.VisualThing != null)
-                {
-                    thing.VisualThing.Dispose();
-                    thing.VisualThing = null;
-                }
-            }
+			// Dispose
+			foreach(KeyValuePair<Sector, VisualSector> vs in allsectors)
+				if(vs.Value != null) vs.Value.Dispose();
+				
+			foreach(KeyValuePair<Thing, VisualThing> vt in allthings)
+				if(vt.Value != null) vt.Value.Dispose();
 				
 			// Clear collections
+			allsectors.Clear();
+			allthings.Clear();
 			visiblesectors.Clear();
 			visibleblocks.Clear();
 			visiblegeometry.Clear();
@@ -908,6 +907,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		protected virtual void ResourcesReloadedPartial()
 		{
+			Dictionary<Sector, VisualSector> newsectors = new Dictionary<Sector,VisualSector>(allsectors.Count);
+			
 			// Neighbour sectors must be updated as well
 			foreach(Sector s in General.Map.Map.Sectors)
 			{
@@ -942,27 +943,27 @@ namespace CodeImp.DoomBuilder.VisualModes
 				}
 			}
 			
-			// Dispose if source was marked
-			foreach(Sector s in General.Map.Map.Sectors)
+			// Dispose if source was disposed or marked
+			foreach(KeyValuePair<Sector, VisualSector> vs in allsectors)
 			{
-				if(s.Marked && s.VisualSector != null)
+				if(vs.Value != null)
 				{
-                    s.VisualSector.Dispose();
-                    s.VisualSector = null;
+					if(vs.Key.IsDisposed || vs.Key.Marked)
+						vs.Value.Dispose();
+					else
+						newsectors.Add(vs.Key, vs.Value);
 				}
 			}
 			
 			// Things depend on the sector they are in and because we can't
 			// easily determine which ones changed, we dispose all things
-            foreach (Thing thing in General.Map.Map.Things)
-            {
-                if (thing.VisualThing != null)
-                {
-                    thing.VisualThing.Dispose();
-                    thing.VisualThing = null;
-                }
-            }
-
+			foreach(KeyValuePair<Thing, VisualThing> vt in allthings)
+				if(vt.Value != null) vt.Value.Dispose();
+			
+			// Apply new lists
+			allsectors = newsectors;
+			allthings = new Dictionary<Thing, VisualThing>(allthings.Count);
+			
 			// Clear visibility collections
 			visiblesectors.Clear();
 			visibleblocks.Clear();
@@ -991,14 +992,14 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		public VisualSector GetVisualSector(Sector s) 
 		{
-			if(s.VisualSector == null) return CreateVisualSector(s); //mxd
-			return s.VisualSector; 
+			if(!allsectors.ContainsKey(s)) return CreateVisualSector(s); //mxd
+			return allsectors[s]; 
 		}
 		
 		/// <summary>
 		/// This returns the VisualThing for the given Thing.
 		/// </summary>
-		public VisualThing GetVisualThing(Thing t) { return t.VisualThing; }
+		public VisualThing GetVisualThing(Thing t) { return allthings[t]; }
 
 		//mxd
 		public List<VisualThing> GetSelectedVisualThings(bool refreshSelection) 
@@ -1006,10 +1007,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if(refreshSelection || selectedVisualThings == null) 
 			{
 				selectedVisualThings = new List<VisualThing>();
-				foreach(Thing t in General.Map.Map.Things) 
+				foreach(KeyValuePair<Thing, VisualThing> group in allthings) 
 				{
-					if(t.VisualThing != null && t.VisualThing.Selected)
-						selectedVisualThings.Add(t.VisualThing);
+					if(group.Value != null && group.Value.Selected)
+						selectedVisualThings.Add(group.Value);
 				}
 
 				//if nothing is selected - try to get thing from hilighted object
@@ -1037,13 +1038,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if(refreshSelection || selectedVisualSectors == null) 
 			{
 				selectedVisualSectors = new List<VisualSector>();
-				foreach(Sector s in General.Map.Map.Sectors.Where(x => x.VisualSector != null)) 
+				foreach(KeyValuePair<Sector, VisualSector> group in allsectors) 
 				{
-					foreach(VisualGeometry vg in s.VisualSector.AllGeometry) 
+					foreach(VisualGeometry vg in group.Value.AllGeometry) 
 					{
 						if(vg.Selected) 
 						{
-							selectedVisualSectors.Add(s.VisualSector);
+							selectedVisualSectors.Add(group.Value);
 							break;
 						}
 					}
@@ -1065,9 +1066,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public List<VisualGeometry> GetSelectedSurfaces() 
 		{
 			List<VisualGeometry> selectedSurfaces = new List<VisualGeometry>();
-			foreach(Sector s in General.Map.Map.Sectors.Where(x => x.VisualSector != null)) 
+			foreach(KeyValuePair<Sector, VisualSector> group in allsectors) 
 			{
-				foreach(VisualGeometry vg in s.VisualSector.AllGeometry) 
+				foreach(VisualGeometry vg in group.Value.AllGeometry) 
 				{
 					if(vg.Selected) selectedSurfaces.Add(vg);
 				}
@@ -1101,12 +1102,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// <summary>
 		/// Returns True when a VisualSector has been created for the specified Sector.
 		/// </summary>
-		public bool VisualSectorExists(Sector s) { return s.VisualSector != null; }
+		public bool VisualSectorExists(Sector s) { return allsectors.ContainsKey(s) && (allsectors[s] != null); }
 
 		/// <summary>
 		/// Returns True when a VisualThing has been created for the specified Thing.
 		/// </summary>
-		public bool VisualThingExists(Thing t) { return t.VisualThing != null; }
+		public bool VisualThingExists(Thing t) { return allthings.ContainsKey(t) && (allthings[t] != null); }
 
 		/// <summary>
 		/// This is called when the blockmap needs to be refilled, because it was invalidated.

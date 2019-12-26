@@ -36,6 +36,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// Geometry
 		private readonly List<VisualGeometry> fixedgeometry;
 		private readonly List<VisualGeometry> allgeometry;
+		private readonly Dictionary<Sidedef, List<VisualGeometry>> sidedefgeometry;
 		private VertexBuffer geobuffer;
 		private bool updategeo;
 		
@@ -68,6 +69,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.sector = s;
 			allgeometry = new List<VisualGeometry>();
 			fixedgeometry = new List<VisualGeometry>();
+			sidedefgeometry = new Dictionary<Sidedef, List<VisualGeometry>>();
 			this.sector.UpdateFogColor(); //mxd
 
 			// Register as resource
@@ -166,9 +168,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 			allgeometry.Add(geo);
 			if(geo.Sidedef != null)
 			{
-				if(geo.Sidedef.VisualGeometry == null)
-					geo.Sidedef.VisualGeometry = new List<VisualGeometry>(3);
-				geo.Sidedef.VisualGeometry.Add(geo);
+				if(!sidedefgeometry.ContainsKey(geo.Sidedef))
+					sidedefgeometry[geo.Sidedef] = new List<VisualGeometry>(3);
+				sidedefgeometry[geo.Sidedef].Add(geo);
 			}
 			else
 			{
@@ -183,13 +185,14 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			allgeometry.Clear();
 			fixedgeometry.Clear();
+			sidedefgeometry.Clear();
 			updategeo = true;
 		}
 
 		// This gets the geometry list for the specified sidedef
 		public List<VisualGeometry> GetSidedefGeometry(Sidedef sd)
 		{
-			if(sd.VisualGeometry != null) return sd.VisualGeometry;
+			if(sidedefgeometry.ContainsKey(sd)) return sidedefgeometry[sd];
 			return new List<VisualGeometry>();
 		}
 		

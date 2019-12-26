@@ -23,7 +23,6 @@ using CodeImp.DoomBuilder.Geometry;
 using System.Drawing;
 using CodeImp.DoomBuilder.Rendering;
 using System.Collections.ObjectModel;
-using CodeImp.DoomBuilder.VisualModes;
 
 #endregion
 
@@ -89,7 +88,6 @@ namespace CodeImp.DoomBuilder.Map
 		private Color4 fogcolor;
 		private SectorFogMode fogmode;
         private int lastProcessed;
-        private VisualSector visualsector;
 
 		//mxd. Slopes
 		private Vector3D floorslope;
@@ -146,14 +144,13 @@ namespace CodeImp.DoomBuilder.Map
 		public Vector3D CeilSlope { get { return ceilslope; } set { BeforePropsChange(); ceilslope = value; updateneeded = true; } }
 		public float CeilSlopeOffset { get { return ceiloffset; } set { BeforePropsChange(); ceiloffset = value; updateneeded = true; } }
         internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
-        public VisualSector VisualSector { get { return visualsector; } set { visualsector = value; } }
 
-        #endregion
+		#endregion
 
-        #region ================== Constructor / Disposer
+		#region ================== Constructor / Disposer
 
-        // Constructor
-        internal Sector(MapSet map, int listindex, int index)
+		// Constructor
+		internal Sector(MapSet map, int listindex, int index)
 		{
 			// Initialize
 			this.elementtype = MapElementType.SECTOR; //mxd
@@ -210,12 +207,6 @@ namespace CodeImp.DoomBuilder.Map
 				// Clean up
 				sidedefs = null;
 				map = null;
-
-                if (visualsector != null)
-                {
-                    visualsector.Dispose();
-                    visualsector = null;
-                }
 
 				//mxd. Restore isdisposed so base classes can do their disposal job
 				isdisposed = false;

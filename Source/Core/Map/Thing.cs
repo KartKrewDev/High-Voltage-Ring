@@ -88,7 +88,6 @@ namespace CodeImp.DoomBuilder.Map
 
         // Rendering
         private int lastProcessed;
-        private VisualThing visualthing;
 
         #endregion
 
@@ -121,7 +120,6 @@ namespace CodeImp.DoomBuilder.Map
 		public bool IsDirectional { get { return directional; } } //mxd
 		public bool Highlighted { get { return highlighted; } set { highlighted = value; } } //mxd
         internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
-        public VisualThing VisualThing { get { return visualthing; } set { visualthing = value; } }
 
         #endregion
 
@@ -162,12 +160,6 @@ namespace CodeImp.DoomBuilder.Map
 				// Clean up
 				map = null;
 				sector = null;
-
-                if (visualthing != null)
-                {
-                    visualthing.Dispose();
-                    visualthing = null;
-                }
 
 				// Dispose base
 				base.Dispose();

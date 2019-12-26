@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Data;
-using CodeImp.DoomBuilder.VisualModes;
 
 #endregion
 
@@ -61,7 +60,6 @@ namespace CodeImp.DoomBuilder.Map
 
         // Rendering
         private int lastProcessed;
-        private List<VisualGeometry> visualgeometry;
 		
 		#endregion
 
@@ -84,7 +82,6 @@ namespace CodeImp.DoomBuilder.Map
 		public long LongLowTexture { get { return longtexnamelow; } }
 		internal int SerializedIndex { get { return serializedindex; } set { serializedindex = value; } }
         internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
-        internal List<VisualGeometry> VisualGeometry { get { return visualgeometry; } set { visualgeometry = value; } }
 		
 		#endregion
 

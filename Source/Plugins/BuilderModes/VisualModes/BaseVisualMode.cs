@@ -31,8 +31,6 @@ using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.Data;
-using System.Linq;
-using System.Drawing;
 
 #endregion
 
@@ -291,9 +289,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				General.Interface.DisplayStatus(StatusType.Action, actionresult.displaystatus);
 
 			// Reset changed flags
-			foreach(Sector s in General.Map.Map.Sectors.Where(x => x.VisualSector != null))
+			foreach(KeyValuePair<Sector, VisualSector> vs in allsectors)
 			{
-				BaseVisualSector bvs = (BaseVisualSector)s.VisualSector;
+				BaseVisualSector bvs = (BaseVisualSector)vs.Value;
 				foreach(VisualFloor vf in bvs.ExtraFloors) vf.Changed = false;
 				foreach(VisualCeiling vc in bvs.ExtraCeilings) vc.Changed = false;
 				foreach(VisualFloor vf in bvs.ExtraBackFloors) vf.Changed = false; //mxd
@@ -350,25 +348,31 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			// Make list of selected objects
 			selectedobjects = new List<IVisualEventReceiver>();
-			foreach(Sector s in General.Map.Map.Sectors.Where(x => x.VisualSector != null))
+			foreach(KeyValuePair<Sector, VisualSector> vs in allsectors)
 			{
-				BaseVisualSector bvs = (BaseVisualSector)s.VisualSector;
-				if((bvs.Floor != null) && bvs.Floor.Selected) selectedobjects.Add(bvs.Floor);
-				if((bvs.Ceiling != null) && bvs.Ceiling.Selected) selectedobjects.Add(bvs.Ceiling);
-				foreach(Sidedef sd in s.Sidedefs)
+				if(vs.Value != null)
 				{
-					List<VisualGeometry> sidedefgeos = bvs.GetSidedefGeometry(sd);
-					foreach(VisualGeometry sdg in sidedefgeos)
+					BaseVisualSector bvs = (BaseVisualSector)vs.Value;
+					if((bvs.Floor != null) && bvs.Floor.Selected) selectedobjects.Add(bvs.Floor);
+					if((bvs.Ceiling != null) && bvs.Ceiling.Selected) selectedobjects.Add(bvs.Ceiling);
+					foreach(Sidedef sd in vs.Key.Sidedefs)
 					{
-						if(sdg.Selected) selectedobjects.Add((IVisualEventReceiver)sdg);
+						List<VisualGeometry> sidedefgeos = bvs.GetSidedefGeometry(sd);
+						foreach(VisualGeometry sdg in sidedefgeos)
+						{
+							if(sdg.Selected) selectedobjects.Add((IVisualEventReceiver)sdg);
+						}
 					}
 				}
 			}
 
-			foreach(Thing t in General.Map.Map.Things.Where(x => x.VisualThing != null))
+			foreach(KeyValuePair<Thing, VisualThing> vt in allthings)
 			{
-				BaseVisualThing bvt = (BaseVisualThing)t.VisualThing;
-				if(bvt.Selected) selectedobjects.Add(bvt);
+				if(vt.Value != null)
+				{
+					BaseVisualThing bvt = (BaseVisualThing)vt.Value;
+					if(bvt.Selected) selectedobjects.Add(bvt);
+				}
 			}
 
 			//mxd
@@ -391,7 +395,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		internal BaseVisualSector CreateBaseVisualSector(Sector s) 
 		{
 			BaseVisualSector vs = new BaseVisualSector(this, s);
-			s.VisualSector = vs;
+			allsectors.Add(s, vs);
 			return vs;
 		}
 
@@ -399,7 +403,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		protected override VisualSector CreateVisualSector(Sector s)
 		{
 			BaseVisualSector vs = new BaseVisualSector(this, s);
-			s.VisualSector = vs; //mxd
+			allsectors.Add(s, vs); //mxd
 			return vs;
 		}
 		
@@ -498,16 +502,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This updates the VisualSectors and VisualThings that have their Changed property set
 		private void UpdateChangedObjects()
 		{
-			foreach(Sector s in General.Map.Map.Sectors.Where(x => x.VisualSector != null))
+			foreach(KeyValuePair<Sector, VisualSector> vs in allsectors)
 			{
-				BaseVisualSector bvs = (BaseVisualSector)s.VisualSector;
-				if(bvs.Changed) bvs.Rebuild();
+				if(vs.Value != null)
+				{
+					BaseVisualSector bvs = (BaseVisualSector)vs.Value;
+					if(bvs.Changed) bvs.Rebuild();
+				}
 			}
 
-			foreach(Thing t in General.Map.Map.Things.Where(x => x.VisualThing != null))
+			foreach(KeyValuePair<Thing, VisualThing> vt in allthings)
 			{
-				BaseVisualThing bvt = (BaseVisualThing)t.VisualThing;
-				if(bvt.Changed) bvt.Rebuild();
+				if(vt.Value != null)
+				{
+					BaseVisualThing bvt = (BaseVisualThing)vt.Value;
+					if(bvt.Changed) bvt.Rebuild();
+				}
 			}
 
 			//mxd
@@ -1440,27 +1450,31 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// No sectors or geometry changed. So we only have
 					// to update things when they have changed.
 					HashSet<Thing> toremove = new HashSet<Thing>(); //mxd
-					foreach(Thing t in General.Map.Map.Things.Where(x => x.VisualThing != null && x.Marked))
+					foreach(KeyValuePair<Thing, VisualThing> vt in allthings)
 					{
-						if(t.IsDisposed) toremove.Add(t); //mxd. Disposed things will cause problems
-						else ((BaseVisualThing)t.VisualThing).Rebuild();
+						if((vt.Value != null) && vt.Key.Marked)
+						{
+							if(vt.Key.IsDisposed) toremove.Add(vt.Key); //mxd. Disposed things will cause problems
+							else ((BaseVisualThing)vt.Value).Rebuild();
+						}
 					}
 
 					//mxd. Remove disposed things
 					foreach(Thing t in toremove)
 					{
-						if(t.VisualThing != null) { t.VisualThing.Dispose(); t.VisualThing = null; }
+						if(allthings[t] != null) allthings[t].Dispose();
+						allthings.Remove(t);
 					}
 				}
 				else
 				{
 					// Things depend on the sector they are in and because we can't
 					// easily determine which ones changed, we dispose all things
-					foreach(Thing t in General.Map.Map.Things.Where(x => x.VisualThing != null))
-                    {
-                        t.VisualThing.Dispose();
-                        t.VisualThing = null;
-                    }
+					foreach(KeyValuePair<Thing, VisualThing> vt in allthings)
+						if(vt.Value != null) vt.Value.Dispose();
+					
+					// Apply new lists
+					allthings = new Dictionary<Thing, VisualThing>(allthings.Count);
 				}
 				
 				// Clear visibility collections
@@ -1572,10 +1586,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		//mxd
 		private void Interface_OnSectorEditFormValuesChanged(object sender, EventArgs e) 
 		{
+			if(allsectors == null) return;
+
 			// Reset changed flags
-			foreach(Sector s in General.Map.Map.Sectors.Where(x => x.VisualSector != null)) 
+			foreach(KeyValuePair<Sector, VisualSector> vs in allsectors) 
 			{
-				BaseVisualSector bvs = (BaseVisualSector)s.VisualSector;
+				BaseVisualSector bvs = (BaseVisualSector)vs.Value;
 				foreach(VisualFloor vf in bvs.ExtraFloors) vf.Changed = false;
 				foreach(VisualCeiling vc in bvs.ExtraCeilings) vc.Changed = false;
 				foreach(VisualFloor vf in bvs.ExtraBackFloors) vf.Changed = false;
@@ -2058,35 +2074,41 @@ namespace CodeImp.DoomBuilder.BuilderModes
             });
 
             //
-            foreach (Sector s in General.Map.Map.Sectors.Where(x => x.VisualSector != null))
+            foreach (KeyValuePair<Sector, VisualSector> vs in allsectors)
             {
-                BaseVisualSector bvs = (BaseVisualSector)s.VisualSector;
-                if (clearsectors)
+                if (vs.Value != null)
                 {
-                    if (bvs.Floor != null) bvs.Floor.Selected = false;
-                    if (bvs.Ceiling != null) bvs.Ceiling.Selected = false;
-                    foreach (VisualFloor vf in bvs.ExtraFloors) vf.Selected = false;
-                    foreach (VisualCeiling vc in bvs.ExtraCeilings) vc.Selected = false;
-                    foreach (VisualFloor vf in bvs.ExtraBackFloors) vf.Selected = false; //mxd
-                    foreach (VisualCeiling vc in bvs.ExtraBackCeilings) vc.Selected = false; //mxd
-                }
-
-                if (clearsidedefs)
-                {
-                    foreach (Sidedef sd in s.Sidedefs)
+                    BaseVisualSector bvs = (BaseVisualSector)vs.Value;
+                    if (clearsectors)
                     {
-                        //mxd. VisualSidedefParts can contain references to visual geometry, which is not present in VisualSector.sidedefgeometry
-                        bvs.GetSidedefParts(sd).DeselectAllParts();
+                        if (bvs.Floor != null) bvs.Floor.Selected = false;
+                        if (bvs.Ceiling != null) bvs.Ceiling.Selected = false;
+                        foreach (VisualFloor vf in bvs.ExtraFloors) vf.Selected = false;
+                        foreach (VisualCeiling vc in bvs.ExtraCeilings) vc.Selected = false;
+                        foreach (VisualFloor vf in bvs.ExtraBackFloors) vf.Selected = false; //mxd
+                        foreach (VisualCeiling vc in bvs.ExtraBackCeilings) vc.Selected = false; //mxd
+                    }
+
+                    if (clearsidedefs)
+                    {
+                        foreach (Sidedef sd in vs.Key.Sidedefs)
+                        {
+                            //mxd. VisualSidedefParts can contain references to visual geometry, which is not present in VisualSector.sidedefgeometry
+                            bvs.GetSidedefParts(sd).DeselectAllParts();
+                        }
                     }
                 }
             }
 
             if (clearthings)
             {
-                foreach (Thing t in General.Map.Map.Things.Where(x => x.VisualThing != null))
+                foreach (KeyValuePair<Thing, VisualThing> vt in allthings)
                 {
-                    BaseVisualThing bvt = (BaseVisualThing)t.VisualThing;
-                    bvt.Selected = false;
+                    if (vt.Value != null)
+                    {
+                        BaseVisualThing bvt = (BaseVisualThing)vt.Value;
+                        bvt.Selected = false;
+                    }
                 }
             }
 
