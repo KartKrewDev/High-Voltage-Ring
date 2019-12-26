@@ -91,10 +91,10 @@ namespace CodeImp.DoomBuilder.Rendering
             // Clear memory
             fixed(PixelColor* pixel = pixels)
             {
-                PixelColor* op = pixel;
+                uint* op = (uint*)pixel;
                 for (int i = 0; i < pixels.Length; i++)
                 {
-                    op->a = 0;
+                    *op = 0;
                     op++;
                 }
             }
