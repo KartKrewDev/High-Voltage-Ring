@@ -73,6 +73,11 @@ void GLSharedVertexBuffer::SetupWorldVAO()
 
 GLVertexBuffer::~GLVertexBuffer()
 {
+	Finalize();
+}
+
+void GLVertexBuffer::Finalize()
+{
 	if (Device)
 	{
 		Device->mSharedVertexBuffers[(int)Format]->VertexBuffers.erase(ListIt);

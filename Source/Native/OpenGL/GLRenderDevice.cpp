@@ -83,15 +83,17 @@ GLRenderDevice::~GLRenderDevice()
 		Context->MakeCurrent();
 
 		ProcessDeleteList();
+		for (GLTexture* tex : mTextures) mDeleteList.Textures.push_back(tex);
+		for (GLIndexBuffer* buffer : mIndexBuffers) mDeleteList.IndexBuffers.push_back(buffer);
+		for (GLVertexBuffer* buffer : mSharedVertexBuffers[0]->VertexBuffers) mDeleteList.VertexBuffers.push_back(buffer);
+		for (GLVertexBuffer* buffer : mSharedVertexBuffers[1]->VertexBuffers) mDeleteList.VertexBuffers.push_back(buffer);
+		ProcessDeleteList(true);
 
 		glDeleteBuffers(1, &mStreamVertexBuffer);
 		glDeleteVertexArrays(1, &mStreamVAO);
 
 		for (auto& sharedbuf : mSharedVertexBuffers)
 		{
-			for (GLVertexBuffer* buf : sharedbuf->VertexBuffers)
-				buf->Device = nullptr;
-
 			GLuint handle = sharedbuf->GetBuffer();
 			glDeleteBuffers(1, &handle);
 			handle = sharedbuf->GetVAO();
@@ -106,6 +108,7 @@ GLRenderDevice::~GLRenderDevice()
 					glDeleteSamplers(1, &handle);
 			}
 		}
+
 
 		mShaderManager->ReleaseResources();
 		Context->ClearCurrent();
@@ -279,7 +282,7 @@ GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilt
 	if (mipfilter == TextureFilter::Linear)
 	{
 		if (filter == TextureFilter::Point || filter == TextureFilter::None)
-			return GL_LINEAR_MIPMAP_NEAREST;
+			return GL_NEAREST_MIPMAP_LINEAR;
 		else
 			return GL_LINEAR_MIPMAP_LINEAR;
 	}
@@ -288,7 +291,7 @@ GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilt
 		if (filter == TextureFilter::Point || filter == TextureFilter::None)
 			return GL_NEAREST_MIPMAP_NEAREST;
 		else
-			return GL_NEAREST_MIPMAP_LINEAR;
+			return GL_LINEAR_MIPMAP_NEAREST;
 	}
 	else
 	{
@@ -584,6 +587,11 @@ bool GLRenderDevice::SetIndexBufferData(IndexBuffer* ibuffer, void* data, int64_
 {
 	CheckContext();
 	GLIndexBuffer* buffer = static_cast<GLIndexBuffer*>(ibuffer);
+	if (buffer->Device == nullptr)
+	{
+		buffer->ItBuffer = mIndexBuffers.insert(mIndexBuffers.end(), buffer);
+		buffer->Device = this;
+	}
 	GLint oldbinding = 0;
 	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &oldbinding);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->GetBuffer());
@@ -906,6 +914,8 @@ bool GLRenderDevice::ApplyTextures()
 			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)mTextureUnit.WrapMode]);
 			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)mTextureUnit.WrapMode]);
 			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)mTextureUnit.WrapMode]);
+			if (mSamplerFilterKey.MaxAnisotropy > 0.0f)
+				glSamplerParameterf(samplerHandle, GL_TEXTURE_MAX_ANISOTROPY_EXT, mSamplerFilterKey.MaxAnisotropy);
 		}
 
 		if (mTextureUnit.SamplerHandle != samplerHandle)
@@ -957,12 +967,23 @@ void GLRenderDevice::DeleteObject(GLTexture* texture)
 		delete texture;
 }
 
-void GLRenderDevice::ProcessDeleteList()
+void GLRenderDevice::ProcessDeleteList(bool finalize)
 {
 	std::unique_lock<std::mutex> lock(GLRenderDevice::GetMutex());
-	for (auto buffer : mDeleteList.IndexBuffers) delete buffer;
-	for (auto buffer : mDeleteList.VertexBuffers) delete buffer;
-	for (auto texture : mDeleteList.Textures) delete texture;
+
+	if (!finalize)
+	{
+		for (auto buffer : mDeleteList.IndexBuffers) delete buffer;
+		for (auto buffer : mDeleteList.VertexBuffers) delete buffer;
+		for (auto texture : mDeleteList.Textures) delete texture;
+	}
+	else
+	{
+		for (auto buffer : mDeleteList.IndexBuffers) buffer->Finalize();
+		for (auto buffer : mDeleteList.VertexBuffers) buffer->Finalize();
+		for (auto texture : mDeleteList.Textures) texture->Finalize();
+	}
+
 	mDeleteList.IndexBuffers.clear();
 	mDeleteList.VertexBuffers.clear();
 	mDeleteList.Textures.clear();

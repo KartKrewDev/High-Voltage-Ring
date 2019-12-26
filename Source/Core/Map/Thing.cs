@@ -88,6 +88,7 @@ namespace CodeImp.DoomBuilder.Map
 
         // Rendering
         private int lastProcessed;
+        private VisualThing visualthing;
 
         #endregion
 
@@ -120,6 +121,7 @@ namespace CodeImp.DoomBuilder.Map
 		public bool IsDirectional { get { return directional; } } //mxd
 		public bool Highlighted { get { return highlighted; } set { highlighted = value; } } //mxd
         internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
+        public VisualThing VisualThing { get { return visualthing; } set { visualthing = value; } }
 
         #endregion
 
@@ -160,6 +162,12 @@ namespace CodeImp.DoomBuilder.Map
 				// Clean up
 				map = null;
 				sector = null;
+
+                if (visualthing != null)
+                {
+                    visualthing.Dispose();
+                    visualthing = null;
+                }
 
 				// Dispose base
 				base.Dispose();
@@ -269,19 +277,7 @@ namespace CodeImp.DoomBuilder.Map
 		// This determines which sector the thing is in and links it
 		public void DetermineSector(VisualBlockMap blockmap)
 		{
-			// Find nearest sectors using the blockmap
-			List<Sector> possiblesectors = blockmap.GetBlock(blockmap.GetBlockCoordinates(pos)).Sectors;
-
-			// Check in which sector we are
-			sector = null;
-			foreach(Sector s in possiblesectors)
-			{
-				if(s.Intersect(pos))
-				{
-					sector = s;
-					break;
-				}
-			}
+            sector = blockmap.GetSectorAt(pos);
 		}
 
 		// This translates the flags into UDMF fields

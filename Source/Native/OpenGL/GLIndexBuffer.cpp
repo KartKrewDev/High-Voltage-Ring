@@ -25,9 +25,18 @@
 
 GLIndexBuffer::~GLIndexBuffer()
 {
-	if (Device && mBuffer != 0)
+	Finalize();
+}
+
+void GLIndexBuffer::Finalize()
+{
+	if (Device)
 	{
-		glDeleteBuffers(1, &mBuffer);
+		Device->mIndexBuffers.erase(ItBuffer);
+		Device = nullptr;
+
+		if (mBuffer != 0)
+			glDeleteBuffers(1, &mBuffer);
 		mBuffer = 0;
 	}
 }

@@ -28,453 +28,296 @@ using System.Linq;
 
 namespace CodeImp.DoomBuilder.VisualModes
 {
-	public sealed class VisualBlockMap
-	{
-		#region ================== Constants
-		
-		public const int BLOCK_SIZE_SHIFT = 7;
-		public const int BLOCK_SIZE = 1 << BLOCK_SIZE_SHIFT;
-		public const float BLOCK_RADIUS = BLOCK_SIZE * Angle2D.SQRT2;
-
-        #endregion
-
-        #region ================== Variables
-
-        // Blocks
-#if DICTIONARY_BLOCKMAP
-        private Dictionary<ulong, VisualBlockEntry> blockmap;
-#else
-        private VisualBlockEntry[,] blockmap;
-#endif
-
-        // State
-        private bool isdisposed;
-		
-		#endregion
-		
-		#region ================== Properties
-		
-		public bool IsDisposed { get { return isdisposed; } }
-		
-		#endregion
-		
-		#region ================== Constructor / Disposer
-		
-		// Constructor
-		internal VisualBlockMap()
-		{
-#if DICTIONARY_BLOCKMAP
-			// Initialize
-			blockmap = new Dictionary<ulong,VisualBlockEntry>();
-#else
-            blockmap = new VisualBlockEntry[(1 << 16) / BLOCK_SIZE, (1 << 16) / BLOCK_SIZE]; // 1 megabyte per blockmap
-#endif
-        }
-		
-		// Disposer
-		internal void Dispose()
-		{
-			// Not already disposed?
-			if(!isdisposed)
-			{
-				// Clean up
-				blockmap = null;
-				
-				// Done
-				isdisposed = true;
-			}
-		}
-		
-		#endregion
-		
-		#region ================== Methods
-		
-		// This returns the block coordinates
-		public Point GetBlockCoordinates(Vector2D v)
-		{
-			return new Point((int)v.x >> BLOCK_SIZE_SHIFT,
-							 (int)v.y >> BLOCK_SIZE_SHIFT);
-		}
-
-		// This returns the block center in world coordinates
-		public Vector2D GetBlockCenter(Point p)
-		{
-			return new Vector2D((p.X << BLOCK_SIZE_SHIFT) + (BLOCK_SIZE >> 1),
-								(p.Y << BLOCK_SIZE_SHIFT) + (BLOCK_SIZE >> 1));
-		}
-
-		// This returns the key for a block at the given coordinates
-		// TODO: Could we just use the Point struct as key?
-		private static ulong GetBlockKey(Point p)
-		{
-			return unchecked( ((ulong)(uint)p.X << 32) + (uint)p.Y );
-		}
-		
-		// This returns the block with the given coordinates
-		// Creates the block if it doesn't exist yet
-		public VisualBlockEntry GetBlock(Point p)
-		{
-#if DICTIONARY_BLOCKMAP
-			ulong k = GetBlockKey(p);
-			VisualBlockEntry vbe;
-			
-			if (blockmap.TryGetValue(k, out vbe))
-				return vbe;
-			else
-				return (blockmap[k] = new VisualBlockEntry());
-#else
-            int blockX = p.X % blockmap.GetLength(0);
-            int blockY = p.Y % blockmap.GetLength(1);
-            if (blockX < 0) blockX += blockmap.GetLength(0);
-            if (blockY < 0) blockY += blockmap.GetLength(1);
-            if (blockmap[blockX, blockY] == null)
-                blockmap[blockX, blockY] = new VisualBlockEntry();
-            return blockmap[blockX, blockY];
-#endif
-        }
-		
-		// This clears the blockmap
-		public void Clear()
-		{
-#if DICTIONARY_BLOCKMAP
-			blockmap = new Dictionary<ulong,VisualBlockEntry>();
-#else
-            blockmap = new VisualBlockEntry[(1 << 16) / BLOCK_SIZE, (1 << 16) / BLOCK_SIZE]; // ok this a little bit expensive..
-#endif
-        }
-		
-		// This returns a range of blocks in a square
-		public List<VisualBlockEntry> GetSquareRange(RectangleF rect)
-		{
-			// Calculate block coordinates
-			Point lt = GetBlockCoordinates(new Vector2D(rect.Left, rect.Top));
-			Point rb = GetBlockCoordinates(new Vector2D(rect.Right, rect.Bottom));
-			
-			// Go through the range to make a list
-			int entriescount = (rb.X - lt.X) * (rb.Y - lt.Y);
-			List<VisualBlockEntry> entries = new List<VisualBlockEntry>(entriescount);
-			for(int x = lt.X; x <= rb.X; x++)
-			{
-				for(int y = lt.Y; y <= rb.Y; y++)
-				{
-					entries.Add(GetBlock(new Point(x, y)));
-				}
-			}
-
-			// Return list
-			return entries;
-		}
-
-		// This returns a range of blocks in a frustum
-		public List<VisualBlockEntry> GetFrustumRange(ProjectedFrustum2D frustum)
-		{
-			// Make square range from frustum circle
-			// This will be the range in which we will test blocks
-			Point lb = GetBlockCoordinates(frustum.Center - frustum.Radius);
-			Point rt = GetBlockCoordinates(frustum.Center + frustum.Radius);
-
-			Vector2D maplb = new Vector2D();
-			Vector2D maprt = new Vector2D();
-
-			Vertex firstvertex = General.Map.Map.Vertices.OfType<Vertex>().FirstOrDefault();
-			
-			if (firstvertex != null)
-				maplb = maprt = firstvertex.Position;
-
-			// Get maximum dimensions of the map. First vertices...
-			foreach (Vertex v in General.Map.Map.Vertices)
-			{
-				if (v.Position.x < maplb.x) maplb.x = v.Position.x;
-				if (v.Position.y < maplb.y) maplb.y = v.Position.y;
-				if (v.Position.x > maprt.x) maprt.x = v.Position.x;
-				if (v.Position.y > maprt.y) maprt.y = v.Position.y;
-			}
-
-			// ... then things
-			foreach (Thing t in General.Map.Map.Things)
-			{
-				if (t.Position.x < maplb.x) maplb.x = t.Position.x;
-				if (t.Position.y < maplb.y) maplb.y = t.Position.y;
-				if (t.Position.x > maprt.x) maprt.x = t.Position.x;
-				if (t.Position.y > maprt.y) maprt.y = t.Position.y;
-			}
-
-			Point mlb = GetBlockCoordinates(maplb);
-			Point mrt = GetBlockCoordinates(maprt);
-			
-			// Make sure that the checked region does not exceed the dimensions where something is to be displayed
-			if (lb.X < mlb.X) lb.X = mlb.X;
-			if (lb.Y < mlb.Y) lb.Y = mlb.Y;
-			if (rt.X > mrt.X) rt.X = mrt.X;
-			if (rt.Y > mrt.Y) rt.Y = mrt.Y;
-
-			// Constants we need
-			float blockfrustumdistance2 = (frustum.Radius * frustum.Radius) + (BLOCK_RADIUS * BLOCK_RADIUS);
-
-			// Go through the range to make a list
-			int entriescount = (rt.X - lb.X) * (rt.Y - lb.Y);
-			List<VisualBlockEntry> entries = new List<VisualBlockEntry>(entriescount);
-			
-			for (int x = lb.X; x <= rt.X; x++)
-			{
-				for(int y = lb.Y; y <= rt.Y; y++)
-				{
-					// First check if the block circle is intersecting the frustum circle
-					Point block = new Point(x, y);
-					Vector2D blockcenter = GetBlockCenter(block);
-					if(Vector2D.DistanceSq(frustum.Center, blockcenter) < blockfrustumdistance2)
-					{
-						// Add the block if the block circle is inside the frustum
-						if (frustum.IntersectCircle(blockcenter, BLOCK_RADIUS)) entries.Add(GetBlock(block));
-					}
-				}
-			}
-
-			// Return list
-			return entries;
-		}
-
+    public sealed class VisualBlockMap
+    {
 		// This returns all blocks along the given line
 		public List<VisualBlockEntry> GetLineBlocks(Vector2D v1, Vector2D v2)
-		{
-			// Estimate number of blocks we will go through and create list
-			int entriescount = (int)(Vector2D.ManhattanDistance(v1, v2) * 2.0f) / BLOCK_SIZE;
-			List<VisualBlockEntry> entries = new List<VisualBlockEntry>(entriescount);
+        {
+            int x0 = (int)Math.Floor(Math.Min(v1.x, v2.x));
+            int y0 = (int)Math.Floor(Math.Min(v1.y, v2.y));
+            int x1 = (int)Math.Floor(Math.Max(v1.x, v2.x)) + 1;
+            int y1 = (int)Math.Floor(Math.Max(v1.y, v2.y)) + 1;
 
-			// Find start and end block
-			Point pos = GetBlockCoordinates(v1);
-			Point end = GetBlockCoordinates(v2);
+            var result = new List<VisualBlockEntry>();
+            root.GetBlocks(new Rectangle(x0, y0, x1 - x0, y1 - y0), ref result);
+            return result;
+        }
 
-			// Add this block
-			entries.Add(GetBlock(pos));
+        public List<VisualBlockEntry> GetBlocks(RectangleF box)
+        {
+            var result = new List<VisualBlockEntry>();
+            root.GetBlocks(ToRectangle(box), ref result);
+            return result;
+        }
 
-			// Moving outside the block?
-			if(pos != end)
-			{
-				// Calculate current block edges
-				float cl = pos.X * BLOCK_SIZE;
-				float cr = (pos.X + 1) * BLOCK_SIZE;
-				float ct = pos.Y * BLOCK_SIZE;
-				float cb = (pos.Y + 1) * BLOCK_SIZE;
+        public List<VisualBlockEntry> GetBlocks(Vector2D pos)
+        {
+            var result = new List<VisualBlockEntry>();
+            root.GetBlocks(new Point((int)Math.Floor(pos.x), (int)Math.Floor(pos.y)), ref result);
+            return result;
+        }
 
-				// Line directions
-				int dirx = Math.Sign(v2.x - v1.x);
-				int diry = Math.Sign(v2.y - v1.y);
+        // This returns a range of blocks in a frustum
+        public List<VisualBlockEntry> GetFrustumRange(ProjectedFrustum2D frustum2D)
+        {
+            var frustum = new Frustum();
+            frustum.planes = new Plane[4]
+            {
+                new Plane(frustum2D.Lines[0]),
+                new Plane(frustum2D.Lines[1]),
+                new Plane(frustum2D.Lines[2]),
+                new Plane(frustum2D.Lines[3])
+            };
 
-				// Calculate offset and delta movement over x
-				float posx, deltax;
-				if(dirx >= 0)
-				{
-					posx = (cr - v1.x) / (v2.x - v1.x);
-					deltax = BLOCK_SIZE / (v2.x - v1.x);
-				}
-				else
-				{
-					// Calculate offset and delta movement over x
-					posx = (v1.x - cl) / (v1.x - v2.x);
-					deltax = BLOCK_SIZE / (v1.x - v2.x);
-				}
+            var result = new List<VisualBlockEntry>();
+            root.GetBlocks(frustum, ref result);
+            return result;
+        }
 
-				// Calculate offset and delta movement over y
-				float posy, deltay;
-				if(diry >= 0)
-				{
-					posy = (cb - v1.y) / (v2.y - v1.y);
-					deltay = BLOCK_SIZE / (v2.y - v1.y);
-				}
-				else
-				{
-					posy = (v1.y - ct) / (v1.y - v2.y);
-					deltay = BLOCK_SIZE / (v1.y - v2.y);
-				}
+        public Sector GetSectorAt(Vector2D pos)
+        {
+            foreach (VisualBlockEntry e in GetBlocks(pos))
+            {
+                foreach (Sector s in e.Sectors)
+                {
+                    if (s.Intersect(pos))
+                    {
+                        return s;
+                    }
+                }
+            }
+            return null;
+        }
 
-				// Continue while not reached the end
-				while(pos != end)
-				{
-					// Check in which direction to move
-					if(posx < posy)
-					{
-						// Move horizontally
-						posx += deltax;
-						if(pos.X != end.X) pos.X += dirx;
-					}
-					else
-					{
-						// Move vertically
-						posy += deltay;
-						if(pos.Y != end.Y) pos.Y += diry;
-					}
+        public void Clear()
+        {
+            root = new Node(new Rectangle(MapMinX, MapMinY, MapMaxX - MapMinX, MapMaxY - MapMinY));
+        }
 
-					// Add lines to this block
-					entries.Add(GetBlock(pos));
-				}
-			}
-
-			// Return list
-			return entries;
-		}
-
-		// This puts a thing in the blockmap
-		public void AddThingsSet(ICollection<Thing> things)
-		{
-			foreach(Thing t in things) AddThing(t);
-		}
-		
-		// This puts a thing in the blockmap
-		public void AddThing(Thing t)
-		{
-			//mxd
-			Point p1 = GetBlockCoordinates(new Vector2D(t.Position.x - t.RenderSize, t.Position.y - t.RenderSize));
-			Point p2 = GetBlockCoordinates(new Vector2D(t.Position.x + t.RenderSize, t.Position.y + t.RenderSize));
-			for(int x = p1.X; x <= p2.X; x++)
-			{
-				for(int y = p1.Y; y <= p2.Y; y++)
-				{
-					VisualBlockEntry block = GetBlock(new Point(x, y));
-					block.Things.Add(t);
-				}
-			}
-		}
-
-		// This puts a secotr in the blockmap
 		public void AddSectorsSet(ICollection<Sector> sectors)
 		{
-			foreach(Sector s in sectors) AddSector(s);
+            foreach (Sector s in sectors) AddSector(s);
 		}
 
-		// This puts a sector in the blockmap
-		public void AddSector(Sector s)
+        public void AddLinedefsSet(ICollection<Linedef> lines)
+        {
+            foreach (Linedef line in lines) AddLinedef(line);
+        }
+
+        public void AddThingsSet(ICollection<Thing> things)
+        {
+            foreach (Thing t in things) AddThing(t);
+        }
+
+        public void AddSector(Sector sector)
+        {
+            root.GetEntry(ToRectangle(sector.BBox)).Sectors.Add(sector);
+        }
+
+        public void AddLinedef(Linedef line)
+        {
+            int x0 = (int)Math.Floor(Math.Min(line.Start.Position.x, line.End.Position.x));
+            int y0 = (int)Math.Floor(Math.Min(line.Start.Position.y, line.End.Position.y));
+            int x1 = (int)Math.Floor(Math.Max(line.Start.Position.x, line.End.Position.x)) + 1;
+            int y1 = (int)Math.Floor(Math.Max(line.Start.Position.y, line.End.Position.y)) + 1;
+            root.GetEntry(new Rectangle(x0, y0, x1 - x0, y1 - y0)).Lines.Add(line);
+        }
+
+        public void AddThing(Thing thing)
+        {
+            int x0 = (int)Math.Floor(thing.Position.x - thing.Size);
+            int x1 = (int)Math.Floor(thing.Position.x + thing.Size) + 1;
+            int y0 = (int)Math.Floor(thing.Position.y - thing.Size);
+            int y1 = (int)Math.Floor(thing.Position.y + thing.Size) + 1;
+            root.GetEntry(new Rectangle(x0, y0, x1 - x0, y1 - y0)).Things.Add(thing);
+        }
+
+        internal void Dispose()
 		{
-			Point p1 = GetBlockCoordinates(new Vector2D(s.BBox.Left, s.BBox.Top));
-			Point p2 = GetBlockCoordinates(new Vector2D(s.BBox.Right, s.BBox.Bottom));
-			for(int x = p1.X; x <= p2.X; x++)
-			{
-				for(int y = p1.Y; y <= p2.Y; y++)
-				{
-					VisualBlockEntry block = GetBlock(new Point(x, y));
-					block.Sectors.Add(s);
-				}
-			}
+            Clear();
 		}
-		
-		// This puts a whole set of linedefs in the blocks they cross
-		public void AddLinedefsSet(ICollection<Linedef> lines)
-		{
-			foreach(Linedef l in lines) AddLinedef(l);
-		}
-		
-		// This puts a single linedef in all blocks it crosses
-		public void AddLinedef(Linedef line)
-		{
-			// Get coordinates
-			Vector2D v1 = line.Start.Position;
-			Vector2D v2 = line.End.Position;
-			
-			// Find start and end block
-			Point pos = GetBlockCoordinates(v1);
-			Point end = GetBlockCoordinates(v2);
-			
-			// Horizontal straight line?
-			if(pos.Y == end.Y)
-			{
-				// Simple loop
-				int dirx = Math.Sign(v2.x - v1.x);
-				for(int x = pos.X; x != end.X; x += dirx)
-				{
-					GetBlock(new Point(x, pos.Y)).Lines.Add(line);
-				}
-				GetBlock(end).Lines.Add(line);
-			}
-			// Vertical straight line?
-			else if(pos.X == end.X)
-			{
-				// Simple loop
-				int diry = Math.Sign(v2.y - v1.y);
-				for(int y = pos.Y; y != end.Y; y += diry)
-				{
-					GetBlock(new Point(pos.X, y)).Lines.Add(line);
-				}
-				GetBlock(end).Lines.Add(line);
-			}
-			else
-			{
-				// Add lines to this block
-				GetBlock(pos).Lines.Add(line);
-				
-				// Moving outside the block?
-				if(pos != end)
-				{
-					// Calculate current block edges
-					float cl = pos.X * BLOCK_SIZE;
-					float cr = (pos.X + 1) * BLOCK_SIZE;
-					float ct = pos.Y * BLOCK_SIZE;
-					float cb = (pos.Y + 1) * BLOCK_SIZE;
-					
-					// Line directions
-					int dirx = Math.Sign(v2.x - v1.x);
-					int diry = Math.Sign(v2.y - v1.y);
-					
-					// Calculate offset and delta movement over x
-					float posx, deltax;
-					if(dirx == 0)
-					{
-						posx = float.MaxValue;
-						deltax = float.MaxValue;
-					}
-					else if(dirx > 0)
-					{
-						posx = (cr - v1.x) / (v2.x - v1.x);
-						deltax = BLOCK_SIZE / (v2.x - v1.x);
-					}
-					else
-					{
-						// Calculate offset and delta movement over x
-						posx = (v1.x - cl) / (v1.x - v2.x);
-						deltax = BLOCK_SIZE / (v1.x - v2.x);
-					}
-					
-					// Calculate offset and delta movement over y
-					float posy, deltay;
-					if(diry == 0)
-					{
-						posy = float.MaxValue;
-						deltay = float.MaxValue;
-					}
-					else if(diry > 0)
-					{
-						posy = (cb - v1.y) / (v2.y - v1.y);
-						deltay = BLOCK_SIZE / (v2.y - v1.y);
-					}
-					else
-					{
-						posy = (v1.y - ct) / (v1.y - v2.y);
-						deltay = BLOCK_SIZE / (v1.y - v2.y);
-					}
-					
-					// Continue while not reached the end
-					while(pos != end)
-					{
-						// Check in which direction to move
-						if(posx < posy)
-						{
-							// Move horizontally
-							posx += deltax;
-							if(pos.X != end.X) pos.X += dirx;
-						}
-						else
-						{
-							// Move vertically
-							posy += deltay;
-							if(pos.Y != end.Y) pos.Y += diry;
-						}
-						
-						// Add lines to this block
-						GetBlock(pos).Lines.Add(line);
-					}
-				}
-			}
-		}
-		
-#endregion
-	}
+
+        static Rectangle ToRectangle(RectangleF bbox)
+        {
+            int x0 = (int)Math.Floor(bbox.Left);
+            int y0 = (int)Math.Floor(bbox.Top);
+            int x1 = (int)Math.Floor(bbox.Right) + 1;
+            int y1 = (int)Math.Floor(bbox.Bottom) + 1;
+            return new Rectangle(x0, y0, x1 - x0, y1 - y0);
+        }
+
+        const int MapMinX = -32768;
+        const int MapMinY = -32768;
+        const int MapMaxX = 32768;
+        const int MapMaxY = 32768;
+        const int MaxLevels = 8;
+
+        Node root = new Node(new Rectangle(MapMinX, MapMinY, MapMaxX - MapMinX, MapMaxY - MapMinY));
+
+        struct Plane
+        {
+            public Plane(Line2D line)
+            {
+                Vector2D dir = line.v2 - line.v1;
+                A = -dir.y;
+                B = dir.x;
+                D = -(line.v1.x * A + line.v1.y * B);
+            }
+
+            public float A, B, D;
+        }
+
+        class Frustum
+        {
+            public Plane[] planes;
+        }
+
+        class Node
+        {
+            enum Visibility { Inside, Intersecting, Outside };
+
+            public Node(Rectangle bbox)
+            {
+                this.bbox = bbox;
+                extents = new Vector2D(bbox.Width * 0.5f, bbox.Height * 0.5f);
+                center = new Vector2D(bbox.X + extents.x, bbox.Y + extents.y);
+            }
+
+            public void GetBlocks(Frustum frustum, ref List<VisualBlockEntry> list)
+            {
+                Visibility vis = TestVisibility(frustum);
+                if (vis == Visibility.Inside)
+                {
+                    GetAllBlocks(ref list);
+                }
+                else if (vis == Visibility.Intersecting)
+                {
+                    if (visualBlock != null)
+                        list.Add(visualBlock);
+
+                    if (topLeft != null)
+                    {
+                        topLeft.GetBlocks(frustum, ref list);
+                        topRight.GetBlocks(frustum, ref list);
+                        bottomLeft.GetBlocks(frustum, ref list);
+                        bottomRight.GetBlocks(frustum, ref list);
+                    }
+                }
+            }
+
+            void GetAllBlocks(ref List<VisualBlockEntry> list)
+            {
+                if (visualBlock != null)
+                    list.Add(visualBlock);
+
+                if (topLeft != null)
+                {
+                    topLeft.GetAllBlocks(ref list);
+                    topRight.GetAllBlocks(ref list);
+                    bottomLeft.GetAllBlocks(ref list);
+                    bottomRight.GetAllBlocks(ref list);
+                }
+            }
+
+            Visibility TestVisibility(Frustum frustum)
+            {
+                Visibility result = Visibility.Inside;
+                for (int i = 0; i < 4; i++)
+                {
+                    Visibility vis = TestFrustumLineVisibility(frustum.planes[i]);
+                    if (vis == Visibility.Outside)
+                        return Visibility.Outside;
+                    else if (vis == Visibility.Intersecting)
+                        result = Visibility.Intersecting;
+                }
+                return result;
+            }
+
+            Visibility TestFrustumLineVisibility(Plane plane)
+            {
+                float e = extents.x * Math.Abs(plane.A) + extents.y * Math.Abs(plane.B);
+                float s = center.x * plane.A + center.y * plane.B + plane.D;
+                if (s - e > 0.0)
+                    return Visibility.Inside;
+                else if (s + e < 0)
+                    return Visibility.Outside;
+                else
+                    return Visibility.Intersecting;
+            }
+
+            public void GetBlocks(Point pos, ref List<VisualBlockEntry> list)
+            {
+                if (visualBlock != null)
+                    list.Add(visualBlock);
+
+                if (topLeft != null)
+                {
+                    if (topLeft.bbox.Contains(pos)) topLeft.GetBlocks(pos, ref list);
+                    if (topRight.bbox.Contains(pos)) topRight.GetBlocks(pos, ref list);
+                    if (bottomLeft.bbox.Contains(pos)) bottomLeft.GetBlocks(pos, ref list);
+                    if (bottomRight.bbox.Contains(pos)) bottomRight.GetBlocks(pos, ref list);
+                }
+            }
+
+            public void GetBlocks(Rectangle box, ref List<VisualBlockEntry> list)
+            {
+                if (visualBlock != null)
+                    list.Add(visualBlock);
+
+                if (topLeft != null)
+                {
+                    if (topLeft.bbox.IntersectsWith(box)) topLeft.GetBlocks(box, ref list);
+                    if (topRight.bbox.IntersectsWith(box)) topRight.GetBlocks(box, ref list);
+                    if (bottomLeft.bbox.IntersectsWith(box)) bottomLeft.GetBlocks(box, ref list);
+                    if (bottomRight.bbox.IntersectsWith(box)) bottomRight.GetBlocks(box, ref list);
+                }
+            }
+
+            public VisualBlockEntry GetEntry(Rectangle box, int level = 0)
+            {
+                if (level == MaxLevels)
+                {
+                    if (visualBlock == null)
+                        visualBlock = new VisualBlockEntry();
+                    return visualBlock;
+                }
+
+                if (topLeft == null)
+                    CreateChildren();
+
+                if (topLeft.bbox.Contains(box)) return topLeft.GetEntry(box, level + 1);
+                if (topRight.bbox.Contains(box)) return topRight.GetEntry(box, level + 1);
+                if (bottomLeft.bbox.Contains(box)) return bottomLeft.GetEntry(box, level + 1);
+                if (bottomRight.bbox.Contains(box)) return bottomRight.GetEntry(box, level + 1);
+
+                if (visualBlock == null)
+                    visualBlock = new VisualBlockEntry();
+                return visualBlock;
+            }
+
+            void CreateChildren()
+            {
+                int x0 = bbox.X;
+                int x1 = bbox.X + bbox.Width / 2;
+                int x2 = bbox.X + bbox.Width;
+                int y0 = bbox.Y;
+                int y1 = bbox.Y + bbox.Height / 2;
+                int y2 = bbox.Y + bbox.Height;
+                topLeft = new Node(new Rectangle(x0, y0, x1 - x0, y1 - y0));
+                topRight = new Node(new Rectangle(x1, y0, x2 - x1, y1 - y0));
+                bottomLeft = new Node(new Rectangle(x0, y1, x1 - x0, y2 - y1));
+                bottomRight = new Node(new Rectangle(x1, y1, x2 - x1, y2 - y1));
+            }
+
+            Rectangle bbox;
+            Vector2D extents;
+            Vector2D center;
+
+            Node topLeft;
+            Node topRight;
+            Node bottomLeft;
+            Node bottomRight;
+            VisualBlockEntry visualBlock;
+        }
+    }
 }

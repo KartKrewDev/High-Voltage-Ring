@@ -600,15 +600,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Get nearby things
 			List<Thing> neighbours = new List<Thing>();
 			RectangleF bbox = new RectangleF(thing.Position.x - thing.Size, thing.Position.y - thing.Size, thing.Size * 2, thing.Size * 2);
-			Point p1 = mode.BlockMap.GetBlockCoordinates(new Vector2D(bbox.Left, bbox.Top));
-			Point p2 = mode.BlockMap.GetBlockCoordinates(new Vector2D(bbox.Right, bbox.Bottom));
-			for(int x = p1.X; x <= p2.X; x++)
-			{
-				for(int y = p1.Y; y <= p2.Y; y++)
-				{
-					neighbours.AddRange(mode.BlockMap.GetBlock(new Point(x, y)).Things);
-				}
-			}
+            foreach (var block in mode.BlockMap.GetBlocks(bbox))
+            {
+                neighbours.AddRange(block.Things);
+            }
 
 			// Collect things intersecting with target thing
 			List<Thing> intersectingthings = new List<Thing>();

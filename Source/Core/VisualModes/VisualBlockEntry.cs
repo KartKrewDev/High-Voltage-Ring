@@ -25,33 +25,15 @@ namespace CodeImp.DoomBuilder.VisualModes
 {
 	public sealed class VisualBlockEntry
 	{
-		#region ================== Variables
+        public List<Linedef> Lines { get; set; }
+		public List<Thing> Things { get; set; }
+		public List<Sector> Sectors { get; set; }
 		
-		// Members
-		private List<Linedef> lines;
-		private List<Thing> things;
-		private List<Sector> sectors;
-		
-		#endregion
-		
-		#region ================== Properties
-		
-		public List<Linedef> Lines { get { return lines; } }
-		public List<Thing> Things { get { return things; } }
-		public List<Sector> Sectors { get { return sectors; } }
-		
-		#endregion
-		
-		#region ================== Constructor
-		
-		// Constructor for empty block
 		internal VisualBlockEntry()
 		{
-			lines = new List<Linedef>(2);
-			things = new List<Thing>(2);
-			sectors = new List<Sector>(2);
+			Lines = new List<Linedef>(2);
+			Things = new List<Thing>(2);
+			Sectors = new List<Sector>(2);
 		}
-		
-		#endregion
 	}
 }

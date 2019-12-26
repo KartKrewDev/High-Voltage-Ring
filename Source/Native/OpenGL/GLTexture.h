@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../Backend.h"
+#include <list>
 
 class GLRenderDevice;
 
@@ -30,6 +31,8 @@ class GLTexture : public Texture
 public:
 	GLTexture();
 	~GLTexture();
+
+	void Finalize();
 
 	void Set2DImage(int width, int height) override;
 	void SetCubeImage(int size) override;
@@ -49,6 +52,7 @@ public:
 	GLuint GetPBO(GLRenderDevice* device);
 
 	GLRenderDevice* Device = nullptr;
+	std::list<GLTexture*>::iterator ItTexture;
 
 private:
 	int mWidth = 0;

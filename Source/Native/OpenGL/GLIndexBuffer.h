@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../Backend.h"
+#include <list>
 
 class GLRenderDevice;
 
@@ -30,9 +31,12 @@ class GLIndexBuffer : public IndexBuffer
 public:
 	~GLIndexBuffer();
 
+	void Finalize();
+
 	GLuint GetBuffer();
 
 	GLRenderDevice* Device = nullptr;
+	std::list<GLIndexBuffer*>::iterator ItBuffer;
 
 private:
 	GLuint mBuffer = 0;
