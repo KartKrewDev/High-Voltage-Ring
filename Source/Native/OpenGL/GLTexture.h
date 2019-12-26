@@ -32,6 +32,8 @@ public:
 	GLTexture();
 	~GLTexture();
 
+	void Finalize();
+
 	void Set2DImage(int width, int height) override;
 	void SetCubeImage(int size) override;
 

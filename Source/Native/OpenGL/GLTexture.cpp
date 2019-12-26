@@ -30,6 +30,11 @@ GLTexture::GLTexture()
 
 GLTexture::~GLTexture()
 {
+	Finalize();
+}
+
+void GLTexture::Finalize()
+{
 	if (Device)
 		Invalidate();
 }

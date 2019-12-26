@@ -87,7 +87,7 @@ GLRenderDevice::~GLRenderDevice()
 		for (GLIndexBuffer* buffer : mIndexBuffers) mDeleteList.IndexBuffers.push_back(buffer);
 		for (GLVertexBuffer* buffer : mSharedVertexBuffers[0]->VertexBuffers) mDeleteList.VertexBuffers.push_back(buffer);
 		for (GLVertexBuffer* buffer : mSharedVertexBuffers[1]->VertexBuffers) mDeleteList.VertexBuffers.push_back(buffer);
-		ProcessDeleteList();
+		ProcessDeleteList(true);
 
 		glDeleteBuffers(1, &mStreamVertexBuffer);
 		glDeleteVertexArrays(1, &mStreamVAO);
@@ -965,13 +965,22 @@ void GLRenderDevice::DeleteObject(GLTexture* texture)
 		delete texture;
 }
 
-void GLRenderDevice::ProcessDeleteList()
+void GLRenderDevice::ProcessDeleteList(bool finalize)
 {
 	std::unique_lock<std::mutex> lock(GLRenderDevice::GetMutex());
 
-	for (auto buffer : mDeleteList.IndexBuffers) delete buffer;
-	for (auto buffer : mDeleteList.VertexBuffers) delete buffer;
-	for (auto texture : mDeleteList.Textures) delete texture;
+	if (!finalize)
+	{
+		for (auto buffer : mDeleteList.IndexBuffers) delete buffer;
+		for (auto buffer : mDeleteList.VertexBuffers) delete buffer;
+		for (auto texture : mDeleteList.Textures) delete texture;
+	}
+	else
+	{
+		for (auto buffer : mDeleteList.IndexBuffers) buffer->Finalize();
+		for (auto buffer : mDeleteList.VertexBuffers) buffer->Finalize();
+		for (auto texture : mDeleteList.Textures) texture->Finalize();
+	}
 
 	mDeleteList.IndexBuffers.clear();
 	mDeleteList.VertexBuffers.clear();

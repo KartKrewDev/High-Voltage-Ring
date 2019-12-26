@@ -31,6 +31,8 @@ class GLIndexBuffer : public IndexBuffer
 public:
 	~GLIndexBuffer();
 
+	void Finalize();
+
 	GLuint GetBuffer();
 
 	GLRenderDevice* Device = nullptr;

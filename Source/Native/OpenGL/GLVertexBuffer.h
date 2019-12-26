@@ -56,6 +56,8 @@ class GLVertexBuffer : public VertexBuffer
 public:
 	~GLVertexBuffer();
 
+	void Finalize();
+
 	VertexFormat Format = VertexFormat::Flat;
 
 	GLRenderDevice* Device = nullptr;

@@ -106,7 +106,7 @@ public:
 	static void DeleteObject(GLIndexBuffer* buffer);
 	static void DeleteObject(GLTexture* texture);
 
-	void ProcessDeleteList();
+	void ProcessDeleteList(bool finalize = false);
 
 	std::unique_ptr<IOpenGLContext> Context;
 
