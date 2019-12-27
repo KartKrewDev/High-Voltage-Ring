@@ -240,16 +240,20 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void PreAction(int multiselectionundogroup)
 		{
 			actionresult = new VisualActionResult();
-			
+
 			PickTargetUnlocked();
-			
+
 			// If the action is not performed on a selected object, clear the
 			// current selection and make a temporary selection for the target.
-			if((target.picked != null) && !target.picked.Selected && (BuilderPlug.Me.VisualModeClearSelection || (selectedobjects.Count == 0)))
+			if ((target.picked != null) && !target.picked.Selected && (BuilderPlug.Me.VisualModeClearSelection || (selectedobjects.Count == 0)))
 			{
 				// Single object, no selection
 				singleselection = true;
-				ClearSelection();
+
+				// Only clear the selection if anything is selected, since it can be very time consuming on huge maps
+				if(BuilderPlug.Me.VisualModeClearSelection && selectedobjects.Count > 0)
+					ClearSelection();
+
 				undocreated = false;
 			}
 			else
@@ -301,8 +305,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			
 			selectionchanged = false;
-			
-			if(singleselection) ClearSelection();
+
+			// Only clear the selection if anything is selected, since it can be very time consuming on huge maps
+			if (singleselection && selectedobjects.Count > 0) ClearSelection();
 			
 			UpdateChangedObjects();
 			ShowTargetInfo();
@@ -2124,7 +2129,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
             //mxd
             if (displaystatus)
             {
-                General.Interface.DisplayStatus(StatusType.Selection, string.Empty);
+               General.Interface.DisplayStatus(StatusType.Selection, string.Empty);
             }
         }
 
