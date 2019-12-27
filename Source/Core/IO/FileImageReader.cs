@@ -557,10 +557,6 @@ namespace CodeImp.DoomBuilder.IO
                     // Clean up
                     ilDeleteImages(1, new IntPtr(&imageid));
 
-                    //mxd. TGA fix
-                    if (imagetype == DevilImageType.IL_TGA)
-                        bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
                     return bmp;
                 }
                 catch (Exception e)
