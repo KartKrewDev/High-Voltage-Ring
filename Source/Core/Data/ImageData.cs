@@ -253,8 +253,7 @@ namespace CodeImp.DoomBuilder.Data
 			LocalLoadImage();
 
 			// Notify the main thread about the change so that sectors can update their buffers
-			IntPtr strptr = Marshal.StringToCoTaskMemAuto(this.name);
-			General.SendMessage(General.MainWindow.Handle, (int)MainForm.ThreadMessages.ImageDataLoaded, strptr, IntPtr.Zero);
+			General.MainWindow.ImageDataLoaded(this.name);
 		}
 		
 		// This requests loading the image

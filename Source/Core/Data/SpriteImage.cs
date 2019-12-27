@@ -71,8 +71,7 @@ namespace CodeImp.DoomBuilder.Data
 			LocalLoadImage();
 
 			// Notify the main thread about the change to redraw display
-			IntPtr strptr = Marshal.StringToCoTaskMemAuto(this.Name);
-			General.SendMessage(General.MainWindow.Handle, (int)MainForm.ThreadMessages.SpriteDataLoaded, strptr, IntPtr.Zero);
+			General.MainWindow.SpriteDataLoaded(this.Name);
 		}
 
 		// This loads the image

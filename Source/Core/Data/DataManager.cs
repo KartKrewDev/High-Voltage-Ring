@@ -789,7 +789,7 @@ namespace CodeImp.DoomBuilder.Data
 				// Done
 				notifiedbusy = false;
 				backgroundloader = null;
-				General.SendMessage(General.MainWindow.Handle, (int)MainForm.ThreadMessages.UpdateStatus, IntPtr.Zero, IntPtr.Zero);
+				General.MainWindow.UpdateStatus();
 			}
 		}
 		
@@ -834,7 +834,7 @@ namespace CodeImp.DoomBuilder.Data
 						if(!notifiedbusy)
 						{
 							notifiedbusy = true;
-							General.SendMessage(General.MainWindow.Handle, (int)MainForm.ThreadMessages.UpdateStatus, IntPtr.Zero, IntPtr.Zero);
+							General.MainWindow.UpdateStatus();
 						}
 						Thread.Sleep(0);
 					}
@@ -848,7 +848,7 @@ namespace CodeImp.DoomBuilder.Data
 							if(!notifiedbusy)
 							{
 								notifiedbusy = true;
-								General.SendMessage(General.MainWindow.Handle, (int)MainForm.ThreadMessages.UpdateStatus, IntPtr.Zero, IntPtr.Zero);
+								General.MainWindow.UpdateStatus();
 							}
 							Thread.Sleep(0);
 						}
@@ -872,14 +872,13 @@ namespace CodeImp.DoomBuilder.Data
 								if(notifiedbusy)
 								{
 									notifiedbusy = false;
-									IntPtr strptr = Marshal.StringToCoTaskMemAuto(deltatimesec);
-									General.SendMessage(General.MainWindow.Handle, (int)MainForm.ThreadMessages.ResourcesLoaded, strptr, IntPtr.Zero);
+									General.MainWindow.ResourcesLoaded(deltatimesec);
 								}
 							}
 							else if(notifiedbusy) //mxd. Sould never happen (?)
 							{
 								notifiedbusy = false;
-								General.SendMessage(General.MainWindow.Handle, (int)MainForm.ThreadMessages.UpdateStatus, IntPtr.Zero, IntPtr.Zero);
+								General.MainWindow.UpdateStatus();
 							}
 							
 							// Wait longer to release CPU resources
@@ -912,7 +911,7 @@ namespace CodeImp.DoomBuilder.Data
 			}
 			
 			// Update icon
-			General.SendMessage(General.MainWindow.Handle, (int)MainForm.ThreadMessages.UpdateStatus, IntPtr.Zero, IntPtr.Zero);
+			General.MainWindow.UpdateStatus();
 		}
 
 		//mxd. This loads a model

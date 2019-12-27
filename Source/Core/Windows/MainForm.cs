@@ -77,23 +77,6 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 		};
 		
-		// Message pump
-		public enum ThreadMessages
-		{
-			// Sent by the background threat to update the status
-			UpdateStatus = General.WM_USER + 1,
-			
-			// This is sent by the background thread when images are loaded
-			// but only when first loaded or when dimensions were changed
-			ImageDataLoaded = General.WM_USER + 2,
-			
-			//mxd. This is sent by the background thread when sprites are loaded
-			SpriteDataLoaded = General.WM_USER + 3,
-
-			//mxd. This is sent by the background thread when all resources are loaded
-			ResourcesLoaded = General.WM_USER + 4,
-		}
-		
 		#endregion 
 
 		#region ================== Delegates
@@ -4125,49 +4108,92 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region ================== Message Pump
-		
-		// This handles messages
-		protected override void WndProc(ref Message m)
+        #region ================== Threadsafe updates
+
+        // This is to avoid spamming the UI thread with messages
+        object syncobject = new object();
+        List<System.Action> uithreadActions = new List<System.Action>();
+
+        void ProcessUIThreadActions()
+        {
+            List<System.Action> actions;
+            lock (syncobject)
+            {
+                actions = uithreadActions;
+                uithreadActions = new List<System.Action>();
+            }
+
+            foreach (System.Action action in actions)
+                action();
+        }
+
+        public void RunOnUIThread(System.Action action)
+        {
+            bool notifyUIThread;
+            lock (syncobject)
+            {
+                notifyUIThread = uithreadActions.Count == 0;
+                uithreadActions.Add(action);
+            }
+            if (notifyUIThread)
+                Invoke(new System.Action(ProcessUIThreadActions));
+        }
+
+        public void UpdateStatus()
+        {
+            RunOnUIThread(() =>
+            {
+                DisplayStatus(status);
+            });
+        }
+
+        public void ImageDataLoaded(string imagename)
+        {
+            RunOnUIThread(() =>
+            {
+                if ((General.Map != null) && (General.Map.Data != null))
+                {
+                    ImageData img = General.Map.Data.GetFlatImage(imagename);
+                    ImageDataLoaded(img);
+                }
+            });
+        }
+
+        public void SpriteDataLoaded(string spritename)
+        {
+            RunOnUIThread(() =>
+            {
+                if ((General.Map != null) && (General.Map.Data != null))
+                {
+                    ImageData img = General.Map.Data.GetSpriteImage(spritename);
+                    if (img != null && img.UsedInMap && !img.IsDisposed)
+                    {
+                        DelayedRedraw();
+                    }
+                }
+            });
+        }
+
+        public void ResourcesLoaded(string loadtime)
+        {
+            RunOnUIThread(() =>
+            {
+                DisplayStatus(StatusType.Info, "Resources loaded in " + loadtime + " seconds");
+            });
+        }
+
+        #endregion
+
+        #region ================== Message Pump
+
+        // This handles messages
+        protected override void WndProc(ref Message m)
 		{
 			// Notify message?
 			switch(m.Msg)
 			{
-				case (int)ThreadMessages.UpdateStatus:
-					DisplayStatus(status);
-					break;
-					
-				case (int)ThreadMessages.ImageDataLoaded:
-					string imagename = Marshal.PtrToStringAuto(m.WParam);
-					Marshal.FreeCoTaskMem(m.WParam);
-					if((General.Map != null) && (General.Map.Data != null))
-					{
-						ImageData img = General.Map.Data.GetFlatImage(imagename);
-						ImageDataLoaded(img);
-					}
-					break;
-
-				case (int)ThreadMessages.SpriteDataLoaded: //mxd
-					string spritename = Marshal.PtrToStringAuto(m.WParam);
-					Marshal.FreeCoTaskMem(m.WParam);
-					if((General.Map != null) && (General.Map.Data != null))
-					{
-						ImageData img = General.Map.Data.GetSpriteImage(spritename);
-						if(img != null && img.UsedInMap && !img.IsDisposed)
-						{
-							DelayedRedraw();
-						}
-					}
-					break;
-
-				case (int)ThreadMessages.ResourcesLoaded: //mxd
-					string loadtime = Marshal.PtrToStringAuto(m.WParam);
-					Marshal.FreeCoTaskMem(m.WParam);
-					DisplayStatus(StatusType.Info, "Resources loaded in " + loadtime + " seconds");
-					break;
-
 				case General.WM_SYSCOMMAND:
 					// We don't want to open a menu when ALT is pressed
 					if(m.WParam.ToInt32() != General.SC_KEYMENU)
