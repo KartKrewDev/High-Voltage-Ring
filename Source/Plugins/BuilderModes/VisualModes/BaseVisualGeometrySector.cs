@@ -242,23 +242,37 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			if(mode.HighlightedTarget is VisualFloor) 
 			{
-				VisualFloor target = (VisualFloor)mode.HighlightedTarget;
+				Sector target;
+				VisualFloor vf = (VisualFloor)mode.HighlightedTarget;
+
+				// Use the control sector if the floor belongs to a 3D floor
+				if (vf.ExtraFloor == null)
+					target = vf.Sector.Sector;
+				else
+					target = vf.GetControlSector();
 
 				// Check texture
-				if(target.Sector.Sector.FloorTexture != (isFloor ? Sector.Sector.FloorTexture : Sector.Sector.CeilTexture))	return;
+				if(target.FloorTexture != (isFloor ? Sector.Sector.FloorTexture : Sector.Sector.CeilTexture))	return;
 
-				scaleX = target.Sector.Sector.Fields.GetValue("xscalefloor", 1.0f);
-				scaleY = target.Sector.Sector.Fields.GetValue("yscalefloor", 1.0f);
+				scaleX = target.Fields.GetValue("xscalefloor", 1.0f);
+				scaleY = target.Fields.GetValue("yscalefloor", 1.0f);
 			} 
 			else 
 			{
-				VisualCeiling target = (VisualCeiling)mode.HighlightedTarget;
+				Sector target;
+				VisualCeiling vc = (VisualCeiling)mode.HighlightedTarget;
+
+				// Use the control sector if the ceiling belongs to a 3D floor
+				if (vc.ExtraFloor == null)
+					target = vc.Sector.Sector;
+				else
+					target = vc.GetControlSector();
 
 				// Check texture
-				if(target.Sector.Sector.CeilTexture != (isFloor ? Sector.Sector.FloorTexture : Sector.Sector.CeilTexture)) return;
+				if(target.CeilTexture != (isFloor ? Sector.Sector.FloorTexture : Sector.Sector.CeilTexture)) return;
 
-				scaleX = target.Sector.Sector.Fields.GetValue("xscaleceiling", 1.0f);
-				scaleY = target.Sector.Sector.Fields.GetValue("yscaleceiling", 1.0f);
+				scaleX = target.Fields.GetValue("xscaleceiling", 1.0f);
+				scaleY = target.Fields.GetValue("yscaleceiling", 1.0f);
 			}
 
 			//find a linedef to align to
@@ -688,13 +702,39 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				if(vg.GeometryType == VisualGeometryType.FLOOR || vg.GeometryType == VisualGeometryType.CEILING) 
 				{
-					if(vg.GeometryType == VisualGeometryType.FLOOR)
-						((VisualFloor)vg).AlignTexture(alignx, aligny);
-					else
-						((VisualCeiling)vg).AlignTexture(alignx, aligny);
+					// Might be a 3D floor, so we might need another VisualGeometry
+					VisualGeometry realvg;
 
-					vg.Sector.Sector.UpdateNeeded = true;
-					vg.Sector.Sector.UpdateCache();
+					if (vg.GeometryType == VisualGeometryType.FLOOR)
+					{
+						if (((VisualFloor)vg).ExtraFloor == null)
+							realvg = vg;
+						else
+						{
+							Sector s = ((VisualFloor)vg).GetControlSector();
+							BaseVisualSector vs = (BaseVisualSector)mode.GetVisualSector(s);
+							realvg = vs.Floor;
+						}
+					}
+					else
+					{
+						if (((VisualCeiling)vg).ExtraFloor == null)
+							realvg = vg;
+						else
+						{
+							Sector s = ((VisualCeiling)vg).GetControlSector();
+							BaseVisualSector vs = (BaseVisualSector)mode.GetVisualSector(s);
+							realvg = vs.Ceiling;
+						}
+					}
+
+					if(realvg.GeometryType == VisualGeometryType.FLOOR)
+							((VisualFloor)realvg).AlignTexture(alignx, aligny);
+					else
+							((VisualCeiling)realvg).AlignTexture(alignx, aligny);
+
+					realvg.Sector.Sector.UpdateNeeded = true;
+					realvg.Sector.Sector.UpdateCache();
 				}
 			}
 
