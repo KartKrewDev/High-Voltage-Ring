@@ -740,8 +740,7 @@ namespace CodeImp.DoomBuilder.Data
 
 			// Start a low priority thread to load images in background
 			General.WriteLogLine("Starting background resource loading...");
-            //int numThreads = Math.Min(Math.Max(Environment.ProcessorCount * 3 / 4, 1), 16); // Use 75% of processors available, minimum one and maximum 16
-            int numThreads = 1; // This sadly has to be 1 right now as otherwise DevIL crashes when called from FileImageReader.ReadAsBitmap
+            int numThreads = Math.Min(Math.Max(Environment.ProcessorCount * 3 / 4, 1), 16); // Use 75% of processors available, minimum one and maximum 16
             backgroundloader = new Thread[numThreads];
             for (int i = 0; i < numThreads; i++)
             {

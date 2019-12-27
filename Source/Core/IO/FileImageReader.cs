@@ -484,113 +484,133 @@ namespace CodeImp.DoomBuilder.IO
 			return bmp;
 		}
 
+        static object syncobject = new object();
+
 		// This reads the image and returns a Bitmap
 		public Bitmap ReadAsBitmap(Stream stream)
 		{
             if (proxyreader != null)
                 return proxyreader.ReadAsBitmap(stream);
 
+            // Let the .net framework try first
             try
-			{
-				// Create an image in DevIL
-				uint imageid = 0;
-				ilGenImages(1, new IntPtr(&imageid));
-				ilBindImage(imageid);
-
-                // Read image data from stream
-                byte[] bytes;
-                if (imagebytes == null)
+            {
+                using (var image = Image.FromStream(stream))
                 {
-                    bytes = new byte[stream.Length];
+                    return new Bitmap(image);
+                }
+            }
+            catch
+            {
+            }
+
+            string error;
+            lock (syncobject) // DevIL is not thread safe.
+            {
+                try
+                {
+                    // Create an image in DevIL
+                    uint imageid = 0;
+                    ilGenImages(1, new IntPtr(&imageid));
+                    ilBindImage(imageid);
+
+                    // Read image data from stream
+                    byte[] bytes;
+                    if (imagebytes == null)
+                    {
+                        bytes = new byte[stream.Length];
+                        stream.Seek(0, SeekOrigin.Begin);
+                        stream.Read(bytes, 0, bytes.Length);
+                        imagebytes = bytes;
+                    }
+                    else bytes = imagebytes;
+
+                    ilEnable(IL_ORIGIN_SET);
+                    ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
+
+                    fixed (byte* bptr = bytes)
+                    {
+                        if (!ilLoadL(imagetype, new IntPtr(bptr), (uint)bytes.Length))
+                            throw new BadImageFormatException();
+                    }
+
+                    // [ZZ] check if there was any error code
+                    DevilError ilerror = (DevilError)ilGetError();
+                    if (ilerror != DevilError.IL_NO_ERROR)
+                        throw new BadImageFormatException("DevIL error: " + ilerror.ToString());
+
+                    // Get the image properties
+                    int width = ilGetInteger(IL_IMAGE_WIDTH);
+                    int height = ilGetInteger(IL_IMAGE_HEIGHT);
+                    if ((width < 1) || (height < 1))
+                        throw new BadImageFormatException();
+
+                    // Convert the image to ARGB if needed
+                    ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE);
+
+                    // Copy the image pixels to a Bitmap
+                    Bitmap bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                    BitmapData bmpdata = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+                    ilCopyPixels(0, 0, 0, (uint)width, (uint)height, 1, IL_BGRA, IL_UNSIGNED_BYTE, bmpdata.Scan0);
+                    bmp.UnlockBits(bmpdata);
+
+                    // Clean up
+                    ilDeleteImages(1, new IntPtr(&imageid));
+
+                    //mxd. TGA fix
+                    if (imagetype == DevilImageType.IL_TGA)
+                        bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+                    return bmp;
+                }
+                catch (Exception e)
+                {
+                    // Remove last error from the stack. Workaround for https://github.com/jewalky/GZDoom-Builder-Bugfix/issues/295
+                    ilGetError();
+
+                    error = "Unable to make file image. " + e.GetType().Name + ": " + e.Message;
+                }
+            }
+
+            // [ZZ] try to make a guessed reader
+            switch (guesstype)
+            {
+                case ImageDataFormat.DOOMPICTURE:
+                    // Check if data is valid for a doom picture
                     stream.Seek(0, SeekOrigin.Begin);
-                    stream.Read(bytes, 0, bytes.Length);
-                    imagebytes = bytes;
-                }
-                else bytes = imagebytes;
+                    DoomPictureReader picreader = new DoomPictureReader(guesspalette);
+                    if (picreader.Validate(stream)) proxyreader = picreader;
+                    break;
 
-                ilEnable(IL_ORIGIN_SET);
-                ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
-
-                fixed (byte* bptr = bytes)
-				{
-					if(!ilLoadL(imagetype, new IntPtr(bptr), (uint)bytes.Length))
-						throw new BadImageFormatException();
-				}
-
-                // [ZZ] check if there was any error code
-                DevilError ilerror = (DevilError)ilGetError();
-                if (ilerror != DevilError.IL_NO_ERROR)
-                    throw new BadImageFormatException("DevIL error: " + ilerror.ToString());
-
-				// Get the image properties
-				int width = ilGetInteger(IL_IMAGE_WIDTH);
-				int height = ilGetInteger(IL_IMAGE_HEIGHT);
-				if((width < 1) || (height < 1))
-					throw new BadImageFormatException();
-				
-				// Convert the image to ARGB if needed
-				ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE);
-
-				// Copy the image pixels to a Bitmap
-				Bitmap bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-				BitmapData bmpdata = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-				ilCopyPixels(0, 0, 0, (uint)width, (uint)height, 1, IL_BGRA, IL_UNSIGNED_BYTE, bmpdata.Scan0);
-				bmp.UnlockBits(bmpdata);
-
-				// Clean up
-				ilDeleteImages(1, new IntPtr(&imageid));
-
-				//mxd. TGA fix
-				if(imagetype == DevilImageType.IL_TGA)
-					bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-				return bmp;
-			}
-			catch(Exception e)
-			{
-				// Remove last error from the stack. Workaround for https://github.com/jewalky/GZDoom-Builder-Bugfix/issues/295
-				ilGetError();
-
-				// [ZZ] try to make a guessed reader
-				switch (guesstype)
-                {
-                    case ImageDataFormat.DOOMPICTURE:
-                        // Check if data is valid for a doom picture
-                        stream.Seek(0, SeekOrigin.Begin);
-                        DoomPictureReader picreader = new DoomPictureReader(guesspalette);
-                        if (picreader.Validate(stream)) proxyreader = picreader;
-                        break;
-
-                    case ImageDataFormat.DOOMFLAT:
-                        // Check if data is valid for a doom flat
-                        stream.Seek(0, SeekOrigin.Begin);
-                        DoomFlatReader flatreader = new DoomFlatReader(guesspalette);
-                        if (flatreader.Validate(stream)) proxyreader = flatreader;
-                        break;
-
-                    case ImageDataFormat.DOOMCOLORMAP:
-                        // Check if data is valid for a doom colormap
-                        stream.Seek(0, SeekOrigin.Begin);
-                        DoomColormapReader colormapreader = new DoomColormapReader(guesspalette);
-                        if (colormapreader.Validate(stream)) proxyreader = colormapreader;
-                        break;
-                }
-
-                if (proxyreader != null)
-                {
+                case ImageDataFormat.DOOMFLAT:
+                    // Check if data is valid for a doom flat
                     stream.Seek(0, SeekOrigin.Begin);
-                    return proxyreader.ReadAsBitmap(stream);
-                }
+                    DoomFlatReader flatreader = new DoomFlatReader(guesspalette);
+                    if (flatreader.Validate(stream)) proxyreader = flatreader;
+                    break;
 
-                // Unable to make bitmap
-                General.ErrorLogger.Add(ErrorType.Error, "Unable to make file image. " + e.GetType().Name + ": " + e.Message);
-				return null;
-			}
-		}
+                case ImageDataFormat.DOOMCOLORMAP:
+                    // Check if data is valid for a doom colormap
+                    stream.Seek(0, SeekOrigin.Begin);
+                    DoomColormapReader colormapreader = new DoomColormapReader(guesspalette);
+                    if (colormapreader.Validate(stream)) proxyreader = colormapreader;
+                    break;
+            }
 
-		// This draws the picture to the given pixel color data
-		// Throws exception on failure
-		public void DrawToPixelData(Stream stream, PixelColor* target, int targetwidth, int targetheight, int x, int y)
+            if (proxyreader != null)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return proxyreader.ReadAsBitmap(stream);
+            }
+
+            // Unable to make bitmap
+            General.ErrorLogger.Add(ErrorType.Error, error);
+            return null;
+        }
+
+        // This draws the picture to the given pixel color data
+        // Throws exception on failure
+        public void DrawToPixelData(Stream stream, PixelColor* target, int targetwidth, int targetheight, int x, int y)
 		{
 			// Get bitmap
 			Bitmap bmp = ReadAsBitmap(stream);
