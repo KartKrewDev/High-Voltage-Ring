@@ -100,8 +100,7 @@ namespace CodeImp.DoomBuilder.Data
 		
 		// Background loading
 		private Queue<ImageData> imageque;
-		private Thread backgroundloader;
-		private volatile bool updatedusedtextures;
+		private Thread[] backgroundloader;
 		private bool notifiedbusy;
 		
 		// Image previews
@@ -203,7 +202,7 @@ namespace CodeImp.DoomBuilder.Data
 			get
 			{
 				if(imageque != null)
-					return (backgroundloader != null) && backgroundloader.IsAlive && ((imageque.Count > 0) || previews.IsLoading);
+					return (backgroundloader != null) && backgroundloader.Any(x => x.IsAlive) && ((imageque.Count > 0) || previews.IsLoading);
 				return false;
 			}
 		}
@@ -741,11 +740,15 @@ namespace CodeImp.DoomBuilder.Data
 
 			// Start a low priority thread to load images in background
 			General.WriteLogLine("Starting background resource loading...");
-			backgroundloader = new Thread(BackgroundLoad);
-			backgroundloader.Name = "Background Loader";
-			backgroundloader.Priority = ThreadPriority.Lowest;
-			backgroundloader.IsBackground = true;
-			backgroundloader.Start();
+            //int numThreads = Math.Min(Math.Max(Environment.ProcessorCount * 3 / 4, 1), 16); // Use 75% of processors available, minimum one and maximum 16
+            int numThreads = 1; // This sadly has to be 1 right now as otherwise DevIL crashes when called from FileImageReader.ReadAsBitmap
+            backgroundloader = new Thread[numThreads];
+            for (int i = 0; i < numThreads; i++)
+            {
+                backgroundloader[i] = new Thread(BackgroundLoad);
+                backgroundloader[i].Name = "Background Loader";
+                backgroundloader[i].Start();
+            }
 		}
 		
 		// This stops background loading
@@ -754,9 +757,9 @@ namespace CodeImp.DoomBuilder.Data
 			General.WriteLogLine("Stopping background resource loading...");
 			if(backgroundloader != null)
 			{
-				// Stop the thread and wait for it to end
-				backgroundloader.Interrupt();
-				backgroundloader.Join();
+                // Stop the thread and wait for it to end
+                foreach (Thread t in backgroundloader) t.Interrupt();
+                foreach (Thread t in backgroundloader) t.Join();
 
 				// Reset load states on all images in the list
 				while(imageque.Count > 0)
@@ -800,9 +803,6 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				do
 				{
-					// Do we have to update the used-in-map status?
-					if(updatedusedtextures) BackgroundUpdateUsedTextures();
-					
 					// Get next item
 					ImageData image = null;
 					lock(imageque)
@@ -836,7 +836,6 @@ namespace CodeImp.DoomBuilder.Data
 							notifiedbusy = true;
 							General.MainWindow.UpdateStatus();
 						}
-						Thread.Sleep(0);
 					}
 					else
 					{
@@ -850,7 +849,6 @@ namespace CodeImp.DoomBuilder.Data
 								notifiedbusy = true;
 								General.MainWindow.UpdateStatus();
 							}
-							Thread.Sleep(0);
 						}
 						else
 						{
@@ -880,13 +878,16 @@ namespace CodeImp.DoomBuilder.Data
 								notifiedbusy = false;
 								General.MainWindow.UpdateStatus();
 							}
-							
-							// Wait longer to release CPU resources
-							Thread.Sleep(50);
-						}
-					}
-				}
-				while(true);
+
+                            // Wait until there's more to do.
+                            lock (imageque)
+                            {
+                                if (imageque.Count == 0) Monitor.Wait(imageque);
+                            }
+                        }
+                    }
+                }
+                while (true);
 			}
 			catch(ThreadInterruptedException) { }
 		}
@@ -899,7 +900,7 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				// Add for loading
 				img.ImageState = ImageLoadState.Loading;
-				lock(imageque) { imageque.Enqueue(img); }
+				lock(imageque) { imageque.Enqueue(img); Monitor.Pulse(imageque); }
 			}
 			
 			// Unload this image?
@@ -907,11 +908,8 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				// Add for unloading
 				img.ImageState = ImageLoadState.Unloading;
-				lock(imageque) { imageque.Enqueue(img); }
+				lock(imageque) { imageque.Enqueue(img); Monitor.Pulse(imageque); }
 			}
-			
-			// Update icon
-			General.MainWindow.UpdateStatus();
 		}
 
 		//mxd. This loads a model
@@ -930,56 +928,6 @@ namespace CodeImp.DoomBuilder.Data
 
 			modeldefentries.Remove(type);
 			return false;
-		}
-
-		// This updates the used-in-map status on all textures and flats
-		private void BackgroundUpdateUsedTextures()
-		{
-			if(General.Map.Config.MixTexturesFlats)
-			{
-				lock(usedtextures)
-				{
-					// Set used on all textures
-					foreach(KeyValuePair<long, ImageData> i in textures)
-					{
-						i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
-						if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
-					}
-
-					// Set used on all flats
-					foreach(KeyValuePair<long, ImageData> i in flats)
-					{
-						i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
-						if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
-					}
-				}
-			}
-			//mxd. Use separate collections
-			else
-			{
-				lock(usedtextures)
-				{
-					// Set used on all textures
-					foreach(KeyValuePair<long, ImageData> i in textures)
-					{
-						i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
-						if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
-					}
-				}
-
-				lock(usedflats)
-				{
-					// Set used on all flats
-					foreach(KeyValuePair<long, ImageData> i in flats)
-					{
-						i.Value.SetUsedInMap(usedflats.ContainsKey(i.Key));
-						if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
-					}
-				}
-			}
-
-			// Done
-			updatedusedtextures = false;
 		}
 		
 		#endregion
@@ -3112,122 +3060,148 @@ namespace CodeImp.DoomBuilder.Data
 		{
 			if(General.Map.Config.MixTexturesFlats)
 			{
-				lock(usedtextures)
+				usedtextures.Clear();
+
+				// Go through the map to find the used textures
+				foreach(Sidedef sd in General.Map.Map.Sidedefs)
 				{
-					usedtextures.Clear();
-
-					// Go through the map to find the used textures
-					foreach(Sidedef sd in General.Map.Map.Sidedefs)
+					// Add used textures to dictionary
+					if(sd.LongHighTexture != MapSet.EmptyLongName)
 					{
-						// Add used textures to dictionary
-						if(sd.LongHighTexture != MapSet.EmptyLongName)
-						{
-							usedtextures[sd.LongHighTexture] = true;
-
-							//mxd. Part of long name support shennanigans
-							if(texturenamesshorttofull.ContainsKey(sd.LongHighTexture))
-								usedtextures[texturenamesshorttofull[sd.LongHighTexture]] = true;
-						}
-						if(sd.LongMiddleTexture != MapSet.EmptyLongName)
-						{
-							usedtextures[sd.LongMiddleTexture] = true;
-
-							//mxd. Part of long name support shennanigans
-							if(texturenamesshorttofull.ContainsKey(sd.LongMiddleTexture))
-								usedtextures[texturenamesshorttofull[sd.LongMiddleTexture]] = true;
-						}
-						if(sd.LongLowTexture != MapSet.EmptyLongName)
-						{
-							usedtextures[sd.LongLowTexture] = true;
-
-							//mxd. Part of long name support shennanigans
-							if(texturenamesshorttofull.ContainsKey(sd.LongLowTexture))
-								usedtextures[texturenamesshorttofull[sd.LongLowTexture]] = true;
-						}
-					}
-
-					// Go through the map to find the used flats
-					foreach(Sector s in General.Map.Map.Sectors)
-					{
-						// Add used flats to dictionary
-						usedtextures[s.LongFloorTexture] = false;
-						usedtextures[s.LongCeilTexture] = false;
+						usedtextures[sd.LongHighTexture] = true;
 
 						//mxd. Part of long name support shennanigans
-						if(flatnamesshorttofull.ContainsKey(s.LongFloorTexture))
-							usedtextures[flatnamesshorttofull[s.LongFloorTexture]] = false;
-						if(flatnamesshorttofull.ContainsKey(s.LongCeilTexture))
-							usedtextures[flatnamesshorttofull[s.LongCeilTexture]] = false;
+						if(texturenamesshorttofull.ContainsKey(sd.LongHighTexture))
+							usedtextures[texturenamesshorttofull[sd.LongHighTexture]] = true;
 					}
+					if(sd.LongMiddleTexture != MapSet.EmptyLongName)
+					{
+						usedtextures[sd.LongMiddleTexture] = true;
+
+						//mxd. Part of long name support shennanigans
+						if(texturenamesshorttofull.ContainsKey(sd.LongMiddleTexture))
+							usedtextures[texturenamesshorttofull[sd.LongMiddleTexture]] = true;
+					}
+					if(sd.LongLowTexture != MapSet.EmptyLongName)
+					{
+						usedtextures[sd.LongLowTexture] = true;
+
+						//mxd. Part of long name support shennanigans
+						if(texturenamesshorttofull.ContainsKey(sd.LongLowTexture))
+							usedtextures[texturenamesshorttofull[sd.LongLowTexture]] = true;
+					}
+				}
+
+				// Go through the map to find the used flats
+				foreach(Sector s in General.Map.Map.Sectors)
+				{
+					// Add used flats to dictionary
+					usedtextures[s.LongFloorTexture] = false;
+					usedtextures[s.LongCeilTexture] = false;
+
+					//mxd. Part of long name support shennanigans
+					if(flatnamesshorttofull.ContainsKey(s.LongFloorTexture))
+						usedtextures[flatnamesshorttofull[s.LongFloorTexture]] = false;
+					if(flatnamesshorttofull.ContainsKey(s.LongCeilTexture))
+						usedtextures[flatnamesshorttofull[s.LongCeilTexture]] = false;
 				}
 			}
 			//mxd. Use separate collections
 			else
 			{
-				lock(usedtextures)
+				usedtextures.Clear();
+
+				// Go through the map to find the used textures
+				foreach(Sidedef sd in General.Map.Map.Sidedefs)
 				{
-					usedtextures.Clear();
-
-					// Go through the map to find the used textures
-					foreach(Sidedef sd in General.Map.Map.Sidedefs)
+					// Add used textures to dictionary
+					if(sd.LongHighTexture != MapSet.EmptyLongName)
 					{
-						// Add used textures to dictionary
-						if(sd.LongHighTexture != MapSet.EmptyLongName)
-						{
-							usedtextures[sd.LongHighTexture] = true;
+						usedtextures[sd.LongHighTexture] = true;
 
-							//mxd. Part of long name support shennanigans
-							if(texturenamesshorttofull.ContainsKey(sd.LongHighTexture))
-								usedtextures[texturenamesshorttofull[sd.LongHighTexture]] = true;
-						}
-						if(sd.LongMiddleTexture != MapSet.EmptyLongName)
-						{
-							usedtextures[sd.LongMiddleTexture] = true;
+						//mxd. Part of long name support shennanigans
+						if(texturenamesshorttofull.ContainsKey(sd.LongHighTexture))
+							usedtextures[texturenamesshorttofull[sd.LongHighTexture]] = true;
+					}
+					if(sd.LongMiddleTexture != MapSet.EmptyLongName)
+					{
+						usedtextures[sd.LongMiddleTexture] = true;
 
-							//mxd. Part of long name support shennanigans
-							if(texturenamesshorttofull.ContainsKey(sd.LongMiddleTexture))
-								usedtextures[texturenamesshorttofull[sd.LongMiddleTexture]] = true;
-						}
-						if(sd.LongLowTexture != MapSet.EmptyLongName)
-						{
-							usedtextures[sd.LongLowTexture] = true;
+						//mxd. Part of long name support shennanigans
+						if(texturenamesshorttofull.ContainsKey(sd.LongMiddleTexture))
+							usedtextures[texturenamesshorttofull[sd.LongMiddleTexture]] = true;
+					}
+					if(sd.LongLowTexture != MapSet.EmptyLongName)
+					{
+						usedtextures[sd.LongLowTexture] = true;
 
-							//mxd. Part of long name support shennanigans
-							if(texturenamesshorttofull.ContainsKey(sd.LongLowTexture))
-								usedtextures[texturenamesshorttofull[sd.LongLowTexture]] = true;
-						}
+						//mxd. Part of long name support shennanigans
+						if(texturenamesshorttofull.ContainsKey(sd.LongLowTexture))
+							usedtextures[texturenamesshorttofull[sd.LongLowTexture]] = true;
 					}
 				}
 
-				lock(usedflats)
+				usedflats.Clear();
+
+				// Go through the map to find the used flats
+				foreach(Sector s in General.Map.Map.Sectors)
 				{
-					usedflats.Clear();
+					// Add used flats to dictionary
+					usedflats[s.LongFloorTexture] = false;
+					usedflats[s.LongCeilTexture] = false;
 
-					// Go through the map to find the used flats
-					foreach(Sector s in General.Map.Map.Sectors)
-					{
-						// Add used flats to dictionary
-						usedflats[s.LongFloorTexture] = false;
-						usedflats[s.LongCeilTexture] = false;
-
-						//mxd. Part of long name support shennanigans
-						if(flatnamesshorttofull.ContainsKey(s.LongFloorTexture))
-							usedflats[flatnamesshorttofull[s.LongFloorTexture]] = false;
-						if(flatnamesshorttofull.ContainsKey(s.LongCeilTexture))
-							usedflats[flatnamesshorttofull[s.LongCeilTexture]] = false;
-					}
+					//mxd. Part of long name support shennanigans
+					if(flatnamesshorttofull.ContainsKey(s.LongFloorTexture))
+						usedflats[flatnamesshorttofull[s.LongFloorTexture]] = false;
+					if(flatnamesshorttofull.ContainsKey(s.LongCeilTexture))
+						usedflats[flatnamesshorttofull[s.LongCeilTexture]] = false;
 				}
 			}
 
 			// Notify the background thread that it needs to update the images
-			updatedusedtextures = true;
-		}
+			if(General.Map.Config.MixTexturesFlats)
+			{
+				// Set used on all textures
+				foreach(KeyValuePair<long, ImageData> i in textures)
+				{
+					i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
+					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+				}
 
-		#endregion
+				// Set used on all flats
+				foreach(KeyValuePair<long, ImageData> i in flats)
+				{
+					i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
+					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+				}
+			}
+			//mxd. Use separate collections
+			else
+			{
+				// Set used on all textures
+				foreach(KeyValuePair<long, ImageData> i in textures)
+				{
+					i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
+					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+				}
 
-		#region ================== mxd. Skybox Making
+				// Set used on all flats
+				foreach(KeyValuePair<long, ImageData> i in flats)
+				{
+					i.Value.SetUsedInMap(usedflats.ContainsKey(i.Key));
+					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+				}
+			}
 
-		internal void SetupSkybox()
+            // Update icon
+            General.MainWindow.UpdateStatus();
+        }
+
+        #endregion
+
+        #region ================== mxd. Skybox Making
+
+        internal void SetupSkybox()
 		{
 			// Get rid of old texture
 			if(skybox != null) skybox.Dispose(); skybox = null;

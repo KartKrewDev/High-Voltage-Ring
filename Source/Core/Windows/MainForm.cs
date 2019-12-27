@@ -4112,33 +4112,12 @@ namespace CodeImp.DoomBuilder.Windows
 
         #region ================== Threadsafe updates
 
-        // This is to avoid spamming the UI thread with messages
-        object syncobject = new object();
-        List<System.Action> uithreadActions = new List<System.Action>();
-
-        void ProcessUIThreadActions()
-        {
-            List<System.Action> actions;
-            lock (syncobject)
-            {
-                actions = uithreadActions;
-                uithreadActions = new List<System.Action>();
-            }
-
-            foreach (System.Action action in actions)
-                action();
-        }
-
         public void RunOnUIThread(System.Action action)
         {
-            bool notifyUIThread;
-            lock (syncobject)
-            {
-                notifyUIThread = uithreadActions.Count == 0;
-                uithreadActions.Add(action);
-            }
-            if (notifyUIThread)
-                Invoke(new System.Action(ProcessUIThreadActions));
+            if (InvokeRequired)
+                Invoke(action);
+            else
+                action();
         }
 
         public void UpdateStatus()
