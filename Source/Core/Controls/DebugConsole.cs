@@ -46,11 +46,11 @@ namespace CodeImp.DoomBuilder
 		private static string storedtext = string.Empty;
 		private static DebugConsole me;
 
-		#endregion
+        #endregion
 
-		#region ================== Properties
+        #region ================== Properties
 
-		public bool AlwaysOnTop { get { return alwaysontop.Checked; } }
+        public bool AlwaysOnTop { get { return alwaysontop.Checked; } }
 		public static int Counter { get { return counter; } }
 
 		#endregion
@@ -106,32 +106,28 @@ namespace CodeImp.DoomBuilder
 		public static void Write(DebugMessageType type, string text) { Write(type, text, true); }
 		public static void Write(DebugMessageType type, string text, bool append)
 		{
-			if(me != null && me.InvokeRequired) 
-			{
-				me.Invoke(new Action<DebugMessageType, string, bool>(Write), new object[] { type, text, append });
-			} 
-			else 
-			{
-				if(messages.Count + 1 > MAX_MESSAGES) lock (messages) { messages.RemoveAt(0); }
-				messages.Add(new KeyValuePair<DebugMessageType, string>(type, text));
-				if(me != null && (me.filters & type) == type) 
-				{
-					me.AddMessage(type, text, true, append);
-				}
-			}
+            if (General.MainWindow == null)
+                return;
+            General.MainWindow.RunOnUIThread(() =>
+            {
+                if (messages.Count + 1 > MAX_MESSAGES) lock (messages) { messages.RemoveAt(0); }
+                messages.Add(new KeyValuePair<DebugMessageType, string>(type, text));
+                if (me != null && (me.filters & type) == type)
+                {
+                    me.AddMessage(type, text, true, append);
+                }
+            });
 		}
 
 		public static void Clear()
 		{
-			if(me != null && me.InvokeRequired)
-			{
-				me.Invoke(new Action(Clear));
-			}
-			else
-			{
-				if(me != null) me.console.Clear();
-				messages.Clear();
-			}
+            if (General.MainWindow == null)
+                return;
+            General.MainWindow.RunOnUIThread(() =>
+            {
+                if (me != null) me.console.Clear();
+                messages.Clear();
+            });
 		}
 
 		public static void StartTimer() 

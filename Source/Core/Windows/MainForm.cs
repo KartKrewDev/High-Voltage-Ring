@@ -282,6 +282,11 @@ namespace CodeImp.DoomBuilder.Windows
 			//mxd. Hints
 			hintsPanel = new HintsPanel();
 			hintsDocker = new Docker("hints", "Help", hintsPanel);
+
+            // [ZZ]
+            InvokeTimer.Tick += new EventHandler(InvokeHandler);
+            InvokeTimer.Interval = 10;
+            InvokeTimer.Start();
 		}
 		
 		#endregion
@@ -4112,12 +4117,37 @@ namespace CodeImp.DoomBuilder.Windows
 
         #region ================== Threadsafe updates
 
+        Timer InvokeTimer = new Timer();
+        List<System.Action> InvokeActions = new List<System.Action>();
+
+        // this is actually InvokeTimer.Tick handler
+        void InvokeHandler(object sender, EventArgs e)
+        {
+            InvokeTimer.Stop();
+
+            List<System.Action> actions = null;
+            lock (InvokeActions)
+            {
+                if (InvokeActions.Count > 0)
+                {
+                    actions = new List<System.Action>();
+                    actions.AddRange(InvokeActions);
+                }
+            }
+
+            if (actions == null)
+                return;
+
+            foreach (System.Action action in actions)
+                action();
+
+            InvokeTimer.Start();
+        }
+
         public void RunOnUIThread(System.Action action)
         {
-            if (InvokeRequired)
-                Invoke(action);
-            else
-                action();
+            if (!InvokeRequired) action();
+            else lock (InvokeActions) InvokeActions.Add(action);
         }
 
         public void UpdateStatus()
@@ -4198,28 +4228,24 @@ namespace CodeImp.DoomBuilder.Windows
 		private delegate void SetWarningsCountCallback(int count, bool blink);
 		internal void SetWarningsCount(int count, bool blink) 
 		{
-			if(this.InvokeRequired)
-			{
-				SetWarningsCountCallback d = SetWarningsCount;
-				this.Invoke(d, new object[] { count, blink });
-				return;
-			}
+            RunOnUIThread(() =>
+            {
+                // Update icon, start annoying blinking if necessary
+                if (count > 0)
+                {
+                    if (blink && !blinkTimer.Enabled) blinkTimer.Start();
+                    warnsLabel.Image = Resources.Warning;
+                }
+                else
+                {
+                    blinkTimer.Stop();
+                    warnsLabel.Image = Resources.WarningOff;
+                    warnsLabel.BackColor = SystemColors.Control;
+                }
 
-			// Update icon, start annoying blinking if necessary
-			if(count > 0) 
-			{
-				if(blink && !blinkTimer.Enabled) blinkTimer.Start();
-				warnsLabel.Image = Resources.Warning;
-			} 
-			else 
-			{
-				blinkTimer.Stop();
-				warnsLabel.Image = Resources.WarningOff;
-				warnsLabel.BackColor = SystemColors.Control;
-			}
-
-			// Update errors count
-			warnsLabel.Text = count.ToString();
+                // Update errors count
+                warnsLabel.Text = count.ToString();
+            });
 		}
 
 		//mxd. Bliks warnings indicator
@@ -4240,7 +4266,10 @@ namespace CodeImp.DoomBuilder.Windows
 			if(!blinkTimer.Enabled) return;
 			try 
 			{
-				this.Invoke(new CallBlink(Blink));
+                RunOnUIThread(() =>
+                {
+                    Blink();
+                });
 			} catch(ObjectDisposedException) { } //la-la-la. We don't care.
 		}
 		
@@ -4465,24 +4494,18 @@ namespace CodeImp.DoomBuilder.Windows
 		#region ================== Updater (mxd)
 
 		private delegate void UpdateAvailableCallback(int remoterev, string changelog);
-		internal void UpdateAvailable(int remoterev, string changelog)
-		{
-			if(this.InvokeRequired)
-			{
-				UpdateAvailableCallback d = UpdateAvailable;
-				this.Invoke(d, new object[] { remoterev, changelog });
-			} 
-			else 
-			{
-				// Show the window
-				UpdateForm form = new UpdateForm(remoterev, changelog);
-				form.FormClosing += delegate
-				{
-					// Update ignored revision number
-					General.Settings.IgnoredRemoteRevision = (form.IgnoreThisUpdate ? remoterev : 0);
-				};
-				form.Show(this);
-			}
+        internal void UpdateAvailable(int remoterev, string changelog)
+        {
+            RunOnUIThread(() => {
+                // Show the window
+                UpdateForm form = new UpdateForm(remoterev, changelog);
+                form.FormClosing += delegate
+                {
+                    // Update ignored revision number
+                    General.Settings.IgnoredRemoteRevision = (form.IgnoreThisUpdate ? remoterev : 0);
+                };
+                form.Show(this);
+            });
 		}
 
 		#endregion
