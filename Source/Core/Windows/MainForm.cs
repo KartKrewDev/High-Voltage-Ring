@@ -282,11 +282,6 @@ namespace CodeImp.DoomBuilder.Windows
 			//mxd. Hints
 			hintsPanel = new HintsPanel();
 			hintsDocker = new Docker("hints", "Help", hintsPanel);
-
-            // [ZZ]
-            InvokeTimer.Tick += new EventHandler(InvokeHandler);
-            InvokeTimer.Interval = 10;
-            InvokeTimer.Start();
 		}
 		
 		#endregion
@@ -4117,37 +4112,23 @@ namespace CodeImp.DoomBuilder.Windows
 
         #region ================== Threadsafe updates
 
-        Timer InvokeTimer = new Timer();
-        List<System.Action> InvokeActions = new List<System.Action>();
-
-        // this is actually InvokeTimer.Tick handler
-        void InvokeHandler(object sender, EventArgs e)
-        {
-            InvokeTimer.Stop();
-
-            List<System.Action> actions = null;
-            lock (InvokeActions)
-            {
-                if (InvokeActions.Count > 0)
-                {
-                    actions = new List<System.Action>();
-                    actions.AddRange(InvokeActions);
-                }
-            }
-
-            if (actions == null)
-                return;
-
-            foreach (System.Action action in actions)
-                action();
-
-            InvokeTimer.Start();
-        }
-
         public void RunOnUIThread(System.Action action)
         {
-            if (!InvokeRequired) action();
-            else lock (InvokeActions) InvokeActions.Add(action);
+            if (!InvokeRequired)
+            {
+                action();
+                return;
+            }
+
+            IAsyncResult result = null;
+            result = BeginInvoke(new System.Action(() =>
+            {
+                action();
+                // this may happen if exiting
+                while (result == null)
+                    System.Threading.Thread.Sleep(1);
+                EndInvoke(result);
+            }));
         }
 
         public void UpdateStatus()

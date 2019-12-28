@@ -151,7 +151,7 @@ namespace CodeImp.DoomBuilder.Rendering
             {
                 ff = new FontFamily(General.Settings.TextLabelFontName);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 ff = General.MainWindow.Font.FontFamily;
             }
