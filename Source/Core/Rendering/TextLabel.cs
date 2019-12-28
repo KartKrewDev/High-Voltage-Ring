@@ -128,18 +128,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				scale = value;
 				font.Dispose();
-
-                FontFamily ff;
-                try
-                {
-                    ff = new FontFamily(General.Settings.TextLabelFontName);
-                }
-                catch (Exception)
-                {
-                    ff = General.MainWindow.Font.FontFamily;
-                }
-
-				font = new Font(ff, (float)Math.Round(scale * 0.75f), (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular));
+				font = new Font(GetFontFamily(), (float)Math.Round(scale * 0.75f), (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular));
 				textsize = Size.Empty; 
 				textureupdateneeded = true;
 			} 
@@ -155,12 +144,26 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		#region ================== Constructor / Disposer
 
+        private FontFamily GetFontFamily()
+        {
+            FontFamily ff;
+            try
+            {
+                ff = new FontFamily(General.Settings.TextLabelFontName);
+            }
+            catch (Exception e)
+            {
+                ff = General.MainWindow.Font.FontFamily;
+            }
+            return ff;
+        }
+
 		// Constructor
 		public TextLabel()
 		{
 			// Initialize
 			this.text = "";
-			this.font = new Font(new FontFamily(General.Settings.TextLabelFontName), General.Settings.TextLabelFontSize, (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular)); //General.Settings.TextLabelFont; //mxd
+			this.font = new Font(GetFontFamily(), General.Settings.TextLabelFontSize, (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular)); //General.Settings.TextLabelFont; //mxd
 			this.location = new Vector2D(); //mxd
 			this.color = new PixelColor(255, 255, 255, 255);
 			this.backcolor = new PixelColor(128, 0, 0, 0);
@@ -186,7 +189,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			// Initialize
 			this.text = "";
-			this.font = new Font(new FontFamily(General.Settings.TextLabelFontName), General.Settings.TextLabelFontSize, (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular)); // General.Settings.TextLabelFont;
+			this.font = new Font(GetFontFamily(), General.Settings.TextLabelFontSize, (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular)); // General.Settings.TextLabelFont;
 			this.location = new Vector2D();
 			this.color = new PixelColor(255, 255, 255, 255);
 			this.backcolor = new PixelColor(128, 0, 0, 0);
