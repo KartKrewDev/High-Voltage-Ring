@@ -484,6 +484,30 @@ namespace CodeImp.DoomBuilder.IO
 			return bmp;
 		}
 
+        // This wraps a stream but makes Close/Dispose do nothing. That prevents.net's Image.FromStream from closing it as we want to fall back to other image loaders.
+        class NoCloseStream : Stream
+        {
+            Stream stream;
+            public NoCloseStream(Stream s) { stream = s; }
+            public override bool CanRead { get { return stream.CanRead; } }
+            public override bool CanSeek { get { return stream.CanSeek; } }
+            public override bool CanWrite { get { return stream.CanWrite; } }
+            public override bool CanTimeout { get { return stream.CanTimeout; } }
+            public override int ReadTimeout { get { return stream.ReadTimeout; } }
+            public override int WriteTimeout { get { return stream.WriteTimeout; } }
+            public override int EndRead(IAsyncResult asyncResult) { return stream.EndRead(asyncResult); }
+            public override void EndWrite(IAsyncResult asyncResult) { stream.EndWrite(asyncResult); }
+            public override int ReadByte() { return stream.ReadByte(); }
+            public override long Length { get { return stream.Length; } }
+            public override void WriteByte(byte value) { stream.WriteByte(value); }
+            public override long Position { get { return stream.Position; } set { stream.Position = value; } }
+            public override void Flush() { stream.Flush(); }
+            public override int Read(byte[] buffer, int offset, int count) { return stream.Read(buffer, offset, count); }
+            public override long Seek(long offset, SeekOrigin origin) { return stream.Seek(offset, origin); }
+            public override void SetLength(long value) { stream.SetLength(value); }
+            public override void Write(byte[] buffer, int offset, int count) { stream.Write(buffer, offset, count); }
+        }
+
         static object syncobject = new object();
 
 		// This reads the image and returns a Bitmap
@@ -495,13 +519,14 @@ namespace CodeImp.DoomBuilder.IO
             // Let the .net framework try first
             try
             {
-                using (var image = Image.FromStream(stream))
+                using (var image = Image.FromStream(new NoCloseStream(stream)))
                 {
                     return new Bitmap(image);
                 }
             }
             catch
             {
+                stream.Seek(0, SeekOrigin.Begin);
             }
 
             string error;
