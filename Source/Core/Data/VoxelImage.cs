@@ -53,13 +53,13 @@ namespace CodeImp.DoomBuilder.Data
 
 		#region ================== Methods
 
-		override public void LoadImage()
+		override public void LoadImage(bool notify)
 		{
 			// Do the loading
 			LocalLoadImage();
 
 			// Notify the main thread about the change to redraw display
-			General.MainWindow.SpriteDataLoaded(this.Name);
+			if (notify) General.MainWindow.SpriteDataLoaded(this.Name);
 		}
 
 		// This loads the image

@@ -246,14 +246,19 @@ namespace CodeImp.DoomBuilder.Data
 			}
 		}
 		
+        public void LoadImage()
+        {
+            LoadImage(true);
+        }
+
 		// This loads the image
-		public virtual void LoadImage()
+		public virtual void LoadImage(bool notify)
 		{
 			// Do the loading
 			LocalLoadImage();
 
 			// Notify the main thread about the change so that sectors can update their buffers
-			General.MainWindow.ImageDataLoaded(this.name);
+			if (notify) General.MainWindow.ImageDataLoaded(this.name);
 		}
 		
 		// This requests loading the image

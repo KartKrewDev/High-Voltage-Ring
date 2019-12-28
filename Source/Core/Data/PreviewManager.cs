@@ -106,7 +106,7 @@ namespace CodeImp.DoomBuilder.Data
 			lock(img)
 			{
 				// Load image if needed
-				if(!img.IsImageLoaded) img.LoadImage();
+				if(!img.IsImageLoaded) img.LoadImage(false);
 				int imagewidth, imageheight;
 				Bitmap image = img.GetBitmap(); //mxd
                 Bitmap preview;
