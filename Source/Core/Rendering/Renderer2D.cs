@@ -977,7 +977,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				pos.y = y;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
 
-                gridplotter.DrawGridLineH((int)pos.y, (int)Math.Round(from + 0.49999f), (int)Math.Round(to + 0.49999f), ref c);
+                gridplotter.DrawGridLineH((int)Math.Round(pos.y + 0.49999f), (int)from, (int)to, ref c);
             }
 
 			// Draw all vertical grid lines
@@ -2074,7 +2074,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			// Draw line. mxd: added 3d-floor indication
 			if(l.ExtraFloorFlag && General.Settings.GZMarkExtraFloors)
-				plotter.DrawLine3DFloor(TransformY(v1), TransformY(v2), ref c, General.Colors.ThreeDFloor);
+				plotter.DrawLine3DFloor((int)v1.x, TransformY((int)v1.y), (int)v2.x, TransformY((int)v2.y), ref c, General.Colors.ThreeDFloor);
 			else
 				plotter.DrawLineSolid((int)v1.x, TransformY((int)v1.y), (int)v2.x, TransformY((int)v2.y), ref c);
 
@@ -2110,7 +2110,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				// Draw line. mxd: added 3d-floor indication
 				if(l.ExtraFloorFlag && General.Settings.GZMarkExtraFloors)
-					plotter.DrawLine3DFloor(TransformY(v1), TransformY(v2), ref c, General.Colors.ThreeDFloor);
+					plotter.DrawLine3DFloor((int)v1.x, TransformY((int)v1.y), (int)v2.x, TransformY((int)v2.y), ref c, General.Colors.ThreeDFloor);
 				else
 					plotter.DrawLineSolid((int)v1.x, TransformY((int)v1.y), (int)v2.x, TransformY((int)v2.y), ref c);
 
