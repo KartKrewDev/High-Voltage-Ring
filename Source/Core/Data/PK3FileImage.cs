@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System;
+using System.Drawing;
 using System.IO;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.IO;
@@ -109,59 +110,46 @@ namespace CodeImp.DoomBuilder.Data
 		}
 
 		// This loads the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
-			// Leave when already loaded
-			if(this.IsImageLoaded) return;
+            // Load file data
+            Bitmap bitmap = null;
+            string error = null;
+			MemoryStream filedata = datareader.LoadFile(filepathname); //mxd
 
-			lock(this)
+            isBadForLongTextureNames = false;
+
+            if (filedata != null)
 			{
-				// Load file data
-				if(bitmap != null) bitmap.Dispose(); bitmap = null;
-				MemoryStream filedata = datareader.LoadFile(filepathname); //mxd
-
-                isBadForLongTextureNames = false;
-
-                if (filedata != null)
+				// Get a reader for the data
+				IImageReader reader = ImageDataFormat.GetImageReader(filedata, probableformat, General.Map.Data.Palette);
+				if(!(reader is UnknownImageReader))
 				{
-					// Get a reader for the data
-					IImageReader reader = ImageDataFormat.GetImageReader(filedata, probableformat, General.Map.Data.Palette);
-					if(!(reader is UnknownImageReader))
+                    // Load the image
+                    filedata.Seek(0, SeekOrigin.Begin);
+					try
 					{
-                        // Load the image
-                        filedata.Seek(0, SeekOrigin.Begin);
-						try
-						{
-							bitmap = reader.ReadAsBitmap(filedata);
-						}
-						catch(InvalidDataException)
-						{
-							// Data cannot be read!
-							bitmap = null;
-						}
+						bitmap = reader.ReadAsBitmap(filedata);
 					}
-
-					// Not loaded?
-					if(bitmap == null)
+					catch(InvalidDataException)
 					{
-						General.ErrorLogger.Add(ErrorType.Error, "Image file \"" + filepathname + "\" data format could not be read, while loading texture \"" + this.Name + "\"");
-						loadfailed = true;
+						// Data cannot be read!
+						bitmap = null;
 					}
-					else
-					{
-						// Get width and height from image
-						width = bitmap.Size.Width;
-						height = bitmap.Size.Height;
-					}
-
-					filedata.Dispose();
 				}
 
-				// Pass on to base
-				base.LocalLoadImage();
+				// Not loaded?
+				if(bitmap == null)
+				{
+					error = "Image file \"" + filepathname + "\" data format could not be read, while loading texture \"" + this.Name + "\"";
+				}
+
+				filedata.Dispose();
 			}
-		}
-		
-		#endregion
-	}
+
+            return new LocalLoadResult(bitmap, error);
+        }
+
+        #endregion
+    }
 }

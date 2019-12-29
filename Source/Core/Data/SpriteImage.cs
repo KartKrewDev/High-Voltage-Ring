@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using CodeImp.DoomBuilder.IO;
@@ -68,87 +69,73 @@ namespace CodeImp.DoomBuilder.Data
 		override public void LoadImage(bool notify)
 		{
 			// Do the loading
-			LocalLoadImage();
+			base.LoadImage(false);
 
 			// Notify the main thread about the change to redraw display
 			if (notify) General.MainWindow.SpriteDataLoaded(this.Name);
 		}
 
 		// This loads the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
-			// Leave when already loaded
-			if(this.IsImageLoaded) return;
-
-			lock(this)
+            // Get the lump data stream
+            Bitmap bitmap = null;
+            string error = null;
+			string spritelocation = string.Empty; //mxd
+			Stream lumpdata = General.Map.Data.GetSpriteData(Name, ref spritelocation);
+			if(lumpdata != null)
 			{
-				// Get the lump data stream
-				string spritelocation = string.Empty; //mxd
-				Stream lumpdata = General.Map.Data.GetSpriteData(Name, ref spritelocation);
-				if(lumpdata != null)
+				// Copy lump data to memory
+				byte[] membytes = new byte[(int)lumpdata.Length];
+
+				lock(lumpdata) //mxd
 				{
-					// Copy lump data to memory
-					byte[] membytes = new byte[(int)lumpdata.Length];
-
-					lock(lumpdata) //mxd
-					{
-						lumpdata.Seek(0, SeekOrigin.Begin);
-						lumpdata.Read(membytes, 0, (int)lumpdata.Length);
-					}
+					lumpdata.Seek(0, SeekOrigin.Begin);
+					lumpdata.Read(membytes, 0, (int)lumpdata.Length);
+				}
 					
-					MemoryStream mem = new MemoryStream(membytes);
-					mem.Seek(0, SeekOrigin.Begin);
+				MemoryStream mem = new MemoryStream(membytes);
+				mem.Seek(0, SeekOrigin.Begin);
 					
-					// Get a reader for the data
-					IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-					if(reader is UnknownImageReader)
-					{
-						// Data is in an unknown format!
-						General.ErrorLogger.Add(ErrorType.Error, "Sprite lump \"" + Path.Combine(spritelocation, Name) + "\" data format could not be read. Does this lump contain valid picture data at all?");
-						bitmap = null;
-					}
-					else
-					{
-						// Read data as bitmap
-						mem.Seek(0, SeekOrigin.Begin);
-						if(bitmap != null) bitmap.Dispose();
-						bitmap = reader.ReadAsBitmap(mem, out offsetx, out offsety);
-					}
-					
-					// Done
-					mem.Dispose();
-
-					if(bitmap != null)
-					{
-						// Get width and height from image
-						width = bitmap.Size.Width;
-						height = bitmap.Size.Height;
-						scale.x = 1.0f;
-						scale.y = 1.0f;
-						
-						// Make offset corrections if the offset was not given
-						if((offsetx == int.MinValue) || (offsety == int.MinValue))
-						{
-							offsetx = (int)((width * scale.x) * 0.5f);
-							offsety = (int)(height * scale.y);
-						}
-					}
-					else
-					{
-						loadfailed = true;
-					}
+				// Get a reader for the data
+				IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
+				if(reader is UnknownImageReader)
+				{
+					// Data is in an unknown format!
+					error = "Sprite lump \"" + Path.Combine(spritelocation, Name) + "\" data format could not be read. Does this lump contain valid picture data at all?";
+					bitmap = null;
 				}
 				else
 				{
-					// Missing a patch lump!
-					General.ErrorLogger.Add(ErrorType.Error, "Missing sprite lump \"" + Name + "\". Forgot to include required resources?");
+					// Read data as bitmap
+					mem.Seek(0, SeekOrigin.Begin);
+					if(bitmap != null) bitmap.Dispose();
+					bitmap = reader.ReadAsBitmap(mem, out offsetx, out offsety);
 				}
-
-				// Pass on to base
-				base.LocalLoadImage();
+					
+				// Done
+				mem.Dispose();
 			}
-		}
+			else
+			{
+				// Missing a patch lump!
+				error = "Missing sprite lump \"" + Name + "\". Forgot to include required resources?";
+			}
 
-		#endregion
-	}
+            return new LocalLoadResult(bitmap, error, () =>
+            {
+                scale.x = 1.0f;
+                scale.y = 1.0f;
+
+                // Make offset corrections if the offset was not given
+                if ((offsetx == int.MinValue) || (offsety == int.MinValue))
+                {
+                    offsetx = (int)((width * scale.x) * 0.5f);
+                    offsety = (int)(height * scale.y);
+                }
+            });
+        }
+
+        #endregion
+    }
 }

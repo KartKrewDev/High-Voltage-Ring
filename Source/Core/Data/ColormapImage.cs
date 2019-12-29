@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System;
+using System.Drawing;
 using System.IO;
 using CodeImp.DoomBuilder.IO;
 
@@ -44,66 +45,52 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Methods
 
 		// This loads the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
-			// Leave when already loaded
-			if(this.IsImageLoaded) return;
+            Bitmap bitmap = null;
+            string error = null;
 
-			lock(this)
+			// Get the lump data stream
+			Stream lumpdata = General.Map.Data.GetColormapData(Name);
+			if(lumpdata != null)
 			{
-				// Get the lump data stream
-				Stream lumpdata = General.Map.Data.GetColormapData(Name);
-				if(lumpdata != null)
+				// Copy lump data to memory
+				lumpdata.Seek(0, SeekOrigin.Begin);
+				byte[] membytes = new byte[(int)lumpdata.Length];
+				lumpdata.Read(membytes, 0, (int)lumpdata.Length);
+				MemoryStream mem = new MemoryStream(membytes);
+				mem.Seek(0, SeekOrigin.Begin);
+
+				// Get a reader for the data
+				IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMCOLORMAP, General.Map.Data.Palette);
+				if(reader is UnknownImageReader)
 				{
-					// Copy lump data to memory
-					lumpdata.Seek(0, SeekOrigin.Begin);
-					byte[] membytes = new byte[(int)lumpdata.Length];
-					lumpdata.Read(membytes, 0, (int)lumpdata.Length);
-					MemoryStream mem = new MemoryStream(membytes);
-					mem.Seek(0, SeekOrigin.Begin);
-
-					// Get a reader for the data
-					IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMCOLORMAP, General.Map.Data.Palette);
-					if(reader is UnknownImageReader)
-					{
-						// Data is in an unknown format!
-						General.ErrorLogger.Add(ErrorType.Error, "Colormap lump \"" + Name + "\" data format could not be read. Does this lump contain valid colormap data at all?");
-						bitmap = null;
-					}
-					else
-					{
-						// Read data as bitmap
-						mem.Seek(0, SeekOrigin.Begin);
-						if(bitmap != null) bitmap.Dispose();
-						bitmap = reader.ReadAsBitmap(mem);
-					}
-
-					// Done
-					mem.Dispose();
-
-					if(bitmap != null)
-					{
-						// Get width and height from image and set the scale
-						width = bitmap.Size.Width;
-						height = bitmap.Size.Height;
-						scale.x = General.Map.Config.DefaultFlatScale;
-						scale.y = General.Map.Config.DefaultFlatScale;
-					}
-					else
-					{
-						loadfailed = true;
-					}
+					// Data is in an unknown format!
+					error = "Colormap lump \"" + Name + "\" data format could not be read. Does this lump contain valid colormap data at all?";
+					bitmap = null;
 				}
 				else
 				{
-					// Missing a patch lump!
-					General.ErrorLogger.Add(ErrorType.Error, "Missing colormap lump \"" + Name + "\". Did you forget to include required resources?");
-					loadfailed = true;
+					// Read data as bitmap
+					mem.Seek(0, SeekOrigin.Begin);
+					if(bitmap != null) bitmap.Dispose();
+					bitmap = reader.ReadAsBitmap(mem);
 				}
 
-				// Pass on to base
-				base.LocalLoadImage();
+				// Done
+				mem.Dispose();
 			}
+			else
+			{
+				// Missing a patch lump!
+				error = "Missing colormap lump \"" + Name + "\". Did you forget to include required resources?";
+			}
+
+            return new LocalLoadResult(bitmap, error, () =>
+            {
+                scale.x = General.Map.Config.DefaultFlatScale;
+                scale.y = General.Map.Config.DefaultFlatScale;
+            });
 		}
 
 		#endregion

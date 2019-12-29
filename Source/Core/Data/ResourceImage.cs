@@ -69,28 +69,21 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Methods
 
 		// This loads the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
-			if(IsImageLoaded) return; //mxd. ResourceImages can't be unloaded, so no need to reload them.
-			
-			lock(this)
-			{
-				// No failure checking here. If anything fails here, it is not the user's fault,
-				// because the resources this loads are in the assembly.
+			// No failure checking here. If anything fails here, it is not the user's fault,
+			// because the resources this loads are in the assembly.
 				
-				// Get resource from memory
-				Stream bitmapdata = assembly.GetManifestResourceStream(resourcename);
-				if(bitmap != null) bitmap.Dispose();
-				bitmap = (Bitmap)Image.FromStream(bitmapdata);
-				bitmapdata.Dispose();
-				
-				// Pass on to base
-				base.LocalLoadImage();
-			}
-		}
+			// Get resource from memory
+			Stream bitmapdata = assembly.GetManifestResourceStream(resourcename);
+			var bitmap = (Bitmap)Image.FromStream(bitmapdata);
+			bitmapdata.Dispose();
 
-		//mxd
-		public override Image GetPreview() 
+            return new LocalLoadResult(bitmap);
+        }
+
+        //mxd
+        public override Image GetPreview() 
 		{
 			return base.GetBitmap();
 		}

@@ -4117,18 +4117,11 @@ namespace CodeImp.DoomBuilder.Windows
             if (!InvokeRequired)
             {
                 action();
-                return;
             }
-
-            IAsyncResult result = null;
-            result = BeginInvoke(new System.Action(() =>
+            else
             {
-                action();
-                // this may happen if exiting
-                while (result == null)
-                    System.Threading.Thread.Sleep(1);
-                EndInvoke(result);
-            }));
+                Invoke(action);
+            }
         }
 
         public void UpdateStatus()

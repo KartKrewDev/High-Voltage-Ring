@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System;
+using System.Drawing;
 using System.IO;
 using CodeImp.DoomBuilder.IO;
 
@@ -45,74 +46,59 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Methods
 
 		// This loads the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
-			// Leave when already loaded
-			if(this.IsImageLoaded) return;
+            Bitmap bitmap = null;
+            string error = null;
 
-			lock(this)
+			// Get the lump data stream
+			string flatlocation = string.Empty; //mxd
+			Stream lumpdata = General.Map.Data.GetFlatData(Name, hasLongName, ref flatlocation);
+			if(lumpdata != null)
 			{
-				// Get the lump data stream
-				string flatlocation = string.Empty; //mxd
-				Stream lumpdata = General.Map.Data.GetFlatData(Name, hasLongName, ref flatlocation);
-				if(lumpdata != null)
+				// Copy lump data to memory
+				byte[] membytes = new byte[(int)lumpdata.Length];
+
+				lock(lumpdata) //mxd
 				{
-					// Copy lump data to memory
-					byte[] membytes = new byte[(int)lumpdata.Length];
-
-					lock(lumpdata) //mxd
-					{
-						lumpdata.Seek(0, SeekOrigin.Begin);
-						lumpdata.Read(membytes, 0, (int)lumpdata.Length);
-					}
+					lumpdata.Seek(0, SeekOrigin.Begin);
+					lumpdata.Read(membytes, 0, (int)lumpdata.Length);
+				}
 					
-					MemoryStream mem = new MemoryStream(membytes);
-					mem.Seek(0, SeekOrigin.Begin);
+				MemoryStream mem = new MemoryStream(membytes);
+				mem.Seek(0, SeekOrigin.Begin);
 
-					// Get a reader for the data
-					IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
-					if(reader is UnknownImageReader)
-					{
-						// Data is in an unknown format!
-						General.ErrorLogger.Add(ErrorType.Error, "Flat lump \"" + Path.Combine(flatlocation, Name) + "\" data format could not be read. Does this lump contain valid picture data at all?");
-						bitmap = null;
-					}
-					else
-					{
-						// Read data as bitmap
-						mem.Seek(0, SeekOrigin.Begin);
-						if(bitmap != null) bitmap.Dispose();
-						bitmap = reader.ReadAsBitmap(mem);
-					}
-
-					// Done
-					mem.Dispose();
-
-					if(bitmap != null)
-					{
-						// Get width and height from image and set the scale
-						width = bitmap.Size.Width;
-						height = bitmap.Size.Height;
-						scale.x = General.Map.Config.DefaultFlatScale;
-						scale.y = General.Map.Config.DefaultFlatScale;
-					}
-					else
-					{
-						loadfailed = true;
-					}
+				// Get a reader for the data
+				IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
+				if(reader is UnknownImageReader)
+				{
+					// Data is in an unknown format!
+					error = "Flat lump \"" + Path.Combine(flatlocation, Name) + "\" data format could not be read. Does this lump contain valid picture data at all?";
+					bitmap = null;
 				}
 				else
 				{
-					// Missing a patch lump!
-					General.ErrorLogger.Add(ErrorType.Error, "Missing flat lump \"" + Name + "\". Did you forget to include required resources?");
-					loadfailed = true;
+					// Read data as bitmap
+					mem.Seek(0, SeekOrigin.Begin);
+					bitmap = reader.ReadAsBitmap(mem);
 				}
 
-				// Pass on to base
-				base.LocalLoadImage();
+				// Done
+				mem.Dispose();
 			}
-		}
+			else
+			{
+				// Missing a patch lump!
+				error = "Missing flat lump \"" + Name + "\". Did you forget to include required resources?";
+			}
 
-		#endregion
-	}
+            return new LocalLoadResult(bitmap, error, () =>
+            {
+                scale.x = General.Map.Config.DefaultFlatScale;
+                scale.y = General.Map.Config.DefaultFlatScale;
+            });
+        }
+
+        #endregion
+    }
 }

@@ -108,86 +108,73 @@ namespace CodeImp.DoomBuilder.Data
 		}
 
 		// This loads the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
-			// Checks
-			if(this.IsImageLoaded) return;
+            // Get the patch data stream
+            Bitmap bitmap = null;
+            string error = null;
+			string sourcelocation = string.Empty;
+			Stream data = General.Map.Data.GetHiResTextureData(shortname, ref sourcelocation);
+			if(data != null)
+			{
+				// Copy patch data to memory
+				byte[] membytes = new byte[(int)data.Length];
 
-			lock(this)
-			{ 
-				// Get the patch data stream
-				if(bitmap != null) bitmap.Dispose(); bitmap = null;
-				string sourcelocation = string.Empty;
-				Stream data = General.Map.Data.GetHiResTextureData(shortname, ref sourcelocation);
-				if(data != null)
+				lock(data) //mxd
 				{
-					// Copy patch data to memory
-					byte[] membytes = new byte[(int)data.Length];
-
-					lock(data) //mxd
-					{
-						data.Seek(0, SeekOrigin.Begin);
-						data.Read(membytes, 0, (int)data.Length);
-					}
+					data.Seek(0, SeekOrigin.Begin);
+					data.Read(membytes, 0, (int)data.Length);
+				}
 					
-					MemoryStream mem = new MemoryStream(membytes);
-					mem.Seek(0, SeekOrigin.Begin);
+				MemoryStream mem = new MemoryStream(membytes);
+				mem.Seek(0, SeekOrigin.Begin);
 
-					// Get a reader for the data
-					IImageReader reader = ImageDataFormat.GetImageReader(mem, (isFlat ? ImageDataFormat.DOOMFLAT : ImageDataFormat.DOOMPICTURE), General.Map.Data.Palette);
-					if(!(reader is UnknownImageReader))
-					{
-						// Load the image
-						mem.Seek(0, SeekOrigin.Begin);
-						try { bitmap = reader.ReadAsBitmap(mem); }
-						catch(InvalidDataException)
-						{
-							// Data cannot be read!
-							bitmap = null;
-						}
-					}
-
-					// Not loaded?
-					if(bitmap == null)
-					{
-						General.ErrorLogger.Add(ErrorType.Error, "Image lump \"" + Path.Combine(sourcelocation, filepathname.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)) + "\" data format could not be read, while loading HiRes texture \"" + this.Name + "\". Does this lump contain valid picture data at all?");
-						loadfailed = true;
-					}
-					else
-					{
-						// Get width and height from image
-						width = bitmap.Size.Width;
-						height = bitmap.Size.Height;
-
-						// Apply source overrides?
-						if(!sourcesize.IsEmpty)
-						{
-							scale = new Vector2D(ScaledWidth / width, ScaledHeight / height);
-						}
-						else 
-						{
-							if(overridesettingsapplied)
-								General.ErrorLogger.Add(ErrorType.Warning, "Unable to get source texture dimensions while loading HiRes texture \"" + this.Name + "\".");
-
-							// Use our own size...
-							sourcesize = new Size(width, height);
-						}
-					}
-
-					// Done
-					mem.Dispose();
-				}
-				else
+				// Get a reader for the data
+				IImageReader reader = ImageDataFormat.GetImageReader(mem, (isFlat ? ImageDataFormat.DOOMFLAT : ImageDataFormat.DOOMPICTURE), General.Map.Data.Palette);
+				if(!(reader is UnknownImageReader))
 				{
-					General.ErrorLogger.Add(ErrorType.Error, "Image lump \"" + shortname + "\" could not be found, while loading HiRes texture \"" + this.Name + "\". Did you forget to include required resources?");
-					loadfailed = true;
+					// Load the image
+					mem.Seek(0, SeekOrigin.Begin);
+					try { bitmap = reader.ReadAsBitmap(mem); }
+					catch(InvalidDataException)
+					{
+						// Data cannot be read!
+						bitmap = null;
+					}
 				}
-				
-				// Pass on to base
-				base.LocalLoadImage();
+
+				// Not loaded?
+				if(bitmap == null)
+				{
+					error = "Image lump \"" + Path.Combine(sourcelocation, filepathname.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)) + "\" data format could not be read, while loading HiRes texture \"" + this.Name + "\". Does this lump contain valid picture data at all?";
+				}
+
+				// Done
+				mem.Dispose();
 			}
-		}
-		
-		#endregion
-	}
+			else
+			{
+				error = "Image lump \"" + shortname + "\" could not be found, while loading HiRes texture \"" + this.Name + "\". Did you forget to include required resources?";
+			}
+
+            return new LocalLoadResult(bitmap, error, () =>
+            {
+                // Apply source overrides?
+                if (!sourcesize.IsEmpty)
+                {
+                    scale = new Vector2D(ScaledWidth / width, ScaledHeight / height);
+                }
+                else
+                {
+                    if (overridesettingsapplied)
+                        General.ErrorLogger.Add(ErrorType.Warning, "Unable to get source texture dimensions while loading HiRes texture \"" + this.Name + "\".");
+
+                    // Use our own size...
+                    sourcesize = new Size(width, height);
+                }
+            });
+        }
+
+        #endregion
+    }
 }

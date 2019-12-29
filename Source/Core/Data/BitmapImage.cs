@@ -57,19 +57,12 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Methods
 
 		// This loads the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
-			lock(this)
-			{
-				// No failure checking here. I anything fails here, it is not the user's fault,
-				// because the resources this loads are in the assembly.
+			// No failure checking here. I anything fails here, it is not the user's fault,
+			// because the resources this loads are in the assembly.
 
-				// Get resource from memory
-				bitmap = img;
-
-				// Pass on to base
-				base.LocalLoadImage();
-			}
+			return new LocalLoadResult(img);
 		}
 
 		#endregion

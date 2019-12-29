@@ -42,7 +42,7 @@ namespace CodeImp.DoomBuilder.Data
 			this.loadbitmap = image;
 			SetName("");
 			
-			LocalLoadImage();
+			LoadImage(false);
 			
 			// We have no destructor
 			GC.SuppressFinalize(this);
@@ -53,23 +53,16 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Methods
 		
 		// This 'loads' the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
-			//mxd. Leave when already loaded
-			if(this.IsImageLoaded) return;
-			
-			bitmap = loadbitmap;
-			base.LocalLoadImage();
-		}
+            return new LocalLoadResult(loadbitmap);
+        }
 
-		// This returns a preview image
-		public override Image GetPreview()
+        // This returns a preview image
+        public override Image GetPreview()
 		{
-			lock(this)
-			{
-				// Make a copy
-				return new Bitmap(loadbitmap);
-			}
+			// To do: do we actually need a copy here?
+			return new Bitmap(loadbitmap);
 		}
 
 		#endregion

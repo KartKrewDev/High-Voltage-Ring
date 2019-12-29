@@ -56,42 +56,31 @@ namespace CodeImp.DoomBuilder.Data
 		protected override void LocalLoadImage()
 		{
 			// Leave when already loaded
-			if(this.IsImageLoaded) return;
 			if((width == 0) || (height == 0)) return;
 
-			lock(this)
+			// Create bitmap
+            Bitmap bitmap = null;
+            string error = null;
+			try
 			{
-				// Create bitmap
-				try
+				bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+				BitmapData bitmapdata = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+				PixelColor* pixels = (PixelColor*)bitmapdata.Scan0.ToPointer();
+				for(int i = 0; i < (width * height); i++)
 				{
-					if(bitmap != null) bitmap.Dispose();
-					bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-					BitmapData bitmapdata = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-					PixelColor* pixels = (PixelColor*)bitmapdata.Scan0.ToPointer();
-					for(int i = 0; i < (width * height); i++)
-					{
-						*pixels = color;
-						pixels++;
-					}
-					bitmap.UnlockBits(bitmapdata);
+					*pixels = color;
+					pixels++;
 				}
-				catch(Exception e)
-				{
-					// Unable to make bitmap
-					General.ErrorLogger.Add(ErrorType.Error, "Unable to create color image '" + this.Name + "'. " + e.GetType().Name + ": " + e.Message);
-					loadfailed = true;
-				}
-
-				// Dispose bitmap if load failed
-				if(loadfailed && (bitmap != null))
-				{
-					bitmap.Dispose();
-					bitmap = null;
-				}
-				
-				// Pass on to base
-				base.LocalLoadImage();
+				bitmap.UnlockBits(bitmapdata);
 			}
+			catch(Exception e)
+			{
+				// Unable to make bitmap
+				error = "Unable to create color image '" + this.Name + "'. " + e.GetType().Name + ": " + e.Message;
+				bitmap?.Dispose();
+			}
+
+			EndLoadImage(bitmap, error);
 		}
 
 		#endregion

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Rendering;
@@ -98,167 +99,158 @@ namespace CodeImp.DoomBuilder.Data
 		}
 		
 		// This loads the image
-		protected override void LocalLoadImage()
+		protected override LocalLoadResult LocalLoadImage()
 		{
 			// Checks
-			if(this.IsImageLoaded || width == 0 || height == 0) return;
+			if(width == 0 || height == 0) return new LocalLoadResult(null);
 
 			Graphics g = null;
-			
-			lock(this)
+
+            Bitmap bitmap = null;
+            List<LogMessage> messages = new List<LogMessage>();
+
+			// Create texture bitmap
+			try
 			{
-				// Create texture bitmap
-				try
-				{
-					if(bitmap != null) bitmap.Dispose();
-					bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-					BitmapData bitmapdata = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-					PixelColor* pixels = (PixelColor*)bitmapdata.Scan0.ToPointer();
-					General.ZeroMemory(new IntPtr(pixels), width * height * sizeof(PixelColor));
-					bitmap.UnlockBits(bitmapdata);
-					g = Graphics.FromImage(bitmap);
-				}
-				catch(Exception e)
-				{
-					// Unable to make bitmap
-					General.ErrorLogger.Add(ErrorType.Error, "Unable to load texture image \"" + this.Name + "\". " + e.GetType().Name + ": " + e.Message);
-					loadfailed = true;
-				}
-
-				int missingpatches = 0; //mxd
-				if(patches.Count == 0) //mxd
-				{
-					//mxd. Empty image will suffice here, I suppose...
-					if(nulltexture)
-					{
-						base.LocalLoadImage();
-						return;
-					}
-					
-					// No patches!
-					General.ErrorLogger.Add(ErrorType.Warning, "No patches are defined for texture \"" + this.Name + "\"");
-					loadfailed = true;
-				}
-				else if(!loadfailed)
-				{
-					// Go for all patches
-					foreach(TexturePatch p in patches)
-					{
-						//mxd. Some patches (like "TNT1A0") should be skipped
-						if(p.Skip) continue;
-						
-						// Get the patch data stream
-						string patchlocation = string.Empty; //mxd
-						Stream patchdata = General.Map.Data.GetPatchData(p.LumpName, p.HasLongName, ref patchlocation);
-						if(patchdata != null)
-						{
-							// Copy patch data to memory
-							byte[] membytes = new byte[(int)patchdata.Length];
-
-							lock(patchdata) //mxd
-							{
-								patchdata.Seek(0, SeekOrigin.Begin);
-								patchdata.Read(membytes, 0, (int)patchdata.Length);
-							}
-							
-							MemoryStream mem = new MemoryStream(membytes);
-							mem.Seek(0, SeekOrigin.Begin);
-
-							// Get a reader for the data
-							IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-							if(reader is UnknownImageReader)
-							{
-								//mxd. Probably that's a flat?..
-								if(General.Map.Config.MixTexturesFlats) 
-								{
-									reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
-								}
-
-								if(reader is UnknownImageReader) 
-								{
-									// Data is in an unknown format!
-									if(!nulltexture) General.ErrorLogger.Add((optional ? ErrorType.Warning : ErrorType.Error), "Patch lump \"" + Path.Combine(patchlocation, p.LumpName) + "\" data format could not be read, while loading texture \"" + this.Name + "\"");
-									missingpatches++; //mxd
-								}
-							}
-
-							if(!(reader is UnknownImageReader)) 
-							{
-								// Get the patch
-								mem.Seek(0, SeekOrigin.Begin);
-								Bitmap patchbmp = null;
-								try { patchbmp = reader.ReadAsBitmap(mem); }
-								catch(InvalidDataException)
-								{
-									// Data cannot be read!
-									if(!nulltexture) General.ErrorLogger.Add((optional ? ErrorType.Warning : ErrorType.Error), "Patch lump \"" + p.LumpName + "\" data format could not be read, while loading texture \"" + this.Name + "\"");
-									missingpatches++; //mxd
-								}
-
-								if(patchbmp != null)
-								{
-									//mxd. Apply transformations from TexturePatch 
-									patchbmp = TransformPatch(p, patchbmp);
-
-									// Draw the patch on the texture image
-									Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);
-									g.DrawImageUnscaledAndClipped(patchbmp, tgtrect);
-									patchbmp.Dispose();
-								}
-							}
-
-							// Done
-							mem.Dispose();
-						}
-						else
-						{
-							//mxd. ZDoom can use any known graphic as patch
-							if(General.Map.Config.MixTexturesFlats)
-							{
-								ImageData img = General.Map.Data.GetTextureImage(p.LumpName);
-								if(!(img is UnknownImage) && img != this)
-								{
-									if(!img.IsImageLoaded) img.LoadImage();
-
-                                    //mxd. Apply transformations from TexturePatch. We don't want to modify the original bitmap here, so make a copy
-                                    Bitmap bmp = img.GetBitmap();
-                                    Bitmap patchbmp;
-                                    lock (bmp)
-                                    {
-                                        patchbmp = TransformPatch(p, new Bitmap(bmp));
-                                    }
-
-									// Draw the patch on the texture image
-									Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);
-									g.DrawImageUnscaledAndClipped(patchbmp, tgtrect);
-									patchbmp.Dispose();
-
-									continue;
-								}
-							}
-							
-							// Missing a patch lump!
-							if(!nulltexture) General.ErrorLogger.Add((optional ? ErrorType.Warning : ErrorType.Error), "Missing patch lump \"" + p.LumpName + "\" while loading texture \"" + this.Name + "\"");
-							missingpatches++; //mxd
-						}
-					}
-				}
-				
-				// Dispose bitmap if load failed
-				if(!nulltexture && (bitmap != null) && (loadfailed || missingpatches >= patches.Count)) //mxd. We can still display texture if at least one of the patches was loaded
-				{
-					bitmap.Dispose();
-					bitmap = null;
-					loadfailed = true;
-				}
-
-				// Pass on to base
-				base.LocalLoadImage();
+				if(bitmap != null) bitmap.Dispose();
+				bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+				BitmapData bitmapdata = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+				PixelColor* pixels = (PixelColor*)bitmapdata.Scan0.ToPointer();
+				General.ZeroMemory(new IntPtr(pixels), width * height * sizeof(PixelColor));
+				bitmap.UnlockBits(bitmapdata);
+				g = Graphics.FromImage(bitmap);
 			}
-		}
+			catch(Exception e)
+			{
+				// Unable to make bitmap
+				messages.Add(new LogMessage(ErrorType.Warning, "Unable to load texture image \"" + this.Name + "\". " + e.GetType().Name + ": " + e.Message));
+			}
 
-		//mxd
-		private Bitmap TransformPatch(TexturePatch p, Bitmap patchbmp)
+			int missingpatches = 0; //mxd
+			if(patches.Count == 0) //mxd
+			{
+				//mxd. Empty image will suffice here, I suppose...
+				if(nulltexture)
+				{
+                    return new LocalLoadResult(bitmap, messages);
+				}
+
+                // No patches!
+                messages.Add(new LogMessage(ErrorType.Warning, "No patches are defined for texture \"" + this.Name + "\""));
+			}
+			else if(!messages.Any(x => x.Type == ErrorType.Error))
+			{
+				// Go for all patches
+				foreach(TexturePatch p in patches)
+				{
+					//mxd. Some patches (like "TNT1A0") should be skipped
+					if(p.Skip) continue;
+						
+					// Get the patch data stream
+					string patchlocation = string.Empty; //mxd
+					Stream patchdata = General.Map.Data.GetPatchData(p.LumpName, p.HasLongName, ref patchlocation);
+					if(patchdata != null)
+					{
+						// Copy patch data to memory
+						byte[] membytes = new byte[(int)patchdata.Length];
+
+						lock(patchdata) //mxd
+						{
+							patchdata.Seek(0, SeekOrigin.Begin);
+							patchdata.Read(membytes, 0, (int)patchdata.Length);
+						}
+							
+						MemoryStream mem = new MemoryStream(membytes);
+						mem.Seek(0, SeekOrigin.Begin);
+
+						// Get a reader for the data
+						IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
+						if(reader is UnknownImageReader)
+						{
+							//mxd. Probably that's a flat?..
+							if(General.Map.Config.MixTexturesFlats) 
+							{
+								reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
+							}
+
+							if(reader is UnknownImageReader) 
+							{
+								// Data is in an unknown format!
+								if(!nulltexture) messages.Add(new LogMessage(optional ? ErrorType.Warning : ErrorType.Error, "Patch lump \"" + Path.Combine(patchlocation, p.LumpName) + "\" data format could not be read, while loading texture \"" + this.Name + "\""));
+								missingpatches++; //mxd
+							}
+						}
+
+						if(!(reader is UnknownImageReader)) 
+						{
+							// Get the patch
+							mem.Seek(0, SeekOrigin.Begin);
+							Bitmap patchbmp = null;
+							try { patchbmp = reader.ReadAsBitmap(mem); }
+							catch(InvalidDataException)
+							{
+								// Data cannot be read!
+								if(!nulltexture) messages.Add(new LogMessage(optional ? ErrorType.Warning : ErrorType.Error, "Patch lump \"" + p.LumpName + "\" data format could not be read, while loading texture \"" + this.Name + "\""));
+								missingpatches++; //mxd
+							}
+
+							if(patchbmp != null)
+							{
+								//mxd. Apply transformations from TexturePatch 
+								patchbmp = TransformPatch(p, patchbmp);
+
+								// Draw the patch on the texture image
+								Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);
+								g.DrawImageUnscaledAndClipped(patchbmp, tgtrect);
+								patchbmp.Dispose();
+							}
+						}
+
+						// Done
+						mem.Dispose();
+					}
+					else
+					{
+						//mxd. ZDoom can use any known graphic as patch
+						if(General.Map.Config.MixTexturesFlats)
+						{
+							ImageData img = General.Map.Data.GetTextureImage(p.LumpName);
+							if(!(img is UnknownImage) && img != this)
+							{
+								if(!img.IsImageLoaded) img.LoadImage();
+
+                                //mxd. Apply transformations from TexturePatch. We don't want to modify the original bitmap here, so make a copy
+                                Bitmap bmp = new Bitmap(img.LocalGetBitmap());
+                                Bitmap patchbmp = TransformPatch(p, bmp);
+
+								// Draw the patch on the texture image
+								Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);
+								g.DrawImageUnscaledAndClipped(patchbmp, tgtrect);
+								patchbmp.Dispose();
+
+								continue;
+							}
+						}
+							
+						// Missing a patch lump!
+						if(!nulltexture) messages.Add(new LogMessage(optional ? ErrorType.Warning : ErrorType.Error, "Missing patch lump \"" + p.LumpName + "\" while loading texture \"" + this.Name + "\""));
+						missingpatches++; //mxd
+					}
+				}
+			}
+				
+			// Dispose bitmap if load failed
+			if(!nulltexture && (bitmap != null) && (messages.Any(x => x.Type == ErrorType.Error) || missingpatches >= patches.Count)) //mxd. We can still display texture if at least one of the patches was loaded
+			{
+				bitmap.Dispose();
+				bitmap = null;
+			}
+
+            return new LocalLoadResult(bitmap, messages);
+        }
+
+        //mxd
+        private Bitmap TransformPatch(TexturePatch p, Bitmap patchbmp)
 		{
 			//mxd. Flip
 			if(p.FlipX || p.FlipY)

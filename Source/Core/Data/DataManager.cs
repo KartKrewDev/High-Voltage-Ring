@@ -96,11 +96,13 @@ namespace CodeImp.DoomBuilder.Data
 		private Dictionary<int, AmbientSoundInfo> ambientsounds;
 
 		//mxd. Text resources
-		private Dictionary<ScriptType, HashSet<ScriptResource>> scriptresources; 
-		
-		// Background loading
+		private Dictionary<ScriptType, HashSet<ScriptResource>> scriptresources;
+
+        // Background loading
+        private object syncobject = new object();
 		private Queue<ImageData> imageque;
 		private Thread[] backgroundloader;
+        private int threadsfinished;
 		private bool notifiedbusy;
 		
 		// Image previews
@@ -734,6 +736,7 @@ namespace CodeImp.DoomBuilder.Data
 			// Timing
 			loadstarttime = Clock.CurrentTime;
 			loadfinishtime = 0;
+            threadsfinished = 0;
 			
 			// If a loader is already running, stop it first
 			if(backgroundloader != null) StopBackgroundLoader();
@@ -804,7 +807,7 @@ namespace CodeImp.DoomBuilder.Data
 				{
 					// Get next item
 					ImageData image = null;
-					lock(imageque)
+					lock(syncobject)
 					{
 						// Fetch next image to process
 						if(imageque.Count > 0) image = imageque.Dequeue();
@@ -851,37 +854,53 @@ namespace CodeImp.DoomBuilder.Data
 						}
 						else
 						{
-							// Timing
-							if(loadfinishtime == 0)
-							{
-								//mxd. Release PK3 files
-								foreach(DataReader reader in containers)
-								{
-									if(reader is PK3Reader) (reader as PK3Reader).BathMode = false;
-								}
-								
-								loadfinishtime = Clock.CurrentTime;
-								string deltatimesec = ((loadfinishtime - loadstarttime) / 1000.0f).ToString("########0.00");
-								General.WriteLogLine("Resources loading took " + deltatimesec + " seconds");
-								loadstarttime = 0; //mxd
+                            bool lastthread = false;
+                            lock (syncobject)
+                            {
+                                threadsfinished++;
+                                if (threadsfinished == backgroundloader.Length)
+                                    lastthread = true;
+                            }
 
-								//mxd. Show more detailed message
-								if(notifiedbusy)
-								{
-									notifiedbusy = false;
-									General.MainWindow.ResourcesLoaded(deltatimesec);
-								}
-							}
-							else if(notifiedbusy) //mxd. Sould never happen (?)
-							{
-								notifiedbusy = false;
-								General.MainWindow.UpdateStatus();
-							}
+                            if (lastthread)
+                            {
+                                // Timing
+                                if (loadfinishtime == 0)
+                                {
+                                    //mxd. Release PK3 files
+                                    foreach (DataReader reader in containers)
+                                    {
+                                        if (reader is PK3Reader) (reader as PK3Reader).BathMode = false;
+                                    }
+
+                                    loadfinishtime = Clock.CurrentTime;
+                                    string deltatimesec = ((loadfinishtime - loadstarttime) / 1000.0f).ToString("########0.00");
+                                    General.WriteLogLine("Resources loading took " + deltatimesec + " seconds");
+                                    loadstarttime = 0; //mxd
+
+                                    lock (syncobject)
+                                    {
+                                        threadsfinished = 0;
+                                    }
+
+                                    //mxd. Show more detailed message
+                                    if (notifiedbusy)
+                                    {
+                                        notifiedbusy = false;
+                                        General.MainWindow.ResourcesLoaded(deltatimesec);
+                                    }
+                                }
+                                else if (notifiedbusy) //mxd. Sould never happen (?)
+                                {
+                                    notifiedbusy = false;
+                                    General.MainWindow.UpdateStatus();
+                                }
+                            }
 
                             // Wait until there's more to do.
-                            lock (imageque)
+                            lock (syncobject)
                             {
-                                if (imageque.Count == 0) Monitor.Wait(imageque);
+                                if (imageque.Count == 0) Monitor.Wait(syncobject);
                             }
                         }
                     }
@@ -899,7 +918,7 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				// Add for loading
 				img.ImageState = ImageLoadState.Loading;
-				lock(imageque) { imageque.Enqueue(img); Monitor.Pulse(imageque); }
+				lock(syncobject) { imageque.Enqueue(img); Monitor.Pulse(syncobject); }
 			}
 			
 			// Unload this image?
@@ -907,7 +926,7 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				// Add for unloading
 				img.ImageState = ImageLoadState.Unloading;
-				lock(imageque) { imageque.Enqueue(img); Monitor.Pulse(imageque); }
+				lock(syncobject) { imageque.Enqueue(img); Monitor.Pulse(syncobject); }
 			}
 		}
 

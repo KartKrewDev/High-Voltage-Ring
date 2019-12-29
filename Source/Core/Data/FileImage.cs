@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Controls;
+using System.Drawing;
 
 #endregion
 
@@ -140,62 +141,48 @@ namespace CodeImp.DoomBuilder.Data
         }
 
         // This loads the image
-        protected override void LocalLoadImage()
+        protected override LocalLoadResult LocalLoadImage()
         {
-            // Leave when already loaded
-            if (this.IsImageLoaded) return;
+            // Load file data
+            Bitmap bitmap = null;
+            string error = null;
 
-            lock (this)
+            MemoryStream filedata = null;
+            try
             {
-                // Load file data
-                if (bitmap != null) bitmap.Dispose(); bitmap = null;
-
-                MemoryStream filedata = null;
-                try
-                {
-                    filedata = new MemoryStream(File.ReadAllBytes(filepathname));
-                }
-                catch (IOException)
-                {
-                    General.ErrorLogger.Add(ErrorType.Error, "Image file \"" + filepathname + "\" could not be read, while loading image \"" + this.Name + "\". Consider reloading resources.");
-                    loadfailed = true;
-                }
-
-                if (filedata != null)
-                {
-                    // Get a reader for the data
-                    IImageReader reader = ImageDataFormat.GetImageReader(filedata, probableformat, General.Map.Data.Palette);
-                    if (!(reader is UnknownImageReader))
-                    {
-                        // Load the image
-                        filedata.Seek(0, SeekOrigin.Begin);
-                        try { bitmap = reader.ReadAsBitmap(filedata); }
-                        catch (InvalidDataException)
-                        {
-                            // Data cannot be read!
-                            bitmap = null;
-                        }
-                    }
-
-                    // Not loaded?
-                    if (bitmap == null)
-                    {
-                        General.ErrorLogger.Add(ErrorType.Error, "Image file \"" + filepathname + "\" data format could not be read, while loading image \"" + this.Name + "\". Is this a valid picture file at all?");
-                        loadfailed = true;
-                    }
-                    else
-                    {
-                        // Get width and height
-                        width = bitmap.Size.Width;
-                        height = bitmap.Size.Height;
-                    }
-
-                    filedata.Dispose();
-                }
-
-                // Pass on to base
-                base.LocalLoadImage();
+                filedata = new MemoryStream(File.ReadAllBytes(filepathname));
             }
+            catch (IOException)
+            {
+                error = "Image file \"" + filepathname + "\" could not be read, while loading image \"" + this.Name + "\". Consider reloading resources.";
+            }
+
+            if (filedata != null)
+            {
+                // Get a reader for the data
+                IImageReader reader = ImageDataFormat.GetImageReader(filedata, probableformat, General.Map.Data.Palette);
+                if (!(reader is UnknownImageReader))
+                {
+                    // Load the image
+                    filedata.Seek(0, SeekOrigin.Begin);
+                    try { bitmap = reader.ReadAsBitmap(filedata); }
+                    catch (InvalidDataException)
+                    {
+                        // Data cannot be read!
+                        bitmap = null;
+                    }
+                }
+
+                // Not loaded?
+                if (bitmap == null)
+                {
+                    error = "Image file \"" + filepathname + "\" data format could not be read, while loading image \"" + this.Name + "\". Is this a valid picture file at all?";
+                }
+
+                filedata.Dispose();
+            }
+
+            return new LocalLoadResult(bitmap, error);
         }
 
         #endregion
