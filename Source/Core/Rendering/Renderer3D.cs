@@ -759,10 +759,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				else
 					curtexture = General.Map.Data.Hourglass3D;
 
-				// Create Direct3D texture if still needed
-				if((curtexture.Texture == null) || curtexture.Texture.Disposed)
-					curtexture.CreateTexture();
-
                 // Apply texture
                 graphics.SetTexture(curtexture.Texture);
 				
@@ -857,10 +853,6 @@ namespace CodeImp.DoomBuilder.Rendering
 						curtexture = General.Map.Data.Hourglass3D;
 					else 
 						curtexture = group.Key;
-
-					// Create Direct3D texture if still needed
-					if((curtexture.Texture == null) || curtexture.Texture.Disposed)
-						curtexture.CreateTexture();
 
                     // Apply texture
                     graphics.SetTexture(curtexture.Texture);
@@ -1037,10 +1029,6 @@ namespace CodeImp.DoomBuilder.Rendering
 					else
 						curtexture = General.Map.Data.Hourglass3D;
 
-					// Create Direct3D texture if still needed
-					if((curtexture.Texture == null) || curtexture.Texture.Disposed)
-						curtexture.CreateTexture();
-
                     // Apply texture
                     graphics.SetTexture(curtexture.Texture);
 					curtexturename = g.Texture.LongName;
@@ -1169,10 +1157,6 @@ namespace CodeImp.DoomBuilder.Rendering
 							curtexture = t.Texture;
 						else
 							curtexture = General.Map.Data.Hourglass3D;
-
-						// Create Direct3D texture if still needed
-						if((curtexture.Texture == null) || curtexture.Texture.Disposed)
-							curtexture.CreateTexture();
 
                         // Apply texture
                         graphics.SetTexture(curtexture.Texture);
@@ -2019,12 +2003,10 @@ namespace CodeImp.DoomBuilder.Rendering
             // Texture
             if (crosshairbusy)
 			{
-				if(General.Map.Data.CrosshairBusy3D.Texture == null) General.Map.Data.CrosshairBusy3D.CreateTexture();
 				graphics.SetTexture(General.Map.Data.CrosshairBusy3D.Texture);
 			}
 			else
 			{
-				if(General.Map.Data.Crosshair3D.Texture == null) General.Map.Data.Crosshair3D.CreateTexture();
 				graphics.SetTexture(General.Map.Data.Crosshair3D.Texture);
 			}
 			

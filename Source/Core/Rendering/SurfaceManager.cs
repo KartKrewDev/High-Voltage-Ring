@@ -588,11 +588,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 					else
 					{
-						if(img.IsImageLoaded && !img.LoadFailed) 
-						{
-							if(img.Texture == null) img.CreateTexture();
-						}
-						else 
+						if(!img.IsImageLoaded || img.LoadFailed) 
 						{
 							img = General.Map.Data.WhiteTexture;
 						}

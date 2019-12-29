@@ -68,7 +68,6 @@ namespace CodeImp.DoomBuilder.Data
         // Loading
         private ImageLoadState previewstate;
         private ImageLoadState imagestate;
-        private int previewindex;
         private bool loadfailed;
         private bool allowunload;
 
@@ -79,9 +78,10 @@ namespace CodeImp.DoomBuilder.Data
         // GDI bitmap
         private Bitmap _bitmap;
 		protected Bitmap bitmap { get { return _bitmap; } }
-		
-		// Direct3D texture
-		private int mipmaplevels;	// 0 = all mipmaps
+        private Bitmap previewbitmap;
+
+        // Direct3D texture
+        private int mipmaplevels;	// 0 = all mipmaps
 		protected bool dynamictexture;
 		private Texture texture;
 		
@@ -104,7 +104,7 @@ namespace CodeImp.DoomBuilder.Data
 		public bool HasPatchWithSameName { get { return hasPatchWithSameName; } } //mxd
 		internal bool HasLongName { get { return hasLongName; } } //mxd
 		public bool UseColorCorrection { get { return usecolorcorrection; } set { usecolorcorrection = value; } }
-		public Texture Texture { get { return texture; } }
+		public Texture Texture { get { return GetTexture(); } }
 		public bool IsPreviewLoaded { get { return (previewstate == ImageLoadState.Ready); } }
 		public bool IsImageLoaded { get { return (imagestate == ImageLoadState.Ready); } }
 		public bool LoadFailed { get { return loadfailed; } }
@@ -117,7 +117,6 @@ namespace CodeImp.DoomBuilder.Data
 		public int MipMapLevels { get { return mipmaplevels; } set { mipmaplevels = value; } }
 		public virtual int Width { get { return width; } }
 		public virtual int Height { get { return height; } }
-		internal int PreviewIndex { get { return previewindex; } set { previewindex = value; } }
 		//mxd. Scaled texture size is integer in ZDoom.
 		public virtual float ScaledWidth { get { return (float)Math.Round(width * scale.x); } }
 		public virtual float ScaledHeight { get { return (float)Math.Round(height * scale.y); } }
@@ -256,6 +255,7 @@ namespace CodeImp.DoomBuilder.Data
             LocalLoadResult loadResult = LocalLoadImage();
 
             ConvertImageFormat(loadResult);
+            MakeImagePreview(loadResult);
 
             General.MainWindow.RunOnUIThread(() =>
             {
@@ -272,7 +272,9 @@ namespace CodeImp.DoomBuilder.Data
 
                 // Image is ready
                 imagestate = ImageLoadState.Ready;
+                previewstate = ImageLoadState.Ready;
                 _bitmap = loadResult.bitmap;
+                previewbitmap = loadResult.preview;
                 if (loadResult.uiThreadWork != null)
                     loadResult.uiThreadWork();
             });
@@ -311,6 +313,7 @@ namespace CodeImp.DoomBuilder.Data
             }
 
             public Bitmap bitmap;
+            public Bitmap preview;
             public List<LogMessage> messages;
             public Action uiThreadWork;
         }
@@ -517,28 +520,89 @@ namespace CodeImp.DoomBuilder.Data
 
             loadResult.bitmap = bitmap;
 		}
-		
-		// This creates the Direct3D texture
-		public virtual void CreateTexture()
-		{
-			// Only do this when texture is not created yet
-			if(((texture == null) || (texture.Disposed)) && this.IsImageLoaded && !loadfailed)
-			{
-				Bitmap img = bitmap;
-				if(loadfailed) img = Properties.Resources.Failed;
 
-                texture = new Texture(General.Map.Graphics, img);
-					
-				if(dynamictexture)
-				{
-					if((width != texture.Width) || (height != texture.Height))
-						throw new Exception("Could not create a texture with the same size as the image.");
-				}
+        // Dimensions of a single preview image
+        const int MAX_PREVIEW_SIZE = 256; //mxd
+
+        // This makes a preview for the given image and updates the image settings
+        private void MakeImagePreview(LocalLoadResult loadResult)
+        {
+            if (loadResult.bitmap == null)
+                return;
+
+            Bitmap image = loadResult.bitmap;
+            Bitmap preview;
+
+            int imagewidth = image.Width;
+            int imageheight = image.Height;
+
+            // Determine preview size
+            float scalex = (imagewidth > MAX_PREVIEW_SIZE) ? (MAX_PREVIEW_SIZE / (float)imagewidth) : 1.0f;
+            float scaley = (imageheight > MAX_PREVIEW_SIZE) ? (MAX_PREVIEW_SIZE / (float)imageheight) : 1.0f;
+            float scale = Math.Min(scalex, scaley);
+            int previewwidth = (int)(imagewidth * scale);
+            int previewheight = (int)(imageheight * scale);
+            if (previewwidth < 1) previewwidth = 1;
+            if (previewheight < 1) previewheight = 1;
+
+            //mxd. Expected and actual image sizes and format match?
+            if (previewwidth == imagewidth && previewheight == imageheight && image.PixelFormat == PixelFormat.Format32bppArgb)
+            {
+                preview = new Bitmap(image);
+            }
+            else
+            {
+                // Make new image
+                preview = new Bitmap(previewwidth, previewheight, PixelFormat.Format32bppArgb);
+                Graphics g = Graphics.FromImage(preview);
+                g.PageUnit = GraphicsUnit.Pixel;
+                //g.CompositingQuality = CompositingQuality.HighQuality; //mxd
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                //g.SmoothingMode = SmoothingMode.HighQuality; //mxd
+                g.PixelOffsetMode = PixelOffsetMode.None;
+                //g.Clear(Color.Transparent); //mxd
+
+                // Draw image onto atlas
+                Rectangle atlasrect = new Rectangle(0, 0, previewwidth, previewheight);
+                RectangleF imgrect = General.MakeZoomedRect(new Size(imagewidth, imageheight), atlasrect);
+                if (imgrect.Width < 1.0f)
+                {
+                    imgrect.X -= 0.5f - imgrect.Width * 0.5f;
+                    imgrect.Width = 1.0f;
+                }
+                if (imgrect.Height < 1.0f)
+                {
+                    imgrect.Y -= 0.5f - imgrect.Height * 0.5f;
+                    imgrect.Height = 1.0f;
+                }
+                g.DrawImage(image, imgrect);
+                g.Dispose();
+            }
+
+            loadResult.preview = preview;
+        }
+
+        Texture GetTexture()
+		{
+            if (texture != null)
+                return texture;
+            else if (loadfailed)
+                return General.Map.Data.FailedTexture;
+            else if (imagestate == ImageLoadState.Loading)
+                return General.Map.Data.LoadingTexture;
+
+            texture = new Texture(General.Map.Graphics, bitmap);
+
+            if (dynamictexture)
+            {
+                if ((width != texture.Width) || (height != texture.Height))
+                    throw new Exception("Could not create a texture with the same size as the image.");
+            }
 
 #if DEBUG
-				texture.Tag = name; //mxd. Helps with tracking undisposed resources...
+			texture.Tag = name; //mxd. Helps with tracking undisposed resources...
 #endif
-			}
+            return texture;
 		}
 
 		// This updates a dynamic texture
@@ -556,37 +620,10 @@ namespace CodeImp.DoomBuilder.Data
 		// This destroys the Direct3D texture
 		public void ReleaseTexture()
 		{
-			// Trash it
-			if(texture != null) texture.Dispose();
+			texture?.Dispose();
 			texture = null;
 		}
 
-		// This draws a preview
-		public virtual void DrawPreview(Graphics target, Point targetpos)
-		{
-			// Preview ready?
-			if(!loadfailed && (previewstate == ImageLoadState.Ready))
-			{
-				// Draw preview
-				General.Map.Data.Previews.DrawPreview(previewindex, target, targetpos);
-			}
-			// Loading failed?
-			else if(loadfailed)
-			{
-				// Draw error bitmap
-				targetpos = new Point(targetpos.X + ((PreviewManager.MAX_PREVIEW_SIZE - Properties.Resources.Hourglass.Width) >> 1),
-										targetpos.Y + ((PreviewManager.MAX_PREVIEW_SIZE - Properties.Resources.Hourglass.Height) >> 1));
-				target.DrawImageUnscaled(Properties.Resources.Failed, targetpos);
-			}
-			else
-			{
-				// Draw loading bitmap
-				targetpos = new Point(targetpos.X + ((PreviewManager.MAX_PREVIEW_SIZE - Properties.Resources.Hourglass.Width) >> 1),
-										targetpos.Y + ((PreviewManager.MAX_PREVIEW_SIZE - Properties.Resources.Hourglass.Height) >> 1));
-				target.DrawImageUnscaled(Properties.Resources.Hourglass, targetpos);
-			}
-		}
-		
 		// This returns a preview image
 		public virtual Image GetPreview()
 		{
@@ -594,7 +631,7 @@ namespace CodeImp.DoomBuilder.Data
 			if(previewstate == ImageLoadState.Ready)
 			{
 				// Make a copy
-				return General.Map.Data.Previews.GetPreviewCopy(previewindex);
+				return new Bitmap(previewbitmap);
 			}
 				
 			// Loading failed?

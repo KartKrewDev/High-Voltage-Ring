@@ -1329,7 +1329,6 @@ namespace CodeImp.DoomBuilder.Rendering
 							sprite.SetUsedInMap(true);
 							continue;
 						}
-						if(sprite.Texture == null) sprite.CreateTexture();
 
 						graphics.SetTexture(sprite.Texture);
 
@@ -1560,10 +1559,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Set the rendertarget to the surface texture
                 graphics.StartRendering(true, General.Colors.Background.WithAlpha(0).ToColorValue(), surfacetex, false);
 
-				// Make sure anything we need is loaded
-				General.Map.Data.UnknownTexture3D.CreateTexture();
-				General.Map.Data.MissingTexture3D.CreateTexture(); //mxd
-
 				// Set transformations
 				UpdateTransformations();
 
@@ -1614,9 +1609,6 @@ namespace CodeImp.DoomBuilder.Rendering
 				
 				if(texture != null)
 				{
-					// Make sure the texture is loaded
-					if(!texture.IsImageLoaded) texture.LoadImage();
-					if(texture.Texture == null) texture.CreateTexture();
 					t = texture.Texture;
 				}
 				else

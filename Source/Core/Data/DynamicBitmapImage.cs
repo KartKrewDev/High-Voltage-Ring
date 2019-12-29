@@ -69,7 +69,6 @@ namespace CodeImp.DoomBuilder.Data
 		// Reload the resource
 		public void ReloadResource()
 		{
-			CreateTexture();
 		}
 
 		#endregion

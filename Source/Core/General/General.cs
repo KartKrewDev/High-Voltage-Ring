@@ -58,6 +58,7 @@ namespace CodeImp.DoomBuilder
 	internal static bool MessageBeep(MessageBeepType type) { return true; }
 	internal static void ZeroMemory(IntPtr dest, int size) { }
 	internal static int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam) { return 0; }
+    internal static int PostMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam) { return 0; }
 
 #else
         [DllImport("user32.dll")]
@@ -72,7 +73,10 @@ namespace CodeImp.DoomBuilder
 		[DllImport("user32.dll", EntryPoint = "SendMessage", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
 		internal static extern int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
-		[DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "PostMessage", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        internal static extern int PostMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
 		internal static extern bool MessageBeep(MessageBeepType type);
 
 		//[DllImport("kernel32.dll")]
@@ -108,6 +112,7 @@ namespace CodeImp.DoomBuilder
 
 		// SendMessage API
 		internal const int WM_USER = 0x400;
+        internal const int WM_UIACTION = WM_USER + 1;
 		internal const int WM_SYSCOMMAND = 0x112;
         internal const int WM_MOUSEHWHEEL = 0x020E; // [ZZ]
         internal const int SC_KEYMENU = 0xF100;

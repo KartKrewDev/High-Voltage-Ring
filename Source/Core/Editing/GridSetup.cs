@@ -235,7 +235,6 @@ namespace CodeImp.DoomBuilder.Editing
 
 			// Make sure it is loaded
 			backimage.LoadImage();
-			backimage.CreateTexture();
 		}
 		
 		// This returns the next higher coordinate

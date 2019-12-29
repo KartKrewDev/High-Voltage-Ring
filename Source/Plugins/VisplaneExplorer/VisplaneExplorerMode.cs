@@ -281,7 +281,6 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 			image.UseColorCorrection = false;
 			image.MipMapLevels = 1;
 			image.LoadImage();
-			image.CreateTexture();
 
 			// Make custom presentation
 			CustomPresentation p = new CustomPresentation();

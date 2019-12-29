@@ -147,10 +147,6 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					//add loaded data to ModeldefEntry
 					mde.Model.Meshes.AddRange(result.Meshes);
 
-					//prepare UnknownTexture3D... just in case :)
-					if(General.Map.Data.UnknownTexture3D.Texture == null || General.Map.Data.UnknownTexture3D.Texture.Disposed)
-						General.Map.Data.UnknownTexture3D.CreateTexture();
-
 					//load texture
 					List<string> errors = new List<string>();
 
@@ -282,9 +278,6 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					if (!image.IsImageLoaded)
 						image.LoadImage();
 
-					if (image.Texture == null)
-						image.CreateTexture();
-
 					t = image.Texture;
 
 					break;
@@ -304,9 +297,6 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					if (!image.IsImageLoaded)
 						image.LoadImage();
 
-					if (image.Texture == null)
-						image.CreateTexture();
-
 					t = image.Texture;
 				}
 			}
@@ -322,9 +312,6 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 					if (!image.IsImageLoaded)
 						image.LoadImage();
-
-					if (image.Texture == null)
-						image.CreateTexture();
 
 					t = image.Texture;
 				}

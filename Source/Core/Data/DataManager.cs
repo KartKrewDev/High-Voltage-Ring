@@ -105,9 +105,6 @@ namespace CodeImp.DoomBuilder.Data
         private int threadsfinished;
 		private bool notifiedbusy;
 		
-		// Image previews
-		private PreviewManager previews;
-		
 		// Special images
 		private ImageData missingtexture3d;
 		private ImageData unknowntexture3d;
@@ -172,7 +169,6 @@ namespace CodeImp.DoomBuilder.Data
 		internal IEnumerable<DataReader> Containers { get { return containers; } }
 
 		public Playpal Palette { get { return palette; } }
-		public PreviewManager Previews { get { return previews; } }
 		public ICollection<ImageData> Textures { get { return textures.Values; } }
 		public ICollection<ImageData> Flats { get { return flats.Values; } }
 		public List<string> TextureNames { get { return texturenames; } }
@@ -184,7 +180,9 @@ namespace CodeImp.DoomBuilder.Data
 		public ImageData Hourglass3D { get { return hourglass3d; } }
 		public ImageData Crosshair3D { get { return crosshair; } }
 		public ImageData CrosshairBusy3D { get { return crosshairbusy; } }
-		public ImageData WhiteTexture { get { return whitetexture; } }
+        public Texture LoadingTexture { get; private set; }
+        public Texture FailedTexture { get; private set; }
+        public ImageData WhiteTexture { get { return whitetexture; } }
 		public ImageData BlackTexture { get { return blacktexture; } } //mxd
 		public ImageData ThingTexture { get { return thingtexture; } } //mxd
 		internal ImageData FolderTexture { get { return foldertexture; } } //mxd
@@ -204,7 +202,7 @@ namespace CodeImp.DoomBuilder.Data
 			get
 			{
 				if(imageque != null)
-					return (backgroundloader != null) && backgroundloader.Any(x => x.IsAlive) && ((imageque.Count > 0) || previews.IsLoading);
+					return (backgroundloader != null) && backgroundloader.Any(x => x.IsAlive) && ((imageque.Count > 0));
 				return false;
 			}
 		}
@@ -236,16 +234,14 @@ namespace CodeImp.DoomBuilder.Data
         // Constructor
         internal DataManager()
 		{
-			// We have no destructor
-			GC.SuppressFinalize(this);
+            FailedTexture = new Texture(General.Map.Graphics, Properties.Resources.Failed);
+            LoadingTexture = new Texture(General.Map.Graphics, Properties.Resources.Hourglass);
 
-			// Load special images (mxd: the rest is loaded in LoadInternalTextures())
-			whitetexture = new ResourceImage("CodeImp.DoomBuilder.Resources.White.png") { UseColorCorrection = false };
+            // Load special images (mxd: the rest is loaded in LoadInternalTextures())
+            whitetexture = new ResourceImage("CodeImp.DoomBuilder.Resources.White.png") { UseColorCorrection = false };
 			whitetexture.LoadImage();
-			whitetexture.CreateTexture();
 			blacktexture = new ResourceImage("CodeImp.DoomBuilder.Resources.Black.png") { UseColorCorrection = false }; //mxd
 			blacktexture.LoadImage(); //mxd
-			blacktexture.CreateTexture(); //mxd
 			unknownimage = new UnknownImage(Properties.Resources.UnknownImage); //mxd. There should be only one!
 
 			//mxd. Textures browser images
@@ -268,7 +264,6 @@ namespace CodeImp.DoomBuilder.Data
 			foreach(ImageData data in commenttextures)
 			{
 				data.LoadImage();
-				data.CreateTexture();
 			}
 		}
 		
@@ -356,7 +351,6 @@ namespace CodeImp.DoomBuilder.Data
 			flatnamesshorttofull = new Dictionary<long, long>(); //mxd
 			flatnamesfulltoshort = new Dictionary<long, long>(); //mxd
 			imageque = new Queue<ImageData>();
-			previews = new PreviewManager();
 			texturesets = new List<MatchingTextureSet>();
 			usedtextures = new Dictionary<long, bool>(); //mxd
 			usedflats = new Dictionary<long, bool>(); //mxd
@@ -634,10 +628,6 @@ namespace CodeImp.DoomBuilder.Data
 			// Stop background loader
 			StopBackgroundLoader();
 			
-			// Dispose preview manager
-			previews.Dispose();
-			previews = null;
-			
 			// Dispose decorate
 			decorate.Dispose();
 			
@@ -845,72 +835,55 @@ namespace CodeImp.DoomBuilder.Data
 					}
 					else
 					{
-						// Process previews only when we don't have images to process
-						// because these are lower priority than the actual images
-						if(previews.BackgroundLoad())
-						{
-							// Wait a bit and update icon
-							if(!notifiedbusy)
-							{
-								notifiedbusy = true;
-								General.MainWindow.UpdateStatus();
-							}
-						}
-						else
-						{
-                            bool lastthread = false;
-                            lock (syncobject)
-                            {
-                                threadsfinished++;
-                                if (threadsfinished == backgroundloader.Length)
-                                    lastthread = true;
-                            }
+                        bool lastthread = false;
+                        lock (syncobject)
+                        {
+                            threadsfinished++;
+                            if (threadsfinished == backgroundloader.Length)
+                                lastthread = true;
+                        }
 
-                            if (lastthread)
+                        if (lastthread)
+                        {
+                            // Timing
+                            if (loadfinishtime == 0)
                             {
-                                // Timing
-                                if (loadfinishtime == 0)
+                                //mxd. Release PK3 files
+                                foreach (DataReader reader in containers)
                                 {
-                                    //mxd. Release PK3 files
-                                    foreach (DataReader reader in containers)
-                                    {
-                                        if (reader is PK3Reader) (reader as PK3Reader).BatchMode = false;
-                                    }
-
-                                    loadfinishtime = Clock.CurrentTime;
-                                    string deltatimesec = ((loadfinishtime - loadstarttime) / 1000.0f).ToString("########0.00");
-                                    General.WriteLogLine("Resources loading took " + deltatimesec + " seconds");
-                                    loadstarttime = 0; //mxd
-
-                                    lock (syncobject)
-                                    {
-                                        threadsfinished = 0;
-                                    }
-
-                                    //mxd. Show more detailed message
-                                    if (notifiedbusy)
-                                    {
-                                        notifiedbusy = false;
-                                        General.MainWindow.ResourcesLoaded(deltatimesec);
-                                    }
+                                    if (reader is PK3Reader) (reader as PK3Reader).BatchMode = false;
                                 }
-                                else if (notifiedbusy) //mxd. Sould never happen (?)
+
+                                loadfinishtime = Clock.CurrentTime;
+                                string deltatimesec = ((loadfinishtime - loadstarttime) / 1000.0f).ToString("########0.00");
+                                General.WriteLogLine("Resources loading took " + deltatimesec + " seconds");
+                                loadstarttime = 0; //mxd
+
+                                lock (syncobject)
+                                {
+                                    threadsfinished = 0;
+                                }
+
+                                //mxd. Show more detailed message
+                                if (notifiedbusy)
                                 {
                                     notifiedbusy = false;
-                                    General.MainWindow.UpdateStatus();
+                                    General.MainWindow.ResourcesLoaded(deltatimesec);
                                 }
                             }
-
-                            // Wait until there's more to do.
-                            lock (syncobject)
+                            else if (notifiedbusy) //mxd. Sould never happen (?)
                             {
-                                if (imageque.Count == 0) Monitor.Wait(syncobject);
+                                notifiedbusy = false;
+                                General.MainWindow.UpdateStatus();
                             }
                         }
-                    }
 
-                    if (image == null)
-                        Thread.Sleep(1);
+                        // Wait until there's more to do.
+                        lock (syncobject)
+                        {
+                            if (imageque.Count == 0) Monitor.Wait(syncobject);
+                        }
+                    }
                 }
                 while (true);
 			}
@@ -925,7 +898,8 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				// Add for loading
 				img.ImageState = ImageLoadState.Loading;
-				lock(syncobject) { imageque.Enqueue(img); Monitor.Pulse(syncobject); }
+                img.PreviewState = ImageLoadState.Loading;
+                lock (syncobject) { imageque.Enqueue(img); Monitor.Pulse(syncobject); }
 			}
 			
 			// Unload this image?
@@ -933,7 +907,8 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				// Add for unloading
 				img.ImageState = ImageLoadState.Unloading;
-				lock(syncobject) { imageque.Enqueue(img); Monitor.Pulse(syncobject); }
+                img.PreviewState = ImageLoadState.Unloading;
+                lock (syncobject) { imageque.Enqueue(img); Monitor.Pulse(syncobject); }
 			}
 		}
 
@@ -954,13 +929,13 @@ namespace CodeImp.DoomBuilder.Data
 			modeldefentries.Remove(type);
 			return false;
 		}
-		
-		#endregion
-		
-		#region ================== Palette
 
-		// This loads the PLAYPAL palette
-		private void LoadPalette()
+        #endregion
+
+        #region ================== Palette
+
+        // This loads the PLAYPAL palette
+        private void LoadPalette()
 		{
 			// Go for all opened containers
 			for(int i = containers.Count - 1; i >= 0; i--)
@@ -1001,9 +976,6 @@ namespace CodeImp.DoomBuilder.Data
 						list.Remove(img.LongName);
 						list.Add(img.LongName, img);
 						counter++;
-
-						// Add to preview manager
-						previews.AddImage(img);
 					}
 				}
 			}
@@ -1070,9 +1042,6 @@ namespace CodeImp.DoomBuilder.Data
 						{
 							nametranslation.Remove(img.LongName);
 						}
-						
-						// Add to preview manager
-						previews.AddImage(img);
 					}
 				}
 			}
@@ -1246,7 +1215,6 @@ namespace CodeImp.DoomBuilder.Data
 			crosshairbusy = LoadInternalTexture("CrosshairBusy.png");
 
 			thingtexture.UseColorCorrection = false;
-			thingtexture.CreateTexture();
 		}
 
 		//mxd
@@ -1303,9 +1271,6 @@ namespace CodeImp.DoomBuilder.Data
 						{
 							nametranslation.Remove(img.LongName);
 						}
-
-						// Add to preview manager
-						previews.AddImage(img);
 					}
 				}
 			}
@@ -1434,8 +1399,6 @@ namespace CodeImp.DoomBuilder.Data
 							textures[img.LongName] = replacer;
 							//replaced = true;
 
-							// Add to preview manager
-							previews.AddImage(replacer);
 							counter++;
 						}
 
@@ -1448,8 +1411,6 @@ namespace CodeImp.DoomBuilder.Data
 							flats[img.LongName] = replacer;
 							//replaced = true;
 
-							// Add to preview manager
-							previews.AddImage(replacer);
 							counter++;
 						}
 
@@ -1461,8 +1422,6 @@ namespace CodeImp.DoomBuilder.Data
 							sprites[img.LongName] = replacer;
 							//replaced = true;
 
-							// Add to preview manager
-							previews.AddImage(replacer);
 							counter++;
 						}
 
@@ -1586,9 +1545,6 @@ namespace CodeImp.DoomBuilder.Data
 
 						// Add to collection
 						sprites.Add(image.LongName, image);
-
-						// Add to preview manager
-						previews.AddImage(image);
 					}
 				}
 				else
@@ -1634,9 +1590,6 @@ namespace CodeImp.DoomBuilder.Data
 						{
 							image = sprites[info.SpriteLongName];
 						}
-
-						// Add to preview manager
-						if(image != null) previews.AddImage(image);
 					}
 				}
 			}
@@ -2460,9 +2413,6 @@ namespace CodeImp.DoomBuilder.Data
 
 										// Add to collection
 										sprites.Add(sprite.LongName, sprite);
-
-										// Add to preview manager
-										previews.AddImage(sprite);
 									}
 
 									// Apply VOXELDEF settings to the preview image...
@@ -2827,9 +2777,6 @@ namespace CodeImp.DoomBuilder.Data
 						//TODO: Do cameratextures override stuff like this?..
 						textures[camteximage.LongName] = camteximage;
 						flats[camteximage.LongName] = camteximage;
-
-						// Add to preview manager
-						previews.AddImage(camteximage);
 
 						// Add to container's texture set
 						currentreader.TextureSet.AddFlat(camteximage);
@@ -3304,7 +3251,6 @@ namespace CodeImp.DoomBuilder.Data
 				
 				// Use the built-in texture
 				ImageData tex = LoadInternalTexture("MissingSky3D.png");
-				tex.CreateTexture();
                 Bitmap bmp = tex.GetBitmap();
                 Bitmap sky;
                 lock (bmp)

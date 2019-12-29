@@ -4112,6 +4112,24 @@ namespace CodeImp.DoomBuilder.Windows
 
         #region ================== Threadsafe updates
 
+        object syncobject = new object();
+        List<System.Action> queuedActions = new List<System.Action>();
+
+        void ProcessQueuedUIActions()
+        {
+            List<System.Action> queue;
+            lock (syncobject)
+            {
+                queue = queuedActions;
+                queuedActions = new List<System.Action>();
+            }
+
+            foreach (System.Action action in queue)
+            {
+                action();
+            }
+        }
+
         public void RunOnUIThread(System.Action action)
         {
             if (!InvokeRequired)
@@ -4120,7 +4138,15 @@ namespace CodeImp.DoomBuilder.Windows
             }
             else
             {
-                Invoke(action);
+                bool notify;
+                lock (syncobject)
+                {
+                    notify = queuedActions.Count == 0;
+                    queuedActions.Add(action);
+                }
+
+                if (notify)
+                    General.PostMessage(Handle, General.WM_UIACTION, IntPtr.Zero, IntPtr.Zero);
             }
         }
 
@@ -4177,7 +4203,11 @@ namespace CodeImp.DoomBuilder.Windows
 			// Notify message?
 			switch(m.Msg)
 			{
-				case General.WM_SYSCOMMAND:
+                case General.WM_UIACTION:
+                    ProcessQueuedUIActions();
+                    break;
+
+                case General.WM_SYSCOMMAND:
 					// We don't want to open a menu when ALT is pressed
 					if(m.WParam.ToInt32() != General.SC_KEYMENU)
 					{
