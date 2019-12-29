@@ -291,6 +291,16 @@ namespace CodeImp.DoomBuilder.Controls
 			int selectionStart = editor.SelectionStart;
 			int selectionEnd = editor.SelectionEnd;
 
+            // remember folding
+            int[] folded = new int[editor.Scintilla.Lines.Count];
+            bool[] expanded = new bool[editor.Scintilla.Lines.Count];
+            for (int i = 0; i < folded.Length; i++)
+            {
+                Line l = editor.Scintilla.Lines[i];
+                folded[i] = l.FoldLevel;
+                expanded[i] = l.Expanded;
+            }
+
 			int offset = 0;
 			string text = editor.Text;
 			string[] atext = text.Split(new char[] { '\n' });
@@ -321,7 +331,16 @@ namespace CodeImp.DoomBuilder.Controls
 			editor.SelectionStart = selectionStart;
 			editor.SelectionEnd = selectionEnd;
 			editor.Scintilla.FirstVisibleLine = vscroll;
-		}
+
+            // restore folding
+            for (int i = 0; i < folded.Length; i++)
+            {
+                Line l = editor.Scintilla.Lines[i];
+                l.FoldLevel = folded[i];
+                if (!expanded[i])
+                    l.FoldLine(FoldAction.Contract);
+            }
+        }
 
 		// This saves the document (used for both explicit and implicit)
 		// Return true when successfully saved
