@@ -812,12 +812,16 @@ namespace CodeImp.DoomBuilder.Data
 						// Fetch next image to process
 						if(imageque.Count > 0) image = imageque.Dequeue();
 					}
-					
+
 					// Any image to process?
 					if(image != null)
 					{
-						// Load this image?
-						if(image.IsReferenced && (image.ImageState != ImageLoadState.Ready))
+                        // If image was already loaded during this "resource epoch" and failed, don't reload it
+                        if (image.LoadFailed)
+                            continue;
+
+                        // Load this image?
+                        if (image.IsReferenced && (image.ImageState != ImageLoadState.Ready))
 						{
 							image.LoadImage();
 						}
@@ -904,6 +908,9 @@ namespace CodeImp.DoomBuilder.Data
                             }
                         }
                     }
+
+                    if (image == null)
+                        Thread.Sleep(1);
                 }
                 while (true);
 			}
@@ -3182,14 +3189,18 @@ namespace CodeImp.DoomBuilder.Data
 				// Set used on all textures
 				foreach(KeyValuePair<long, ImageData> i in textures)
 				{
+                    if (i.Value.LoadFailed)
+                        continue;
 					i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
-					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+					if(i.Value.LoadFailed && i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
 				}
 
 				// Set used on all flats
 				foreach(KeyValuePair<long, ImageData> i in flats)
 				{
-					i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
+                    if (i.Value.LoadFailed)
+                        continue;
+                    i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
 					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
 				}
 			}
@@ -3199,14 +3210,18 @@ namespace CodeImp.DoomBuilder.Data
 				// Set used on all textures
 				foreach(KeyValuePair<long, ImageData> i in textures)
 				{
-					i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
+                    if (i.Value.LoadFailed)
+                        continue;
+                    i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
 					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
 				}
 
 				// Set used on all flats
 				foreach(KeyValuePair<long, ImageData> i in flats)
 				{
-					i.Value.SetUsedInMap(usedflats.ContainsKey(i.Key));
+                    if (i.Value.LoadFailed)
+                        continue;
+                    i.Value.SetUsedInMap(usedflats.ContainsKey(i.Key));
 					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
 				}
 			}

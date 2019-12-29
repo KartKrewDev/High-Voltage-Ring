@@ -301,7 +301,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				// Check if the texture is loaded
 				ImageData sprite = sprites[i];
-				sprite.LoadImage();
+                if (!sprite.IsImageLoaded && !sprite.LoadFailed)
+				    sprite.LoadImage();
 				if(sprite.IsImageLoaded)
 				{
 					base.textures[i] = sprite;

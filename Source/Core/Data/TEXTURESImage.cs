@@ -123,7 +123,7 @@ namespace CodeImp.DoomBuilder.Data
 			catch(Exception e)
 			{
 				// Unable to make bitmap
-				messages.Add(new LogMessage(ErrorType.Warning, "Unable to load texture image \"" + this.Name + "\". " + e.GetType().Name + ": " + e.Message));
+				messages.Add(new LogMessage(ErrorType.Error, "Unable to load texture image \"" + this.Name + "\". " + e.GetType().Name + ": " + e.Message));
 			}
 
 			int missingpatches = 0; //mxd
@@ -136,7 +136,7 @@ namespace CodeImp.DoomBuilder.Data
 				}
 
                 // No patches!
-                messages.Add(new LogMessage(ErrorType.Warning, "No patches are defined for texture \"" + this.Name + "\""));
+                messages.Add(new LogMessage(ErrorType.Error, "No patches are defined for texture \"" + this.Name + "\""));
 			}
 			else if(!messages.Any(x => x.Type == ErrorType.Error))
 			{
