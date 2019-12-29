@@ -158,12 +158,6 @@ namespace CodeImp.DoomBuilder.Data
             isreadonly = wasreadonly;
 		}
 
-        // This reloads the resource (possibly as readonly).
-        public virtual void Reload(bool newreadonly)
-        {
-
-        }
-
 		#endregion
 
 		#region ================== Palette

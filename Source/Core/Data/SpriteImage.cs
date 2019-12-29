@@ -85,20 +85,8 @@ namespace CodeImp.DoomBuilder.Data
 			Stream lumpdata = General.Map.Data.GetSpriteData(Name, ref spritelocation);
 			if(lumpdata != null)
 			{
-				// Copy lump data to memory
-				byte[] membytes = new byte[(int)lumpdata.Length];
-
-				lock(lumpdata) //mxd
-				{
-					lumpdata.Seek(0, SeekOrigin.Begin);
-					lumpdata.Read(membytes, 0, (int)lumpdata.Length);
-				}
-					
-				MemoryStream mem = new MemoryStream(membytes);
-				mem.Seek(0, SeekOrigin.Begin);
-					
 				// Get a reader for the data
-				IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
+				IImageReader reader = ImageDataFormat.GetImageReader(lumpdata, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
 				if(reader is UnknownImageReader)
 				{
 					// Data is in an unknown format!
@@ -107,14 +95,14 @@ namespace CodeImp.DoomBuilder.Data
 				}
 				else
 				{
-					// Read data as bitmap
-					mem.Seek(0, SeekOrigin.Begin);
+                    // Read data as bitmap
+                    lumpdata.Seek(0, SeekOrigin.Begin);
 					if(bitmap != null) bitmap.Dispose();
-					bitmap = reader.ReadAsBitmap(mem, out offsetx, out offsety);
+					bitmap = reader.ReadAsBitmap(lumpdata, out offsetx, out offsety);
 				}
 					
 				// Done
-				mem.Dispose();
+                lumpdata.Close();
 			}
 			else
 			{

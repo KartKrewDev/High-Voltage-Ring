@@ -190,7 +190,8 @@ namespace CodeImp.DoomBuilder.Data
 				General.WriteLogLine("Closing WAD resource \"" + location.location + "\"");
 
 				// Clean up
-				file.Dispose();
+                if (file != null)
+				    file.Dispose();
 				
 				// Done
 				base.Dispose();
@@ -218,17 +219,8 @@ namespace CodeImp.DoomBuilder.Data
 		// This resumes use of this resource
 		public override void Resume()
 		{
-            Reload(IsReadOnly);
 			base.Resume();
-		}
-
-        // This reloads the resource
-        public override void Reload(bool newreadonly)
-        {
-            if (file != null) file.Dispose();
-            file = new WAD(location.location, newreadonly);
-            is_iwad = file.IsIWAD;
-            base.Reload(newreadonly);
+            file = new WAD(location.location, IsReadOnly);
         }
 
         // This fills a ranges list

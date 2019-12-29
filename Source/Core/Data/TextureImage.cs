@@ -108,26 +108,14 @@ namespace CodeImp.DoomBuilder.Data
 					Stream patchdata = General.Map.Data.GetPatchData(p.LumpName, p.HasLongName, ref patchlocation);
 					if(patchdata != null)
 					{
-						// Copy patch data to memory
-						byte[] membytes = new byte[(int)patchdata.Length];
-
-						lock(patchdata) //mxd
-						{
-							patchdata.Seek(0, SeekOrigin.Begin);
-							patchdata.Read(membytes, 0, (int)patchdata.Length);
-						}
-							
-						MemoryStream mem = new MemoryStream(membytes);
-						mem.Seek(0, SeekOrigin.Begin);
-
 						// Get a reader for the data
-						IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
+						IImageReader reader = ImageDataFormat.GetImageReader(patchdata, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
 						if(reader is UnknownImageReader)
 						{
 							//mxd. Probably that's a flat?..
 							if(General.Map.Config.MixTexturesFlats) 
 							{
-								reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
+								reader = ImageDataFormat.GetImageReader(patchdata, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
 							}
 							if(reader is UnknownImageReader) 
 							{
@@ -139,9 +127,9 @@ namespace CodeImp.DoomBuilder.Data
 
 						if(!(reader is UnknownImageReader))
 						{
-							// Draw the patch
-							mem.Seek(0, SeekOrigin.Begin);
-							try { reader.DrawToPixelData(mem, pixels, width, height, p.X, p.Y); }
+                            // Draw the patch
+                            patchdata.Seek(0, SeekOrigin.Begin);
+							try { reader.DrawToPixelData(patchdata, pixels, width, height, p.X, p.Y); }
 							catch(InvalidDataException)
 							{
                                 // Data cannot be read!
@@ -150,8 +138,8 @@ namespace CodeImp.DoomBuilder.Data
 							}
 						}
 
-						// Done
-						mem.Dispose();
+                        // Done
+                        patchdata.Dispose();
 					}
 					else
 					{

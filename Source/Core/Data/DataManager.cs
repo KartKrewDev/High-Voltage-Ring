@@ -874,7 +874,7 @@ namespace CodeImp.DoomBuilder.Data
                                     //mxd. Release PK3 files
                                     foreach (DataReader reader in containers)
                                     {
-                                        if (reader is PK3Reader) (reader as PK3Reader).BathMode = false;
+                                        if (reader is PK3Reader) (reader as PK3Reader).BatchMode = false;
                                     }
 
                                     loadfinishtime = Clock.CurrentTime;

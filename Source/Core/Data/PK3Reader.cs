@@ -39,13 +39,28 @@ namespace CodeImp.DoomBuilder.Data
 		private IArchive archive; //mxd
 		private /*readonly*/ ArchiveType archivetype; //mxd
 		private /*readonly*/ Dictionary<string, byte[]> sevenzipentries; //mxd
-		private bool bathmode = true; //mxd
+		private bool batchmode = true; //mxd
 
 		#endregion
 
 		#region ================== Properties (mxd)
 
-		public bool BathMode { get { return bathmode; } set { bathmode = value; UpdateArchive(bathmode); } }
+		public bool BatchMode
+        {
+            get
+            {
+                return batchmode;
+            }
+
+            set
+            {
+                if (batchmode != value)
+                {
+                    batchmode = value;
+                    UpdateArchive(batchmode);
+                }
+            }
+        }
 
 		#endregion
 
@@ -147,25 +162,12 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				archive = ArchiveFactory.Open(location.location);
 			} 
-			else if(!enable && !bathmode && archive != null)
+			else if(!enable && !batchmode && archive != null)
 			{
 				archive.Dispose();
 				archive = null;
 			}
 		}
-
-        #endregion
-
-        #region ================== Management
-
-        // [ZZ]
-        // This reloads the resource
-        public override void Reload(bool newreadonly)
-        {
-            if (archive != null)
-                archive.Dispose();
-            LoadFrom(location, newreadonly);
-        }
 
         #endregion
 
