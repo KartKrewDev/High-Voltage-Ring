@@ -180,7 +180,6 @@ namespace CodeImp.DoomBuilder.Controls
 						| System.Windows.Forms.Keys.F)));
 			this.menufindusages.Size = new System.Drawing.Size(208, 22);
 			this.menufindusages.Text = "Find usages";
-			this.menufindusages.Click += new System.EventHandler(this.menufindusages_Click);
 			// 
 			// scriptpanel
 			// 

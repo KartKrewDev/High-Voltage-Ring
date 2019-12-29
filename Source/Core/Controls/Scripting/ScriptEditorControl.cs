@@ -1339,11 +1339,6 @@ namespace CodeImp.DoomBuilder.Controls
 			scriptedit.SelectAll();
 		}
 
-		private void menufindusages_Click(object sender, EventArgs e)
-		{
-			General.Map.ScriptEditor.Editor.FindUsages();
-		}
-
 		#endregion
 
 	}

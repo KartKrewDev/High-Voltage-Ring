@@ -72,12 +72,6 @@ namespace CodeImp.DoomBuilder.Windows
 		}
 
 		//mxd
-		internal void OnReloadResources()
-		{
-			editor.OnReloadResources();
-		}
-
-		//mxd
 		internal void DisplayError(TextResourceErrorItem error)
 		{
 			editor.ShowError(error);

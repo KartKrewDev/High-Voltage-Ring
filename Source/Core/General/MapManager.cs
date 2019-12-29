@@ -2326,9 +2326,6 @@ namespace CodeImp.DoomBuilder
 			//mxd. Update script names
 			LoadACS();
 
-			//mxd. Script Editor may need updating...
-			if(scriptwindow != null) scriptwindow.OnReloadResources();
-
 			// Reset status
 			General.MainWindow.DisplayStatus(oldstatus);
 			Cursor.Current = oldcursor;

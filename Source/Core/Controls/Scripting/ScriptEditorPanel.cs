@@ -74,7 +74,6 @@ namespace CodeImp.DoomBuilder.Controls
 		
 		public ScriptDocumentTab ActiveTab { get { return (tabs.SelectedTab as ScriptDocumentTab); } }
 		internal ScriptIconsManager Icons { get { return iconsmgr; } }
-		internal ScriptResourcesControl ScriptResourcesControl { get { return scriptresources; } }
 		public bool ShowWhitespace { get { return showwhitespace; } }
 		public bool WrapLongLines { get { return wraplonglines; } }
 
@@ -99,56 +98,7 @@ namespace CodeImp.DoomBuilder.Controls
 			scriptconfigs = new List<ScriptConfiguration>(General.ScriptConfigs.Values);
 			scriptconfigs.Add(new ScriptConfiguration());
 			scriptconfigs.Sort();
-			
-			// Fill the list of new document types
-			foreach(ScriptConfiguration cfg in scriptconfigs)
-			{
-				Image icon = scripticons.Images[iconsmgr.GetScriptIcon(cfg.ScriptType)]; //mxd
-				
-				// Button for new script menu
-				ToolStripMenuItem item = new ToolStripMenuItem(cfg.Description);
-				item.Image = icon; //mxd
-				item.Tag = cfg;
-				item.Click += buttonnew_Click;
-				buttonnew.DropDownItems.Add(item);
-				
-				// Button for script type menu
-				item = new ToolStripMenuItem(cfg.Description);
-				item.Image = icon; //mxd
-				item.Tag = cfg;
-				item.Click += buttonscriptconfig_Click;
-				buttonscriptconfig.DropDownItems.Add(item);
 
-				//mxd. Button for the "New" menu item
-				item = new ToolStripMenuItem(cfg.Description);
-				item.Image = icon; //mxd
-				item.Tag = cfg;
-				item.Click += buttonnew_Click;
-				menunew.DropDownItems.Add(item);
-			}
-			
-			// Setup supported extensions
-			string filterall = "";
-			string filterseperate = "";
-			foreach(ScriptConfiguration cfg in scriptconfigs)
-			{
-				if(cfg.Extensions.Length > 0)
-				{
-					string exts = "*." + string.Join(";*.", cfg.Extensions);
-					if(filterseperate.Length > 0) filterseperate += "|";
-					filterseperate += cfg.Description + "|" + exts;
-					if(filterall.Length > 0) filterall += ";";
-					filterall += exts;
-				}
-			}
-			openfile.Filter = "Script files|" + filterall + "|" + filterseperate + "|All files|*.*";
-
-			//mxd. Initialize script resources control
-			scriptresources.Setup(this, General.Map.Data.ScriptResources);
-
-			//mxd. Initialize "find usages" control
-			findusages.Setup(this);
-			
 			// Load the script lumps
 			ScriptDocumentTab activetab = null; //mxd
 			foreach(MapLumpInfo maplumpinfo in General.Map.Config.MapLumps.Values)
@@ -296,24 +246,11 @@ namespace CodeImp.DoomBuilder.Controls
 			errorlist.Columns[1].Width = General.Settings.ReadSetting("scriptspanel.errorscolumn1width", errorlist.Columns[1].Width);
 			errorlist.Columns[2].Width = General.Settings.ReadSetting("scriptspanel.errorscolumn2width", errorlist.Columns[2].Width);
 
-			//mxd. Set script navigator splitter position and state
-			if(General.Settings.ReadSetting("scriptspanel.splittercollapsed", false))
-				mainsplitter.IsCollapsed = true;
-
-			int splitterdistance = General.Settings.ReadSetting("scriptspanel.splitterdistance", int.MinValue);
-			if(splitterdistance == int.MinValue)
-			{
-				splitterdistance = 200;
-				if(MainForm.DPIScaler.Width != 1.0f)
-					splitterdistance = (int)Math.Round(splitterdistance * MainForm.DPIScaler.Width);
-			}
-			mainsplitter.SplitPosition = splitterdistance;
-
 			//mxd. Set script splitter position and state
 			if(General.Settings.ReadSetting("scriptspanel.scriptsplittercollapsed", false))
 				scriptsplitter.IsCollapsed = true;
 
-			splitterdistance = General.Settings.ReadSetting("scriptspanel.scriptsplitterdistance", int.MinValue);
+            int splitterdistance = General.Settings.ReadSetting("scriptspanel.scriptsplitterdistance", int.MinValue);
 			if(splitterdistance == int.MinValue)
 			{
 				splitterdistance = 250;
@@ -342,8 +279,6 @@ namespace CodeImp.DoomBuilder.Controls
 			General.Settings.WriteSetting("scriptspanel.errorscolumn0width", errorlist.Columns[0].Width);
 			General.Settings.WriteSetting("scriptspanel.errorscolumn1width", errorlist.Columns[1].Width);
 			General.Settings.WriteSetting("scriptspanel.errorscolumn2width", errorlist.Columns[2].Width); //mxd
-			General.Settings.WriteSetting("scriptspanel.splittercollapsed", mainsplitter.IsCollapsed); //mxd
-			General.Settings.WriteSetting("scriptspanel.splitterdistance", mainsplitter.SplitPosition); //mxd
 			General.Settings.WriteSetting("scriptspanel.scriptsplittercollapsed", scriptsplitter.IsCollapsed); //mxd
 			General.Settings.WriteSetting("scriptspanel.scriptsplitterdistance", scriptsplitter.SplitPosition); //mxd
 			General.Settings.WriteSetting("scriptspanel.infotabindex", infotabs.SelectedIndex); //mxd
@@ -362,20 +297,6 @@ namespace CodeImp.DoomBuilder.Controls
 					scripttab.WrapLongLines = buttonwordwrap.Checked;
 					scripttab.ShowWhitespace = buttonwhitespace.Checked;
 				}
-			}
-		}
-
-		//mxd
-		internal void OnReloadResources()
-		{
-			// Re-initialize script resources control
-			scriptresources.Setup(this, General.Map.Data.ScriptResources);
-
-			// Resource tabs may need re-linking...
-			foreach(var tp in tabs.TabPages)
-			{
-				var tab = (tp as ScriptResourceDocumentTab);
-				if(tab != null) tab.OnReloadResources();
 			}
 		}
 
@@ -935,51 +856,6 @@ namespace CodeImp.DoomBuilder.Controls
 			return false;
 		}
 
-		//mxd
-		internal bool FindUsages()
-		{
-			ScriptDocumentTab t = ActiveTab;
-			if(t != null)
-			{
-				string text = t.Editor.Scintilla.GetWordFromPosition(t.Editor.Scintilla.SelectionStart);
-				if(string.IsNullOrEmpty(text))
-				{
-					DisplayStatus(ScriptStatusType.Warning, "Unable to get search query from the text cursor position!");
-				}
-				else
-				{
-					var options = new FindReplaceOptions
-					{
-						FindText = text,
-						SearchMode = FindReplaceSearchMode.CURRENT_PROJECT_CURRENT_SCRIPT_TYPE,
-						WholeWord = true,
-						CaseSensitive = t.Config.CaseSensitive
-					};
-
-					return FindUsages(options, t.Config.ScriptType);
-				}
-			}
-			else
-			{
-				DisplayStatus(ScriptStatusType.Warning, "An active tab is required to perform Find Usages action!");
-			}
-
-			return false;
-		}
-
-		//mxd
-		public bool FindUsages(FindReplaceOptions options, ScriptType scripttype)
-		{
-			if(findusages.FindUsages(options, scripttype))
-			{
-				infotabs.SelectedTab = tabsearchresults;
-				scriptsplitter.IsCollapsed = false;
-				return true;
-			}
-
-			return false;
-		}
-		
 		// This closed the Find & Replace subwindow
 		public void CloseFindReplace(bool closing)
 		{
@@ -1161,9 +1037,6 @@ namespace CodeImp.DoomBuilder.Controls
 			{
 				// Go to error line
 				if(item.LineNumber != CompilerError.NO_LINE_NUMBER) targettab.MoveToLine(item.LineNumber);
-
-				// Show in resources tree
-				scriptresources.SelectItem(item.ResourceLocation, item.LumpName, item.LumpIndex, item.ScriptType);
 			}
 		}
 
@@ -1642,9 +1515,6 @@ namespace CodeImp.DoomBuilder.Controls
 			statusresetter.Stop();
 			statusflasher.Stop();
 
-			//mxd
-			findusages.OnClose();
-			
 			// Close the sub windows now
 			if(findreplaceform != null) findreplaceform.Dispose();
 		}
@@ -2003,13 +1873,6 @@ namespace CodeImp.DoomBuilder.Controls
 		}
 
 		//mxd
-		private void tabs_MouseDoubleClick(object sender, MouseEventArgs e)
-		{
-			// Show corresponding resource
-			scriptresources.SelectItem(tabs.SelectedTab as ScriptResourceDocumentTab);
-		}
-
-		//mxd
 		private void tabs_OnCloseTabClicked(object sender, TabControlEventArgs e)
 		{
 			ScriptDocumentTab t = (e.TabPage as ScriptDocumentTab);
@@ -2103,11 +1966,6 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 		}
 
-		private void menufindusages_Click(object sender, EventArgs e)
-		{
-			FindUsages();
-		}
-		
 		#endregion
 
 		#region ================== Quick Search (mxd)
@@ -2215,7 +2073,6 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			ScriptDocumentTab t = ActiveTab;
 			menufind.Enabled = (t != null);
-			menufindusages.Enabled = (t != null);
 
 			bool enable = (!string.IsNullOrEmpty(findoptions.FindText) && t != null);
 			menufindnext.Enabled = enable;
@@ -2238,9 +2095,6 @@ namespace CodeImp.DoomBuilder.Controls
 			scriptsplitter.Panel1MinSize = 100;
 			scriptsplitter.Panel2MinSize = 100;
 			scriptsplitter.SetSizes();
-
-			mainsplitter.Panel1MinSize = 180;
-			mainsplitter.SetSizes();
 		}
 	}
 }

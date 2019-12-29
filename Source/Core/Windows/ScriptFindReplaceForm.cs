@@ -276,8 +276,6 @@ namespace CodeImp.DoomBuilder.Windows
 					if(t != null) scripttype = t.Config.ScriptType;
 					break;
 			}
-
-			if(General.Map.ScriptEditor.Editor.FindUsages(options, scripttype)) this.Close();
 		}
 		
 		//mxd. Replace
