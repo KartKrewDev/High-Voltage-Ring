@@ -310,8 +310,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
-            TextureFilter texFilter = General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point;
-            graphics.SetSamplerFilter(texFilter, texFilter, TextureFilter.Linear, General.Settings.FilterAnisotropy);
+            TextureFilter texFilter = General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Nearest;
+            graphics.SetSamplerFilter(texFilter, texFilter, MipmapFilter.Linear, General.Settings.FilterAnisotropy);
 
             // Texture addressing
             graphics.SetSamplerState(TextureAddress.Wrap);
@@ -2014,7 +2014,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetUniform(UniformName.projection, world * view2d);
             graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.rendersettings, new Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-            graphics.SetSamplerFilter(General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point);
+            graphics.SetSamplerFilter(General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Nearest);
 
             // Texture
             if (crosshairbusy)

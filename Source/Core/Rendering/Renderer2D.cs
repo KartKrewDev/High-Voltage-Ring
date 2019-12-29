@@ -493,7 +493,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 graphics.SetUniform(UniformName.projection, worldmatrix * viewmatrix * Matrix.Scaling(1f, -1f, 1f));
             else
                 graphics.SetUniform(UniformName.projection, worldmatrix * viewmatrix);
-            graphics.SetSamplerFilter(bilinear ? TextureFilter.Linear : TextureFilter.Point);
+            graphics.SetSamplerFilter(bilinear ? TextureFilter.Linear : TextureFilter.Nearest);
         }
 
         private void SetThings2DSettings(float alpha)
