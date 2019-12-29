@@ -91,7 +91,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
         public void Clear()
         {
-            root = new Node(new Rectangle(MapMinX, MapMinY, MapMaxX - MapMinX, MapMaxY - MapMinY));
+            root = new Node(new Rectangle(General.Map.Config.LeftBoundary, General.Map.Config.BottomBoundary, General.Map.Config.RightBoundary - General.Map.Config.LeftBoundary, General.Map.Config.TopBoundary - General.Map.Config.BottomBoundary));
         }
 
 		public void AddSectorsSet(ICollection<Sector> sectors)
@@ -146,13 +146,9 @@ namespace CodeImp.DoomBuilder.VisualModes
             return new Rectangle(x0, y0, x1 - x0, y1 - y0);
         }
 
-        const int MapMinX = -32768;
-        const int MapMinY = -32768;
-        const int MapMaxX = 32768;
-        const int MapMaxY = 32768;
         const int MaxLevels = 8;
 
-        Node root = new Node(new Rectangle(MapMinX, MapMinY, MapMaxX - MapMinX, MapMaxY - MapMinY));
+        Node root = new Node(new Rectangle(General.Map.Config.LeftBoundary, General.Map.Config.BottomBoundary, General.Map.Config.RightBoundary - General.Map.Config.LeftBoundary, General.Map.Config.TopBoundary - General.Map.Config.BottomBoundary));
 
         struct Plane
         {
