@@ -127,10 +127,6 @@ namespace CodeImp.DoomBuilder.Data
 		//mxd. Comment icons
 		private ImageData[] commenttextures;
 		
-		// Used images
-		private Dictionary<long, bool> usedtextures; //mxd
-		private Dictionary<long, bool> usedflats; //mxd. Used only when MixTextursFlats is disabled
-		
 		// Things combined with things created from Decorate
 		private DecorateParser decorate;
         private ZScriptParser zscript;
@@ -352,8 +348,6 @@ namespace CodeImp.DoomBuilder.Data
 			flatnamesfulltoshort = new Dictionary<long, long>(); //mxd
 			imageque = new Queue<ImageData>();
 			texturesets = new List<MatchingTextureSet>();
-			usedtextures = new Dictionary<long, bool>(); //mxd
-			usedflats = new Dictionary<long, bool>(); //mxd
 			thingcategories = General.Map.Config.GetThingCategories();
 			thingtypes = General.Map.Config.GetThingTypes();
 
@@ -757,28 +751,8 @@ namespace CodeImp.DoomBuilder.Data
 				while(imageque.Count > 0)
 				{
 					ImageData img = imageque.Dequeue();
-					
-					switch(img.ImageState)
-					{
-						case ImageLoadState.Loading:
-							img.ImageState = ImageLoadState.None;
-							break;
-
-						case ImageLoadState.Unloading:
-							img.ImageState = ImageLoadState.Ready;
-							break;
-					}
-
-					switch(img.PreviewState)
-					{
-						case ImageLoadState.Loading:
-							img.PreviewState = ImageLoadState.None;
-							break;
-
-						case ImageLoadState.Unloading:
-							img.PreviewState = ImageLoadState.Ready;
-							break;
-					}
+					img.ImageState = ImageLoadState.None;
+					img.PreviewState = ImageLoadState.None;
 				}
 				
 				// Done
@@ -806,21 +780,7 @@ namespace CodeImp.DoomBuilder.Data
 					// Any image to process?
 					if(image != null)
 					{
-                        // If image was already loaded during this "resource epoch" and failed, don't reload it
-                        if (image.LoadFailed)
-                            continue;
-
-                        // Load this image?
-                        if (image.IsReferenced && (image.ImageState != ImageLoadState.Ready))
-						{
-							image.LoadImage();
-						}
-						// Unload this image?
-						else if(!image.IsReferenced && image.AllowUnload && (image.ImageState != ImageLoadState.None))
-						{
-							// Still unreferenced?
-							image.UnloadImage();
-						}
+						image.LoadImage();
 					}
 					
 					// Doing something?
@@ -890,30 +850,35 @@ namespace CodeImp.DoomBuilder.Data
 			catch(ThreadInterruptedException) { }
 		}
 		
-		// This adds an image for background loading or unloading
-		internal void ProcessImage(ImageData img)
+		internal void QueueLoadImage(ImageData img)
 		{
-			// Load this image?
-			if((img.ImageState == ImageLoadState.None) && img.IsReferenced)
+			if(img.ImageState == ImageLoadState.None)
 			{
-				// Add for loading
 				img.ImageState = ImageLoadState.Loading;
                 img.PreviewState = ImageLoadState.Loading;
-                lock (syncobject) { imageque.Enqueue(img); Monitor.Pulse(syncobject); }
-			}
-			
-			// Unload this image?
-			if((img.ImageState == ImageLoadState.Ready) && !img.IsReferenced && img.AllowUnload)
-			{
-				// Add for unloading
-				img.ImageState = ImageLoadState.Unloading;
-                img.PreviewState = ImageLoadState.Unloading;
-                lock (syncobject) { imageque.Enqueue(img); Monitor.Pulse(syncobject); }
+                lock (syncobject)
+                {
+                    imageque.Enqueue(img);
+                    Monitor.Pulse(syncobject);
+                }
 			}
 		}
 
-		//mxd. This loads a model
-		internal bool ProcessModel(int type) 
+        void QueueLoadPreview(ImageData img)
+        {
+            if (img.PreviewState == ImageLoadState.None)
+            {
+                img.PreviewState = ImageLoadState.Loading;
+                lock (syncobject)
+                {
+                    imageque.Enqueue(img);
+                    Monitor.Pulse(syncobject);
+                }
+            }
+        }
+
+        //mxd. This loads a model
+        internal bool ProcessModel(int type) 
 		{
 			if(modeldefentries[type].LoadState != ModelLoadState.None) return true;
 
@@ -976,6 +941,8 @@ namespace CodeImp.DoomBuilder.Data
 						list.Remove(img.LongName);
 						list.Add(img.LongName, img);
 						counter++;
+
+                        QueueLoadPreview(img);
 					}
 				}
 			}
@@ -1042,7 +1009,9 @@ namespace CodeImp.DoomBuilder.Data
 						{
 							nametranslation.Remove(img.LongName);
 						}
-					}
+
+                        QueueLoadPreview(img);
+                    }
 				}
 			}
 			
@@ -1271,7 +1240,9 @@ namespace CodeImp.DoomBuilder.Data
 						{
 							nametranslation.Remove(img.LongName);
 						}
-					}
+
+                        QueueLoadPreview(img);
+                    }
 				}
 			}
 
@@ -1397,9 +1368,10 @@ namespace CodeImp.DoomBuilder.Data
 							HiResImage replacer = new HiResImage(img);
 							replacer.ApplySettings(textures[hash]);
 							textures[img.LongName] = replacer;
-							//replaced = true;
+                            //replaced = true;
 
-							counter++;
+                            QueueLoadPreview(img);
+                            counter++;
 						}
 
 						// Replace flat?
@@ -1409,9 +1381,10 @@ namespace CodeImp.DoomBuilder.Data
 							HiResImage replacer = new HiResImage(img);
 							replacer.ApplySettings(flats[hash]);
 							flats[img.LongName] = replacer;
-							//replaced = true;
+                            //replaced = true;
 
-							counter++;
+                            QueueLoadPreview(img);
+                            counter++;
 						}
 
 						// Replace sprite?
@@ -1420,9 +1393,10 @@ namespace CodeImp.DoomBuilder.Data
 							HiResImage replacer = new HiResImage(img);
 							replacer.ApplySettings(sprites[img.LongName]);
 							sprites[img.LongName] = replacer;
-							//replaced = true;
+                            //replaced = true;
 
-							counter++;
+                            QueueLoadPreview(img);
+                            counter++;
 						}
 
 						// We don't load any graphics and most of the sprites, so this can result in a ton of false warnings...
@@ -1545,7 +1519,9 @@ namespace CodeImp.DoomBuilder.Data
 
 						// Add to collection
 						sprites.Add(image.LongName, image);
-					}
+
+                        QueueLoadPreview(image);
+                    }
 				}
 				else
 				{
@@ -1590,7 +1566,9 @@ namespace CodeImp.DoomBuilder.Data
 						{
 							image = sprites[info.SpriteLongName];
 						}
-					}
+
+                        if (image != null) QueueLoadPreview(image);
+                    }
 				}
 			}
 			
@@ -1703,7 +1681,13 @@ namespace CodeImp.DoomBuilder.Data
 				if(internalspriteslookup.ContainsKey(internalname)) //mxd
 					return sprites[internalspriteslookup[internalname]];
 
-				return sprites[UNKNOWN_THING]; //mxd
+				ImageData img = sprites[UNKNOWN_THING]; //mxd
+                if (img != null)
+                {
+                    img.UsedInMap = true;
+                    QueueLoadImage(img);
+                }
+                return img;
 			}
 			else
 			{
@@ -1714,9 +1698,15 @@ namespace CodeImp.DoomBuilder.Data
 				if(sprites.ContainsKey(longname))
 				{
 					// Return exiting sprite
-					return sprites[longname];
-				}
-				else
+					ImageData img = sprites[longname];
+                    if (img != null)
+                    {
+                        img.UsedInMap = true;
+                        QueueLoadImage(img);
+                    }
+                    return img;
+                }
+                else
 				{
 					//mxd. Go for all opened containers
 					bool spritefound = false;
@@ -1742,8 +1732,13 @@ namespace CodeImp.DoomBuilder.Data
 						// Add to collection
 						sprites.Add(longname, image);
 
-						// Return result
-						return image;
+                        // Return result
+                        if (image != null)
+                        {
+                            image.UsedInMap = true;
+                            QueueLoadImage(image);
+                        }
+                        return image;
 					}
 					else //mxd
 					{
@@ -1751,9 +1746,14 @@ namespace CodeImp.DoomBuilder.Data
 						
 						// Add to collection
 						sprites.Add(longname, img);
-					
-						// Return image
-						return img; 
+
+                        // Return image
+                        if (img != null)
+                        {
+                            img.UsedInMap = true;
+                            QueueLoadImage(img);
+                        }
+                        return img; 
 					}
 				}
 			}
@@ -2413,7 +2413,9 @@ namespace CodeImp.DoomBuilder.Data
 
 										// Add to collection
 										sprites.Add(sprite.LongName, sprite);
-									}
+
+                                        QueueLoadPreview(sprite);
+                                    }
 
 									// Apply VOXELDEF settings to the preview image...
 									VoxelImage vi = sprite as VoxelImage;
@@ -2778,8 +2780,10 @@ namespace CodeImp.DoomBuilder.Data
 						textures[camteximage.LongName] = camteximage;
 						flats[camteximage.LongName] = camteximage;
 
-						// Add to container's texture set
-						currentreader.TextureSet.AddFlat(camteximage);
+                        QueueLoadPreview(camteximage);
+
+                        // Add to container's texture set
+                        currentreader.TextureSet.AddFlat(camteximage);
 						currentreader.TextureSet.AddTexture(camteximage);
 					}
 				}
@@ -3030,10 +3034,11 @@ namespace CodeImp.DoomBuilder.Data
 		// used-in-map status on all textures and flats
 		public void UpdateUsedTextures()
 		{
-			if(General.Map.Config.MixTexturesFlats)
-			{
-				usedtextures.Clear();
+            var usedtextures = new Dictionary<long, bool>();
+            var usedflats = new Dictionary<long, bool>();
 
+            if (General.Map.Config.MixTexturesFlats)
+			{
 				// Go through the map to find the used textures
 				foreach(Sidedef sd in General.Map.Map.Sidedefs)
 				{
@@ -3078,10 +3083,8 @@ namespace CodeImp.DoomBuilder.Data
 						usedtextures[flatnamesshorttofull[s.LongCeilTexture]] = false;
 				}
 			}
-			//mxd. Use separate collections
 			else
 			{
-				usedtextures.Clear();
 
 				// Go through the map to find the used textures
 				foreach(Sidedef sd in General.Map.Map.Sidedefs)
@@ -3113,8 +3116,6 @@ namespace CodeImp.DoomBuilder.Data
 					}
 				}
 
-				usedflats.Clear();
-
 				// Go through the map to find the used flats
 				foreach(Sector s in General.Map.Map.Sectors)
 				{
@@ -3138,8 +3139,8 @@ namespace CodeImp.DoomBuilder.Data
 				{
                     if (i.Value.LoadFailed)
                         continue;
-					i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
-					if(i.Value.LoadFailed && i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+					i.Value.UsedInMap = usedtextures.ContainsKey(i.Key);
+                    QueueLoadImage(i.Value);
 				}
 
 				// Set used on all flats
@@ -3147,8 +3148,8 @@ namespace CodeImp.DoomBuilder.Data
 				{
                     if (i.Value.LoadFailed)
                         continue;
-                    i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
-					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+                    i.Value.UsedInMap = usedtextures.ContainsKey(i.Key);
+                    QueueLoadImage(i.Value);
 				}
 			}
 			//mxd. Use separate collections
@@ -3159,8 +3160,8 @@ namespace CodeImp.DoomBuilder.Data
 				{
                     if (i.Value.LoadFailed)
                         continue;
-                    i.Value.SetUsedInMap(usedtextures.ContainsKey(i.Key));
-					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+                    i.Value.UsedInMap = usedtextures.ContainsKey(i.Key);
+                    QueueLoadImage(i.Value);
 				}
 
 				// Set used on all flats
@@ -3168,8 +3169,8 @@ namespace CodeImp.DoomBuilder.Data
 				{
                     if (i.Value.LoadFailed)
                         continue;
-                    i.Value.SetUsedInMap(usedflats.ContainsKey(i.Key));
-					if(i.Value.IsImageLoaded != i.Value.IsReferenced) ProcessImage(i.Value);
+                    i.Value.UsedInMap = usedflats.ContainsKey(i.Key);
+                    QueueLoadImage(i.Value);
 				}
 			}
 

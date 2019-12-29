@@ -24,7 +24,6 @@ namespace CodeImp.DoomBuilder.Data
 	{
 		None,
 		Loading,
-		Ready,
-		Unloading
+		Ready
 	}
 }

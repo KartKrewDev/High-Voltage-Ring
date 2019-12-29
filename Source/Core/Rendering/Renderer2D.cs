@@ -1324,11 +1324,6 @@ namespace CodeImp.DoomBuilder.Rendering
 						SpriteFrameInfo sfi = info.SpriteFrame[framegroup.Key];
 						ImageData sprite = General.Map.Data.GetSpriteImage(sfi.Sprite);
 						if(sprite == null) continue;
-						if(!sprite.IsImageLoaded)
-						{
-							sprite.SetUsedInMap(true);
-							continue;
-						}
 
 						graphics.SetTexture(sprite.Texture);
 

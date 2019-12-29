@@ -69,11 +69,6 @@ namespace CodeImp.DoomBuilder.Data
         private ImageLoadState previewstate;
         private ImageLoadState imagestate;
         private bool loadfailed;
-        private bool allowunload;
-
-        // References
-        private volatile bool usedinmap;
-		private volatile int references;
 
         // GDI bitmap
         private Bitmap _bitmap;
@@ -109,11 +104,10 @@ namespace CodeImp.DoomBuilder.Data
 		public bool IsImageLoaded { get { return (imagestate == ImageLoadState.Ready); } }
 		public bool LoadFailed { get { return loadfailed; } }
 		public bool IsDisposed { get { return isdisposed; } }
-		public bool AllowUnload { get { return allowunload; } set { allowunload = value; } }
+		public bool AllowUnload { get; set; }
 		public ImageLoadState ImageState { get { return imagestate; } internal set { imagestate = value; } }
 		public ImageLoadState PreviewState { get { return previewstate; } internal set { previewstate = value; } }
-		public bool IsReferenced { get { return (references > 0) || usedinmap; } }
-		public bool UsedInMap { get { return usedinmap; } }
+		public bool UsedInMap { get; internal set; }
 		public int MipMapLevels { get { return mipmaplevels; } set { mipmaplevels = value; } }
 		public virtual int Width { get { return width; } }
 		public virtual int Height { get { return height; } }
@@ -134,7 +128,7 @@ namespace CodeImp.DoomBuilder.Data
 		{
 			// Defaults
 			usecolorcorrection = true;
-			allowunload = true;
+			AllowUnload = true;
 
 			//mxd. Hashing
 			hashcode = hashcounter++;
@@ -159,7 +153,6 @@ namespace CodeImp.DoomBuilder.Data
 				texture = null;
 					
 				// Done
-				usedinmap = false;
 				imagestate = ImageLoadState.None;
 				previewstate = ImageLoadState.None;
 				isdisposed = true;
@@ -170,31 +163,7 @@ namespace CodeImp.DoomBuilder.Data
 		
 		#region ================== Management
 		
-		// This sets the status of the texture usage in the map
-		internal void SetUsedInMap(bool used)
-		{
-			if(used != usedinmap)
-			{
-				usedinmap = used;
-				General.Map.Data.ProcessImage(this);
-			}
-		}
-		
 		// This adds a reference
-		public void AddReference()
-		{
-			references++;
-			if(references == 1) General.Map.Data.ProcessImage(this);
-		}
-		
-		// This removes a reference
-		public void RemoveReference()
-		{
-			references--;
-			if(references < 0) General.Fail("FAIL! (references < 0) Somewhere this image is dereferenced more than it was referenced.");
-			if(references == 0) General.Map.Data.ProcessImage(this);
-		}
-		
 		// This sets the name
 		protected virtual void SetName(string name)
 		{
@@ -251,6 +220,9 @@ namespace CodeImp.DoomBuilder.Data
 		// This loads the image
 		public virtual void LoadImage(bool notify)
 		{
+            if (imagestate == ImageLoadState.Ready && previewstate != ImageLoadState.Loading)
+                return;
+
             // Do the loading
             LocalLoadResult loadResult = LocalLoadImage();
 
@@ -259,40 +231,47 @@ namespace CodeImp.DoomBuilder.Data
 
             General.MainWindow.RunOnUIThread(() =>
             {
-                // Log errors and warnings
-                foreach (LogMessage message in loadResult.messages)
+                if (imagestate != ImageLoadState.Ready)
                 {
-                    General.ErrorLogger.Add(message.Type, message.Text);
+                    // Log errors and warnings
+                    foreach (LogMessage message in loadResult.messages)
+                    {
+                        General.ErrorLogger.Add(message.Type, message.Text);
+                    }
+
+                    if (loadResult.messages.Any(x => x.Type == ErrorType.Error))
+                    {
+                        loadfailed = true;
+                    }
+
+                    _bitmap?.Dispose();
+                    texture?.Dispose();
+                    imagestate = ImageLoadState.Ready;
+                    _bitmap = loadResult.bitmap;
+
+                    if (loadResult.uiThreadWork != null)
+                        loadResult.uiThreadWork();
+                }
+                else
+                {
+                    loadResult.bitmap?.Dispose();
                 }
 
-                if (loadResult.messages.Any(x => x.Type == ErrorType.Error))
+                if (previewstate == ImageLoadState.Loading)
                 {
-                    loadfailed = true;
+                    previewbitmap?.Dispose();
+                    previewstate = ImageLoadState.Ready;
+                    previewbitmap = loadResult.preview;
                 }
-
-                // Image is ready
-                imagestate = ImageLoadState.Ready;
-                previewstate = ImageLoadState.Ready;
-                _bitmap = loadResult.bitmap;
-                previewbitmap = loadResult.preview;
-                if (loadResult.uiThreadWork != null)
-                    loadResult.uiThreadWork();
+                else
+                {
+                    loadResult.preview?.Dispose();
+                }
             });
 
             // Notify the main thread about the change so that sectors can update their buffers
             if (notify) General.MainWindow.ImageDataLoaded(this.name);
 		}
-
-        // This unloads the image
-        public virtual void UnloadImage()
-        {
-            General.MainWindow.RunOnUIThread(() =>
-            {
-                _bitmap?.Dispose();
-                _bitmap = null;
-                imagestate = ImageLoadState.None;
-            });
-        }
 
         protected class LocalLoadResult
         {
@@ -586,10 +565,16 @@ namespace CodeImp.DoomBuilder.Data
 		{
             if (texture != null)
                 return texture;
-            else if (loadfailed)
-                return General.Map.Data.FailedTexture;
             else if (imagestate == ImageLoadState.Loading)
                 return General.Map.Data.LoadingTexture;
+            else if (loadfailed)
+                return General.Map.Data.FailedTexture;
+
+            if (imagestate == ImageLoadState.None)
+            {
+                General.Map.Data.QueueLoadImage(this);
+                return General.Map.Data.LoadingTexture;
+            }
 
             texture = new Texture(General.Map.Graphics, bitmap);
 

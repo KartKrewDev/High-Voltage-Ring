@@ -81,7 +81,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			for(int i = 0; i < info.SpriteFrame.Length; i++)
 			{
 				sprites[i] = General.Map.Data.GetSpriteImage(info.SpriteFrame[i].Sprite);
-				if(sprites[i] != null) sprites[i].AddReference();
 			}
 
 			//mxd
@@ -477,11 +476,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(!IsDisposed)
 			{
-				if(sprites != null) //mxd
-				{
-					foreach(ImageData sprite in sprites) sprite.RemoveReference();
-					sprites = null;
-				}
+				sprites = null;
 
 				base.Dispose();
 			}
@@ -505,7 +500,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			for(int i = 0; i < info.SpriteFrame.Length; i++)
 			{
 				sprites[i] = General.Map.Data.GetSpriteImage(info.SpriteFrame[i].Sprite);
-				if(sprites[i] != null) sprites[i].AddReference();
 			}
 			
 			// Setup visual thing
