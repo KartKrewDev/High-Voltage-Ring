@@ -310,7 +310,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
-            graphics.SetSamplerFilter(TextureFilter.Linear, General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point, TextureFilter.Linear, General.Settings.FilterAnisotropy);
+            TextureFilter texFilter = General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point;
+            graphics.SetSamplerFilter(texFilter, texFilter, TextureFilter.Linear, General.Settings.FilterAnisotropy);
 
             // Texture addressing
             graphics.SetSamplerState(TextureAddress.Wrap);
