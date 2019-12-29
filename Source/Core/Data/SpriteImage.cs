@@ -57,6 +57,8 @@ namespace CodeImp.DoomBuilder.Data
 			// Initialize
 			SetName(name);
 
+            AllowUnload = false;
+
 			// We have no destructor
 			GC.SuppressFinalize(this);
 		}
