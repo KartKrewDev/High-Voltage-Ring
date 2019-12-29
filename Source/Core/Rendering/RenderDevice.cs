@@ -265,10 +265,10 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetSamplerFilter(TextureFilter filter)
         {
-            SetSamplerFilter(filter, filter, TextureFilter.None, 0.0f);
+            SetSamplerFilter(filter, filter, MipmapFilter.None, 0.0f);
         }
 
-        public void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+        public void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
         {
             RenderDevice_SetSamplerFilter(Handle, minfilter, magfilter, mipfilter, maxanisotropy);
         }
@@ -437,11 +437,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			SetSamplerState(TextureAddress.Wrap);
 			
             //mxd. It's still nice to have anisotropic filtering when texture filtering is disabled
-            TextureFilter magminfilter = (General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Point);
+            TextureFilter magminfilter = (General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Nearest);
             SetSamplerFilter(
-                General.Settings.FilterAnisotropy > 1.0f ? TextureFilter.Anisotropic : magminfilter,
                 magminfilter,
-                General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.None, // [SB] use None, otherwise textures are still filtered
+                magminfilter,
+                General.Settings.VisualBilinear ? MipmapFilter.Linear : MipmapFilter.Nearest,
                 General.Settings.FilterAnisotropy);
 
             // Initialize presentations
@@ -514,7 +514,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_SetTexture(IntPtr handle, IntPtr texture);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetSamplerFilter(IntPtr handle, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy);
+        static extern void RenderDevice_SetSamplerFilter(IntPtr handle, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetSamplerState(IntPtr handle, TextureAddress address);
@@ -675,5 +675,6 @@ namespace CodeImp.DoomBuilder.Rendering
     public enum FillMode : int { Solid, Wireframe }
     public enum TextureAddress : int { Wrap, Clamp }
     public enum PrimitiveType : int { LineList, TriangleList, TriangleStrip }
-    public enum TextureFilter : int { None, Point, Linear, Anisotropic }
+    public enum TextureFilter : int { Nearest, Linear }
+    public enum MipmapFilter : int { None, Nearest, Linear}
 }

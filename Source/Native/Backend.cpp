@@ -135,7 +135,7 @@ extern "C"
 		device->SetTexture(texture);
 	}
 
-	void RenderDevice_SetSamplerFilter(RenderDevice* device, TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+	void RenderDevice_SetSamplerFilter(RenderDevice* device, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
 	{
 		device->SetSamplerFilter(minfilter, magfilter, mipfilter, maxanisotropy);
 	}

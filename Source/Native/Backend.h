@@ -35,7 +35,8 @@ enum class FillMode : int { Solid, Wireframe };
 enum class TextureAddress : int { Wrap, Clamp };
 enum class ShaderFlags : int { None, Debug };
 enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };
-enum class TextureFilter : int { None, Point, Linear, Anisotropic };
+enum class TextureFilter : int { Nearest, Linear };
+enum class MipmapFilter : int { None, Nearest, Linear };
 enum class UniformType : int { Vec4f, Vec3f, Vec2f, Float, Mat4 };
 
 typedef int UniformName;
@@ -69,7 +70,7 @@ public:
 	virtual void SetZEnable(bool value) = 0;
 	virtual void SetZWriteEnable(bool value) = 0;
 	virtual void SetTexture(Texture* texture) = 0;
-	virtual void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy) = 0;
+	virtual void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy) = 0;
 	virtual void SetSamplerState(TextureAddress address) = 0;
 	virtual bool Draw(PrimitiveType type, int startIndex, int primitiveCount) = 0;
 	virtual bool DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount) = 0;

@@ -55,7 +55,7 @@ public:
 	void SetZEnable(bool value) override;
 	void SetZWriteEnable(bool value) override;
 	void SetTexture(Texture* texture) override;
-	void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy) override;
+	void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy) override;
 	void SetSamplerState(TextureAddress address) override;
 	bool Draw(PrimitiveType type, int startIndex, int primitiveCount) override;
 	bool DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount) override;
@@ -99,7 +99,7 @@ public:
 
 	GLShader* GetActiveShader();
 
-	GLint GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter);
+	GLint GetGLMinFilter(TextureFilter filter, MipmapFilter mipfilter);
 
 	static std::mutex& GetMutex();
 	static void DeleteObject(GLVertexBuffer* buffer);

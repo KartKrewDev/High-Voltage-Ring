@@ -261,11 +261,11 @@ void GLRenderDevice::SetTexture(Texture* texture)
 	}
 }
 
-void GLRenderDevice::SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, TextureFilter mipfilter, float maxanisotropy)
+void GLRenderDevice::SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
 {
 	SamplerFilterKey key;
 	key.MinFilter = GetGLMinFilter(minfilter, mipfilter);
-	key.MagFilter = (magfilter == TextureFilter::Point || magfilter == TextureFilter::None) ? GL_NEAREST : GL_LINEAR;
+	key.MagFilter = (magfilter == TextureFilter::Nearest) ? GL_NEAREST : GL_LINEAR;
 	key.MaxAnisotropy = maxanisotropy;
 	if (mSamplerFilterKey != key)
 	{
@@ -277,25 +277,25 @@ void GLRenderDevice::SetSamplerFilter(TextureFilter minfilter, TextureFilter mag
 	}
 }
 
-GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, TextureFilter mipfilter)
+GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, MipmapFilter mipfilter)
 {
-	if (mipfilter == TextureFilter::Linear)
+	if (mipfilter == MipmapFilter::Linear)
 	{
-		if (filter == TextureFilter::Point || filter == TextureFilter::None)
+		if (filter == TextureFilter::Nearest)
 			return GL_NEAREST_MIPMAP_LINEAR;
 		else
 			return GL_LINEAR_MIPMAP_LINEAR;
 	}
-	else if (mipfilter == TextureFilter::Point)
+	else if (mipfilter == MipmapFilter::Nearest)
 	{
-		if (filter == TextureFilter::Point || filter == TextureFilter::None)
+		if (filter == TextureFilter::Nearest)
 			return GL_NEAREST_MIPMAP_NEAREST;
 		else
 			return GL_LINEAR_MIPMAP_NEAREST;
 	}
 	else
 	{
-		if (filter == TextureFilter::Point || filter == TextureFilter::None)
+		if (filter == TextureFilter::Nearest)
 			return GL_NEAREST;
 		else
 			return GL_LINEAR;
