@@ -71,8 +71,7 @@ namespace CodeImp.DoomBuilder.Data
         private bool loadfailed;
 
         // GDI bitmap
-        private Bitmap _bitmap;
-		protected Bitmap bitmap { get { return _bitmap; } }
+        private Bitmap bitmap;
         private Bitmap previewbitmap;
 
         // Direct3D texture
@@ -147,9 +146,9 @@ namespace CodeImp.DoomBuilder.Data
 			if(!isdisposed)
 			{
 				// Clean up
-				_bitmap?.Dispose();
+				bitmap?.Dispose();
 				texture?.Dispose();
-				_bitmap = null;
+				bitmap = null;
 				texture = null;
 					
 				// Done
@@ -200,7 +199,7 @@ namespace CodeImp.DoomBuilder.Data
         // Loads the image directly. This is needed by the background loader for some patches.
         public Bitmap LocalGetBitmap()
         {
-            // Note: if this turns out to be too slow, do NOT try to make it use GetBitmap or _bitmap.
+            // Note: if this turns out to be too slow, do NOT try to make it use GetBitmap or bitmap.
             // Create a cache for the local background loader thread instead.
 
             LocalLoadResult result = LocalLoadImage();
@@ -244,10 +243,10 @@ namespace CodeImp.DoomBuilder.Data
                         loadfailed = true;
                     }
 
-                    _bitmap?.Dispose();
+                    bitmap?.Dispose();
                     texture?.Dispose();
                     imagestate = ImageLoadState.Ready;
-                    _bitmap = loadResult.bitmap;
+                    bitmap = loadResult.bitmap;
 
                     if (loadResult.uiThreadWork != null)
                         loadResult.uiThreadWork();

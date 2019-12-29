@@ -197,7 +197,7 @@ namespace CodeImp.DoomBuilder.Data
 							if(patchbmp != null)
 							{
 								//mxd. Apply transformations from TexturePatch 
-								patchbmp = TransformPatch(p, patchbmp);
+								patchbmp = TransformPatch(bitmap, p, patchbmp);
 
 								// Draw the patch on the texture image
 								Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);
@@ -221,7 +221,7 @@ namespace CodeImp.DoomBuilder.Data
 
                                 //mxd. Apply transformations from TexturePatch. We don't want to modify the original bitmap here, so make a copy
                                 Bitmap bmp = new Bitmap(img.LocalGetBitmap());
-                                Bitmap patchbmp = TransformPatch(p, bmp);
+                                Bitmap patchbmp = TransformPatch(bitmap, p, bmp);
 
 								// Draw the patch on the texture image
 								Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);
@@ -250,7 +250,7 @@ namespace CodeImp.DoomBuilder.Data
         }
 
         //mxd
-        private Bitmap TransformPatch(TexturePatch p, Bitmap patchbmp)
+        private Bitmap TransformPatch(Bitmap bitmap, TexturePatch p, Bitmap patchbmp)
 		{
 			//mxd. Flip
 			if(p.FlipX || p.FlipY)
