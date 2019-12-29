@@ -73,7 +73,7 @@ namespace CodeImp.DoomBuilder.Config
 		private float radius;
 		private float renderradius;
 		private float height;
-		private int distancechecksq; //mxd. Contains squared value or int.MaxValue when not set
+		private double distancechecksq; //mxd. Contains squared value or int.MaxValue when not set
 		private bool hangs;
 		private int blocking;
 		private int errorcheck;
@@ -123,7 +123,7 @@ namespace CodeImp.DoomBuilder.Config
 		public float Radius { get { return radius; } }
 		public float RenderRadius { get { return renderradius; } }
 		public float Height { get { return height; } }
-		public int DistanceCheckSq { get { return distancechecksq; } } //mxd
+		public double DistanceCheckSq { get { return distancechecksq; } } //mxd
 		public bool Hangs { get { return hangs; } }
 		public int Blocking { get { return blocking; } }
 		public int ErrorCheck { get { return errorcheck; } }
@@ -181,7 +181,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.radius = 10f;
 			this.renderradius = 10f;
 			this.height = 20f;
-			this.distancechecksq = int.MaxValue; //mxd
+			this.distancechecksq = double.MaxValue;
 			this.hangs = false;
 			this.blocking = 0;
 			this.errorcheck = 0;
@@ -214,7 +214,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.isknown = true;
 			this.actor = null;
 			this.bright = false; //mxd
-			this.distancechecksq = int.MaxValue; //mxd
+			this.distancechecksq = double.MaxValue;
 		
 			// Read properties
 			this.title = cfg.ReadSetting("thingtypes." + cat.Name + "." + key + ".title", "<" + key + ">");
@@ -292,7 +292,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.classname = string.Empty; //mxd
 			this.isknown = true;
 			this.bright = false; //mxd
-			this.distancechecksq = int.MaxValue; //mxd
+			this.distancechecksq = double.MaxValue;
 			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
 			for(int i = 0; i < Linedef.NUM_ARGS; i++) this.args[i] = new ArgumentInfo(i);
 			
@@ -339,7 +339,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.classname = actor.ClassName; //mxd
 			this.isknown = true;
 			this.bright = false; //mxd
-			this.distancechecksq = int.MaxValue; //mxd
+			this.distancechecksq = double.MaxValue;
 			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
 			for(int i = 0; i < Linedef.NUM_ARGS; i++) this.args[i] = new ArgumentInfo(i);
 			
@@ -388,7 +388,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.classname = actor.ClassName; //mxd
 			this.isknown = true;
 			this.bright = false; //mxd
-			this.distancechecksq = int.MaxValue; //mxd
+			this.distancechecksq = double.MaxValue;
 			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
 			for(int i = 0; i < Linedef.NUM_ARGS; i++) this.args[i] = new ArgumentInfo(i);
 
@@ -566,11 +566,11 @@ namespace CodeImp.DoomBuilder.Config
 				if(!General.Map.Data.CVars.Integers.ContainsKey(cvarname))
 				{
 					General.ErrorLogger.Add(ErrorType.Error, "Error in actor \"" + title + "\":" + index + ". DistanceCheck property references undefined cvar \"" + cvarname + "\"");
-					distancechecksq = int.MaxValue;
+					distancechecksq = double.MaxValue;
 				}
 				else
 				{
-					distancechecksq = (int)Math.Pow(General.Map.Data.CVars.Integers[cvarname], 2);
+					distancechecksq = Math.Pow(General.Map.Data.CVars.Integers[cvarname], 2);
 				}
 			}
 

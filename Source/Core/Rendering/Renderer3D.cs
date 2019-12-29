@@ -870,8 +870,8 @@ namespace CodeImp.DoomBuilder.Rendering
 						// Update buffer if needed
 						t.Update();
 
-                        //mxd. Check 3D distance
-                        if (t.Info.DistanceCheckSq < int.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
+                        //mxd. Check 3D distance. Check against MaxValue to save doing GetLenthSq if there's not DistanceCheck defined
+                        if (t.Info.DistanceCheckSq < double.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
 							continue;
 
 						// Only do this sector when a vertexbuffer is created
@@ -1136,8 +1136,8 @@ namespace CodeImp.DoomBuilder.Rendering
 					// Update buffer if needed
 					t.Update();
 
-					//mxd. Check 3D distance
-					if(t.Info.DistanceCheckSq < int.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
+					//mxd. Check 3D distance. Check against MaxValue to save doing GetLenthSq if there's not DistanceCheck defined
+					if (t.Info.DistanceCheckSq < double.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
 						continue;
 					
 					t.UpdateSpriteFrame(); // Set correct texture, geobuffer and triangles count
@@ -1561,8 +1561,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Update buffer if needed
 				t.Update();
 
-				// Check 3D distance
-				if(t.Info.DistanceCheckSq < int.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
+				// Check 3D distance. Check against MaxValue to save doing GetLenthSq if there's not DistanceCheck defined
+				if (t.Info.DistanceCheckSq < double.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
 					continue;
 					
 				Color4 vertexcolor = new Color4(t.VertexColor);
