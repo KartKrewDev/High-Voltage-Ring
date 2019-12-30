@@ -228,9 +228,17 @@ namespace CodeImp.DoomBuilder.Data
             ConvertImageFormat(loadResult);
             MakeImagePreview(loadResult);
 
+            // Save memory by disposing the original image immediately if we only used it to load a preview image
+            bool onlyPreview = false;
+            if (imagestate == ImageLoadState.Ready)
+            {
+                loadResult.bitmap?.Dispose();
+                onlyPreview = true;
+            }
+
             General.MainWindow.RunOnUIThread(() =>
             {
-                if (imagestate != ImageLoadState.Ready)
+                if (imagestate != ImageLoadState.Ready && !onlyPreview)
                 {
                     // Log errors and warnings
                     foreach (LogMessage message in loadResult.messages)
