@@ -767,6 +767,9 @@ namespace CodeImp.DoomBuilder.Data
 		{
 			try
 			{
+                // Wait a bit before loading to give the main thread a headstart on acquiring the locks in the resource loader part of the codebase..
+                Thread.Sleep(666);
+
 				do
 				{
 					// Get next item
