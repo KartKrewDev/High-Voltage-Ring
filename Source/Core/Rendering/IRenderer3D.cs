@@ -50,6 +50,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		void AddSectorGeometry(VisualGeometry g);
 		void AddThingGeometry(VisualThing t);
 		void SetVisualVertices(List<VisualVertex> verts);
+		void SetVisualSlopeHandles(List<VisualSlope> handles);
 		void SetEventLines(List<Line3D> lines);
 		void RenderCrosshair();
 		void SetFogMode(bool usefog);

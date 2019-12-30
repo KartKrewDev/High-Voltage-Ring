@@ -351,6 +351,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//mxd. Modify slope offset?
 				if(level.sector.FloorSlope.GetLengthSq() > 0)
 				{
+					/*
 					Vector3D center = new Vector3D(level.sector.BBox.X + level.sector.BBox.Width / 2,
 												   level.sector.BBox.Y + level.sector.BBox.Height / 2, 
 												   level.sector.FloorHeight);
@@ -361,6 +362,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 										true);
 
 					level.sector.FloorSlopeOffset = p.Offset;
+					*/
+
+					level.sector.FloorSlopeOffset -= level.sector.FloorSlope.z * amount;
 				}
 			}
 
