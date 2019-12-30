@@ -995,7 +995,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 		// Draw the display
 		public override void OnRedrawDisplay()
 		{
-			base.OnRedrawDisplay();
+			renderer.RedrawSurface();
 
 			if(form == null) return;
 

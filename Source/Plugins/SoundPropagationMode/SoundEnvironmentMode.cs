@@ -282,8 +282,10 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		{
 			if(BuilderPlug.Me.DataIsDirty) UpdateData();
 
+			renderer.RedrawSurface();
+
 			// Render lines and vertices
-			if(renderer.StartPlotter(true))
+			if (renderer.StartPlotter(true))
 			{
 				// Plot lines by hand, so that no coloring (line specials, 3D floors etc.) distracts from
 				// the sound environments. Also don't draw the line's normal. They are not needed here anyway
