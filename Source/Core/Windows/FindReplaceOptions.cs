@@ -23,10 +23,7 @@ namespace CodeImp.DoomBuilder.Windows
 	internal enum FindReplaceSearchMode //mxd
 	{
 		CURRENT_FILE,
-		OPENED_TABS_CURRENT_SCRIPT_TYPE,
-		OPENED_TABS_ALL_SCRIPT_TYPES,
-		CURRENT_PROJECT_CURRENT_SCRIPT_TYPE,
-		CURRENT_PROJECT_ALL_SCRIPT_TYPES,
+		OPENED_TABS_ALL_SCRIPT_TYPES
 	}
 	
 	internal struct FindReplaceOptions

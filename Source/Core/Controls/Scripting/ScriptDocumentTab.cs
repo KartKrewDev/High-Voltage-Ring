@@ -189,7 +189,6 @@ namespace CodeImp.DoomBuilder.Controls
 
 			// Bind events
 			editor.OnExplicitSaveTab += panel.ExplicitSaveCurrentTab;
-			editor.OnOpenScriptBrowser += panel.OpenBrowseScript;
 			editor.OnOpenFindAndReplace += panel.OpenFindAndReplace;
 			editor.OnFindNext += panel.FindNext;
 			editor.OnFindPrevious += panel.FindPrevious; //mxd
@@ -218,7 +217,6 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			// Remove events
 			editor.OnExplicitSaveTab -= panel.ExplicitSaveCurrentTab;
-			editor.OnOpenScriptBrowser -= panel.OpenBrowseScript;
 			editor.OnOpenFindAndReplace -= panel.OpenFindAndReplace;
 			editor.OnFindNext -= panel.FindNext;
 			editor.OnFindPrevious -= panel.FindPrevious; //mxd

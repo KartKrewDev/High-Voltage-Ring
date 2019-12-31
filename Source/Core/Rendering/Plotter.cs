@@ -382,7 +382,8 @@ namespace CodeImp.DoomBuilder.Rendering
         //mxd
         public void DrawLine3DFloor(int x1, int y1, int x2, int y2, ref PixelColor c, PixelColor c2)
         {
-			float length = (float)Math.Sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
+			Line2D line = new Line2D(x1, y1, x2, y2);
+			float length = line.GetLength();
 
             if (length < DASH_INTERVAL * 2)
             {
@@ -393,9 +394,9 @@ namespace CodeImp.DoomBuilder.Rendering
                 float d1 = DASH_INTERVAL / length;
                 float d2 = 1.0f - d1;
 
-				Line2D l = new Line2D(x1, y1, x2, y2);
-				Vector2D p1 = l.GetCoordinatesAt(d1);
-				Vector2D p2 = l.GetCoordinatesAt(d2);
+				
+				Vector2D p1 = line.GetCoordinatesAt(d1);
+				Vector2D p2 = line.GetCoordinatesAt(d2);
 
                 DrawLineSolid(x1, y1, (int)p1.x, (int)p1.y, ref c2);
                 DrawLineSolid((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y, ref c);

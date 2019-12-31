@@ -810,9 +810,6 @@
     <EmbeddedResource Include="Controls\Scripting\ScriptEditorPreviewControl.resx">
       <DependentUpon>ScriptEditorPreviewControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Scripting\ScriptResourcesControl.resx">
-      <DependentUpon>ScriptResourcesControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\SkySphere.md3" />
     <None Include="Resources\ThingStatistics.png" />
     <None Include="Resources\Copy.png" />
@@ -832,12 +829,6 @@
     <Compile Include="Controls\Scripting\ScriptIconsManager.cs" />
     <Compile Include="Controls\Scripting\ScriptResourceDocumentTab.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\Scripting\ScriptResourcesControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Scripting\ScriptResourcesControl.designer.cs">
-      <DependentUpon>ScriptResourcesControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\VisualStudioTabControl.cs">
       <SubType>Component</SubType>

@@ -87,6 +87,9 @@ namespace CodeImp.DoomBuilder.Controls
 			InitializeComponent();
 			iconsmgr = new ScriptIconsManager(scripticons); //mxd
 			tabs.ImageList = scripticons; //mxd
+			PreviewKeyDown += new PreviewKeyDownEventHandler(ScriptEditorPanel_PreviewKeyDown);
+			KeyDown += new KeyEventHandler(ScriptEditorPanel_KeyDown);
+			KeyUp += new KeyEventHandler(ScriptEditorPanel_KeyDown);
 		}
 		
 		// This initializes the control
@@ -152,46 +155,6 @@ namespace CodeImp.DoomBuilder.Controls
 					t.OnTextChanged += tabpage_OnLumpTextChanged; //mxd
 					t.Editor.Scintilla.UpdateUI += scintilla_OnUpdateUI; //mxd
 					tabs.TabPages.Add(t);
-				}
-			}
-
-			// Load files, which were previously opened for this map
-			foreach(ScriptDocumentSettings settings in General.Map.Options.ScriptDocumentSettings.Values)
-			{
-				switch(settings.TabType)
-				{
-					//TODO: load all tab types here...
-					case ScriptDocumentTabType.LUMP: continue;
-
-					case ScriptDocumentTabType.FILE:
-						// Does this file exist?
-						if(File.Exists(settings.Filename))
-						{
-							// Load this!
-							ScriptFileDocumentTab t = OpenFile(settings.Filename, settings.ScriptType);
-							t.SetViewSettings(settings); //mxd
-							if(settings.IsActiveTab) activetab = t;
-						}
-						break;
-
-					case ScriptDocumentTabType.RESOURCE:
-						// Find target resource...
-						if(!General.Map.Data.ScriptResources.ContainsKey(settings.ScriptType)) continue;
-						foreach(ScriptResource res in General.Map.Data.ScriptResources[settings.ScriptType])
-						{
-							if(res.Resource.Location.location == settings.ResourceLocation)
-							{
-								// Load this!
-								ScriptResourceDocumentTab t = OpenResource(res);
-								t.SetViewSettings(settings);
-								if(settings.IsActiveTab) activetab = t;
-								break;
-							}
-						}
-						break;
-
-					default:
-						throw new NotImplementedException("Unknown ScriptDocumentTabType!");
 				}
 			}
 
@@ -346,40 +309,11 @@ namespace CodeImp.DoomBuilder.Controls
                     rtabs.Add(ActiveTab);
                     break;
 
-                case FindReplaceSearchMode.OPENED_TABS_CURRENT_SCRIPT_TYPE:
-                    if (ActiveTab == null)
-                        return 0;
-                    // .NET is heavily retarded
-                    goto case FindReplaceSearchMode.OPENED_TABS_ALL_SCRIPT_TYPES;
                 case FindReplaceSearchMode.OPENED_TABS_ALL_SCRIPT_TYPES:
                     foreach (ScriptDocumentTab tab in tabs.TabPages)
                     {
                         if (options.SearchMode == FindReplaceSearchMode.OPENED_TABS_ALL_SCRIPT_TYPES ||
                              tab.Config.ScriptType == ActiveTab.Config.ScriptType) rtabs.Add(tab);
-                    }
-                    break;
-
-                case FindReplaceSearchMode.CURRENT_PROJECT_CURRENT_SCRIPT_TYPE:
-                    if (ActiveTab == null)
-                        return 0;
-                    // .NET is heavily retarded
-                    goto case FindReplaceSearchMode.CURRENT_PROJECT_ALL_SCRIPT_TYPES;
-                case FindReplaceSearchMode.CURRENT_PROJECT_ALL_SCRIPT_TYPES:
-                    // Just search among all resources
-                    var usedscripttypes = new List<ScriptType>(General.Map.Data.ScriptResources.Keys);
-                    for (int i = 0; i < usedscripttypes.Count; i++)
-                    {
-                        if (options.SearchMode != FindReplaceSearchMode.CURRENT_PROJECT_ALL_SCRIPT_TYPES &&
-                            usedscripttypes[i] != ActiveTab.Config.ScriptType) continue; // [ZZ] skip irrelevant script types
-                        foreach (ScriptResource sr in General.Map.Data.ScriptResources[usedscripttypes[i]])
-                        {
-                            if (!sr.IsReadOnly && sr.ContainsText(singlesearchoptions))
-                            {
-                                // open this tab
-                                var newtab = OpenResource(sr);
-                                rtabs.Add(newtab);
-                            }
-                        }
                     }
                     break;
             }
@@ -484,10 +418,9 @@ namespace CodeImp.DoomBuilder.Controls
 			{
 				case FindReplaceSearchMode.CURRENT_FILE: return false; // Let the tab handle wrap-around
 
-				case FindReplaceSearchMode.OPENED_TABS_CURRENT_SCRIPT_TYPE:
 				case FindReplaceSearchMode.OPENED_TABS_ALL_SCRIPT_TYPES:
 					ScriptType targettabtype = curtab.Config.ScriptType;
-					bool checktabtype = (options.SearchMode == FindReplaceSearchMode.OPENED_TABS_CURRENT_SCRIPT_TYPE);
+					bool checktabtype = false;
 
 					// Search in processed tab only
 					var searchoptions = new FindReplaceOptions(options) { SearchMode = FindReplaceSearchMode.CURRENT_FILE };
@@ -525,134 +458,6 @@ namespace CodeImp.DoomBuilder.Controls
 					// No dice
 					return false;
 
-				case FindReplaceSearchMode.CURRENT_PROJECT_CURRENT_SCRIPT_TYPE:
-				case FindReplaceSearchMode.CURRENT_PROJECT_ALL_SCRIPT_TYPES:
-					ScriptType targetrestype = curtab.Config.ScriptType;
-					bool searchallresources = (options.SearchMode == FindReplaceSearchMode.CURRENT_PROJECT_ALL_SCRIPT_TYPES);
-
-					// Search in processed tab only
-					var ressearchoptions = new FindReplaceOptions(options) { SearchMode = FindReplaceSearchMode.CURRENT_FILE };
-					bool replacemode = (options.ReplaceWith != null);
-
-					// Find current resource, then search
-					if(General.Map.Data.ScriptResources.ContainsKey(targetrestype))
-					{
-						var reslist = new List<ScriptResource>(General.Map.Data.ScriptResources[targetrestype]);
-
-						// Determine starting resource
-						int startres = -1;
-						if(curtab is ScriptResourceDocumentTab)
-						{
-							startres = reslist.IndexOf(((ScriptResourceDocumentTab)curtab).Resource);
-						}
-						else if(curtab is ScriptLumpDocumentTab)
-						{
-							// Only temporary map wad qualifies 
-							var scripttab = (ScriptLumpDocumentTab)curtab;
-							for(int i = 0; i < reslist.Count; i++)
-							{
-								if(reslist[i].Resource == General.Map.TemporaryMapFile && reslist[i].Filename == scripttab.Filename)
-								{
-									startres = i;
-									break;
-								}
-							}
-						}
-
-						// Search after current resource
-						// This will search among all resources of targetrestype when startres == -1
-						for(int i = startres + 1; i < reslist.Count; i++)
-						{
-							// Perform search...
-							if((!reslist[i].IsReadOnly || !replacemode) && reslist[i].ContainsText(ressearchoptions))
-							{
-								// Found it!
-								var newtab = OpenResource(reslist[i]);
-								newtab.FindNext(ressearchoptions); // Search again using actual tab...
-								return true;
-							}
-						}
-
-						if(searchallresources)
-						{
-							// Search all script types after current ScriptType
-							var usedscripttypes = new List<ScriptType>(General.Map.Data.ScriptResources.Keys);
-							int startrestypepos = usedscripttypes.IndexOf(targetrestype);
-							for(int i = startrestypepos + 1; i < usedscripttypes.Count; i++)
-							{
-								foreach(ScriptResource sr in General.Map.Data.ScriptResources[usedscripttypes[i]])
-								{
-									// Perform search...
-									if((!sr.IsReadOnly || !replacemode) && sr.ContainsText(ressearchoptions))
-									{
-										// Found it!
-										var newtab = OpenResource(sr);
-										newtab.FindNext(ressearchoptions); // Search again using actual tab...
-										return true;
-									}
-								}
-							}
-
-							// Search all script types before current ScriptType
-							if(startrestypepos > 0)
-							{
-								for(int i = 0; i < startrestypepos; i++)
-								{
-									foreach(ScriptResource sr in General.Map.Data.ScriptResources[usedscripttypes[i]])
-									{
-										// Perform search...
-										if((!sr.IsReadOnly || !replacemode) && sr.ContainsText(ressearchoptions))
-										{
-											// Found it!
-											var newtab = OpenResource(sr);
-											newtab.FindNext(ressearchoptions); // Search again using actual tab...
-											return true;
-										}
-									}
-								}
-							}
-						}
-
-						// Search before current resource
-						if(startres > 0)
-						{
-							for(int i = 0; i < startres; i++)
-							{
-								// Perform search...
-								if((!reslist[i].IsReadOnly || !replacemode) && reslist[i].ContainsText(ressearchoptions))
-								{
-									// Found it!
-									var newtab = OpenResource(reslist[i]);
-									newtab.FindNext(ressearchoptions); // Search again using actual tab...
-									return true;
-								}
-							}
-						}
-
-					}
-					else if(searchallresources)
-					{
-						// Just search among all resources
-						var usedscripttypes = new List<ScriptType>(General.Map.Data.ScriptResources.Keys);
-						for(int i = 0; i < usedscripttypes.Count; i++)
-						{
-							foreach(ScriptResource sr in General.Map.Data.ScriptResources[usedscripttypes[i]])
-							{
-								// Perform search...
-								if((!sr.IsReadOnly || !replacemode) && sr.ContainsText(ressearchoptions))
-								{
-									// Found it!
-									var newtab = OpenResource(sr);
-									newtab.FindNext(ressearchoptions); // Search again using actual tab...
-									return true;
-								}
-							}
-						}
-					}
-
-					// No dice
-					return false;
-
 				default: throw new NotImplementedException("Unknown FindReplaceSearchMode!");
 			}
 		}
@@ -666,10 +471,9 @@ namespace CodeImp.DoomBuilder.Controls
 			{
 				case FindReplaceSearchMode.CURRENT_FILE: return false; // Let the tab handle wrap-around
 
-				case FindReplaceSearchMode.OPENED_TABS_CURRENT_SCRIPT_TYPE:
 				case FindReplaceSearchMode.OPENED_TABS_ALL_SCRIPT_TYPES:
 					ScriptType targettabtype = curtab.Config.ScriptType;
-					bool checktabtype = (options.SearchMode == FindReplaceSearchMode.OPENED_TABS_CURRENT_SCRIPT_TYPE);
+					bool checktabtype = false;
 
 					// Search in processed tab only
 					var searchoptions = new FindReplaceOptions(options) { SearchMode = FindReplaceSearchMode.CURRENT_FILE };
@@ -700,134 +504,6 @@ namespace CodeImp.DoomBuilder.Controls
 								// Previous match found!
 								tabs.SelectTab(t);
 								return true;
-							}
-						}
-					}
-
-					// No dice
-					return false;
-
-				case FindReplaceSearchMode.CURRENT_PROJECT_CURRENT_SCRIPT_TYPE:
-				case FindReplaceSearchMode.CURRENT_PROJECT_ALL_SCRIPT_TYPES:
-					ScriptType targetrestype = curtab.Config.ScriptType;
-					bool searchallresources = (options.SearchMode == FindReplaceSearchMode.CURRENT_PROJECT_ALL_SCRIPT_TYPES);
-
-					// Search in processed tab only
-					var ressearchoptions = new FindReplaceOptions(options) { SearchMode = FindReplaceSearchMode.CURRENT_FILE };
-					bool replacemode = (options.ReplaceWith != null);
-
-					// Find current resource, then search
-					if(General.Map.Data.ScriptResources.ContainsKey(targetrestype))
-					{
-						var reslist = new List<ScriptResource>(General.Map.Data.ScriptResources[targetrestype]);
-
-						// Determine starting resource
-						int startres = -1;
-						if(curtab is ScriptResourceDocumentTab)
-						{
-							startres = reslist.IndexOf(((ScriptResourceDocumentTab)curtab).Resource);
-						}
-						else if(curtab is ScriptLumpDocumentTab)
-						{
-							// Only temporary map wad qualifies 
-							var scripttab = (ScriptLumpDocumentTab)curtab;
-							for(int i = 0; i < reslist.Count; i++)
-							{
-								if(reslist[i].Resource == General.Map.TemporaryMapFile && reslist[i].Filename == scripttab.Filename)
-								{
-									startres = i;
-									break;
-								}
-							}
-						}
-
-						// Search before current resource
-						// This will search among all resources of targetrestype when startres == -1
-						for(int i = startres - 1; i > -1; i--)
-						{
-							// Perform search...
-							if((!reslist[i].IsReadOnly || !replacemode) && reslist[i].ContainsText(ressearchoptions))
-							{
-								// Found it!
-								var newtab = OpenResource(reslist[i]);
-								newtab.FindPrevious(ressearchoptions); // Search again using actual tab...
-								return true;
-							}
-						}
-
-						if(searchallresources)
-						{
-							// Search all script types before current ScriptType
-							var usedscripttypes = new List<ScriptType>(General.Map.Data.ScriptResources.Keys);
-							int startrestypepos = usedscripttypes.IndexOf(targetrestype);
-							for(int i = startrestypepos - 1; i > 0; i--)
-							{
-								foreach(ScriptResource sr in General.Map.Data.ScriptResources[usedscripttypes[i]])
-								{
-									// Perform search...
-									if((!sr.IsReadOnly || !replacemode) && sr.ContainsText(ressearchoptions))
-									{
-										// Found it!
-										var newtab = OpenResource(sr);
-										newtab.FindPrevious(ressearchoptions); // Search again using actual tab...
-										return true;
-									}
-								}
-							}
-
-							// Search all script types after current ScriptType
-							if(startrestypepos < usedscripttypes.Count)
-							{
-								for(int i = usedscripttypes.Count - 1; i > startrestypepos; i--)
-								{
-									foreach(ScriptResource sr in General.Map.Data.ScriptResources[usedscripttypes[i]])
-									{
-										// Perform search...
-										if((!sr.IsReadOnly || !replacemode) && sr.ContainsText(ressearchoptions))
-										{
-											// Found it!
-											var newtab = OpenResource(sr);
-											newtab.FindPrevious(ressearchoptions); // Search again using actual tab...
-											return true;
-										}
-									}
-								}
-							}
-						}
-
-						// Search after current resource
-						if(startres > 0)
-						{
-							for(int i = reslist.Count - 1; i > startres; i--)
-							{
-								// Perform search...
-								if((!reslist[i].IsReadOnly || !replacemode) && reslist[i].ContainsText(ressearchoptions))
-								{
-									// Found it!
-									var newtab = OpenResource(reslist[i]);
-									newtab.FindPrevious(ressearchoptions); // Search again using actual tab...
-									return true;
-								}
-							}
-						}
-
-					}
-					else if(searchallresources)
-					{
-						// Just search among all resources
-						var usedscripttypes = new List<ScriptType>(General.Map.Data.ScriptResources.Keys);
-						for(int i = usedscripttypes.Count - 1; i > -1; i--)
-						{
-							foreach(ScriptResource sr in General.Map.Data.ScriptResources[usedscripttypes[i]])
-							{
-								// Perform search...
-								if((!sr.IsReadOnly || !replacemode) && sr.ContainsText(ressearchoptions))
-								{
-									// Found it!
-									var newtab = OpenResource(sr);
-									newtab.FindPrevious(ressearchoptions); // Search again using actual tab...
-									return true;
-								}
 							}
 						}
 					}
@@ -1157,6 +833,9 @@ namespace CodeImp.DoomBuilder.Controls
 		// This updates the toolbar for the current status
 		private void UpdateInterface(bool focuseditor)
 		{
+			menustrip.Enabled = false;
+			menustrip.Enabled = true;
+
 			int numscriptsopen = tabs.TabPages.Count;
 			int explicitsavescripts = 0;
 			ScriptDocumentTab t = null;
@@ -1271,122 +950,23 @@ namespace CodeImp.DoomBuilder.Controls
 			scripttype.Text = ((t != null && t.Config != null) ? t.Config.Description : "Plain Text");
 		}
 
-		// This opens the given file, returns null when failed
-		public ScriptFileDocumentTab OpenFile(string filename, ScriptType scripttype)
-		{
-			//mxd. Check if we already have this file opened
-			foreach(var tab in tabs.TabPages)
-			{
-				if(!(tab is ScriptFileDocumentTab)) continue;
-				ScriptFileDocumentTab filetab = (ScriptFileDocumentTab)tab;
-
-				if(filetab.Filename == filename)
-				{
-					tabs.SelectedTab = filetab;
-					return filetab;
-				}
-			}
-			
-			ScriptConfiguration foundconfig = new ScriptConfiguration();
-
-			// Find the most suitable script configuration to use
-			if(scripttype == ScriptType.UNKNOWN)
-			{
-				foreach(ScriptConfiguration cfg in scriptconfigs)
-				{
-					foreach(string ext in cfg.Extensions)
-					{
-						// Use this configuration if the extension matches
-						if(filename.EndsWith("." + ext, StringComparison.OrdinalIgnoreCase))
-						{
-							foundconfig = cfg;
-							break;
-						}
-					}
-				}
-			}
-			else
-			{
-				foundconfig = General.GetScriptConfiguration(scripttype);
-			}
-
-			// Create new document
-			ScriptFileDocumentTab t = new ScriptFileDocumentTab(this, foundconfig);
-			if(t.Open(filename))
-			{
-				//mxd. Try to determine script type from file contents...
-				if(scripttype == ScriptType.UNKNOWN)
-				{
-					ScriptType st = t.VerifyScriptType();
-					if(st != ScriptType.UNKNOWN)
-					{
-						foreach(ScriptConfiguration cfg in scriptconfigs)
-						{
-							if(cfg.ScriptType == st)
-							{
-								t.ChangeScriptConfig(cfg);
-								break;
-							}
-						}
-					}
-				}
-				
-				// Mark any errors this script may have
-				if(compilererrors != null) t.MarkScriptErrors(compilererrors);
-
-				// Add to tabs
-				tabs.TabPages.Add(t);
-				tabs.SelectedTab = t;
-
-				// Done
-				t.OnTextChanged += tabpage_OnTextChanged; //mxd
-				t.Editor.Scintilla.UpdateUI += scintilla_OnUpdateUI;
-				UpdateInterface(true);
-				return t;
-			}
-
-			// Failed
-			return null;
-		}
-
 		//mxd
 		internal ScriptResourceDocumentTab OpenResource(ScriptResource resource)
 		{
 			// Check if we already have this file opened
-			foreach(var tab in tabs.TabPages)
+			foreach (var tab in tabs.TabPages)
 			{
-				if(!(tab is ScriptResourceDocumentTab)) continue;
+				if (!(tab is ScriptResourceDocumentTab)) continue;
 				ScriptResourceDocumentTab restab = (ScriptResourceDocumentTab)tab;
 
-				if(restab.Resource.LumpIndex == resource.LumpIndex && restab.Resource.FilePathName == resource.FilePathName)
+				if (restab.Resource.LumpIndex == resource.LumpIndex && restab.Resource.FilePathName == resource.FilePathName)
 				{
 					tabs.SelectedTab = restab;
 					return restab;
 				}
 			}
-			
-			// Create new document
-			ScriptConfiguration config = General.GetScriptConfiguration(resource.ScriptType);
-			if(config == null || config.ScriptType != resource.ScriptType)
-			{
-				General.ErrorLogger.Add(ErrorType.Warning, "Incorrect or missing script configuration for \"" + resource.ScriptType + "\" script type. Using plain text configuration.");
-				config = new ScriptConfiguration();
-			}
 
-			var t = new ScriptResourceDocumentTab(this, resource, config);
-			
-			// Mark any errors this script may have
-			if(compilererrors != null) t.MarkScriptErrors(compilererrors);
-
-			// Add to tabs
-			tabs.TabPages.Add(t);
-			tabs.SelectedTab = t;
-
-			// Done
-			t.OnTextChanged += tabpage_OnTextChanged;
-			t.Editor.Scintilla.UpdateUI += scintilla_OnUpdateUI;
-			UpdateInterface(true);
-			return t;
+			return null;
 		}
 
 		// This saves the current open script
@@ -1408,12 +988,6 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 		}
 		
-		// This opens a script
-		public void OpenBrowseScript()
-		{
-			buttonopen_Click(this, EventArgs.Empty);
-		}
-
 		//mxd. This launches keyword help website
 		public bool LaunchKeywordHelp() 
 		{
@@ -1499,10 +1073,25 @@ namespace CodeImp.DoomBuilder.Controls
 					throw new NotImplementedException("Unsupported Script Status Type!");
 			}
 		}
-		
+
 		#endregion
-		
+
 		#region ================== Events
+
+		private void ScriptEditorPanel_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (e.KeyCode == Keys.F10)
+				e.IsInputKey = true;
+		}
+
+		private void ScriptEditorPanel_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.F10)
+			{
+				e.SuppressKeyPress = true;
+				e.Handled = true;
+			}
+		}
 
 		// Called when the window that contains this panel closes
 		public void OnClose()
@@ -1542,68 +1131,6 @@ namespace CodeImp.DoomBuilder.Controls
 			UpdateInterface(true);
 		}
 		
-		// When new script is clicked
-		private void buttonnew_Click(object sender, EventArgs e)
-		{
-			// Get the script config to use
-			ScriptConfiguration scriptconfig = ((sender as ToolStripMenuItem).Tag as ScriptConfiguration);
-			
-			// Create new document
-			ScriptFileDocumentTab t = new ScriptFileDocumentTab(this, scriptconfig);
-			tabs.TabPages.Add(t);
-			tabs.SelectedTab = t;
-			
-			// Done
-			UpdateInterface(true);
-		}
-		
-		// Open script clicked
-		private void buttonopen_Click(object sender, EventArgs e)
-		{
-			// Show open file dialog
-			if(openfile.ShowDialog(this.ParentForm) == DialogResult.OK)
-			{
-				//mxd. Gather already opened file names
-				List<string> openedfiles = new List<string>();
-				foreach(var page in tabs.TabPages)
-				{
-					var scriptpage = page as ScriptFileDocumentTab;
-					if(scriptpage != null) openedfiles.Add(scriptpage.Filename);
-				}
-
-				//mxd. Add new tabs
-				foreach(string name in openfile.FileNames)
-				{
-					if(!openedfiles.Contains(name))
-					{
-						ScriptFileDocumentTab t = OpenFile(name, ScriptType.UNKNOWN);
-						
-						// Apply document settings
-						if(General.Map.Options.ScriptDocumentSettings.ContainsKey(t.Filename))
-						{
-							t.SetViewSettings(General.Map.Options.ScriptDocumentSettings[t.Filename]);
-						}
-						else
-						{
-							// Apply default settings
-							t.SetDefaultViewSettings();
-						}
-					}
-				}
-
-				// Select the last new item
-				foreach(var page in tabs.TabPages)
-				{
-					var scriptpage = page as ScriptFileDocumentTab;
-					if(scriptpage != null && scriptpage.Filename == openfile.FileNames[openfile.FileNames.Length - 1])
-					{
-						tabs.SelectedTab = scriptpage;
-						break;
-					}
-				}
-			}
-		}
-
 		// Save script clicked
 		private void buttonsave_Click(object sender, EventArgs e)
 		{
@@ -1933,39 +1460,6 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 		}
 		
-		// User double-clicks and error in the list
-		private void errorlist_ItemActivate(object sender, EventArgs e)
-		{
-			// Anything selection?
-			if(errorlist.SelectedItems.Count > 0)
-			{
-				// Get the compiler error
-				CompilerError err = (CompilerError)errorlist.SelectedItems[0].Tag;
-				
-				// Show the tab with the script that matches
-				bool foundscript = false;
-				foreach(ScriptDocumentTab t in tabs.TabPages)
-				{
-					if(t.VerifyErrorForScript(err))
-					{
-						tabs.SelectedTab = t;
-						t.MoveToLine(err.linenumber);
-						foundscript = true;
-						break;
-					}
-				}
-
-				// If we don't have the script opened, see if we can find the file and open the script
-				if(!foundscript && File.Exists(err.filename))
-				{
-					ScriptDocumentTab t = OpenFile(err.filename, ScriptType.UNKNOWN);
-					if(t != null) t.MoveToLine(err.linenumber);
-				}
-				
-				ForceFocus();
-			}
-		}
-
 		#endregion
 
 		#region ================== Quick Search (mxd)

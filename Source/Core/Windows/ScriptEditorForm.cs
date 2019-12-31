@@ -46,12 +46,16 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			InitializeComponent();
 			editor.Initialize(this);
+			KeyPreview = true;
+			PreviewKeyDown += new PreviewKeyDownEventHandler(ScriptEditorForm_PreviewKeyDown);
+			KeyDown += new KeyEventHandler(ScriptEditorForm_KeyDown);
+			KeyUp += new KeyEventHandler(ScriptEditorForm_KeyDown);
 		}
-		
+
 		#endregion
-		
+
 		#region ================== Methods
-		
+
 		// This asks to save files and returns the result
 		// Also does implicit saves
 		// Returns false when cancelled by the user
@@ -84,8 +88,23 @@ namespace CodeImp.DoomBuilder.Windows
 		}*/
 
 		#endregion
-		
+
 		#region ================== Events
+
+		private void ScriptEditorForm_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (e.KeyCode == Keys.F10)
+				e.IsInputKey = true;
+		}
+
+		private void ScriptEditorForm_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.F10)
+			{
+				e.SuppressKeyPress = true;
+				e.Handled = true;
+			}
+		}
 
 		// Window is loaded
 		private void ScriptEditorForm_Load(object sender, EventArgs e)

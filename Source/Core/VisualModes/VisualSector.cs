@@ -53,7 +53,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 		internal List<VisualGeometry> FixedGeometry { get { return fixedgeometry; } }
 		internal List<VisualGeometry> AllGeometry { get { return allgeometry; } }
 		internal VertexBuffer GeometryBuffer { get { return geobuffer; } }
-		internal bool NeedsUpdateGeo { get { return updategeo; } set { updategeo |= value; } }
+		internal bool NeedsUpdateGeo
+        {
+            get { return updategeo; }
+            set { updategeo |= value; }
+        }
 		
 		public bool IsDisposed { get { return isdisposed; } }
 		public Sector Sector { get { return sector; } }
@@ -105,7 +109,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			// Trash geometry buffer
 			if(geobuffer != null) geobuffer.Dispose();
 			geobuffer = null;
-			updategeo = true;
+            NeedsUpdateGeo = true;
 		}
 
 		// This is called resets when the device is reset
@@ -164,7 +168,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		public void AddGeometry(VisualGeometry geo)
 		{
-			updategeo = true;
+            NeedsUpdateGeo = true;
 			allgeometry.Add(geo);
 			if(geo.Sidedef != null)
 			{
@@ -186,7 +190,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			allgeometry.Clear();
 			fixedgeometry.Clear();
 			sidedefgeometry.Clear();
-			updategeo = true;
+            NeedsUpdateGeo = true;
 		}
 
 		// This gets the geometry list for the specified sidedef

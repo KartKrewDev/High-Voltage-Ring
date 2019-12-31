@@ -102,7 +102,7 @@ namespace CodeImp.DoomBuilder.Data
                     sevenzipentries.Add(reader.Entry.Key.ToLowerInvariant(), s.ToArray());
                     fileentries.Add(new DirectoryFileEntry(reader.Entry.Key));
                 }
-            }
+			}
             else
             {
                 foreach (IArchiveEntry entry in archive.Entries)
@@ -156,16 +156,19 @@ namespace CodeImp.DoomBuilder.Data
 		//mxd
 		private void UpdateArchive(bool enable) 
 		{
-			if(archivetype == ArchiveType.SevenZip) return;
+			lock (this)
+			{
+				if (archivetype == ArchiveType.SevenZip) return;
 
-			if(enable && archive == null)
-			{
-				archive = ArchiveFactory.Open(location.location);
-			} 
-			else if(!enable && !batchmode && archive != null)
-			{
-				archive.Dispose();
-				archive = null;
+				if (enable && archive == null)
+				{
+					archive = ArchiveFactory.Open(location.location);
+				}
+				else if (!enable && !batchmode && archive != null)
+				{
+					archive.Dispose();
+					archive = null;
+				}
 			}
 		}
 
@@ -507,16 +510,16 @@ namespace CodeImp.DoomBuilder.Data
 			} 
 			else 
 			{
-				lock(this)
+				lock (this)
 				{
 					UpdateArchive(true);
 
-					foreach(var entry in archive.Entries)
+					foreach (var entry in archive.Entries)
 					{
-						if(entry.IsDirectory) continue;
+						if (entry.IsDirectory) continue;
 
 						// Is this the entry we are looking for?
-						if(string.Compare(entry.Key, fn, true) == 0)
+						if (string.Compare(entry.Key, fn, true) == 0)
 						{
 							filedata = new MemoryStream();
 							entry.WriteTo(filedata);

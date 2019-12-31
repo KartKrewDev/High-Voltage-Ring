@@ -45,11 +45,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		protected readonly BaseVisualMode mode;
 		protected long setuponloadedtexture;
+        private long lastsetuponloadedtexture;
 
-		// This is only used to see if this object has already received a change
-		// in a multiselection. The Changed property on the BaseVisualSector is
-		// used to indicate a rebuild is needed.
-		protected bool changed;
+        // This is only used to see if this object has already received a change
+        // in a multiselection. The Changed property on the BaseVisualSector is
+        // used to indicate a rebuild is needed.
+        protected bool changed;
 
 		protected SectorLevel level;
 		protected Effect3DFloor extrafloor;
@@ -597,17 +598,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public virtual void OnProcess(long deltatime)
 		{
 			// If the texture was not loaded, but is loaded now, then re-setup geometry
-			if(setuponloadedtexture != 0)
+			if(setuponloadedtexture != lastsetuponloadedtexture)
 			{
-				ImageData t = General.Map.Data.GetFlatImage(setuponloadedtexture);
-				if(t != null)
-				{
-					if(t.IsImageLoaded)
-					{
-						setuponloadedtexture = 0;
-						Setup();
-					}
-				}
+                if (setuponloadedtexture != 0)
+                {
+                    ImageData t = General.Map.Data.GetFlatImage(setuponloadedtexture);
+                    if (t != null && t.IsImageLoaded)
+                    {
+                        lastsetuponloadedtexture = setuponloadedtexture;
+                        Setup();
+                    }
+                }
+                else
+                {
+                    lastsetuponloadedtexture = setuponloadedtexture;
+                }
 			}
 		}
 
