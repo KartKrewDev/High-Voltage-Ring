@@ -87,6 +87,8 @@ namespace CodeImp.DoomBuilder.Controls
 			InitializeComponent();
 			iconsmgr = new ScriptIconsManager(scripticons); //mxd
 			tabs.ImageList = scripticons; //mxd
+			PreviewKeyDown += new PreviewKeyDownEventHandler(ScriptEditorPanel_PreviewKeyDown);
+			KeyDown += new KeyEventHandler(ScriptEditorPanel_KeyDown);
 		}
 		
 		// This initializes the control
@@ -830,6 +832,9 @@ namespace CodeImp.DoomBuilder.Controls
 		// This updates the toolbar for the current status
 		private void UpdateInterface(bool focuseditor)
 		{
+			menustrip.Enabled = false;
+			menustrip.Enabled = true;
+
 			int numscriptsopen = tabs.TabPages.Count;
 			int explicitsavescripts = 0;
 			ScriptDocumentTab t = null;
@@ -1067,10 +1072,25 @@ namespace CodeImp.DoomBuilder.Controls
 					throw new NotImplementedException("Unsupported Script Status Type!");
 			}
 		}
-		
+
 		#endregion
-		
+
 		#region ================== Events
+
+		private void ScriptEditorPanel_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (e.KeyCode == Keys.F10)
+				e.IsInputKey = true;
+		}
+
+		private void ScriptEditorPanel_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.F10)
+			{
+				e.SuppressKeyPress = true;
+				e.Handled = true;
+			}
+		}
 
 		// Called when the window that contains this panel closes
 		public void OnClose()

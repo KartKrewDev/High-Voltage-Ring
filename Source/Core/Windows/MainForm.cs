@@ -282,6 +282,9 @@ namespace CodeImp.DoomBuilder.Windows
 			//mxd. Hints
 			hintsPanel = new HintsPanel();
 			hintsDocker = new Docker("hints", "Help", hintsPanel);
+
+			KeyPreview = true;
+			PreviewKeyDown += new PreviewKeyDownEventHandler(MainForm_PreviewKeyDown);
 		}
 		
 		#endregion
@@ -1368,6 +1371,12 @@ namespace CodeImp.DoomBuilder.Windows
 			// base? what base?
 		}
 		
+		private void MainForm_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (e.KeyCode == Keys.F10)
+				e.IsInputKey = true;
+		}
+
 		// When a key is pressed
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -1418,6 +1427,16 @@ namespace CodeImp.DoomBuilder.Windows
 					{
 						General.Editing.Mode.OnHelp();
 					}
+				}
+			}
+
+			if (e.KeyCode == Keys.F10)
+			{
+				Actions.Action[] f10actions = General.Actions.GetActionsByKey((int)e.KeyData);
+				if (f10actions.Length > 0)
+				{
+					e.SuppressKeyPress = true;
+					e.Handled = true;
 				}
 			}
 		}
