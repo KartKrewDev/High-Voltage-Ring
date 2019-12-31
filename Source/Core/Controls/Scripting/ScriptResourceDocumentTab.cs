@@ -90,7 +90,6 @@ namespace CodeImp.DoomBuilder.Controls
 
 		public override bool IsReconfigurable { get { return false; } }
 		public override bool IsSaveAsRequired { get { return false; } }
-		public override bool IsReadOnly { get { return source.IsReadOnly; } }
 		public override string Filename { get { return filepathname; } }
 		internal ScriptResource Resource { get { return source; } }
 

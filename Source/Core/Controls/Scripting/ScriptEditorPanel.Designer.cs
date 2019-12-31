@@ -31,9 +31,6 @@ namespace CodeImp.DoomBuilder.Controls
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScriptEditorPanel));
             this.toolbar = new System.Windows.Forms.ToolStrip();
-            this.buttonnew = new System.Windows.Forms.ToolStripDropDownButton();
-            this.buttonopen = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonsave = new System.Windows.Forms.ToolStripButton();
             this.buttonsaveall = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -128,9 +125,6 @@ namespace CodeImp.DoomBuilder.Controls
             this.toolbar.AllowMerge = false;
             this.toolbar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonnew,
-            this.buttonopen,
-            this.toolStripSeparator7,
             this.buttonsave,
             this.buttonsaveall,
             this.toolStripSeparator1,
@@ -162,32 +156,6 @@ namespace CodeImp.DoomBuilder.Controls
             this.toolbar.Name = "toolbar";
             this.toolbar.Size = new System.Drawing.Size(928, 25);
             this.toolbar.TabIndex = 1;
-            // 
-            // buttonnew
-            // 
-            this.buttonnew.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonnew.Image = global::CodeImp.DoomBuilder.Properties.Resources.ScriptNew;
-            this.buttonnew.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonnew.Margin = new System.Windows.Forms.Padding(7, 1, 0, 2);
-            this.buttonnew.Name = "buttonnew";
-            this.buttonnew.Size = new System.Drawing.Size(29, 22);
-            this.buttonnew.Text = "New File";
-            // 
-            // buttonopen
-            // 
-            this.buttonopen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonopen.Image = global::CodeImp.DoomBuilder.Properties.Resources.OpenMap;
-            this.buttonopen.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonopen.Name = "buttonopen";
-            this.buttonopen.Size = new System.Drawing.Size(23, 22);
-            this.buttonopen.Text = "Open File";
-            this.buttonopen.Click += new System.EventHandler(this.buttonopen_Click);
-            // 
-            // toolStripSeparator7
-            // 
-            this.toolStripSeparator7.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
             // 
             // buttonsave
             // 
@@ -767,7 +735,7 @@ namespace CodeImp.DoomBuilder.Controls
             this.menucompile.Image = global::CodeImp.DoomBuilder.Properties.Resources.ScriptCompile;
             this.menucompile.Name = "menucompile";
             this.menucompile.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.menucompile.Size = new System.Drawing.Size(152, 22);
+            this.menucompile.Size = new System.Drawing.Size(138, 22);
             this.menucompile.Text = "Compile";
             this.menucompile.Click += new System.EventHandler(this.buttoncompile_Click);
             // 
@@ -945,6 +913,7 @@ namespace CodeImp.DoomBuilder.Controls
             this.errorlist.FullRowSelect = true;
             this.errorlist.GridLines = true;
             this.errorlist.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.errorlist.HideSelection = false;
             this.errorlist.LabelWrap = false;
             this.errorlist.Location = new System.Drawing.Point(3, 3);
             this.errorlist.MultiSelect = false;
@@ -1014,8 +983,6 @@ namespace CodeImp.DoomBuilder.Controls
 
 		#endregion
 		private System.Windows.Forms.ToolStrip toolbar;
-		private System.Windows.Forms.ToolStripButton buttonopen;
-		private System.Windows.Forms.ToolStripDropDownButton buttonnew;
 		private System.Windows.Forms.OpenFileDialog openfile;
 		private System.Windows.Forms.SaveFileDialog savefile;
 		private System.Windows.Forms.ToolStripButton buttonsave;
@@ -1052,7 +1019,6 @@ namespace CodeImp.DoomBuilder.Controls
 		private System.Windows.Forms.ToolStripButton buttonindent;
 		private System.Windows.Forms.ToolStripButton buttonwhitespace;
 		private System.Windows.Forms.ToolStripButton buttonwordwrap;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 		private System.Windows.Forms.MenuStrip menustrip;
 		private System.Windows.Forms.ToolStripMenuItem filemenuitem;
 		private System.Windows.Forms.ToolStripMenuItem menusave;
