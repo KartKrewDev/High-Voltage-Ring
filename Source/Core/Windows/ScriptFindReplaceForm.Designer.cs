@@ -184,10 +184,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.findinbox.FormattingEnabled = true;
 			this.findinbox.Items.AddRange(new object[] {
             "Current tab",
-            "All opened tabs (current script type)",
-            "All opened tabs (any script type)",
-            "All resources (current script type)",
-            "All resources (any script type)"});
+            "All opened tabs"});
 			this.findinbox.Location = new System.Drawing.Point(9, 80);
 			this.findinbox.Name = "findinbox";
 			this.findinbox.Size = new System.Drawing.Size(276, 21);

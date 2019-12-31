@@ -270,8 +270,6 @@ namespace CodeImp.DoomBuilder.Windows
 			switch(options.SearchMode)
 			{
 				case FindReplaceSearchMode.CURRENT_FILE:
-				case FindReplaceSearchMode.CURRENT_PROJECT_CURRENT_SCRIPT_TYPE:
-				case FindReplaceSearchMode.OPENED_TABS_CURRENT_SCRIPT_TYPE:
 					ScriptDocumentTab t = General.Map.ScriptEditor.Editor.ActiveTab;
 					if(t != null) scripttype = t.Config.ScriptType;
 					break;
