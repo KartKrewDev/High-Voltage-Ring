@@ -40,6 +40,7 @@ namespace CodeImp.DoomBuilder.Data
 		private /*readonly*/ ArchiveType archivetype; //mxd
 		private /*readonly*/ Dictionary<string, byte[]> sevenzipentries; //mxd
 		private bool batchmode = true; //mxd
+		private bool issevenzip = false;
 
 		#endregion
 
@@ -102,7 +103,9 @@ namespace CodeImp.DoomBuilder.Data
                     sevenzipentries.Add(reader.Entry.Key.ToLowerInvariant(), s.ToArray());
                     fileentries.Add(new DirectoryFileEntry(reader.Entry.Key));
                 }
-            }
+
+				issevenzip = true;
+			}
             else
             {
                 foreach (IArchiveEntry entry in archive.Entries)
@@ -164,8 +167,11 @@ namespace CodeImp.DoomBuilder.Data
 			} 
 			else if(!enable && !batchmode && archive != null)
 			{
-				archive.Dispose();
-				archive = null;
+				lock (archive)
+				{
+					archive.Dispose();
+					archive = null;
+				}
 			}
 		}
 
@@ -511,17 +517,22 @@ namespace CodeImp.DoomBuilder.Data
 				{
 					UpdateArchive(true);
 
-					foreach(var entry in archive.Entries)
+					lock (archive)
 					{
-						if(entry.IsDirectory) continue;
 
-						// Is this the entry we are looking for?
-						if(string.Compare(entry.Key, fn, true) == 0)
+						foreach (var entry in archive.Entries)
 						{
-							filedata = new MemoryStream();
-							entry.WriteTo(filedata);
-							break;
+							if (entry.IsDirectory) continue;
+
+							// Is this the entry we are looking for?
+							if (string.Compare(entry.Key, fn, true) == 0)
+							{
+								filedata = new MemoryStream();
+								entry.WriteTo(filedata);
+								break;
+							}
 						}
+
 					}
 
 					UpdateArchive(false);
