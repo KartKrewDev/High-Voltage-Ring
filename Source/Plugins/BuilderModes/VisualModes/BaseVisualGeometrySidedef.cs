@@ -48,9 +48,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		protected Plane top;
 		protected Plane bottom;
 		protected long setuponloadedtexture;
-		
-		// UV dragging
-		private float dragstartanglexy;
+        private long lastsetuponloadedtexture;
+
+        // UV dragging
+        private float dragstartanglexy;
 		private float dragstartanglez;
 		private Vector3D dragorigin;
 		private Vector3D deltaxy;
@@ -884,20 +885,24 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Processing
 		public virtual void OnProcess(long deltatime)
 		{
-			// If the texture was not loaded, but is loaded now, then re-setup geometry
-			if(setuponloadedtexture != 0)
-			{
-				ImageData t = General.Map.Data.GetTextureImage(setuponloadedtexture);
-				if(t != null)
-				{
-					if(t.IsImageLoaded)
-					{
-						setuponloadedtexture = 0;
-						Setup();
-					}
-				}
-			}
-		}
+            // If the texture was not loaded, but is loaded now, then re-setup geometry
+            if (setuponloadedtexture != lastsetuponloadedtexture)
+            {
+                if (setuponloadedtexture != 0)
+                {
+                    ImageData t = General.Map.Data.GetTextureImage(setuponloadedtexture);
+                    if (t != null && t.IsImageLoaded)
+                    {
+                        lastsetuponloadedtexture = setuponloadedtexture;
+                        Setup();
+                    }
+                }
+                else
+                {
+                    lastsetuponloadedtexture = setuponloadedtexture;
+                }
+            }
+        }
 		
 		// Change target height
 		public virtual void OnChangeTargetHeight(int amount)
