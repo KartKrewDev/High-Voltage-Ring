@@ -49,6 +49,7 @@ namespace CodeImp.DoomBuilder.Windows
 			KeyPreview = true;
 			PreviewKeyDown += new PreviewKeyDownEventHandler(ScriptEditorForm_PreviewKeyDown);
 			KeyDown += new KeyEventHandler(ScriptEditorForm_KeyDown);
+			KeyUp += new KeyEventHandler(ScriptEditorForm_KeyDown);
 		}
 
 		#endregion

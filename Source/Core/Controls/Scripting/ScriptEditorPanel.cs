@@ -89,6 +89,7 @@ namespace CodeImp.DoomBuilder.Controls
 			tabs.ImageList = scripticons; //mxd
 			PreviewKeyDown += new PreviewKeyDownEventHandler(ScriptEditorPanel_PreviewKeyDown);
 			KeyDown += new KeyEventHandler(ScriptEditorPanel_KeyDown);
+			KeyUp += new KeyEventHandler(ScriptEditorPanel_KeyDown);
 		}
 		
 		// This initializes the control

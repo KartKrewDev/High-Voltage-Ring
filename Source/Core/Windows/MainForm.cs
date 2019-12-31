@@ -1472,6 +1472,16 @@ namespace CodeImp.DoomBuilder.Windows
 				if(e.Handled)
 					e.SuppressKeyPress = true;
 			}
+
+			if (e.KeyCode == Keys.F10)
+			{
+				Actions.Action[] f10actions = General.Actions.GetActionsByKey((int)e.KeyData);
+				if (f10actions.Length > 0)
+				{
+					e.SuppressKeyPress = true;
+					e.Handled = true;
+				}
+			}
 		}
 
 		//mxd. Sometimes it's handeled by RenderTargetControl, not by MainForm leading to keys being "stuck"
