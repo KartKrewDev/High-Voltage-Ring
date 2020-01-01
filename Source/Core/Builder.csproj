@@ -706,6 +706,7 @@
     <EmbeddedResource Include="Resources\world3d_skybox.fp" />
     <EmbeddedResource Include="Resources\world3d_skybox.vp" />
     <EmbeddedResource Include="Resources\world3d_vertex_color.fp" />
+    <EmbeddedResource Include="Resources\world3d_slopehandle.vp" />
     <None Include="Resources\Zoom.png" />
     <None Include="Resources\Properties.png" />
     <None Include="Resources\NewMap2.png" />

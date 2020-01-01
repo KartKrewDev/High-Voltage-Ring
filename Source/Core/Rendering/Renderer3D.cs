@@ -684,19 +684,15 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		private void RenderSlopeHandles()
 		{
-			/*
 			if (visualslopehandles == null) return;
 
 			graphics.SetAlphaBlendEnable(true);
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetZWriteEnable(false);
 			graphics.SetSourceBlend(Blend.SourceAlpha);
-			graphics.SetDestinationBlend(Blend.SourceAlpha);
+			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
 
-			graphics.Shaders.World3D.BeginPass(18);
-
-			// world = Matrix.Identity;
-			// ApplyMatrices3D();
+			graphics.SetShader(ShaderName.world3d_slope_handle);
 
 			foreach (VisualSlope handle in visualslopehandles)
 			{
@@ -712,22 +708,25 @@ namespace CodeImp.DoomBuilder.Rendering
 					color = General.Colors.Vertices;
 
 				world = handle.Position;
-				ApplyMatrices3D();
+				graphics.SetUniform(UniformName.world, ref world);
+				graphics.SetUniform(UniformName.slopeHandleLength, handle.Length);
 
-				handle.Update(color);
+				//handle.Update();
 
-				graphics.Shaders.World3D.VertexColor = color.ToColorValue();
-				graphics.Shaders.World3D.SlopeHandleLength = handle.Length;
+				graphics.SetUniform(UniformName.vertexColor, color.ToColorValue());
+				//graphics.Shaders.World3D.SlopeHandleLength = handle.Length;
 
-				graphics.Shaders.World3D.ApplySettings();
 				// graphics.Device.SetStreamSource(0, handle.GeoBuffer, 0, WorldVertex.Stride);
-				graphics.Device.SetStreamSource(0, visualslopehandle.Geometry, 0, WorldVertex.Stride);
-				graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
+				//graphics.Device.SetStreamSource(0, visualslopehandle.Geometry, 0, WorldVertex.Stride);
+				//graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
+
+				graphics.SetVertexBuffer(visualslopehandle.Geometry);
+				graphics.Draw(PrimitiveType.TriangleList, 0, 2);
+
 			}
 
 			// Done
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-			*/
 		}
 
 		//mxd

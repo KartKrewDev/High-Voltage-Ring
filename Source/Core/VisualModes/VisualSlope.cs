@@ -107,18 +107,17 @@ namespace CodeImp.DoomBuilder.VisualModes
 			return true;
 		}
 
-		public virtual bool Update(PixelColor color)
-		{
-			return true;
-		}
+		public virtual void Update() {}
 
 		public void SetPosition(Vector3D pos, Geometry.Plane plane, float angle)
 		{
 
 			Matrix translate = Matrix.Translation(pos.x, pos.y, pos.z);
+			Matrix rotate = Matrix.RotationZ(angle);
 			Vector3 v = new Vector3(plane.Normal.x, plane.Normal.y, plane.Normal.z);
 			// Matrix rotate = Matrix.RotationAxis(v, angle);
 			//position = Matrix.Multiply(rotate, translate);
+			position = Matrix.Multiply(rotate, translate);
 		}
 
 		#endregion

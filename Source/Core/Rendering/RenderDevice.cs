@@ -65,6 +65,7 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareUniform(UniformName.texturefactor, "texturefactor", UniformType.Vec4);
             DeclareUniform(UniformName.fogsettings, "fogsettings", UniformType.Vec4);
             DeclareUniform(UniformName.fogcolor, "fogcolor", UniformType.Vec4);
+			DeclareUniform(UniformName.slopeHandleLength, "slopeHandleLength", UniformType.Float);
 
             DeclareShader(ShaderName.display2d_fsaa, "display2d.vp", "display2d_fsaa.fp");
             DeclareShader(ShaderName.display2d_normal, "display2d.vp", "display2d_normal.fp");
@@ -88,7 +89,9 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareShader(ShaderName.world3d_constant_color, "world3d_customvertexcolor.vp", "world3d_constant_color.fp");
             DeclareShader(ShaderName.world3d_lightpass, "world3d_lightpass.vp", "world3d_lightpass.fp");
 
-            SetupSettings();
+			DeclareShader(ShaderName.world3d_slope_handle, "world3d_slopehandle.vp", "world3d_constant_color.fp");
+
+			SetupSettings();
         }
 
         ~RenderDevice()
@@ -632,7 +635,8 @@ namespace CodeImp.DoomBuilder.Rendering
         world3d_main_highlight_fog_vertexcolor,
         world3d_vertex_color,
         world3d_constant_color,
-        world3d_lightpass
+        world3d_lightpass,
+		world3d_slope_handle
     }
 
     public enum UniformType : int
@@ -665,7 +669,8 @@ namespace CodeImp.DoomBuilder.Rendering
         campos,
         texturefactor,
         fogsettings,
-        fogcolor
+        fogcolor,
+		slopeHandleLength
     }
 
     public enum VertexFormat : int { Flat, World }

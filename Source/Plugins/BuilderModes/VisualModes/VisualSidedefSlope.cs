@@ -82,8 +82,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			return new RectangleF(left - SIZE, top - SIZE, right - left + SIZE*2, bottom - top + SIZE*2);
 		}
 
-		public bool Setup() { return Setup(General.Colors.Vertices); }
-		public bool Setup(PixelColor color)
+		public bool Setup()
 		{
 			if (sidedef == null)
 				return false;
@@ -102,13 +101,14 @@ namespace CodeImp.DoomBuilder.VisualModes
 			// Line2D line = new Line2D(ld.Line.GetCoordinatesAt(ld.LengthInv * SIZE), ld.Line.GetCoordinatesAt(1.0f - (ld.LengthInv * SIZE)));
 			Line2D line = ld.Line;
 
+			UpdatePosition();
+
 			return true;
 		}
 
-		public override bool Update(PixelColor color)
+		public override void Update()
 		{
 			UpdatePosition();
-			return Setup(color);
 		}
 
 		/// <summary>
@@ -373,25 +373,20 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			foreach (SectorLevel l in levels)
 			{
-				if (up)
+				Vector2D center = new Vector2D(l.sector.BBox.X + l.sector.BBox.Width / 2,
+												   l.sector.BBox.Y + l.sector.BBox.Height / 2);
+
+				if (l.plane.Normal.z >= 0.0f)
 				{
 					l.sector.FloorSlope = plane.Normal;
 					l.sector.FloorSlopeOffset = plane.Offset;
-
-					Vector2D center = new Vector2D(l.sector.BBox.X + l.sector.BBox.Width / 2,
-													   l.sector.BBox.Y + l.sector.BBox.Height / 2);
-
 					l.sector.FloorHeight = (int)new Plane(l.sector.FloorSlope, l.sector.FloorSlopeOffset).GetZ(center);
 				}
 				else
 				{
-					plane = plane.GetInverted();
-					l.sector.CeilSlope = plane.Normal;
-					l.sector.CeilSlopeOffset = plane.Offset;
-
-					Vector2D center = new Vector2D(l.sector.BBox.X + l.sector.BBox.Width / 2,
-													   l.sector.BBox.Y + l.sector.BBox.Height / 2);
-
+					Plane downplane = plane.GetInverted();
+					l.sector.CeilSlope = downplane.Normal;
+					l.sector.CeilSlopeOffset = downplane.Offset;
 					l.sector.CeilHeight = (int)new Plane(l.sector.CeilSlope, l.sector.CeilSlopeOffset).GetZ(center);
 				}
 
