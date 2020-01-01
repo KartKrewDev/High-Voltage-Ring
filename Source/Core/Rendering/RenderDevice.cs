@@ -149,7 +149,10 @@ namespace CodeImp.DoomBuilder.Rendering
                 byte[] data = new byte[stream.Length];
                 if (stream.Read(data, 0, data.Length) != data.Length)
                     throw new Exception("Could not read resource stream");
-                return Encoding.UTF8.GetString(data);
+                int start = 0;
+                if (data.Length >= 3 && data[0] == 0xef && data[1] == 0xbb && data[2] == 0xbf)
+                    start = 3;
+                return Encoding.UTF8.GetString(data, start, data.Length - start);
             }
         }
 
