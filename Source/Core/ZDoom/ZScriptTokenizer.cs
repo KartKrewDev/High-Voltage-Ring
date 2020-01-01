@@ -582,6 +582,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                         // found the token.
                         reader.BaseStream.Position = cpos + namedtokentype.Length;
                         ZScriptToken tok = new ZScriptToken();
+                        tok.Position = cpos;
                         tok.Type = namedtokentypes[namedtokentype];
                         tok.Value = namedtokentype;
                         return tok;

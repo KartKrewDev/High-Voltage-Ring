@@ -242,7 +242,7 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
                 string funcOutput = string.Format("#line {0}\n", func.Line) + func.ReturnValue + " " + func.Name + " (" + GetTokenListSource(func.Arguments) + ")";
                 preOutput += funcOutput + ";\n";
 
-                funcOutput += " {\n" + string.Format("#line {0}\n", func.CodeLine) +GetTokenListSource(func.Code) + "}\n";
+                funcOutput += " {\n" + string.Format("#line {0}\n", func.CodeLine) + GetTokenListSource(func.Code) + "}\n";
                 output += funcOutput;
 
             }
