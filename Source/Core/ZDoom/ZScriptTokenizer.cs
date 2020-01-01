@@ -104,12 +104,24 @@ namespace CodeImp.DoomBuilder.ZDoom
 			WarningMessage = String.Empty;
         }
 
+        public ZScriptToken(ZScriptToken other)
+        {
+            Type = other.Type;
+            Value = other.Value;
+            ValueInt = other.ValueInt;
+            ValueDouble = other.ValueDouble;
+            IsValid = other.IsValid;
+            WarningMessage = other.WarningMessage;
+            Position = other.Position;
+        }
+
         public ZScriptTokenType Type { get; internal set; }
         public string Value { get; internal set; }
         public int ValueInt { get; internal set; }
         public double ValueDouble { get; internal set; }
         public bool IsValid { get; internal set; }
 		public string WarningMessage { get; internal set; }
+        public long Position { get; internal set; }
 
         public override string ToString()
         {
@@ -128,9 +140,22 @@ namespace CodeImp.DoomBuilder.ZDoom
         public BinaryReader Reader { get { return reader; } }
         public long LastPosition { get; private set; }
 
+        private List<long> LinePositions;
+
         public ZScriptTokenizer(BinaryReader br)
         {
             reader = br;
+
+            long cpos = br.BaseStream.Position;
+            LinePositions = new List<long>();
+            br.BaseStream.Position = 0;
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                byte b = br.ReadByte();
+                if (b == '\n')
+                    LinePositions.Add(br.BaseStream.Position);
+            }
+            br.BaseStream.Position = cpos;
 
             if (SB == null)
                 SB = new StringBuilder();
@@ -163,6 +188,14 @@ namespace CodeImp.DoomBuilder.ZDoom
                     return 0;
                 });
             }
+        }
+
+        public int PositionToLine(long pos)
+        {
+            for (int i = 0; i < LinePositions.Count; i++)
+                if (pos <= LinePositions[i])
+                    return i+1;
+            return LinePositions.Count;
         }
 
         public void SkipWhitespace() // note that this skips both whitespace, newlines AND comments
@@ -202,6 +235,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                 }
 
                 ZScriptToken tok = new ZScriptToken();
+                tok.Position = cpos;
                 tok.Type = ZScriptTokenType.Whitespace;
                 tok.Value = SB.ToString();
                 return tok;
@@ -240,6 +274,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                 }
 
                 ZScriptToken tok = new ZScriptToken();
+                tok.Position = cpos;
                 tok.Type = ZScriptTokenType.Identifier;
                 tok.Value = SB.ToString();
                 return tok;
@@ -313,6 +348,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                     }
 
                     ZScriptToken tok = new ZScriptToken();
+                    tok.Position = cpos;
                     tok.Type = (isdouble ? ZScriptTokenType.Double : ZScriptTokenType.Integer);
                     tok.Value = SB.ToString();
                     try
@@ -400,6 +436,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                             }
 
                             ZScriptToken tok = new ZScriptToken();
+                            tok.Position = cpos;
                             tok.Type = ZScriptTokenType.LineComment;
                             tok.Value = SB.ToString();
                             return tok;
@@ -425,6 +462,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                             }
 
                             ZScriptToken tok = new ZScriptToken();
+                            tok.Position = cpos;
                             tok.Type = ZScriptTokenType.BlockComment;
                             tok.Value = SB.ToString();
                             return tok;
@@ -450,6 +488,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                             else if (cnext == c)
                             {
                                 ZScriptToken tok = new ZScriptToken();
+                                tok.Position = cpos;
                                 tok.Type = type;
                                 tok.Value = SB.ToString();
                                 return tok;
@@ -478,6 +517,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                     // found the token.
                     reader.BaseStream.Position = cpos + namedtokentype.Length;
                     ZScriptToken tok = new ZScriptToken();
+                    tok.Position = cpos;
                     tok.Type = namedtokentypes[namedtokentype];
                     tok.Value = namedtokentype;
                     return tok;

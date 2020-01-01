@@ -27,6 +27,7 @@ using System.Reflection;
 using System.IO;
 using System.Text;
 using System.Linq;
+using CodeImp.DoomBuilder.Rendering.Shaders;
 
 #endregion
 
@@ -66,27 +67,38 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareUniform(UniformName.fogsettings, "fogsettings", UniformType.Vec4);
             DeclareUniform(UniformName.fogcolor, "fogcolor", UniformType.Vec4);
 
-            DeclareShader(ShaderName.display2d_fsaa, "display2d.vp", "display2d_fsaa.fp");
-            DeclareShader(ShaderName.display2d_normal, "display2d.vp", "display2d_normal.fp");
-            DeclareShader(ShaderName.display2d_fullbright, "display2d.vp", "display2d_fullbright.fp");
-            DeclareShader(ShaderName.things2d_thing, "things2d.vp", "things2d_thing.fp");
-            DeclareShader(ShaderName.things2d_sprite, "things2d.vp", "things2d_sprite.fp");
-            DeclareShader(ShaderName.things2d_fill, "things2d.vp", "things2d_fill.fp");
-            DeclareShader(ShaderName.plotter, "plotter.vp", "plotter.fp");
-            DeclareShader(ShaderName.world3d_main, "world3d_main.vp", "world3d_main.fp");
-            DeclareShader(ShaderName.world3d_fullbright, "world3d_main.vp", "world3d_fullbright.fp");
-            DeclareShader(ShaderName.world3d_main_highlight, "world3d_main.vp", "world3d_main_highlight.fp");
-            DeclareShader(ShaderName.world3d_fullbright_highlight, "world3d_main.vp", "world3d_fullbright_highlight.fp");
-            DeclareShader(ShaderName.world3d_main_vertexcolor, "world3d_customvertexcolor.vp", "world3d_main.fp");
-            DeclareShader(ShaderName.world3d_skybox, "world3d_skybox.vp", "world3d_skybox.fp");
-            DeclareShader(ShaderName.world3d_main_highlight_vertexcolor, "world3d_customvertexcolor.vp", "world3d_main_highlight.fp");
-            DeclareShader(ShaderName.world3d_main_fog, "world3d_lightpass.vp", "world3d_main_fog.fp");
-            DeclareShader(ShaderName.world3d_main_highlight_fog, "world3d_lightpass.vp", "world3d_main_highlight_fog.fp");
-            DeclareShader(ShaderName.world3d_main_fog_vertexcolor, "world3d_customvertexcolor_fog.vp", "world3d_main_fog.fp");
-            DeclareShader(ShaderName.world3d_main_highlight_fog_vertexcolor, "world3d_customvertexcolor_fog.vp", "world3d_main_highlight_fog.fp");
-            DeclareShader(ShaderName.world3d_vertex_color, "world3d_main.vp", "world3d_vertex_color.fp");
-            DeclareShader(ShaderName.world3d_constant_color, "world3d_customvertexcolor.vp", "world3d_constant_color.fp");
-            DeclareShader(ShaderName.world3d_lightpass, "world3d_lightpass.vp", "world3d_lightpass.fp");
+            // 2d fsaa
+            CompileShader(ShaderName.display2d_fsaa, "display2d.shader", "display2d_fsaa");
+            
+            // 2d normal
+            CompileShader(ShaderName.display2d_normal, "display2d.shader", "display2d_normal");
+            CompileShader(ShaderName.display2d_fullbright, "display2d.shader", "display2d_fullbright");
+
+            // 2d things
+            CompileShader(ShaderName.things2d_thing, "things2d.shader", "things2d_thing");
+            CompileShader(ShaderName.things2d_sprite, "things2d.shader", "things2d_sprite");
+            CompileShader(ShaderName.things2d_fill, "things2d.shader", "things2d_fill");
+
+            // non-fog 3d shaders
+            CompileShader(ShaderName.world3d_main, "world3d.shader", "world3d_main");
+            CompileShader(ShaderName.world3d_fullbright, "world3d.shader", "world3d_fullbright");
+            CompileShader(ShaderName.world3d_main_highlight, "world3d.shader", "world3d_main_highlight");
+            CompileShader(ShaderName.world3d_fullbright_highlight, "world3d.shader", "world3d_fullbright_highlight");
+            CompileShader(ShaderName.world3d_vertex_color, "world3d.shader", "world3d_vertex_color");
+            CompileShader(ShaderName.world3d_main_vertexcolor, "world3d.shader", "world3d_main_vertexcolor");
+            CompileShader(ShaderName.world3d_constant_color, "world3d.shader", "world3d_constant_color");
+
+            // skybox shader
+            CompileShader(ShaderName.world3d_skybox, "world3d_skybox.shader", "world3d_skybox");
+
+            // fog 3d shaders
+            CompileShader(ShaderName.world3d_main_fog, "world3d.shader", "world3d_main_fog");
+            CompileShader(ShaderName.world3d_main_highlight_fog, "world3d.shader", "world3d_main_highlight_fog");
+            CompileShader(ShaderName.world3d_main_fog_vertexcolor, "world3d.shader", "world3d_main_fog_vertexcolor");
+            CompileShader(ShaderName.world3d_main_highlight_fog_vertexcolor, "world3d.shader", "world3d_main_highlight_fog_vertexcolor");
+
+            // pure light shader
+            CompileShader(ShaderName.world3d_lightpass, "world3d.shader", "world3d_lightpass");
 
             SetupSettings();
         }
@@ -137,6 +149,26 @@ namespace CodeImp.DoomBuilder.Rendering
         public void DeclareShader(ShaderName name, string vertResourceName, string fragResourceName)
         {
             RenderDevice_DeclareShader(Handle, name, name.ToString(), GetResourceText(vertResourceName), GetResourceText(fragResourceName));
+        }
+
+        // save precompiled shaders -- don't build from scratch every time
+        private static Dictionary<string, ShaderGroup> precompiledGroups = new Dictionary<string, ShaderGroup>();
+        public void CompileShader(ShaderName internalName, string groupName, string shaderName)
+        {
+            ShaderGroup sg;
+
+            if (precompiledGroups.ContainsKey(groupName))
+                sg = precompiledGroups[groupName];
+            else sg = ShaderCompiler.Compile(GetResourceText(groupName));
+
+            Shader s = sg.GetShader(shaderName);
+
+            if (s == null)
+                throw new RenderDeviceException(string.Format("Shader {0}::{1} not found", groupName, shaderName));
+
+            General.WriteLogLine(string.Format("===========================================\nDBG: loading shader {0} / {1}\n\nVertex source: {2}\n\nFragment source: {3}\n\n===========================================",
+                groupName, shaderName, s.GetVertexSource(), s.GetFragmentSource()));
+            RenderDevice_DeclareShader(Handle, internalName, internalName.ToString(), s.GetVertexSource(), s.GetFragmentSource());
         }
 
         static string GetResourceText(string name)
@@ -617,7 +649,6 @@ namespace CodeImp.DoomBuilder.Rendering
         things2d_thing,
         things2d_sprite,
         things2d_fill,
-        plotter,
         world3d_main,
         world3d_fullbright,
         world3d_main_highlight,

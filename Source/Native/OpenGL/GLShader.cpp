@@ -77,11 +77,11 @@ void GLShader::Bind()
 void GLShader::CreateProgram(GLRenderDevice* device)
 {
 	const char* prefixNAT = R"(
-		#version 150
+		#version 330
 		#line 1
 	)";
 	const char* prefixAT = R"(
-		#version 150
+		#version 330
 		#define ALPHA_TEST
 		#line 1
 	)";
