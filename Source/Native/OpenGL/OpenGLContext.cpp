@@ -119,7 +119,7 @@ public:
 	OpenGLCreationHelper(HWND window);
 	~OpenGLCreationHelper();
 
-	HGLRC CreateContext(HDC hdc, int major_version, int minor_version, HGLRC share_context = 0);
+	HGLRC CreateContext(HDC hdc, HGLRC share_context = 0);
 
 private:
 	HWND window;
@@ -142,7 +142,7 @@ OpenGLContext::OpenGLContext(void* windowptr) : window((HWND)windowptr)
 {
 	dc = GetDC(window);
 	OpenGLCreationHelper helper(window);
-	context = helper.CreateContext(dc, 3, 2);
+	context = helper.CreateContext(dc);
 	if (context)
 	{
 		MakeCurrent();
@@ -253,7 +253,7 @@ OpenGLCreationHelper::~OpenGLCreationHelper()
 	DestroyWindow(query_window);
 }
 
-HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, int major_version, int minor_version, HGLRC share_context)
+HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, HGLRC share_context)
 {
 	if (query_context == 0)
 		return 0;
@@ -281,22 +281,27 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, int major_version, int minor_
 	HGLRC opengl3_context = 0;
 	if (wglCreateContextAttribsARB)
 	{
-		std::vector<int> int_attributes;
+		for (int profile : { 1/*WGL_CONTEXT_CORE_PROFILE_BIT_ARB*/, 2 /*WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB*/ })
+		{
+			for (int version : { 46, 45, 44, 43, 42, 41, 40, 33, 32 })
+			{
+				std::vector<int> int_attributes;
+				int_attributes.push_back(WGL_CONTEXT_MAJOR_VERSION_ARB);
+				int_attributes.push_back(version / 10);
+				int_attributes.push_back(WGL_CONTEXT_MINOR_VERSION_ARB);
+				int_attributes.push_back(version % 10);
+				int_attributes.push_back(0x9126); // WGL_CONTEXT_PROFILE_MASK_ARB
+				int_attributes.push_back(0x1); // WGL_CONTEXT_CORE_PROFILE_BIT_ARB
+				int_attributes.push_back(0);
+				opengl3_context = wglCreateContextAttribsARB(hdc, share_context, int_attributes.data());
 
-		int_attributes.push_back(WGL_CONTEXT_MAJOR_VERSION_ARB);
-		int_attributes.push_back(major_version);
-		int_attributes.push_back(WGL_CONTEXT_MINOR_VERSION_ARB);
-		int_attributes.push_back(minor_version);
+				if (opengl3_context)
+					break;
+			}
 
-		int_attributes.push_back(0x2094); // WGL_CONTEXT_FLAGS_ARB
-		int_attributes.push_back(0x2); // WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
-
-		int_attributes.push_back(0x9126); // WGL_CONTEXT_PROFILE_MASK_ARB
-		int_attributes.push_back(0x1); // WGL_CONTEXT_CORE_PROFILE_BIT_ARB
-
-		int_attributes.push_back(0);
-
-		opengl3_context = wglCreateContextAttribsARB(hdc, share_context, int_attributes.data());
+			if (opengl3_context)
+				break;
+		}
 	}
 
 	wglMakeCurrent(0, 0);
@@ -809,32 +814,36 @@ GLXContext OpenGLContext::create_context_glx_1_3(GLXContext shared_context)
 		// threads issuing X commands while this code is running.
 		int (*oldHandler)(::Display*, XErrorEvent*) = XSetErrorHandler(&cl_ctxErrorHandler);
 
-		std::vector<int> int_attributes;
-
-		int_attributes.push_back(0x2091);	// GLX_CONTEXT_MAJOR_VERSION_ARB
-		int_attributes.push_back(major_version);
-		int_attributes.push_back(0x2092);	// GLX_CONTEXT_MINOR_VERSION_ARB
-		int_attributes.push_back(minor_version);
-
-		int_attributes.push_back(0x2094);	// GLX_CONTEXT_FLAGS_ARB
-		int_attributes.push_back(0x2);		// GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
-
-		int_attributes.push_back(0x9126);	// GLX_CONTEXT_PROFILE_MASK_ARB
-		int_attributes.push_back(0x1);		// GLX_CONTEXT_CORE_PROFILE_BIT_ARB
-
-		int_attributes.push_back(None);
-
-		cl_ctxErrorOccurred = false;
-
-		GLXContext context_gl3 = glXCreateContextAttribs(disp, fbconfig, shared_context, True, &int_attributes[0]);
-
-		if (cl_ctxErrorOccurred)
+		GLXContext context_gl3 = 0;
+		for (int profile : { 1/*GLX_CONTEXT_CORE_PROFILE_BIT_ARB*/, 2 /*GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB*/ })
 		{
-			if (context_gl3)
+			for (int version : { 46, 45, 44, 43, 42, 41, 40, 33, 32 })
 			{
-				glx.glXDestroyContext(disp, context_gl3);
-				context_gl3 = nullptr;
+				std::vector<int> int_attributes;
+				int_attributes.push_back(0x2091);	// GLX_CONTEXT_MAJOR_VERSION_ARB
+				int_attributes.push_back(version / 10);
+				int_attributes.push_back(0x2092);	// GLX_CONTEXT_MINOR_VERSION_ARB
+				int_attributes.push_back(version % 10);
+				int_attributes.push_back(0x9126);	// GLX_CONTEXT_PROFILE_MASK_ARB
+				int_attributes.push_back(profile);
+				int_attributes.push_back(None);
+
+				cl_ctxErrorOccurred = false;
+
+				context_gl3 = glXCreateContextAttribs(disp, fbconfig, shared_context, True, int_attributes.data());
+
+				if (cl_ctxErrorOccurred && context_gl3)
+				{
+					glx.glXDestroyContext(disp, context_gl3);
+					context_gl3 = nullptr;
+				}
+
+				if (context_gl3)
+					break;
 			}
+
+			if (context_gl3)
+				break;
 		}
 
 		// Restore the original error handler
