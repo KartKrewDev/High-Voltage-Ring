@@ -54,7 +54,7 @@ public:
 	virtual void DeclareUniform(UniformName name, const char* glslname, UniformType type) = 0;
 	virtual void DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader) = 0;
 	virtual void SetShader(ShaderName name) = 0;
-	virtual void SetUniform(UniformName name, const void* values, int count) = 0;
+	virtual void SetUniform(UniformName name, const void* values, int count, int bytesize) = 0;
 	virtual void SetVertexBuffer(VertexBuffer* buffer) = 0;
 	virtual void SetIndexBuffer(IndexBuffer* buffer) = 0;
 	virtual void SetAlphaBlendEnable(bool value) = 0;

@@ -41,7 +41,7 @@ public:
 	void DeclareUniform(UniformName name, const char* glslname, UniformType type) override;
 	void DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader) override;
 	void SetShader(ShaderName name) override;
-	void SetUniform(UniformName name, const void* values, int count) override;
+	void SetUniform(UniformName name, const void* values, int count, int bytesize) override;
 	void SetVertexBuffer(VertexBuffer* buffer) override;
 	void SetIndexBuffer(IndexBuffer* buffer) override;
 	void SetAlphaBlendEnable(bool value) override;
@@ -159,12 +159,12 @@ public:
 	{
 		std::string Name;
 		UniformType Type = {};
-		int Offset = 0;
 		int LastUpdate = 0;
+		int Count = 0;
+		std::vector<uint8_t> Data;
 	};
 
 	std::vector<UniformInfo> mUniformInfo;
-	std::vector<float> mUniformData;
 
 	GLuint mStreamVertexBuffer = 0;
 	GLuint mStreamVAO = 0;

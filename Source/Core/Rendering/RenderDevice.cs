@@ -195,42 +195,42 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetUniform(UniformName uniform, bool value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value ? 1.0f : 0.0f }, 1);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value ? 1.0f : 0.0f }, 1, sizeof(float));
         }
 
         public void SetUniform(UniformName uniform, float value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value }, 1);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value }, 1, sizeof(float));
         }
 
         public void SetUniform(UniformName uniform, Vector2 value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y }, 2);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y }, 1, sizeof(float) * 2);
         }
 
         public void SetUniform(UniformName uniform, Vector3 value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z }, 3);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z }, 1, sizeof(float) * 3);
         }
 
         public void SetUniform(UniformName uniform, Vector4 value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z, value.W }, 4);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z, value.W }, 1, sizeof(float) * 4);
         }
 
         public void SetUniform(UniformName uniform, Color4 value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value.Red, value.Green, value.Blue, value.Alpha }, 4);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.Red, value.Green, value.Blue, value.Alpha }, 1, sizeof(float) * 4);
         }
 
         public void SetUniform(UniformName uniform, Matrix matrix)
         {
-            RenderDevice_SetUniform(Handle, uniform, ref matrix, 16);
+            RenderDevice_SetUniform(Handle, uniform, ref matrix, 1, sizeof(float) * 16);
         }
 
         public void SetUniform(UniformName uniform, ref Matrix matrix)
         {
-            RenderDevice_SetUniform(Handle, uniform, ref matrix, 16);
+            RenderDevice_SetUniform(Handle, uniform, ref matrix, 1, sizeof(float) * 16);
         }
 
         public void SetVertexBuffer(VertexBuffer buffer)
@@ -504,10 +504,10 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern bool RenderDevice_SetShader(IntPtr handle, ShaderName name);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, float[] data, int count);
+        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, float[] data, int count, int bytesize);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, ref Matrix data, int count);
+        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, ref Matrix data, int count, int bytesize);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBuffer(IntPtr handle, IntPtr buffer);
