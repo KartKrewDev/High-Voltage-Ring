@@ -21,6 +21,7 @@
 
 #include "Precomp.h"
 #include "OpenGLContext.h"
+#include "../Backend.h"
 #include <stdexcept>
 
 class OpenGLLoadFunctions
@@ -301,6 +302,13 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, HGLRC share_context)
 			if (opengl3_context)
 				break;
 		}
+
+		GLenum error = glGetError();
+		SetError("No OpenGL 3.2 support found: %d", error);
+	}
+	else
+	{
+		SetError("No OpenGL driver supporting OpenGL 3 found");
 	}
 
 	wglMakeCurrent(0, 0);

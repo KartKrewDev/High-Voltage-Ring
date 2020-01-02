@@ -121,7 +121,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
             Handle = RenderDevice_New(display, RenderTarget.Handle);
             if (Handle == IntPtr.Zero)
-                throw new Exception("RenderDevice_New failed");
+                throw new RenderDeviceException(string.Format("Could not create render device: {0}", BuilderNative_GetError()));
         }
 
         public bool Disposed { get { return Handle == IntPtr.Zero; } }
@@ -129,7 +129,7 @@ namespace CodeImp.DoomBuilder.Rendering
         void ThrowIfFailed(bool result)
         {
             if (!result)
-                throw new RenderDeviceException(Marshal.PtrToStringAnsi(RenderDevice_GetError(Handle)));
+                throw new RenderDeviceException(BuilderNative_GetError());
         }
 
         public void Dispose()
@@ -497,8 +497,8 @@ namespace CodeImp.DoomBuilder.Rendering
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         static extern void RenderDevice_DeclareShader(IntPtr handle, ShaderName index, string name, string vertexShader, string fragShader);
 
-        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr RenderDevice_GetError(IntPtr handle);
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        static extern string BuilderNative_GetError();
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern bool RenderDevice_SetShader(IntPtr handle, ShaderName name);

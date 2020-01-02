@@ -679,24 +679,6 @@ bool GLRenderDevice::CheckGLError()
 	return false;
 }
 
-void GLRenderDevice::SetError(const char* fmt, ...)
-{
-	va_list va;
-	va_start(va, fmt);
-	mSetErrorBuffer[0] = 0;
-	mSetErrorBuffer[sizeof(mSetErrorBuffer) - 1] = 0;
-	_vsnprintf(mSetErrorBuffer, sizeof(mSetErrorBuffer)-1, fmt, va);
-	va_end(va);
-	mLastError = mSetErrorBuffer;
-}
-
-const char* GLRenderDevice::GetError()
-{
-	mReturnError.swap(mLastError);
-	mLastError.clear();
-	return mReturnError.c_str();
-}
-
 GLShader* GLRenderDevice::GetActiveShader()
 {
 	if (mAlphaTest)

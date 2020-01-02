@@ -1,9 +1,9 @@
 
 EXPORTS
 	
+	BuilderNative_GetError
 	RenderDevice_New
 	RenderDevice_Delete
-	RenderDevice_GetError
 	RenderDevice_DeclareUniform
 	RenderDevice_DeclareShader
 	RenderDevice_SetShader

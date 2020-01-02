@@ -94,8 +94,6 @@ public:
 	void RequireContext();
 
 	bool CheckGLError();
-	void SetError(const char* fmt, ...);
-	const char* GetError();
 
 	GLShader* GetActiveShader();
 
@@ -194,10 +192,6 @@ public:
 	bool mRasterizerStateChanged = true;
 
 	bool mContextIsCurrent = false;
-
-	std::string mLastError;
-	std::string mReturnError;
-	char mSetErrorBuffer[4096];
 
 	int mViewportWidth = 0;
 	int mViewportHeight = 0;

@@ -51,8 +51,6 @@ class RenderDevice
 public:
 	virtual ~RenderDevice() = default;
 
-	virtual const char* GetError() = 0;
-
 	virtual void DeclareUniform(UniformName name, const char* glslname, UniformType type) = 0;
 	virtual void DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader) = 0;
 	virtual void SetShader(ShaderName name) = 0;
@@ -129,3 +127,6 @@ public:
 	virtual Texture* NewTexture() = 0;
 	virtual void DeleteTexture(Texture* texture) = 0;
 };
+
+void SetError(const char* fmt, ...);
+const char* GetError();

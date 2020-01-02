@@ -23,6 +23,33 @@
 #include "Backend.h"
 #include "OpenGL/GLBackend.h"
 
+namespace
+{
+	std::string mLastError;
+	std::string mReturnError;
+	char mSetErrorBuffer[4096];
+}
+
+void SetError(const char* fmt, ...)
+{
+	va_list va;
+	va_start(va, fmt);
+	mSetErrorBuffer[0] = 0;
+	_vsnprintf(mSetErrorBuffer, sizeof(mSetErrorBuffer) - 1, fmt, va);
+	va_end(va);
+	mSetErrorBuffer[sizeof(mSetErrorBuffer) - 1] = 0;
+	mLastError = mSetErrorBuffer;
+}
+
+const char* GetError()
+{
+	mReturnError.swap(mLastError);
+	mLastError.clear();
+	return mReturnError.c_str();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
 Backend* Backend::Get()
 {
 	static std::unique_ptr<Backend> backend;
@@ -45,9 +72,9 @@ extern "C"
 		Backend::Get()->DeleteRenderDevice(device);
 	}
 
-	const char* RenderDevice_GetError(RenderDevice* device)
+	const char* BuilderNative_GetError()
 	{
-		return device->GetError();
+		return GetError();
 	}
 
 	void RenderDevice_DeclareUniform(RenderDevice* device, UniformName name, const char* variablename, UniformType type)
