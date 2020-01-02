@@ -278,6 +278,9 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, HGLRC share_context)
 
 	ptr_wglCreateContextAttribsARB wglCreateContextAttribsARB = (ptr_wglCreateContextAttribsARB)wglGetProcAddress("wglCreateContextAttribsARB");
 
+	typedef GLenum(WINAPI* glErrorPtr)();
+	glErrorPtr error = reinterpret_cast<glErrorPtr>(GetProcAddress(LoadLibrary("opengl32.dll"), "glGetError"));
+
 	HGLRC opengl3_context = 0;
 	if (wglCreateContextAttribsARB)
 	{
@@ -306,8 +309,7 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, HGLRC share_context)
 		// Grab the error from the last create attempt
 		if (!opengl3_context)
 		{
-			GLenum error = glGetError();
-			SetError("No OpenGL 3.2 support found: %d", error);
+			SetError("No OpenGL 3.2 support found (error code %d)", (int)error());
 		}
 	}
 	else
