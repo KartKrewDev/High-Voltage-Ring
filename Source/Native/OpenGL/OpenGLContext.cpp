@@ -291,7 +291,7 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, HGLRC share_context)
 				int_attributes.push_back(WGL_CONTEXT_MINOR_VERSION_ARB);
 				int_attributes.push_back(version % 10);
 				int_attributes.push_back(0x9126); // WGL_CONTEXT_PROFILE_MASK_ARB
-				int_attributes.push_back(0x1); // WGL_CONTEXT_CORE_PROFILE_BIT_ARB
+				int_attributes.push_back(profile);
 				int_attributes.push_back(0);
 				opengl3_context = wglCreateContextAttribsARB(hdc, share_context, int_attributes.data());
 
