@@ -541,7 +541,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Also update slope handles
 						if (allslopehandles.ContainsKey(vs.Key))
 							foreach (VisualSidedefSlope handle in allslopehandles[vs.Key])
-								handle.Setup();
+								handle.Update();
 					}
 				}
 			}

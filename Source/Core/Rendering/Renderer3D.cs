@@ -710,15 +710,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				world = handle.Position;
 				graphics.SetUniform(UniformName.world, ref world);
 				graphics.SetUniform(UniformName.slopeHandleLength, handle.Length);
-
-				//handle.Update();
-
 				graphics.SetUniform(UniformName.vertexColor, color.ToColorValue());
-				//graphics.Shaders.World3D.SlopeHandleLength = handle.Length;
-
-				// graphics.Device.SetStreamSource(0, handle.GeoBuffer, 0, WorldVertex.Stride);
-				//graphics.Device.SetStreamSource(0, visualslopehandle.Geometry, 0, WorldVertex.Stride);
-				//graphics.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
 
 				graphics.SetVertexBuffer(visualslopehandle.Geometry);
 				graphics.Draw(PrimitiveType.TriangleList, 0, 2);

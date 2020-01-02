@@ -51,10 +51,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			length = sidedef.Line.Length;
 
-			plane = new Plane(level.plane.Normal, level.plane.Offset - 0.1f);
-
-			if (!up)
-				plane = plane.GetInverted();
+			Update();
 
 			bbox = CreateBoundingBox();
 
@@ -82,32 +79,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 			return new RectangleF(left - SIZE, top - SIZE, right - left + SIZE*2, bottom - top + SIZE*2);
 		}
 
-		public bool Setup()
+		public override void Update()
 		{
-			if (sidedef == null)
-				return false;
-
 			plane = new Plane(level.plane.Normal, level.plane.Offset - 0.1f);
 
 			if (!up)
 				plane = plane.GetInverted();
 
-			Linedef ld = sidedef.Line;
-			SectorData sd = mode.GetSectorData(sidedef.Sector);
-
-			// Make vertices
-			WorldVertex[] verts = new WorldVertex[6];
-			Vector2D offset = ld.Line.GetPerpendicular().GetNormal()*SIZE * (sidedef.IsFront ? -1 : 1);
-			// Line2D line = new Line2D(ld.Line.GetCoordinatesAt(ld.LengthInv * SIZE), ld.Line.GetCoordinatesAt(1.0f - (ld.LengthInv * SIZE)));
-			Line2D line = ld.Line;
-
-			UpdatePosition();
-
-			return true;
-		}
-
-		public override void Update()
-		{
 			UpdatePosition();
 		}
 
