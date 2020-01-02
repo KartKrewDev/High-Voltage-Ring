@@ -303,8 +303,12 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, HGLRC share_context)
 				break;
 		}
 
-		GLenum error = glGetError();
-		SetError("No OpenGL 3.2 support found: %d", error);
+		// Grab the error from the last create attempt
+		if (!opengl3_context)
+		{
+			GLenum error = glGetError();
+			SetError("No OpenGL 3.2 support found: %d", error);
+		}
 	}
 	else
 	{
