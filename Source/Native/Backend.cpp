@@ -92,9 +92,9 @@ extern "C"
 		device->SetShader(name);
 	}
 
-	void RenderDevice_SetUniform(RenderDevice* device, UniformName name, const void* values, int count)
+	void RenderDevice_SetUniform(RenderDevice* device, UniformName name, const void* values, int count, int bytesize)
 	{
-		device->SetUniform(name, values, count);
+		device->SetUniform(name, values, count, bytesize);
 	}
 
 	void RenderDevice_SetVertexBuffer(RenderDevice* device, VertexBuffer* buffer)
