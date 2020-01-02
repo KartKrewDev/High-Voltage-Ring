@@ -23,13 +23,14 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
         public int CodeLine;
         public string ReturnValue;
         public string Name;
+        public bool Override;
         public List<ZScriptToken> Arguments;
         public List<ZScriptToken> Code;
     }
 
     class Shader
     {
-        private ShaderGroup Group;
+        internal ShaderGroup Group;
         internal string ParentName;
         public int CodeLine;
         public string Name;
@@ -45,12 +46,22 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
         // source for main() of fragment shader
         public int SourceFragmentLine;
         public List<ZScriptToken> SourceFragment;
+        // functions local to the shader/parents
+        public List<ShaderFunction> Functions = new List<ShaderFunction>();
 
         private const string GLSLInternalSeparator = "_";
 
         public Shader(ShaderGroup group)
         {
             Group = group;
+        }
+
+        public ShaderFunction GetFunction(string identifier)
+        {
+            foreach (ShaderFunction func in Functions)
+                if (func.Name == identifier)
+                    return func;
+            return null;
         }
 
         // dumps all uniforms into a string
@@ -214,9 +225,9 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
                     // find function
                     functions.Add(token.Value);
                     // if function was found, recurse and find functions it may depend on.
-                    ShaderFunction func = Group.GetFunction(token.Value);
-                    if (func != null)
-                        GetReferencedFunctions(func.Code, functions);
+                    ShaderFunction func = GetFunction(token.Value);
+                    if (func == null) func = Group.GetFunction(token.Value);
+                    if (func != null) GetReferencedFunctions(func.Code, functions);
 
                 }
 
@@ -235,9 +246,9 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
 
             foreach (string functionName in functionNames)
             {
-                ShaderFunction func = Group.GetFunction(functionName);
-                if (func == null)
-                    continue;
+                ShaderFunction func = GetFunction(functionName);
+                if (func == null) func = Group.GetFunction(functionName);
+                if (func == null) continue;
 
                 string funcOutput = string.Format("#line {0}\n", func.Line) + func.ReturnValue + " " + func.Name + " (" + GetTokenListSource(func.Arguments) + ")";
                 preOutput += funcOutput + ";\n";
@@ -568,11 +579,45 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
 
         }
 
+        private static void CompileShaderFunction(ShaderFunction func, ZScriptTokenizer t)
+        {
+            ZScriptToken token;
+
+            t.SkipWhitespace();
+            token = t.ExpectToken(ZScriptTokenType.Identifier);
+            if (!(token?.IsValid ?? true))
+                throw new ShaderCompileException("Expected function name, got {0}", token?.ToString() ?? "<EOF>");
+
+            func.Name = token.Value;
+
+            t.SkipWhitespace();
+            token = t.ExpectToken(ZScriptTokenType.OpenParen);
+            if (!(token?.IsValid ?? true))
+                throw new ShaderCompileException("Expected function argument list, got {0}", token?.ToString() ?? "<EOF>");
+
+            func.Arguments = ReadEverythingUntil(t, ZScriptTokenType.CloseParen, false, false);
+
+            token = t.ExpectToken(ZScriptTokenType.CloseParen);
+            if (!(token?.IsValid ?? true))
+                throw new ShaderCompileException("Expected end of function arguments, got {0}", token?.ToString() ?? "<EOF>");
+
+            t.SkipWhitespace();
+            token = t.ExpectToken(ZScriptTokenType.OpenCurly);
+            if (!(token?.IsValid ?? true))
+                throw new ShaderCompileException("Expected function code block, got {0}", token?.ToString() ?? "<EOF>");
+
+            func.CodeLine = t.PositionToLine(token.Position);
+            func.Code = ReadEverythingUntil(t, ZScriptTokenType.CloseCurly, false, false);
+
+            token = t.ExpectToken(ZScriptTokenType.CloseCurly);
+            if (!(token?.IsValid ?? true))
+                throw new ShaderCompileException("Expected end of function code block, got {0}", token?.ToString() ?? "<EOF>");
+
+        }
+
         private static void CompileFunctions(ShaderGroup output, ZScriptTokenizer t)
         {
 
-            // so a type of a variable is normally identifier+array dimensions
-            // array dimensions may also exist on the variable itself (oh god this shitty C syntax)
             t.SkipWhitespace();
             ZScriptToken token;
 
@@ -591,40 +636,106 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
                 if (token.Type == ZScriptTokenType.CloseCurly)
                     break; // done reading functions
 
+                bool isoverride = false;
+                if (token.Value == "override")
+                {
+                    isoverride = true;
+
+                    t.SkipWhitespace();
+                    token = t.ExpectToken(ZScriptTokenType.Identifier);
+                    if (!(token?.IsValid ?? true))
+                        throw new ShaderCompileException("Expected function return type, got {0}", token?.ToString() ?? "<EOF>");
+                }
+
                 // <return value> <name> (<arguments>) { <code> }
                 ShaderFunction func = new ShaderFunction();
                 func.Line = t.PositionToLine(token.Position);
                 func.ReturnValue = token.Value;
+                func.Override = isoverride;
+
+                CompileShaderFunction(func, t);
+
+                // check if function with such name already exists in the shader
+                // delete it.
+                // overloading is not supported for now
+                for (int i = 0; i < output.Functions.Count; i++)
+                {
+                    if (output.Functions[i].Name == func.Name)
+                    {
+                        if (!isoverride)
+                            throw new ShaderCompileException("Function {0} is double-defined without 'override' keyword! (previous declaration at line {1})", func.Name, output.Functions[i].Line);
+                        output.Functions.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                }
+
+                output.Functions.Add(func);
+
+            }
+
+        }
+
+        private static void CompileShaderFunctions(Shader output, ZScriptTokenizer t)
+        {
+
+            t.SkipWhitespace();
+            ZScriptToken token;
+
+            token = t.ExpectToken(ZScriptTokenType.OpenCurly);
+            if (!(token?.IsValid ?? true))
+                throw new ShaderCompileException("Expected functions block, got {0}", token?.ToString() ?? "<EOF>");
+
+            while (true)
+            {
 
                 t.SkipWhitespace();
-                token = t.ExpectToken(ZScriptTokenType.Identifier);
+                token = t.ExpectToken(ZScriptTokenType.Identifier, ZScriptTokenType.CloseCurly);
                 if (!(token?.IsValid ?? true))
-                    throw new ShaderCompileException("Expected function name, got {0}", token?.ToString() ?? "<EOF>");
+                    throw new ShaderCompileException("Expected function or end of block, got {0}", token?.ToString() ?? "<EOF>");
 
-                func.Name = token.Value;
+                if (token.Type == ZScriptTokenType.CloseCurly)
+                    break; // done reading functions
 
-                t.SkipWhitespace();
-                token = t.ExpectToken(ZScriptTokenType.OpenParen);
-                if (!(token?.IsValid ?? true))
-                    throw new ShaderCompileException("Expected function argument list, got {0}", token?.ToString() ?? "<EOF>");
+                bool isoverride = false;
+                if (token.Value == "override")
+                {
+                    isoverride = true;
 
-                func.Arguments = ReadEverythingUntil(t, ZScriptTokenType.CloseParen, false, false);
+                    t.SkipWhitespace();
+                    token = t.ExpectToken(ZScriptTokenType.Identifier);
+                    if (!(token?.IsValid ?? true))
+                        throw new ShaderCompileException("Expected function return type, got {0}", token?.ToString() ?? "<EOF>");
+                }
 
-                token = t.ExpectToken(ZScriptTokenType.CloseParen);
-                if (!(token?.IsValid ?? true))
-                    throw new ShaderCompileException("Expected end of function arguments, got {0}", token?.ToString() ?? "<EOF>");
+                // <return value> <name> (<arguments>) { <code> }
+                ShaderFunction func = new ShaderFunction();
+                func.Line = t.PositionToLine(token.Position);
+                func.ReturnValue = token.Value;
+                func.Override = isoverride;
 
-                t.SkipWhitespace();
-                token = t.ExpectToken(ZScriptTokenType.OpenCurly);
-                if (!(token?.IsValid ?? true))
-                    throw new ShaderCompileException("Expected function code block, got {0}", token?.ToString() ?? "<EOF>");
+                CompileShaderFunction(func, t);
 
-                func.CodeLine = t.PositionToLine(token.Position);
-                func.Code = ReadEverythingUntil(t, ZScriptTokenType.CloseCurly, false, false);
-
-                token = t.ExpectToken(ZScriptTokenType.CloseCurly);
-                if (!(token?.IsValid ?? true))
-                    throw new ShaderCompileException("Expected end of function code block, got {0}", token?.ToString() ?? "<EOF>");
+                // check if function with such name already exists in the shader
+                // delete it.
+                // overloading is not supported for now
+                if (!isoverride)
+                {
+                    ShaderFunction existingFunc = output.Group.GetFunction(func.Name);
+                    if (existingFunc != null)
+                        throw new ShaderCompileException("Function {0} is double-defined without 'override' keyword! (previous declaration at line {1})", func.Name, existingFunc.Line);
+                }
+                for (int i = 0; i < output.Functions.Count; i++)
+                {
+                    if (output.Functions[i].Name == func.Name)
+                    {
+                        if (!isoverride)
+                            throw new ShaderCompileException("Function {0} is double-defined without 'override' keyword! (previous declaration at line {1})", func.Name, output.Functions[i].Line);
+                        output.Functions.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                }
 
                 output.Functions.Add(func);
 
@@ -755,6 +866,9 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
                     case "v2f":
                         s.V2F = CompileShaderDataBlock(t);
                         break;
+                    case "functions":
+                        CompileShaderFunctions(s, t);
+                        break;
                     case "vertex":
                         s.SourceVertex = CompileShaderSource(t);
                         if (s.SourceVertex != null && s.SourceVertex.Count > 0)
@@ -842,6 +956,13 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
                         {
                             s.SourceVertex = p.SourceVertex;
                             s.SourceVertexLine = p.SourceVertexLine;
+                        }
+
+                        // add functions from parent
+                        foreach (ShaderFunction func in p.Functions)
+                        {
+                            if (s.GetFunction(func.Name) == null)
+                                s.Functions.Add(func);
                         }
                     }
                 }

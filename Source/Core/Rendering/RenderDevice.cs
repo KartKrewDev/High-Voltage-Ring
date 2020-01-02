@@ -166,8 +166,8 @@ namespace CodeImp.DoomBuilder.Rendering
             if (s == null)
                 throw new RenderDeviceException(string.Format("Shader {0}::{1} not found", groupName, shaderName));
 
-            General.WriteLogLine(string.Format("===========================================\nDBG: loading shader {0} / {1}\n\nVertex source: {2}\n\nFragment source: {3}\n\n===========================================",
-                groupName, shaderName, s.GetVertexSource(), s.GetFragmentSource()));
+            /*General.WriteLogLine(string.Format("===========================================\nDBG: loading shader {0} / {1}\n\nVertex source: {2}\n\nFragment source: {3}\n\n===========================================",
+                groupName, shaderName, s.GetVertexSource(), s.GetFragmentSource()));*/
             RenderDevice_DeclareShader(Handle, internalName, internalName.ToString(), s.GetVertexSource(), s.GetFragmentSource());
         }
 
