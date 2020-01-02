@@ -1937,6 +1937,9 @@ namespace CodeImp.DoomBuilder.Geometry
 			if(side.Line.IsFlagSet(General.Map.Config.UpperUnpeggedFlag) || side.Other == null || side.Other.Sector == null)
 				return offset;
 
+			// Make sure the offset doesn't go in the wrong direction
+			scaleY = Math.Abs(scaleY);
+
 			//if we don't have UpperUnpegged flag, normalize offset
 			float surfaceHeight = side.GetHighHeight() * scaleY;
 			return (float)Math.Round((fromNormalized ? offset + surfaceHeight : offset - surfaceHeight), General.Map.FormatInterface.VertexDecimals);
@@ -1946,6 +1949,9 @@ namespace CodeImp.DoomBuilder.Geometry
 		public static float GetSidedefMiddleOffsetY(Sidedef side, float offset, float scaleY, bool fromNormalized) 
 		{
 			if(side.Sector == null) return offset;
+
+			// Make sure the offset doesn't go in the wrong direction
+			scaleY = Math.Abs(scaleY);
 
 			// Normalize offset
 			float surfaceHeight;
@@ -1985,7 +1991,11 @@ namespace CodeImp.DoomBuilder.Geometry
 		public static float GetSidedefBottomOffsetY(Sidedef side, float offset, float scaleY, bool fromNormalized) 
 		{
 			float surfaceHeight;
-			if(side.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag)) 
+
+			// Make sure the offset doesn't go in the wrong direction
+			scaleY = Math.Abs(scaleY);
+
+			if (side.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag)) 
 			{
 				if(side.Other == null || side.Other.Sector == null || side.Sector.CeilTexture != General.Map.Config.SkyFlatName ||
 					side.Other.Sector.CeilTexture != General.Map.Config.SkyFlatName)
