@@ -711,6 +711,7 @@ namespace CodeImp.DoomBuilder.Rendering
             Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
 
             graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
+            graphics.SetUniform(UniformName.ignoreNormals, false);
 
             bool hadlights = false;
 
@@ -1017,6 +1018,7 @@ namespace CodeImp.DoomBuilder.Rendering
             Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
 
             graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
+            graphics.SetUniform(UniformName.ignoreNormals, false);
 
             bool hadlights = false;
 
@@ -1378,6 +1380,7 @@ namespace CodeImp.DoomBuilder.Rendering
             Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
 
             graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
+            graphics.SetUniform(UniformName.ignoreNormals, true);
 
             bool hadlights = false;
 

@@ -60,6 +60,7 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareUniform(UniformName.lightOrientation, "lightOrientation", UniformType.Vec4fArray);
             DeclareUniform(UniformName.light2Radius, "light2Radius", UniformType.Vec2fArray);
             DeclareUniform(UniformName.lightColor, "lightColor", UniformType.Vec4fArray);
+            DeclareUniform(UniformName.ignoreNormals, "ignoreNormals", UniformType.Float);
             DeclareUniform(UniformName.spotLight, "spotLight", UniformType.Float);
             DeclareUniform(UniformName.campos, "campos", UniformType.Vec4f);
             DeclareUniform(UniformName.texturefactor, "texturefactor", UniformType.Vec4f);
@@ -763,6 +764,7 @@ namespace CodeImp.DoomBuilder.Rendering
         lightOrientation,
         light2Radius,
         lightColor,
+        ignoreNormals,
         spotLight,
         campos,
         texturefactor,

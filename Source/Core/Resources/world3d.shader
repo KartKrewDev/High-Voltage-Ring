@@ -22,6 +22,7 @@ uniforms
 	vec4 lightOrientation[64]; // this is a vector that points in light's direction
 	vec2 light2Radius[64]; // this is used with spotlights
 	vec4 lightColor[64];
+	float ignoreNormals;
 	float lightsEnabled;
 
 }
@@ -50,7 +51,7 @@ functions
 		//is face facing away from light source?
 		//      update 01.02.2017: offset the equation by 3px back to try to emulate GZDoom's broken visibility check.
 		float diffuseContribution = dot(Normal, normalize(lPosAndRadius.xyz - PosW + Normal * 3.0));
-		if (diffuseContribution < 0.0 && (lColor.a > 0.979 && lColor.a < 0.981)) // attenuated light and facing away
+		if (diffuseContribution < 0.0 && (ignoreNormals == 0 || (lColor.a > 0.979 && lColor.a < 0.981))) // attenuated light and facing away
 			return light;
 		
 		diffuseContribution = max(diffuseContribution, 0.0); // to make sure
