@@ -353,8 +353,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 			{
 				Vector2D center = new Vector2D(l.sector.BBox.X + l.sector.BBox.Width / 2,
 												   l.sector.BBox.Y + l.sector.BBox.Height / 2);
-
-				if (l.plane.Normal.z >= 0.0f)
+				
+				if (l.plane.Normal.z >= 0.0f && !l.extrafloor)
 				{
 					l.sector.FloorSlope = plane.Normal;
 					l.sector.FloorSlopeOffset = plane.Offset;
