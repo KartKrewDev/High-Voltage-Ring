@@ -46,26 +46,27 @@ namespace CodeImp.DoomBuilder.Rendering
 
             CreateDevice();
 
-            DeclareUniform(UniformName.rendersettings, "rendersettings", UniformType.Vec4);
+            DeclareUniform(UniformName.rendersettings, "rendersettings", UniformType.Vec4f);
             DeclareUniform(UniformName.projection, "projection", UniformType.Mat4);
             DeclareUniform(UniformName.desaturation, "desaturation", UniformType.Float);
-            DeclareUniform(UniformName.highlightcolor, "highlightcolor", UniformType.Vec4);
+            DeclareUniform(UniformName.highlightcolor, "highlightcolor", UniformType.Vec4f);
             DeclareUniform(UniformName.view, "view", UniformType.Mat4);
             DeclareUniform(UniformName.world, "world", UniformType.Mat4);
             DeclareUniform(UniformName.modelnormal, "modelnormal", UniformType.Mat4);
-            DeclareUniform(UniformName.FillColor, "fillColor", UniformType.Vec4);
-            DeclareUniform(UniformName.vertexColor, "vertexColor", UniformType.Vec4);
-            DeclareUniform(UniformName.stencilColor, "stencilColor", UniformType.Vec4);
-            DeclareUniform(UniformName.lightPosAndRadius, "lightPosAndRadius", UniformType.Vec4);
-            DeclareUniform(UniformName.lightOrientation, "lightOrientation", UniformType.Vec3);
-            DeclareUniform(UniformName.light2Radius, "light2Radius", UniformType.Vec2);
-            DeclareUniform(UniformName.lightColor, "lightColor", UniformType.Vec4);
-            DeclareUniform(UniformName.ignoreNormals, "ignoreNormals", UniformType.Float);
+            DeclareUniform(UniformName.FillColor, "fillColor", UniformType.Vec4f);
+            DeclareUniform(UniformName.vertexColor, "vertexColor", UniformType.Vec4f);
+            DeclareUniform(UniformName.stencilColor, "stencilColor", UniformType.Vec4f);
+            DeclareUniform(UniformName.lightPosAndRadius, "lightPosAndRadius", UniformType.Vec4fArray);
+            DeclareUniform(UniformName.lightOrientation, "lightOrientation", UniformType.Vec4fArray);
+            DeclareUniform(UniformName.light2Radius, "light2Radius", UniformType.Vec2fArray);
+            DeclareUniform(UniformName.lightColor, "lightColor", UniformType.Vec4fArray);
             DeclareUniform(UniformName.spotLight, "spotLight", UniformType.Float);
-            DeclareUniform(UniformName.campos, "campos", UniformType.Vec4);
-            DeclareUniform(UniformName.texturefactor, "texturefactor", UniformType.Vec4);
-            DeclareUniform(UniformName.fogsettings, "fogsettings", UniformType.Vec4);
-            DeclareUniform(UniformName.fogcolor, "fogcolor", UniformType.Vec4);
+            DeclareUniform(UniformName.campos, "campos", UniformType.Vec4f);
+            DeclareUniform(UniformName.texturefactor, "texturefactor", UniformType.Vec4f);
+            DeclareUniform(UniformName.fogsettings, "fogsettings", UniformType.Vec4f);
+            DeclareUniform(UniformName.fogcolor, "fogcolor", UniformType.Vec4f);
+            DeclareUniform(UniformName.sectorfogcolor, "sectorfogcolor", UniformType.Vec4f);
+            DeclareUniform(UniformName.lightsEnabled, "lightsEnabled", UniformType.Float);
 
             // 2d fsaa
             CompileShader(ShaderName.display2d_fsaa, "display2d.shader", "display2d_fsaa");
@@ -96,9 +97,6 @@ namespace CodeImp.DoomBuilder.Rendering
             CompileShader(ShaderName.world3d_main_highlight_fog, "world3d.shader", "world3d_main_highlight_fog");
             CompileShader(ShaderName.world3d_main_fog_vertexcolor, "world3d.shader", "world3d_main_fog_vertexcolor");
             CompileShader(ShaderName.world3d_main_highlight_fog_vertexcolor, "world3d.shader", "world3d_main_highlight_fog_vertexcolor");
-
-            // pure light shader
-            CompileShader(ShaderName.world3d_lightpass, "world3d.shader", "world3d_lightpass");
 
             SetupSettings();
         }
@@ -203,17 +201,17 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetUniform(Handle, uniform, new float[] { value }, 1, sizeof(float));
         }
 
-        public void SetUniform(UniformName uniform, Vector2 value)
+        public void SetUniform(UniformName uniform, Vector2f value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y }, 1, sizeof(float) * 2);
         }
 
-        public void SetUniform(UniformName uniform, Vector3 value)
+        public void SetUniform(UniformName uniform, Vector3f value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z }, 1, sizeof(float) * 3);
         }
 
-        public void SetUniform(UniformName uniform, Vector4 value)
+        public void SetUniform(UniformName uniform, Vector4f value)
         {
             RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z, value.W }, 1, sizeof(float) * 4);
         }
@@ -231,6 +229,68 @@ namespace CodeImp.DoomBuilder.Rendering
         public void SetUniform(UniformName uniform, ref Matrix matrix)
         {
             RenderDevice_SetUniform(Handle, uniform, ref matrix, 1, sizeof(float) * 16);
+        }
+
+        public void SetUniform(UniformName uniform, int value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new int[] { value }, 1, sizeof(int));
+        }
+
+        public void SetUniform(UniformName uniform, Vector2i value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new int[] { value.X, value.Y }, 1, sizeof(int) * 2);
+        }
+
+        public void SetUniform(UniformName uniform, Vector3i value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new int[] { value.X, value.Y, value.Z }, 1, sizeof(int) * 3);
+        }
+
+        public void SetUniform(UniformName uniform, Vector4i value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new int[] { value.X, value.Y, value.Z, value.W }, 1, sizeof(int) * 4);
+        }
+
+        public void SetUniform(UniformName uniform, Vector2f[] value)
+        {
+            float[] conv = new float[value.Length * 2];
+            int cv = 0;
+            for (int i = 0; i < conv.Length; i += 2)
+            {
+                conv[i] = value[cv].X;
+                conv[i + 1] = value[cv].Y;
+                cv++;
+            }
+            RenderDevice_SetUniform(Handle, uniform, conv, value.Length, sizeof(float) * conv.Length);
+        }
+
+        public void SetUniform(UniformName uniform, Vector3f[] value)
+        {
+            float[] conv = new float[value.Length * 3];
+            int cv = 0;
+            for (int i = 0; i < conv.Length; i += 3)
+            {
+                conv[i] = value[cv].X;
+                conv[i + 1] = value[cv].Y;
+                conv[i + 2] = value[cv].Z;
+                cv++;
+            }
+            RenderDevice_SetUniform(Handle, uniform, conv, value.Length, sizeof(float) * conv.Length);
+        }
+
+        public void SetUniform(UniformName uniform, Vector4f[] value)
+        {
+            float[] conv = new float[value.Length * 4];
+            int cv = 0;
+            for (int i = 0; i < conv.Length; i += 4)
+            {
+                conv[i] = value[cv].X;
+                conv[i + 1] = value[cv].Y;
+                conv[i + 2] = value[cv].Z;
+                conv[i + 3] = value[cv].W;
+                cv++;
+            }
+            RenderDevice_SetUniform(Handle, uniform, conv, value.Length, sizeof(float) * conv.Length);
         }
 
         public void SetVertexBuffer(VertexBuffer buffer)
@@ -504,6 +564,9 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern bool RenderDevice_SetShader(IntPtr handle, ShaderName name);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, int[] data, int count, int bytesize);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, float[] data, int count, int bytesize);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
@@ -617,25 +680,25 @@ namespace CodeImp.DoomBuilder.Rendering
         internal RenderTargetControl RenderTarget { get; private set; }
 
 		// This makes a Vector3 from Vector3D
-		public static Vector3 V3(Vector3D v3d)
+		public static Vector3f V3(Vector3D v3d)
 		{
-			return new Vector3(v3d.x, v3d.y, v3d.z);
+			return new Vector3f(v3d.x, v3d.y, v3d.z);
 		}
 
 		// This makes a Vector3D from Vector3
-		public static Vector3D V3D(Vector3 v3)
+		public static Vector3D V3D(Vector3f v3)
 		{
 			return new Vector3D(v3.X, v3.Y, v3.Z);
 		}
 
 		// This makes a Vector2 from Vector2D
-		public static Vector2 V2(Vector2D v2d)
+		public static Vector2f V2(Vector2D v2d)
 		{
-			return new Vector2(v2d.x, v2d.y);
+			return new Vector2f(v2d.x, v2d.y);
 		}
 
 		// This makes a Vector2D from Vector2
-		public static Vector2D V2D(Vector2 v2)
+		public static Vector2D V2D(Vector2f v2)
 		{
 			return new Vector2D(v2.X, v2.Y);
 		}
@@ -665,17 +728,23 @@ namespace CodeImp.DoomBuilder.Rendering
         world3d_p13,
         world3d_main_highlight_fog_vertexcolor,
         world3d_vertex_color,
-        world3d_constant_color,
-        world3d_lightpass
+        world3d_constant_color
     }
 
     public enum UniformType : int
     {
-        Vec4,
-        Vec3,
-        Vec2,
+        Vec4f,
+        Vec3f,
+        Vec2f,
         Float,
-        Mat4
+        Mat4,
+        Vec4i,
+        Vec3i,
+        Vec2i,
+        Int,
+        Vec4fArray,
+        Vec3fArray,
+        Vec2fArray
     }
 
     public enum UniformName : int
@@ -694,12 +763,13 @@ namespace CodeImp.DoomBuilder.Rendering
         lightOrientation,
         light2Radius,
         lightColor,
-        ignoreNormals,
         spotLight,
         campos,
         texturefactor,
         fogsettings,
-        fogcolor
+        fogcolor,
+        sectorfogcolor,
+        lightsEnabled
     }
 
     public enum VertexFormat : int { Flat, World }

@@ -179,8 +179,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 				WorldVertex p2 = vertices[startindex + 1];
 				WorldVertex p3 = vertices[startindex + 2];
 
-				Vector3 U = new Vector3(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
-				Vector3 V = new Vector3(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
+				Vector3f U = new Vector3f(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
+				Vector3f V = new Vector3f(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
 
 				p1.nx = p2.nx = p3.nx = -(U.Y * V.Z - U.Z * V.Y);
 				p1.ny = p2.ny = p3.ny = -(U.Z * V.X - U.X * V.Z);

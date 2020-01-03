@@ -12,17 +12,18 @@ uniforms
 
 	vec4 fogsettings;
 	vec4 fogcolor;
+	vec4 sectorfogcolor;
 	vec4 vertexColor;
 
 	sampler2D texture1;
 
 	// dynamic light related
-	vec4 lightPosAndRadius;
-	vec3 lightOrientation; // this is a vector that points in light's direction
-	vec2 light2Radius; // this is used with spotlights
-	vec4 lightColor;
-	float ignoreNormals; // ignore normals in lighting equation. used for non-attenuated lights on models.
-	float spotLight; // use lightOrientation
+	vec4 lightPosAndRadius[64];
+	vec4 lightOrientation[64]; // this is a vector that points in light's direction
+	vec2 light2Radius[64]; // this is used with spotlights
+	vec4 lightColor[64];
+	float lightsEnabled;
+
 }
 
 functions
@@ -33,7 +34,7 @@ functions
 		float fogdist = max(16.0, distance(PosW, campos.xyz));
 		float fogfactor = exp2(campos.w * fogdist);
 
-		color.rgb = mix(lightColor.rgb, color.rgb, fogfactor);
+		color.rgb = mix(sectorfogcolor.rgb, color.rgb, fogfactor);
 		return color;
 	}
 
@@ -41,6 +42,67 @@ functions
 	{
 		float gray = (texel.r * 0.3 + texel.g * 0.56 + texel.b * 0.14);	
 		return vec4(mix(texel.rgb, vec3(gray), desaturation), texel.a);
+	}
+
+	vec3 getOneDynLightContribution(vec3 PosW, vec3 Normal, vec3 light, vec4 lColor, vec4 lPosAndRadius, vec4 lOrientation, vec2 l2Radius)
+	{
+
+		//is face facing away from light source?
+		//      update 01.02.2017: offset the equation by 3px back to try to emulate GZDoom's broken visibility check.
+		float diffuseContribution = dot(Normal, normalize(lPosAndRadius.xyz - PosW + Normal * 3.0));
+		if (diffuseContribution < 0.0 && (lColor.a > 0.979 && lColor.a < 0.981)) // attenuated light and facing away
+			return light;
+		
+		diffuseContribution = max(diffuseContribution, 0.0); // to make sure
+
+		//is pixel in light range?
+		float dist = distance(PosW, lPosAndRadius.xyz);
+
+		if (dist > lPosAndRadius.w)
+			return light;
+
+		float power = 1.0;
+		power *= max(lPosAndRadius.w - dist, 0.0) / lPosAndRadius.w;
+
+		if (lOrientation.w > 0.5)
+		{
+			vec3 lightDirection = normalize(lPosAndRadius.xyz - PosW);
+			float cosDir = dot(lightDirection, lOrientation.xyz);
+			float df = smoothstep(l2Radius.y, l2Radius.x, cosDir);
+			power *= df;
+		}
+
+		if (lColor.a > 0.979 && lColor.a < 0.981) // attenuated light 98%
+			power *= diffuseContribution;
+
+		// for w/e reason GZDoom also does this
+		power *= lColor.a;
+
+		if (lColor.a >= 1)
+			return light.rgb - lColor.rgb * power;
+
+		return light.rgb + lColor.rgb * power;
+
+	}
+
+	vec4 getDynLightContribution(vec4 tcolor, vec4 baselight, vec3 PosW, vec3 Normal)
+	{
+		vec3 light = vec3(0, 0, 0);
+		vec3 addlight = vec3(0, 0, 0);
+
+		if (lightsEnabled != 0)
+		{
+			for (int i = 0; i < 64; i++)
+			{
+				if (lightColor[i].a == 0)
+					break;
+				if (lightColor[i].a < 0.4) // additive
+					addlight = getOneDynLightContribution(PosW, Normal, addlight, lightColor[i], lightPosAndRadius[i], lightOrientation[i], light2Radius[i]);
+				else light = getOneDynLightContribution(PosW, Normal, light, lightColor[i], lightPosAndRadius[i], lightOrientation[i], light2Radius[i]);
+			}
+		}
+
+		return vec4(tcolor.rgb*(baselight.rgb+light)+addlight, tcolor.a*baselight.a);
 	}
 }
 
@@ -53,14 +115,16 @@ shader world3d_main
 		vec2 TextureCoordinate;
 		vec3 Normal;
 	}
-	
+
 	v2f
 	{
 		vec4 Color;
 		vec2 UV;
+		vec3 PosW;
+		vec3 Normal;
 		vec4 viewpos;
 	}
-	
+
 	out
 	{
 		vec4 FragColor;
@@ -70,15 +134,18 @@ shader world3d_main
 	{
 		v2f.viewpos = view * world * vec4(in.Position, 1.0);
 		gl_Position = projection * v2f.viewpos;
+		v2f.PosW = (world * vec4(in.Position, 1.0)).xyz;
 		v2f.Color = in.Color;
 		v2f.UV = in.TextureCoordinate;
+		v2f.Normal = normalize((modelnormal * vec4(in.Normal, 1.0)).xyz);
 	}
 	
 	fragment
 	{
 		vec4 tcolor = texture(texture1, v2f.UV);
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
-		out.FragColor = desaturate(tcolor * v2f.Color);
+		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
+		out.FragColor = desaturate(tcolor);
 
 		#if defined(ALPHA_TEST)
 		if (out.FragColor.a < 0.5) discard;
@@ -111,6 +178,7 @@ shader world3d_main_highlight extends world3d_main
 	{
 		vec4 tcolor = texture(texture1, v2f.UV);
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
+		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		if (tcolor.a == 0.0)
 		{
 			out.FragColor = tcolor;
@@ -118,7 +186,7 @@ shader world3d_main_highlight extends world3d_main
 		else
 		{
 			// Blend texture color and vertex color
-			vec4 ncolor = desaturate(tcolor * v2f.Color);
+			vec4 ncolor = desaturate(tcolor);
 
 			out.FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (ncolor.rgb - 0.4 * highlightcolor.a), max(v2f.Color.a + 0.25, 0.5));
 		}
@@ -209,91 +277,20 @@ shader world3d_highlight_vertexcolor extends world3d_main_highlight
 	}
 }
 
-shader world3d_lightpass extends world3d_main
-{
-	v2f
-	{
-		vec4 Color;
-		vec2 UV;
-		vec3 PosW;
-		vec3 Normal;
-		vec4 viewpos;
-	}
-
-	vertex
-	{
-		v2f.viewpos = view * world * vec4(in.Position, 1.0);
-		gl_Position = projection * v2f.viewpos;
-		v2f.PosW = (world * vec4(in.Position, 1.0)).xyz;
-		v2f.Color = in.Color;
-		v2f.UV = in.TextureCoordinate;
-		v2f.Normal = normalize((modelnormal * vec4(in.Normal, 1.0)).xyz);
-	}
-
-	fragment
-	{
-		//is face facing away from light source?
-		//      update 01.02.2017: offset the equation by 3px back to try to emulate GZDoom's broken visibility check.
-		float diffuseContribution = dot(v2f.Normal, normalize(lightPosAndRadius.xyz - v2f.PosW + v2f.Normal * 3.0));
-		if (diffuseContribution < 0.0 && ignoreNormals < 0.5)
-			discard;
-		diffuseContribution = max(diffuseContribution, 0.0); // to make sure
-
-		//is pixel in light range?
-		float dist = distance(v2f.PosW, lightPosAndRadius.xyz);
-		if (dist > lightPosAndRadius.w)
-			discard;
-
-		//is pixel tranparent?
-		vec4 tcolor = texture(texture1, v2f.UV);
-		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
-		if (tcolor.a == 0.0)
-			discard;
-
-		//if it is - calculate color at current pixel
-		vec4 lightColorMod = vec4(0.0, 0.0, 0.0, 1.0);
-
-		lightColorMod.rgb = lightColor.rgb * max(lightPosAndRadius.w - dist, 0.0) / lightPosAndRadius.w;
-    
-		if (spotLight > 0.5)
-		{
-			vec3 lightDirection = normalize(lightPosAndRadius.xyz - v2f.PosW);
-			float cosDir = dot(lightDirection, lightOrientation);
-			float df = smoothstep(light2Radius.y, light2Radius.x, cosDir);
-			lightColorMod.rgb *= df;
-		}
-
-		if (lightColor.a > 0.979 && lightColor.a < 0.981) // attenuated light 98%
-			lightColorMod.rgb *= diffuseContribution;
-
-		if (lightColorMod.r <= 0.0 && lightColorMod.g <= 0.0 && lightColorMod.b <= 0.0)
-			discard;
-
-		lightColorMod.rgb *= lightColor.a;
-		if (lightColor.a > 0.4) //Normal, vavoom or negative light (or attenuated)
-			lightColorMod *= tcolor;
-		
-		out.FragColor = desaturate(lightColorMod); //Additive light
-
-		#if defined(ALPHA_TEST)
-		if (out.FragColor.a < 0.5) discard;
-		#endif
-	}
-}
-
-shader world3d_main_fog extends world3d_lightpass
+shader world3d_main_fog extends world3d_main
 {
 	fragment
 	{
 		vec4 tcolor = texture(texture1, v2f.UV);
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
+		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		if (tcolor.a == 0.0)
 		{
 			out.FragColor = tcolor;
 		}
 		else
 		{
-			out.FragColor = desaturate(getFogColor(v2f.PosW, tcolor * v2f.Color));
+			out.FragColor = desaturate(getFogColor(v2f.PosW, tcolor));
 		}
 
 		#if defined(ALPHA_TEST)
@@ -310,6 +307,7 @@ shader world3d_main_highlight_fog extends world3d_main_fog
 	{
 		vec4 tcolor = texture(texture1, v2f.UV);
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
+		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		if (tcolor.a == 0.0)
 		{
 			out.FragColor = tcolor;
@@ -317,7 +315,7 @@ shader world3d_main_highlight_fog extends world3d_main_fog
 		else
 		{
 			// Blend texture color and vertex color
-			vec4 ncolor = desaturate(getFogColor(v2f.PosW, tcolor * v2f.Color));
+			vec4 ncolor = desaturate(getFogColor(v2f.PosW, tcolor));
 
 			out.FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (ncolor.rgb - 0.4 * highlightcolor.a), max(ncolor.a + 0.25, 0.5));
 		}

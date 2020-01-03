@@ -15,7 +15,7 @@ namespace CodeImp.DoomBuilder.Rendering
             Blue = b;
         }
 
-        public Color3(Vector3 c)
+        public Color3(Vector3f c)
         {
             Red = c.X;
             Green = c.Y;

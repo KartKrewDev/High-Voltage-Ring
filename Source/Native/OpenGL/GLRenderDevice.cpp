@@ -863,12 +863,19 @@ bool GLRenderDevice::ApplyUniforms()
 			GLuint location = locations[i];
 			switch (mUniformInfo[i].Type)
 			{
-			default:
+			default: break;
 			case UniformType::Vec4f: glUniform4fv(location, 1, data); break;
 			case UniformType::Vec3f: glUniform3fv(location, 1, data); break;
 			case UniformType::Vec2f: glUniform2fv(location, 1, data); break;
 			case UniformType::Float: glUniform1fv(location, 1, data); break;
 			case UniformType::Mat4: glUniformMatrix4fv(location, 1, GL_FALSE, data); break;
+			case UniformType::Vec4i: glUniform4iv(location, 1, idata); break;
+			case UniformType::Vec3i: glUniform3iv(location, 1, idata); break;
+			case UniformType::Vec2i: glUniform2iv(location, 1, idata); break;
+			case UniformType::Int: glUniform1iv(location, 1, idata); break;
+			case UniformType::Vec4fArray: glUniform4fv(location, info.Count, data); break;
+			case UniformType::Vec3fArray: glUniform3fv(location, info.Count, data); break;
+			case UniformType::Vec2fArray: glUniform2fv(location, info.Count, data); break;
 			}
 			lastupdates[i] = mUniformInfo[i].LastUpdate;
 		}

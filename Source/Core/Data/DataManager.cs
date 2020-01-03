@@ -3399,16 +3399,16 @@ namespace CodeImp.DoomBuilder.Data
             General.Map.Graphics.SetSamplerState(TextureAddress.Clamp);
 			
 			// Setup matrices
-			Vector3 offset = new Vector3(0f, 0f, -1.8f); // Sphere size is 10 mu
+			Vector3f offset = new Vector3f(0f, 0f, -1.8f); // Sphere size is 10 mu
 			Matrix mworld = Matrix.Translation(offset) * Matrix.Scaling(1.0f, 1.0f, yscale);
 			Matrix mprojection = Matrix.PerspectiveFov(Angle2D.PIHALF, 1.0f, 0.5f, 100.0f);
 
             // Place camera at origin
-            General.Map.Graphics.SetUniform(UniformName.campos, new Vector4());
+            General.Map.Graphics.SetUniform(UniformName.campos, new Vector4f());
 
             // Begin fullbright shaderpass
             General.Map.Graphics.SetShader(ShaderName.world3d_fullbright);
-            General.Map.Graphics.SetUniform(UniformName.fogsettings, new Vector4(-1.0f));
+            General.Map.Graphics.SetUniform(UniformName.fogsettings, new Vector4f(-1.0f));
 
             // Render to the six faces of the cube map
             for (int i = 0; i < 6; i++)
@@ -3643,45 +3643,45 @@ namespace CodeImp.DoomBuilder.Data
 
 		private static Matrix GetCubeMapViewMatrix(CubeMapFace face)
 		{
-			Vector3 lookdir, updir;
+			Vector3f lookdir, updir;
 
 			switch(face)
 			{
 				case CubeMapFace.PositiveX:
-					lookdir = new Vector3(-1.0f, 0.0f, 0.0f);
-					updir = new Vector3(0.0f, 1.0f, 0.0f);
+					lookdir = new Vector3f(-1.0f, 0.0f, 0.0f);
+					updir = new Vector3f(0.0f, 1.0f, 0.0f);
 					break;
 
 				case CubeMapFace.NegativeX:
-					lookdir = new Vector3(1.0f, 0.0f, 0.0f);
-					updir = new Vector3(0.0f, 1.0f, 0.0f);
+					lookdir = new Vector3f(1.0f, 0.0f, 0.0f);
+					updir = new Vector3f(0.0f, 1.0f, 0.0f);
 					break;
 
 				case CubeMapFace.PositiveY:
-					lookdir = new Vector3(0.0f, -1.0f, 0.0f);
-					updir = new Vector3(0.0f, 0.0f, 1.0f);
+					lookdir = new Vector3f(0.0f, -1.0f, 0.0f);
+					updir = new Vector3f(0.0f, 0.0f, 1.0f);
 					break;
 
 				case CubeMapFace.NegativeY:
-					lookdir = new Vector3(0.0f, 1.0f, 0.0f);
-					updir = new Vector3(0.0f, 0.0f, -1.0f);
+					lookdir = new Vector3f(0.0f, 1.0f, 0.0f);
+					updir = new Vector3f(0.0f, 0.0f, -1.0f);
 					break;
 
 				case CubeMapFace.PositiveZ:
-					lookdir = new Vector3(0.0f, 0.0f, 1.0f);
-					updir = new Vector3(0.0f, 1.0f, 0.0f);
+					lookdir = new Vector3f(0.0f, 0.0f, 1.0f);
+					updir = new Vector3f(0.0f, 1.0f, 0.0f);
 					break;
 
 				case CubeMapFace.NegativeZ:
-					lookdir = new Vector3(0.0f, 0.0f, -1.0f);
-					updir = new Vector3(0.0f, 1.0f, 0.0f);
+					lookdir = new Vector3f(0.0f, 0.0f, -1.0f);
+					updir = new Vector3f(0.0f, 1.0f, 0.0f);
 					break;
 
 				default:
 					throw new Exception("Unknown CubeMapFace!");
 			}
 
-			Vector3 eye = new Vector3();
+			Vector3f eye = new Vector3f();
 			return Matrix.LookAt(eye, lookdir, updir);
 		}
 

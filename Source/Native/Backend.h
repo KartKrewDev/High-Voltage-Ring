@@ -37,7 +37,7 @@ enum class ShaderFlags : int { None, Debug };
 enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };
 enum class TextureFilter : int { Nearest, Linear };
 enum class MipmapFilter : int { None, Nearest, Linear };
-enum class UniformType : int { Vec4f, Vec3f, Vec2f, Float, Mat4 };
+enum class UniformType : int { Vec4f, Vec3f, Vec2f, Float, Mat4, Vec4i, Vec3i, Vec2i, Int, Vec4fArray, Vec3fArray, Vec2fArray };
 
 typedef int UniformName;
 typedef int ShaderName;

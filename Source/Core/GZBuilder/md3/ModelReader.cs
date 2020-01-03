@@ -238,9 +238,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 			bbs.MinX = (int)(bbs.MinX * mde.Scale.X);
 			bbs.MaxY = (int)(bbs.MaxY * mde.Scale.Y);
 			bbs.MinY = (int)(bbs.MinY * mde.Scale.Y);
+            bbs.MaxZ = (int)(bbs.MaxZ * mde.Scale.Z);
+            bbs.MinZ = (int)(bbs.MinZ * mde.Scale.Z);
 
 			//calculate model radius
 			mde.Model.Radius = Math.Max(Math.Max(Math.Abs(bbs.MinY), Math.Abs(bbs.MaxY)), Math.Max(Math.Abs(bbs.MinX), Math.Abs(bbs.MaxX)));
+            mde.Model.BBox = bbs;
 		}
 
 		private static Texture GetTexture(List<DataReader> containers, string texturename)
@@ -853,7 +856,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 				List<int> polyIndecesList = new List<int>();
 				List<int> uvIndecesList = new List<int>();
-				List<Vector2> uvCoordsList = new List<Vector2>();
+				List<Vector2f> uvCoordsList = new List<Vector2f>();
 				List<WorldVertex> vertList = new List<WorldVertex>();
 
 				// Polygons
@@ -874,7 +877,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				s.Position = ofs_uv + start;
 
 				for(int i = 0; i < num_uv; i++)
-					uvCoordsList.Add(new Vector2((float)br.ReadInt16() / texWidth, (float)br.ReadInt16() / texHeight));
+					uvCoordsList.Add(new Vector2f((float)br.ReadInt16() / texWidth, (float)br.ReadInt16() / texHeight));
 
 				// Frames
 				// Find correct frame
@@ -910,8 +913,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 					s.Position = ofs_animFrame + start + frame * framesize;
 				}
 
-				Vector3 scale = new Vector3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
-				Vector3 translate = new Vector3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
+				Vector3f scale = new Vector3f(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
+				Vector3f translate = new Vector3f(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
 
 				s.Position += 16; // Skip frame name
 

@@ -37,6 +37,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		private const float PROJ_NEAR_PLANE = 1f;
 		private const float FOG_RANGE = 0.9f;
+        private const int MAX_DYNLIGHTS_PER_SURFACE = 64;
 
 		#endregion
 
@@ -271,7 +272,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				General.Settings.ViewDistance, Angle2D.DegToRad(General.Settings.VisualFOV));
 
             // Make the view matrix
-            view3d = Matrix.LookAt(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3(0f, 0f, 1f));
+            view3d = Matrix.LookAt(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3f(0f, 0f, 1f));
 			
 			// Make the billboard matrix
 			billboard = Matrix.RotationZ(anglexy + Angle2D.PI);
@@ -306,7 +307,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetAlphaTestEnable(false);
 			graphics.SetSourceBlend(Blend.SourceAlpha);
 			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
-			graphics.SetUniform(UniformName.fogsettings, new Vector4(-1.0f));
+			graphics.SetUniform(UniformName.fogsettings, new Vector4f(-1.0f));
 			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
@@ -393,14 +394,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			// SOLID PASS
 			world = Matrix.Identity;
             graphics.SetUniform(UniformName.world, ref world);
-            RenderSinglePass(solidgeo, solidthings);
+            RenderSinglePass(solidgeo, solidthings, lightthings);
 
 			//mxd. Render models, without backface culling
 			if(maskedmodelthings.Count > 0)
 			{
 				graphics.SetAlphaTestEnable(true);
 				graphics.SetCullMode(Cull.None);
-				RenderModels(false, false);
+				RenderModels(false, lightthings);
                 graphics.SetCullMode(Cull.Clockwise);
 			}
 
@@ -410,32 +411,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				world = Matrix.Identity;
                 graphics.SetUniform(UniformName.world, ref world);
                 graphics.SetAlphaTestEnable(true);
-				RenderSinglePass(maskedgeo, maskedthings);
+				RenderSinglePass(maskedgeo, maskedthings, lightthings);
 			}
-
-			//mxd. LIGHT PASS
-			if(General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0)
-			{
-				world = Matrix.Identity;
-                graphics.SetUniform(UniformName.world, ref world);
-                graphics.SetAlphaBlendEnable(true);
-				graphics.SetAlphaTestEnable(false);
-				graphics.SetZWriteEnable(false);
-				graphics.SetDestinationBlend(Blend.One);
-				
-				RenderLights(solidgeo, lightthings);
-				RenderLights(maskedgeo, lightthings);
-
-                if (maskedmodelthings.Count > 0)
-                {
-                    graphics.SetAlphaTestEnable(true);
-                    graphics.SetCullMode(Cull.None);
-                    graphics.SetUniform(UniformName.ignoreNormals, true);
-                    RenderModels(true, false);
-                    graphics.SetUniform(UniformName.ignoreNormals, false);
-                    graphics.SetCullMode(Cull.Clockwise);
-                }
-            }
 
 			// ALPHA AND ADDITIVE PASS
 			if(translucentgeo.Count > 0 || translucentthings.Count > 0)
@@ -446,20 +423,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetAlphaTestEnable(false);
 				graphics.SetZWriteEnable(false);
 				graphics.SetSourceBlend(Blend.SourceAlpha);
-				RenderTranslucentPass(translucentgeo, translucentthings);
+				RenderTranslucentPass(translucentgeo, translucentthings, lightthings);
 			}
-
-            // [ZZ] LIGHT PASS on ALPHA GEOMETRY (GZDoom does this)
-            if(General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0 && translucentgeo.Count > 0)
-            {
-                world = Matrix.Identity;
-                graphics.SetUniform(UniformName.world, ref world);
-                graphics.SetAlphaBlendEnable(true);
-                graphics.SetAlphaTestEnable(false);
-                graphics.SetZWriteEnable(false);
-                graphics.SetDestinationBlend(Blend.One);
-                RenderTranslucentLights(translucentgeo, lightthings);
-            }
 
 			//mxd. Render translucent models, with backface culling
 			if(translucentmodelthings.Count > 0)
@@ -468,16 +433,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				graphics.SetAlphaTestEnable(false);
 				graphics.SetZWriteEnable(false);
 				graphics.SetSourceBlend(Blend.SourceAlpha);
-                RenderModels(false, true);
-            }
-
-            // [ZZ] light pass on alpha models
-            if (General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0 && translucentmodelthings.Count > 0)
-            {
-                graphics.SetAlphaTestEnable(true);
-                graphics.SetUniform(UniformName.ignoreNormals, true);
-                RenderModels(true, true);
-                graphics.SetUniform(UniformName.ignoreNormals, false);
+                RenderModels(true, lightthings);
             }
 
             // THING CAGES
@@ -739,17 +695,27 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 
 		// This performs a single render pass
-		private void RenderSinglePass(Dictionary<ImageData, List<VisualGeometry>> geopass, Dictionary<ImageData, List<VisualThing>> thingspass)
+		private void RenderSinglePass(Dictionary<ImageData, List<VisualGeometry>> geopass, Dictionary<ImageData, List<VisualThing>> thingspass, List<VisualThing> lights)
 		{
 			ImageData curtexture;
 			ShaderName currentshaderpass = shaderpass;
 			ShaderName highshaderpass = (ShaderName)(shaderpass + 2);
 
-			// Begin rendering with this shader
-			graphics.SetShader(shaderpass);
+            // Begin rendering with this shader
+            graphics.SetShader(shaderpass);
 
-			// Render the geometry collected
-			foreach(KeyValuePair<ImageData, List<VisualGeometry>> group in geopass)
+            // Light data arrays
+            Vector4f[] lightColor = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector4f[] lightPosAndRadius = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector4f[] lightOrientation = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
+
+            graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
+
+            bool hadlights = false;
+
+            // Render the geometry collected
+            foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geopass)
 			{
 				// What texture to use?
 				if(group.Key is UnknownImage)
@@ -770,6 +736,54 @@ namespace CodeImp.DoomBuilder.Rendering
 				
 				foreach(VisualGeometry g in group.Value)
 				{
+
+                    int lightIndex = 0;
+
+                    foreach (VisualThing light in lights)
+                    {
+                        if (BoundingBoxesIntersect(g.BoundingBox, light.BoundingBox))
+                        {
+
+                            //t.LightType.LightRenderStyle
+                            //Vector4f lightColor, lightPosAndRadius, lightOrientation, light2Radius;
+
+                            lightColor[lightIndex] = light.LightColor.ToVector();
+                            lightPosAndRadius[lightIndex] = new Vector4f(light.Center, light.LightRadius);
+
+                            // set type of light
+                            if (light.LightType.LightType == GZGeneral.LightType.SPOT)
+                            {
+                                lightOrientation[lightIndex] = new Vector4f(light.VectorLookAt, 1f);
+                                light2Radius[lightIndex] = new Vector2f(CosDeg(light.LightSpotRadius1), CosDeg(light.LightSpotRadius2));
+                            }
+                            else lightOrientation[lightIndex].W = 0f;
+
+                            lightIndex++;
+
+                            if (lightIndex >= lightColor.Length)
+                                break;
+
+                        }
+                    }
+
+                    bool havelights = (lightIndex > 0);
+
+                    for (int i = lightIndex; i < lightColor.Length; i++)
+                        lightColor[i].W = 0;
+
+                    if (havelights != hadlights || havelights)
+                    {
+                        graphics.SetUniform(UniformName.lightColor, lightColor);
+                        if (havelights)
+                        {
+                            graphics.SetUniform(UniformName.lightPosAndRadius, lightPosAndRadius);
+                            graphics.SetUniform(UniformName.lightOrientation, lightOrientation);
+                            graphics.SetUniform(UniformName.light2Radius, light2Radius);
+                        }
+                    }
+
+                    hadlights = havelights;
+
 					// Changing sector?
 					if(!object.ReferenceEquals(g.Sector, sector))
 					{
@@ -818,8 +832,8 @@ namespace CodeImp.DoomBuilder.Rendering
 						//mxd. Set variables for fog rendering?
 						if(wantedshaderpass > ShaderName.world3d_p7)
 						{
-							graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
-							graphics.SetUniform(UniformName.lightColor, sector.Sector.FogColor);
+							graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
+							graphics.SetUniform(UniformName.sectorfogcolor, sector.Sector.FogColor);
 						}
                         
 						// Set the colors to use
@@ -834,8 +848,10 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 			}
 
-			// Get things for this pass
-			if(thingspass.Count > 0)
+            graphics.SetUniform(UniformName.lightsEnabled, false);
+
+            // Get things for this pass
+            if (thingspass.Count > 0)
 			{
 				// Texture addressing
 				graphics.SetSamplerState(TextureAddress.Clamp);
@@ -912,11 +928,11 @@ namespace CodeImp.DoomBuilder.Rendering
 							if(wantedshaderpass > ShaderName.world3d_p7)
 							{
                                 graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
-                                graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                                graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
 							}
 
 							// Set the colors to use
-							if(t.Thing.Sector != null) graphics.SetUniform(UniformName.lightColor, t.Thing.Sector.FogColor);
+							if(t.Thing.Sector != null) graphics.SetUniform(UniformName.sectorfogcolor, t.Thing.Sector.FogColor);
                             graphics.SetUniform(UniformName.vertexColor, vertexcolor);
                             graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
 
@@ -950,7 +966,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 
 		//mxd
-		private void RenderTranslucentPass(List<VisualGeometry> geopass, List<VisualThing> thingspass)
+		private void RenderTranslucentPass(List<VisualGeometry> geopass, List<VisualThing> thingspass, List<VisualThing> lights)
 		{
 			ShaderName currentshaderpass = shaderpass;
 			ShaderName highshaderpass = (ShaderName)(shaderpass + 2);
@@ -958,12 +974,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Sort geometry by camera distance. First vertex of the BoundingBox is it's center
             geopass.Sort(delegate(VisualGeometry vg1, VisualGeometry vg2)
 			{
-                /*if(vg1 == vg2) return 0;
-				return (int)((General.Map.VisualCamera.Position - vg2.BoundingBox[0]).GetLengthSq()
-					        -(General.Map.VisualCamera.Position - vg1.BoundingBox[0]).GetLengthSq());*/
-
-                // This does not work when you have huge translucent 3D floor combined with small translucent something over it.
-                // The huge translucent 3D floor may easily have it's center CLOSER and thus get drawn over everything, which is certainly not expected behavior.
 
                 if (vg1 == vg2)
                     return 0;
@@ -987,6 +997,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 }
 
                 return (int)(dist2 - dist1);
+
 			});
 
 			ImageData curtexture;
@@ -998,11 +1009,70 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Begin rendering with this shader
 			graphics.SetShader(shaderpass);
 
-			// Go for all geometry
-			foreach(VisualGeometry g in geopass)
+
+            // Light data arrays
+            Vector4f[] lightColor = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector4f[] lightPosAndRadius = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector4f[] lightOrientation = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
+
+            graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
+
+            bool hadlights = false;
+
+            // Go for all geometry
+            foreach (VisualGeometry g in geopass)
 			{
-				// Change blend mode?
-				if(g.RenderPass != currentpass)
+
+                int lightIndex = 0;
+
+                foreach (VisualThing light in lights)
+                {
+                    if (BoundingBoxesIntersect(g.BoundingBox, light.BoundingBox))
+                    {
+
+                        //t.LightType.LightRenderStyle
+                        //Vector4f lightColor, lightPosAndRadius, lightOrientation, light2Radius;
+
+                        lightColor[lightIndex] = light.LightColor.ToVector();
+                        lightPosAndRadius[lightIndex] = new Vector4f(light.Center, light.LightRadius);
+
+                        // set type of light
+                        if (light.LightType.LightType == GZGeneral.LightType.SPOT)
+                        {
+                            lightOrientation[lightIndex] = new Vector4f(light.VectorLookAt, 1f);
+                            light2Radius[lightIndex] = new Vector2f(CosDeg(light.LightSpotRadius1), CosDeg(light.LightSpotRadius2));
+                        }
+                        else lightOrientation[lightIndex].W = 0f;
+
+                        lightIndex++;
+
+                        if (lightIndex >= lightColor.Length)
+                            break;
+
+                    }
+                }
+
+                bool havelights = (lightIndex > 0);
+
+                for (int i = lightIndex; i < lightColor.Length; i++)
+                    lightColor[i].W = 0;
+
+                if (havelights != hadlights || havelights)
+                {
+                    graphics.SetUniform(UniformName.lightColor, lightColor);
+                    if (havelights)
+                    {
+                        graphics.SetUniform(UniformName.lightPosAndRadius, lightPosAndRadius);
+                        graphics.SetUniform(UniformName.lightOrientation, lightOrientation);
+                        graphics.SetUniform(UniformName.light2Radius, light2Radius);
+                    }
+                }
+
+                hadlights = havelights;
+
+                // Change blend mode?
+                if (g.RenderPass != currentpass)
 				{
 					switch(g.RenderPass)
 					{
@@ -1081,7 +1151,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     // Set variables for fog rendering?
                     if (wantedshaderpass > ShaderName.world3d_p7 && g.FogFactor != fogfactor)
                     {
-                        graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
+                        graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
                         fogfactor = g.FogFactor;
                     }
 
@@ -1089,7 +1159,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     graphics.SetUniform(UniformName.desaturation, sector.Sector.Desaturation);
 
                     // Set the colors to use
-                    graphics.SetUniform(UniformName.lightColor, sector.Sector.FogColor);
+                    graphics.SetUniform(UniformName.sectorfogcolor, sector.Sector.FogColor);
                     graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
 
                     // Render!
@@ -1098,8 +1168,10 @@ namespace CodeImp.DoomBuilder.Rendering
                 else graphics.SetUniform(UniformName.desaturation, 0.0f);
             }
 
-			// Get things for this pass
-			if(thingspass.Count > 0)
+            graphics.SetUniform(UniformName.lightsEnabled, false);
+
+            // Get things for this pass
+            if (thingspass.Count > 0)
 			{
 				// Texture addressing
 				graphics.SetSamplerState(TextureAddress.Clamp);
@@ -1210,13 +1282,13 @@ namespace CodeImp.DoomBuilder.Rendering
                             graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                             if (t.FogFactor != fogfactor)
 							{
-                                graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                                graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
 								fogfactor = t.FogFactor;
 							}
 						}
 
                         // Set the colors to use
-                        graphics.SetUniform(UniformName.lightColor, t.Thing.Sector.FogColor);
+                        graphics.SetUniform(UniformName.sectorfogcolor, t.Thing.Sector.FogColor);
                         graphics.SetUniform(UniformName.vertexColor, vertexcolor);
                         graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
 
@@ -1287,206 +1359,8 @@ namespace CodeImp.DoomBuilder.Rendering
             return (float)Math.Cos(Angle2D.DegToRad(angle));
         }
 
-        //mxd. Dynamic lights pass!
-        private VisualSector RenderLightsFromGeometryList(List<VisualGeometry> geometrytolit, List<VisualThing> lights, VisualSector sector, bool settexture)
-        {
-            foreach (VisualGeometry g in geometrytolit)
-            {
-                // Changing sector?
-                if (!object.ReferenceEquals(g.Sector, sector))
-                {
-                    // Only do this sector when a vertexbuffer is created
-                    // mxd. no Map means that sector was deleted recently, I suppose
-                    if (g.Sector.GeometryBuffer != null && g.Sector.Sector.Map != null)
-                    {
-                        // Change current sector
-                        sector = g.Sector;
-
-                        // Set stream source
-                        graphics.SetVertexBuffer(sector.GeometryBuffer);
-                    }
-                    else
-                    {
-                        sector = null;
-                    }
-                }
-
-                if (sector == null) continue;
-
-                graphics.SetUniform(UniformName.desaturation, sector.Sector.Desaturation);
-
-                // note: additive geometry doesn't receive lighting
-                if (g.RenderPass == RenderPass.Additive)
-                    continue;
-
-                if (settexture)
-                    graphics.SetTexture(g.Texture.Texture);
-
-                //normal lights
-                int count = lightOffsets[0];
-                Vector4 lpr;
-                if (lightOffsets[0] > 0)
-                {
-                    graphics.SetBlendOperation(BlendOperation.Add);
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        if (BoundingBoxesIntersect(g.BoundingBox, lights[i].BoundingBox))
-                        {
-                            lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
-                            if (lpr.W == 0) continue;
-                            graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
-                            graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
-                            GZGeneral.LightData ld = lights[i].LightType;
-                            if (ld.LightType == GZGeneral.LightType.SPOT)
-                            {
-                                graphics.SetUniform(UniformName.spotLight, true);
-                                graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
-                                graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
-                            }
-                            else graphics.SetUniform(UniformName.spotLight, false);
-                            graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
-                        }
-                    }
-                }
-
-                //attenuated lights
-                if (lightOffsets[1] > 0)
-                {
-                    count += lightOffsets[1];
-                    graphics.SetBlendOperation(BlendOperation.Add);
-
-                    for (int i = lightOffsets[0]; i < count; i++)
-                    {
-                        if (BoundingBoxesIntersect(g.BoundingBox, lights[i].BoundingBox))
-                        {
-                            lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
-                            if (lpr.W == 0) continue;
-                            graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
-                            graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
-                            GZGeneral.LightData ld = lights[i].LightType;
-                            if (ld.LightType == GZGeneral.LightType.SPOT)
-                            {
-                                graphics.SetUniform(UniformName.spotLight, true);
-                                graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
-                                graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
-                            }
-                            else graphics.SetUniform(UniformName.spotLight, false);
-                            graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
-                        }
-                    }
-                }
-
-                //additive lights
-                if (lightOffsets[2] > 0)
-                {
-                    count += lightOffsets[2];
-                    graphics.SetBlendOperation(BlendOperation.Add);
-
-                    for (int i = lightOffsets[0] + lightOffsets[1]; i < count; i++)
-                    {
-                        if (BoundingBoxesIntersect(g.BoundingBox, lights[i].BoundingBox))
-                        {
-                            lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
-                            if (lpr.W == 0) continue;
-                            graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
-                            graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
-                            GZGeneral.LightData ld = lights[i].LightType;
-                            if (ld.LightType == GZGeneral.LightType.SPOT)
-                            {
-                                graphics.SetUniform(UniformName.spotLight, true);
-                                graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
-                                graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
-                            }
-                            else graphics.SetUniform(UniformName.spotLight, false);
-                            graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
-                        }
-                    }
-                }
-
-                //negative lights
-                if (lightOffsets[3] > 0)
-                {
-                    count += lightOffsets[3];
-                    graphics.SetBlendOperation(BlendOperation.ReverseSubtract);
-
-                    for (int i = lightOffsets[0] + lightOffsets[1] + lightOffsets[2]; i < count; i++)
-                    {
-                        if (BoundingBoxesIntersect(g.BoundingBox, lights[i].BoundingBox))
-                        {
-                            lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
-                            if (lpr.W == 0) continue;
-                            Color4 lc = lights[i].LightColor;
-                            graphics.SetUniform(UniformName.lightColor, new Color4((lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2, lc.Alpha));
-                            graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
-                            GZGeneral.LightData ld = lights[i].LightType;
-                            if (ld.LightType == GZGeneral.LightType.SPOT)
-                            {
-                                graphics.SetUniform(UniformName.spotLight, true);
-                                graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
-                                graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
-                            }
-                            else graphics.SetUniform(UniformName.spotLight, false);
-                            graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
-                        }
-                    }
-                }
-            }
-
-            return sector;
-        }
-        
-        // [ZZ] split into RenderLights and RenderTranslucentLights
-        private void RenderTranslucentLights(List<VisualGeometry> geometrytolit, List<VisualThing> lights)
-        {
-            if (geometrytolit.Count == 0) return;
-
-            graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
-            graphics.SetShader(ShaderName.world3d_lightpass);
-            graphics.SetAlphaBlendEnable(true);
-
-            VisualSector sector = null;
-
-            graphics.SetSourceBlend(Blend.One);
-            graphics.SetDestinationBlend(Blend.One);
-
-            //
-            RenderLightsFromGeometryList(geometrytolit, lights, sector, true);
-
-            //
-            graphics.SetBlendOperation(BlendOperation.Add);
-            graphics.SetAlphaBlendEnable(false);
-        }
-
-        //
-        private void RenderLights(Dictionary<ImageData, List<VisualGeometry>> geometrytolit, List<VisualThing> lights)
-        {
-            // Anything to do?
-            if (geometrytolit.Count == 0) return;
-
-            graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
-            graphics.SetShader(ShaderName.world3d_lightpass);
-            graphics.SetAlphaBlendEnable(true);
-
-            VisualSector sector = null;
-
-            graphics.SetSourceBlend(Blend.One);
-            graphics.SetDestinationBlend(Blend.One);
-
-            foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geometrytolit)
-            {
-                if (group.Key.Texture == null) continue;
-                graphics.SetTexture(group.Key.Texture);
-
-                sector = RenderLightsFromGeometryList(group.Value, lights, sector, false);
-            }
-
-            graphics.SetBlendOperation(BlendOperation.Add);
-            graphics.SetAlphaBlendEnable(false);
-        }
-
         //mxd. Render models
-        private void RenderModels(bool lightpass, bool trans) 
+        private void RenderModels(bool trans, List<VisualThing> lights) 
 		{
 			ShaderName shaderpass = (fullbrightness ? ShaderName.world3d_fullbright : ShaderName.world3d_main_vertexcolor);
 			ShaderName currentshaderpass = shaderpass;
@@ -1495,15 +1369,17 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderPass currentpass = RenderPass.Solid;
 
             // Begin rendering with this shader
-            if (!lightpass)
-            {
-                graphics.SetShader(currentshaderpass);
-            }
-            else
-            {
-                graphics.SetShader(ShaderName.world3d_lightpass);
-                graphics.SetAlphaBlendEnable(true);
-            }
+            graphics.SetShader(currentshaderpass);
+
+            // Light data arrays
+            Vector4f[] lightColor = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector4f[] lightPosAndRadius = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector4f[] lightOrientation = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
+
+            graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
+
+            bool hadlights = false;
 
             List<VisualThing> things;
             if (trans)
@@ -1523,6 +1399,7 @@ namespace CodeImp.DoomBuilder.Rendering
             
 			foreach(VisualThing t in things) 
 			{
+
                 if (trans)
                 {
                     // Change blend mode?
@@ -1563,7 +1440,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					wantedshaderpass += 8;
 
 				// Switch shader pass?
-				if (!lightpass && currentshaderpass != wantedshaderpass)
+				if (currentshaderpass != wantedshaderpass)
 				{
 					graphics.SetShader(wantedshaderpass);
 					currentshaderpass = wantedshaderpass;
@@ -1587,147 +1464,73 @@ namespace CodeImp.DoomBuilder.Rendering
 				{
                     // this is not right...
                     graphics.SetUniform(UniformName.modelnormal, General.Map.Data.ModeldefEntries[t.Thing.Type].TransformRotation * modelrotation);
-                    if (t.Thing.Sector != null) graphics.SetUniform(UniformName.lightColor, t.Thing.Sector.FogColor);
-                    graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                    if (t.Thing.Sector != null) graphics.SetUniform(UniformName.sectorfogcolor, t.Thing.Sector.FogColor);
+                    graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
 				}
 
                 if (t.Thing.Sector != null)
                     graphics.SetUniform(UniformName.desaturation, t.Thing.Sector.Desaturation);
                 else graphics.SetUniform(UniformName.desaturation, 0.0f);
 
+                int lightIndex = 0;
+
+                foreach (VisualThing light in lights)
+                {
+                    if (BoundingBoxesIntersect(t.BoundingBox, light.BoundingBox))
+                    {
+
+                        //t.LightType.LightRenderStyle
+                        //Vector4f lightColor, lightPosAndRadius, lightOrientation, light2Radius;
+
+                        lightColor[lightIndex] = light.LightColor.ToVector();
+                        lightPosAndRadius[lightIndex] = new Vector4f(light.Center, light.LightRadius);
+
+                        // set type of light
+                        if (light.LightType.LightType == GZGeneral.LightType.SPOT)
+                        {
+                            lightOrientation[lightIndex] = new Vector4f(light.VectorLookAt, 1f);
+                            light2Radius[lightIndex] = new Vector2f(CosDeg(light.LightSpotRadius1), CosDeg(light.LightSpotRadius2));
+                        }
+                        else lightOrientation[lightIndex].W = 0f;
+
+                        lightIndex++;
+
+                        if (lightIndex >= lightColor.Length)
+                            break;
+
+                    }
+                }
+
+                bool havelights = (lightIndex > 0);
+
+                for (int i = lightIndex; i < lightColor.Length; i++)
+                    lightColor[i].W = 0;
+
+                if (hadlights != havelights || havelights)
+                {
+                    graphics.SetUniform(UniformName.lightColor, lightColor);
+                    if (havelights)
+                    {
+                        graphics.SetUniform(UniformName.lightPosAndRadius, lightPosAndRadius);
+                        graphics.SetUniform(UniformName.lightOrientation, lightOrientation);
+                        graphics.SetUniform(UniformName.light2Radius, light2Radius);
+                    }
+                }
+
+                hadlights = havelights;
+
                 GZModel model = General.Map.Data.ModeldefEntries[t.Thing.Type].Model;
                 for (int j = 0; j < model.Meshes.Count; j++)
                 {
                     graphics.SetTexture(model.Textures[j]);
 
-                    if (!lightpass)
-                    {
-                        // Render!
-                        model.Meshes[j].Draw(graphics);
-                    }
-                    else if (lightpass && t.RenderPass != RenderPass.Additive) // additive stuff does not get any lighting
-                    {
-                        List<VisualThing> lights = lightthings;
-                        //
-                        int count = lightOffsets[0];
-                        Vector4 lpr;
-
-                        // normal lights
-                        if (lightOffsets[0] > 0)
-                        {
-                            graphics.SetBlendOperation(BlendOperation.Add);
-
-                            for (int i = 0; i < count; i++)
-                            {
-                                if (BoundingBoxesIntersect(t.BoundingBox, lights[i].BoundingBox))
-                                {
-                                    lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
-                                    if (lpr.W == 0) continue;
-                                    graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
-                                    graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
-                                    GZGeneral.LightData ld = lights[i].LightType;
-                                    if (ld.LightType == GZGeneral.LightType.SPOT)
-                                    {
-                                        graphics.SetUniform(UniformName.spotLight, true);
-                                        graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
-                                        graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
-                                    }
-                                    else graphics.SetUniform(UniformName.spotLight, false);
-                                    model.Meshes[j].Draw(graphics);
-                                }
-                            }
-                        }
-
-                        //attenuated lights
-                        if (lightOffsets[1] > 0)
-                        {
-                            count += lightOffsets[1];
-                            graphics.SetBlendOperation(BlendOperation.Add);
-
-                            for (int i = lightOffsets[0]; i < count; i++)
-                            {
-                                if (BoundingBoxesIntersect(t.BoundingBox, lights[i].BoundingBox))
-                                {
-                                    lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
-                                    if (lpr.W == 0) continue;
-                                    graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
-                                    graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
-                                    GZGeneral.LightData ld = lights[i].LightType;
-                                    if (ld.LightType == GZGeneral.LightType.SPOT)
-                                    {
-                                        graphics.SetUniform(UniformName.spotLight, true);
-                                        graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
-                                        graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
-                                    }
-                                    else graphics.SetUniform(UniformName.spotLight, false);
-                                    model.Meshes[j].Draw(graphics);
-                                }
-                            }
-                        }
-
-                        //additive lights
-                        if (lightOffsets[2] > 0)
-                        {
-                            count += lightOffsets[2];
-                            graphics.SetBlendOperation(BlendOperation.Add);
-
-                            for (int i = lightOffsets[0] + lightOffsets[1]; i < count; i++)
-                            {
-                                if (BoundingBoxesIntersect(t.BoundingBox, lights[i].BoundingBox))
-                                {
-                                    lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
-                                    if (lpr.W == 0) continue;
-                                    graphics.SetUniform(UniformName.lightColor, lights[i].LightColor);
-                                    graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
-                                    GZGeneral.LightData ld = lights[i].LightType;
-                                    if (ld.LightType == GZGeneral.LightType.SPOT)
-                                    {
-                                        graphics.SetUniform(UniformName.spotLight, true);
-                                        graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
-                                        graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
-                                    }
-                                    else graphics.SetUniform(UniformName.spotLight, false);
-                                    model.Meshes[j].Draw(graphics);
-                                }
-                            }
-                        }
-
-                        //negative lights
-                        if (lightOffsets[3] > 0)
-                        {
-                            count += lightOffsets[3];
-                            graphics.SetBlendOperation(BlendOperation.ReverseSubtract);
-
-                            for (int i = lightOffsets[0] + lightOffsets[1] + lightOffsets[2]; i < count; i++)
-                            {
-                                if (BoundingBoxesIntersect(t.BoundingBox, lights[i].BoundingBox))
-                                {
-                                    lpr = new Vector4(lights[i].Center, lights[i].LightRadius);
-                                    if (lpr.W == 0) continue;
-                                    Color4 lc = lights[i].LightColor;
-                                    graphics.SetUniform(UniformName.lightColor, new Color4((lc.Green + lc.Blue) / 2, (lc.Red + lc.Blue) / 2, (lc.Green + lc.Red) / 2, lc.Alpha));
-                                    graphics.SetUniform(UniformName.lightPosAndRadius, lpr);
-                                    GZGeneral.LightData ld = lights[i].LightType;
-                                    if (ld.LightType == GZGeneral.LightType.SPOT)
-                                    {
-                                        graphics.SetUniform(UniformName.spotLight, true);
-                                        graphics.SetUniform(UniformName.lightOrientation, lights[i].VectorLookAt);
-                                        graphics.SetUniform(UniformName.light2Radius, new Vector2(CosDeg(lights[i].LightSpotRadius1), CosDeg(lights[i].LightSpotRadius2)));
-                                    }
-                                    else graphics.SetUniform(UniformName.spotLight, false);
-                                    model.Meshes[j].Draw(graphics);
-                                }
-                            }
-                        }
-                    }
+                    // Render!
+                    model.Meshes[j].Draw(graphics);
                 }
 			}
 
-            if (lightpass)
-            {
-                graphics.SetBlendOperation(BlendOperation.Add);
-                graphics.SetAlphaBlendEnable(false);
-            }
+            graphics.SetUniform(UniformName.lightsEnabled, false);
+
         }
 
 		//mxd
@@ -1738,7 +1541,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Set render settings
 			graphics.SetShader(ShaderName.world3d_skybox);
             graphics.SetTexture(General.Map.Data.SkyBox);
-			graphics.SetUniform(UniformName.campos, new Vector4(cameraposition.x, cameraposition.y, cameraposition.z, 0f));
+			graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, 0f));
 
 			foreach(VisualGeometry g in geo)
 			{
@@ -1791,20 +1594,20 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(General.Map.Data.GldefsEntries.ContainsKey(t.Thing.Type) && General.Map.Data.GldefsEntries[t.Thing.Type].DontLightSelf && t.Thing.Index == lt.Thing.Index)
 					continue;
 
-				float distSquared = Vector3.DistanceSquared(lt.Center, t.Center);
+				float distSquared = Vector3f.DistanceSquared(lt.Center, t.Center);
                 float radiusSquared = lt.LightRadius * lt.LightRadius;
 				if(distSquared < radiusSquared) 
 				{
                     int sign = (lt.LightType.LightRenderStyle == GZGeneral.LightRenderStyle.SUBTRACTIVE ? -1 : 1);
-                    Vector3 L = (t.Center - lt.Center);
+                    Vector3f L = (t.Center - lt.Center);
                     float dist = L.Length();
                     float scaler = 1 - dist / lt.LightRadius * lt.LightColor.Alpha;
 
                     if (lt.LightType.LightType == GZGeneral.LightType.SPOT)
                     {
-                        Vector3 lookAt = lt.VectorLookAt;
+                        Vector3f lookAt = lt.VectorLookAt;
                         L.Normalize();
-                        float cosDir = Vector3.Dot(-L, lookAt);
+                        float cosDir = Vector3f.Dot(-L, lookAt);
                         scaler *= (float)Smoothstep(CosDeg(lt.LightSpotRadius2), CosDeg(lt.LightSpotRadius1), cosDir);
                     }
 
@@ -1997,7 +1800,7 @@ namespace CodeImp.DoomBuilder.Rendering
             graphics.SetShader(ShaderName.display2d_normal);
             graphics.SetUniform(UniformName.projection, world * view2d);
             graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
-            graphics.SetUniform(UniformName.rendersettings, new Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+            graphics.SetUniform(UniformName.rendersettings, new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
             graphics.SetSamplerFilter(General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Nearest);
 
             // Texture
@@ -2021,11 +1824,11 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
             if (usefog)
             {
-                graphics.SetUniform(UniformName.fogsettings, new Vector4(General.Settings.ViewDistance * FOG_RANGE, General.Settings.ViewDistance, 0.0f, 0.0f));
+                graphics.SetUniform(UniformName.fogsettings, new Vector4f(General.Settings.ViewDistance * FOG_RANGE, General.Settings.ViewDistance, 0.0f, 0.0f));
             }
             else
             {
-                graphics.SetUniform(UniformName.fogsettings, new Vector4(-1.0f));
+                graphics.SetUniform(UniformName.fogsettings, new Vector4f(-1.0f));
             }
 		}
 

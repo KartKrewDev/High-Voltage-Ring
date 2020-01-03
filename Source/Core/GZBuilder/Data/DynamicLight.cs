@@ -9,14 +9,14 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		public int PrimaryRadius;
 		public int SecondaryRadius;
 		public int Interval;
-		public Vector3 Offset;
+		public Vector3f Offset;
         public bool DontLightSelf;
 
 		public DynamicLightData(GZGeneral.LightData type) 
 		{
             Type = type;
 			Color = new Color3();
-			Offset = new Vector3();
+			Offset = new Vector3f();
 		}
 	}
 }
