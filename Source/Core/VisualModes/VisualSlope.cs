@@ -109,15 +109,18 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public virtual void Update() {}
 
-		public void SetPosition(Vector3D pos, Geometry.Plane plane, float angle)
+		public void SetPosition(Vector3D pos, Plane plane, float angle)
 		{
-
+			Vector3D lookatpoint = new Vector3D(pos.x+128.0f, pos.y+128.0f, plane.GetZ(pos.x + 128.0f, pos.y + 128.0f));
 			Matrix translate = Matrix.Translation(pos.x, pos.y, pos.z);
 			Matrix rotate = Matrix.RotationZ(angle);
-			Vector3 v = new Vector3(plane.Normal.x, plane.Normal.y, plane.Normal.z);
+			Matrix planerotate = Matrix.LookAt(new Vector3f(pos.x, pos.y, pos.z), new Vector3f(lookatpoint.x, lookatpoint.y, lookatpoint.z+0.1f), new Vector3f(0.0f, 1.0f, 0.0f));
+
+			Matrix xrotate = Matrix.RotationX(90.0f);
+			//Vector3 v = new Vector3(plane.Normal.x, plane.Normal.y, plane.Normal.z);
 			// Matrix rotate = Matrix.RotationAxis(v, angle);
-			//position = Matrix.Multiply(rotate, translate);
-			position = Matrix.Multiply(rotate, translate);
+			//position = Matrix.Multiply(translate, planerotate);
+			position = planerotate;
 		}
 
 		#endregion

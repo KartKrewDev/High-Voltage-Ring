@@ -1937,6 +1937,9 @@ namespace CodeImp.DoomBuilder.Geometry
 			if(side.Line.IsFlagSet(General.Map.Config.UpperUnpeggedFlag) || side.Other == null || side.Other.Sector == null)
 				return offset;
 
+			// Make sure the offset doesn't go in the wrong direction
+			scaleY = Math.Abs(scaleY);
+
 			//if we don't have UpperUnpegged flag, normalize offset
 			float surfaceHeight = side.GetHighHeight() * scaleY;
 			return (float)Math.Round((fromNormalized ? offset + surfaceHeight : offset - surfaceHeight), General.Map.FormatInterface.VertexDecimals);
@@ -1946,6 +1949,9 @@ namespace CodeImp.DoomBuilder.Geometry
 		public static float GetSidedefMiddleOffsetY(Sidedef side, float offset, float scaleY, bool fromNormalized) 
 		{
 			if(side.Sector == null) return offset;
+
+			// Make sure the offset doesn't go in the wrong direction
+			scaleY = Math.Abs(scaleY);
 
 			// Normalize offset
 			float surfaceHeight;
@@ -1985,7 +1991,11 @@ namespace CodeImp.DoomBuilder.Geometry
 		public static float GetSidedefBottomOffsetY(Sidedef side, float offset, float scaleY, bool fromNormalized) 
 		{
 			float surfaceHeight;
-			if(side.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag)) 
+
+			// Make sure the offset doesn't go in the wrong direction
+			scaleY = Math.Abs(scaleY);
+
+			if (side.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag)) 
 			{
 				if(side.Other == null || side.Other.Sector == null || side.Sector.CeilTexture != General.Map.Config.SkyFlatName ||
 					side.Other.Sector.CeilTexture != General.Map.Config.SkyFlatName)
@@ -2461,7 +2471,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		/// </summary>
 		public static Vector2D HermiteSpline(Vector2D p1, Vector2D t1, Vector2D p2, Vector2D t2, float u)
 		{
-			return RenderDevice.V2D(Vector2.Hermite(RenderDevice.V2(p1), RenderDevice.V2(t1), RenderDevice.V2(p2), RenderDevice.V2(t2), u));
+			return RenderDevice.V2D(Vector2f.Hermite(RenderDevice.V2(p1), RenderDevice.V2(t1), RenderDevice.V2(p2), RenderDevice.V2(t2), u));
 		}
 
 		/// <summary>
@@ -2470,7 +2480,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		/// </summary>
 		public static Vector3D HermiteSpline(Vector3D p1, Vector3D t1, Vector3D p2, Vector3D t2, float u)
 		{
-			return RenderDevice.V3D(Vector3.Hermite(RenderDevice.V3(p1), RenderDevice.V3(t1), RenderDevice.V3(p2), RenderDevice.V3(t2), u));
+			return RenderDevice.V3D(Vector3f.Hermite(RenderDevice.V3(p1), RenderDevice.V3(t1), RenderDevice.V3(p2), RenderDevice.V3(t2), u));
 		}
 
 		//mxd

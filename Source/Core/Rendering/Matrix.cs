@@ -187,7 +187,7 @@ namespace CodeImp.DoomBuilder.Rendering
             }
         }
 
-        public static Matrix Translation(Vector3 v)
+        public static Matrix Translation(Vector3f v)
         {
             Matrix result = new Matrix();
             Matrix_Translation(v.X, v.Y, v.Z, out result);
@@ -229,7 +229,7 @@ namespace CodeImp.DoomBuilder.Rendering
             return result;
         }
 
-        public static Matrix Scaling(Vector3 v)
+        public static Matrix Scaling(Vector3f v)
         {
             Matrix result = new Matrix();
             Matrix_Scaling(v.X, v.Y, v.Z, out result);
@@ -276,11 +276,11 @@ namespace CodeImp.DoomBuilder.Rendering
 
 #endif
 
-        public static Matrix LookAt(Vector3 eye, Vector3 target, Vector3 up)
+        public static Matrix LookAt(Vector3f eye, Vector3f target, Vector3f up)
         {
-            Vector3 zaxis = Vector3.Normalize(target - eye);
-            Vector3 xaxis = Vector3.Normalize(Vector3.Cross(up, zaxis));
-            Vector3 yaxis = Vector3.Cross(zaxis, xaxis);
+            Vector3f zaxis = Vector3f.Normalize(target - eye);
+            Vector3f xaxis = Vector3f.Normalize(Vector3f.Cross(up, zaxis));
+            Vector3f yaxis = Vector3f.Cross(zaxis, xaxis);
 
             Matrix result = Null;
             result.M11 = -xaxis.X;

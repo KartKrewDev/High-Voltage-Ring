@@ -25,7 +25,7 @@ namespace CodeImp.DoomBuilder.Rendering
             Alpha = a;
         }
 
-        public Color4(Vector4 c)
+        public Color4(Vector4f c)
         {
             Red = c.X;
             Green = c.Y;
@@ -58,6 +58,11 @@ namespace CodeImp.DoomBuilder.Rendering
         public System.Drawing.Color ToColor()
         {
             return System.Drawing.Color.FromArgb(ToArgb());
+        }
+
+        public Vector4f ToVector()
+        {
+            return new Vector4f(Red, Green, Blue, Alpha);
         }
 
         public override bool Equals(object o)

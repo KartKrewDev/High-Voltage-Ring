@@ -4332,7 +4332,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						float offset;
 
 						if (!texture.WorldPanning && !General.Map.Data.MapInfo.ForceWorldPanning)
-							offset = ((start.Sidedef.Sector.CeilHeight - j.ceilingHeight) / scaley) * j.scaleY + ystartalign - j.sidedef.OffsetY; //mxd
+							offset = ((start.Sidedef.Sector.CeilHeight - j.ceilingHeight) / scaley) * Math.Abs(j.scaleY)  + ystartalign - j.sidedef.OffsetY; //mxd
 						else
 							offset = (start.Sidedef.Sector.CeilHeight - j.ceilingHeight + ystartalign - j.sidedef.OffsetY);
 
@@ -4474,7 +4474,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					if(aligny) 
 					{
-						float offset = ((start.Sidedef.Sector.CeilHeight - j.ceilingHeight) / scaley) * j.scaleY + ystartalign; //mxd
+						float offset = ((start.Sidedef.Sector.CeilHeight - j.ceilingHeight) / scaley) * Math.Abs(j.scaleY) + ystartalign; //mxd
 						offset -= j.sidedef.OffsetY; //mxd
 
 						if(matchtop)

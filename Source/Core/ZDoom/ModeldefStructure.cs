@@ -37,8 +37,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 		private Dictionary<int, string>[] surfaceskinenames;
 		private string[] modelnames;
 		private string path;
-		private Vector3 scale;
-		private Vector3 offset;
+		private Vector3f scale;
+		private Vector3f offset;
 		private float angleoffset;
 		private float pitchoffset;
 		private float rolloffset;
@@ -55,8 +55,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 		public string[] SkinNames { get { return skinnames; } }
 		public Dictionary<int, string>[] SurfaceSkinNames { get { return surfaceskinenames; } }
 		public string[] ModelNames { get { return modelnames; } }
-		public Vector3 Scale { get { return scale; } }
-		public Vector3 Offset { get { return offset; } }
+		public Vector3f Scale { get { return scale; } }
+		public Vector3f Offset { get { return offset; } }
 		public float AngleOffset { get { return angleoffset; } }
 		public float PitchOffset { get { return pitchoffset; } }
 		public float RollOffset { get { return rolloffset; } }
@@ -77,7 +77,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			skinnames = new string[MAX_MODELS];
 			modelnames = new string[MAX_MODELS];
 			frames = new Dictionary<string, HashSet<FrameStructure>>(StringComparer.OrdinalIgnoreCase);
-			scale = new Vector3(1.0f, 1.0f, 1.0f);
+			scale = new Vector3f(1.0f, 1.0f, 1.0f);
 			surfaceskinenames = new Dictionary<int, string>[MAX_MODELS];
 			for(int i = 0; i < MAX_MODELS; i++)
 			{

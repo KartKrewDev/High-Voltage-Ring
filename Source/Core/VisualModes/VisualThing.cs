@@ -26,6 +26,7 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using Plane = CodeImp.DoomBuilder.Geometry.Plane;
 using CodeImp.DoomBuilder.GZBuilder;
+using CodeImp.DoomBuilder.GZBuilder.MD3;
 
 #endregion
 
@@ -87,12 +88,12 @@ namespace CodeImp.DoomBuilder.VisualModes
         private float lightSpotRadius2;
         private float lightPrimaryRadius;
 		private float lightSecondaryRadius;
-		private Vector3 position_v3;
+		private Vector3f position_v3;
 		private float lightDelta; //used in light animation
 		private Vector3D[] boundingBox;
 		
 		//gldefs light
-		private Vector3 lightOffset;
+		private Vector3f lightOffset;
 		private int lightInterval;
 		private bool isGldefsLight;
 
@@ -116,18 +117,18 @@ namespace CodeImp.DoomBuilder.VisualModes
 		internal int VertexColor { get { return vertices.Length > 0 && vertices[0].Length > 0 ? vertices[0][0].c : 0; } }
 		public int CameraDistance { get { return cameradistance; } }
 		public float FogFactor { get { return fogfactor; } }
-		public Vector3 Center
+		public Vector3f Center
 		{ 
 			get
 			{
                 if (isGldefsLight) return position_v3 + lightOffset;
                 else if (Thing.DynamicLightType != null) return position_v3; // fixes GZDoomBuilder-Bugfix#137
-				return new Vector3(position_v3.X, position_v3.Y, position_v3.Z + thingheight / 2f); 
+				return new Vector3f(position_v3.X, position_v3.Y, position_v3.Z + thingheight / 2f); 
 			} 
 		}
 		public Vector3D CenterV3D { get { return RenderDevice.V3D(Center); } }
 		public float LocalCenterZ { get { return thingheight / 2f; } } //mxd
-		public Vector3 PositionV3 { get { return position_v3; } }
+		public Vector3f PositionV3 { get { return position_v3; } }
 		public Vector3D[] BoundingBox { get { return boundingBox; } }
 		
 		//mxd. light properties
@@ -141,12 +142,12 @@ namespace CodeImp.DoomBuilder.VisualModes
         public PixelColor StencilColor { get { return stencilColor; } }
 
         // [ZZ] this is used for spotlights
-        public Vector3 VectorLookAt
+        public Vector3f VectorLookAt
         {
             get
             {
                 // this esoteric value (1.5708) is 90 degrees but in radians
-                return new Vector3((float)(Math.Cos(Thing.Angle+1.5708) * Math.Cos(Angle2D.DegToRad(Thing.Pitch))), (float)(Math.Sin(Thing.Angle+1.5708) * Math.Cos(Angle2D.DegToRad(Thing.Pitch))), (float)Math.Sin(Angle2D.DegToRad(Thing.Pitch)));
+                return new Vector3f((float)(Math.Cos(Thing.Angle+1.5708) * Math.Cos(Angle2D.DegToRad(Thing.Pitch))), (float)(Math.Sin(Thing.Angle+1.5708) * Math.Cos(Angle2D.DegToRad(Thing.Pitch))), (float)Math.Sin(Angle2D.DegToRad(Thing.Pitch)));
             }
         }
 
@@ -357,7 +358,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 						float zoffset = ((thing.Pitch == 0f && thing.Position.z == 0f) ? 0.1f : 0f); // Slight offset to avoid z-fighting...
 						for(int i = 0; i < vertices[c].Length; i++)
 						{
-							Vector4 transformed = Vector3.Transform(new Vector3(vertices[c][i].x, vertices[c][i].y, vertices[c][i].z), transform);
+							Vector4f transformed = Vector3f.Transform(new Vector3f(vertices[c][i].x, vertices[c][i].y, vertices[c][i].z), transform);
 							vertices[c][i].x = transformed.X;
 							vertices[c][i].y = transformed.Y;
 							vertices[c][i].z = transformed.Z + zoffset;
@@ -385,7 +386,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 						// Apply transform
 						for(int i = 0; i < vertices[c].Length; i++)
 						{
-							Vector4 transformed = Vector3.Transform(new Vector3(vertices[c][i].x, vertices[c][i].y, vertices[c][i].z), transform);
+							Vector4f transformed = Vector3f.Transform(new Vector3f(vertices[c][i].x, vertices[c][i].y, vertices[c][i].z), transform);
 							vertices[c][i].x = transformed.X;
 							vertices[c][i].y = transformed.Y;
 							vertices[c][i].z = transformed.Z;
@@ -496,7 +497,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 						// Apply transform
 						for(int i = 0; i < vertices[c].Length; i++)
 						{
-							Vector4 transformed = Vector3.Transform(new Vector3(vertices[c][i].x, vertices[c][i].y, vertices[c][i].z), transform);
+							Vector4f transformed = Vector3f.Transform(new Vector3f(vertices[c][i].x, vertices[c][i].y, vertices[c][i].z), transform);
 							vertices[c][i].x = transformed.X;
 							vertices[c][i].y = transformed.Y;
 							vertices[c][i].z = transformed.Z;
@@ -769,7 +770,7 @@ namespace CodeImp.DoomBuilder.VisualModes
             //apply settings
 			lightColor = new Color4(light.Color.Red, light.Color.Green, light.Color.Blue, (float)ld.LightRenderStyle / 100.0f);
 			Vector2D o = new Vector2D(light.Offset.X, light.Offset.Y).GetRotated(thing.Angle - Angle2D.PIHALF);
-			lightOffset = new Vector3(o.x, o.y, light.Offset.Z);
+			lightOffset = new Vector3f(o.x, o.y, light.Offset.Z);
 			lightType = light.Type;
 
 			if(ld.LightModifier == GZGeneral.LightModifier.SECTOR)
@@ -851,17 +852,50 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			boundingBox = new Vector3D[9];
 			boundingBox[0] = CenterV3D;
-			float h2 = height / 2.0f;
 
-			boundingBox[1] = new Vector3D(position_v3.X - width, position_v3.Y - width, Center.Z - h2);
-			boundingBox[2] = new Vector3D(position_v3.X + width, position_v3.Y - width, Center.Z - h2);
-			boundingBox[3] = new Vector3D(position_v3.X - width, position_v3.Y + width, Center.Z - h2);
-			boundingBox[4] = new Vector3D(position_v3.X + width, position_v3.Y + width, Center.Z - h2);
+            if (Thing.RenderMode != ThingRenderMode.MODEL && Thing.RenderMode != ThingRenderMode.VOXEL)
+            {
 
-			boundingBox[5] = new Vector3D(position_v3.X - width, position_v3.Y - width, Center.Z + h2);
-			boundingBox[6] = new Vector3D(position_v3.X + width, position_v3.Y - width, Center.Z + h2);
-			boundingBox[7] = new Vector3D(position_v3.X - width, position_v3.Y + width, Center.Z + h2);
-			boundingBox[8] = new Vector3D(position_v3.X + width, position_v3.Y + width, Center.Z + h2);
+                float h2 = height / 2.0f;
+
+                boundingBox[1] = new Vector3D(position_v3.X - width, position_v3.Y - width, Center.Z - h2);
+                boundingBox[2] = new Vector3D(position_v3.X + width, position_v3.Y - width, Center.Z - h2);
+                boundingBox[3] = new Vector3D(position_v3.X - width, position_v3.Y + width, Center.Z - h2);
+                boundingBox[4] = new Vector3D(position_v3.X + width, position_v3.Y + width, Center.Z - h2);
+
+                boundingBox[5] = new Vector3D(position_v3.X - width, position_v3.Y - width, Center.Z + h2);
+                boundingBox[6] = new Vector3D(position_v3.X + width, position_v3.Y - width, Center.Z + h2);
+                boundingBox[7] = new Vector3D(position_v3.X - width, position_v3.Y + width, Center.Z + h2);
+                boundingBox[8] = new Vector3D(position_v3.X + width, position_v3.Y + width, Center.Z + h2);
+
+            }
+            else
+            {
+
+                GZModel model = General.Map?.Data?.ModeldefEntries[Thing.Type]?.Model;
+
+                if (model != null)
+                {
+
+                    Vector3D offs = new Vector3D(position_v3.X, position_v3.Y, position_v3.Z);
+
+                    boundingBox[5] = new Vector3D(model.BBox.MinX, model.BBox.MinY, model.BBox.MaxZ) + offs;
+                    boundingBox[6] = new Vector3D(model.BBox.MaxX, model.BBox.MinY, model.BBox.MaxZ) + offs;
+                    boundingBox[7] = new Vector3D(model.BBox.MinX, model.BBox.MaxY, model.BBox.MaxZ) + offs;
+                    boundingBox[8] = new Vector3D(model.BBox.MaxX, model.BBox.MaxY, model.BBox.MaxZ) + offs;
+
+                    boundingBox[1] = new Vector3D(model.BBox.MinX, model.BBox.MinY, model.BBox.MinZ) + offs;
+                    boundingBox[2] = new Vector3D(model.BBox.MaxX, model.BBox.MinY, model.BBox.MinZ) + offs;
+                    boundingBox[3] = new Vector3D(model.BBox.MinX, model.BBox.MaxY, model.BBox.MinZ) + offs;
+                    boundingBox[4] = new Vector3D(model.BBox.MaxX, model.BBox.MaxY, model.BBox.MinZ) + offs;
+
+                    boundingBox[0] = new Vector3D(0.5f * (model.BBox.MinX + model.BBox.MaxX),
+                                                  0.5f * (model.BBox.MinY + model.BBox.MaxY),
+                                                  0.5f * (model.BBox.MinZ + model.BBox.MaxZ)) + offs;
+
+                }
+
+            }
 		}
 
 		//mxd. This updates the sprite frame to be rendered
@@ -894,3 +928,4 @@ namespace CodeImp.DoomBuilder.VisualModes
 		#endregion
 	}
 }
+

@@ -37,7 +37,7 @@ enum class ShaderFlags : int { None, Debug };
 enum class PrimitiveType : int { LineList, TriangleList, TriangleStrip };
 enum class TextureFilter : int { Nearest, Linear };
 enum class MipmapFilter : int { None, Nearest, Linear };
-enum class UniformType : int { Vec4f, Vec3f, Vec2f, Float, Mat4 };
+enum class UniformType : int { Vec4f, Vec3f, Vec2f, Float, Mat4, Vec4i, Vec3i, Vec2i, Int, Vec4fArray, Vec3fArray, Vec2fArray };
 
 typedef int UniformName;
 typedef int ShaderName;
@@ -51,12 +51,10 @@ class RenderDevice
 public:
 	virtual ~RenderDevice() = default;
 
-	virtual const char* GetError() = 0;
-
 	virtual void DeclareUniform(UniformName name, const char* glslname, UniformType type) = 0;
 	virtual void DeclareShader(ShaderName index, const char* name, const char* vertexshader, const char* fragmentshader) = 0;
 	virtual void SetShader(ShaderName name) = 0;
-	virtual void SetUniform(UniformName name, const void* values, int count) = 0;
+	virtual void SetUniform(UniformName name, const void* values, int count, int bytesize) = 0;
 	virtual void SetVertexBuffer(VertexBuffer* buffer) = 0;
 	virtual void SetIndexBuffer(IndexBuffer* buffer) = 0;
 	virtual void SetAlphaBlendEnable(bool value) = 0;
@@ -129,3 +127,6 @@ public:
 	virtual Texture* NewTexture() = 0;
 	virtual void DeleteTexture(Texture* texture) = 0;
 };
+
+void SetError(const char* fmt, ...);
+const char* GetError();

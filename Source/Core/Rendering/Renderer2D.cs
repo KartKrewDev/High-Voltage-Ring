@@ -487,7 +487,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         private void SetDisplay2DSettings(float texelx, float texely, float fsaafactor, float alpha, bool bilinear, bool flipY = false)
         {
-            Vector4 values = new Vector4(texelx, texely, fsaafactor, alpha);
+            Vector4f values = new Vector4f(texelx, texely, fsaafactor, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
             if (flipY)
                 graphics.SetUniform(UniformName.projection, worldmatrix * viewmatrix * Matrix.Scaling(1f, -1f, 1f));
@@ -498,7 +498,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
         private void SetThings2DSettings(float alpha)
         {
-            Vector4 values = new Vector4(0.0f, 0.0f, 1.0f, alpha);
+            Vector4f values = new Vector4f(0.0f, 0.0f, 1.0f, alpha);
             graphics.SetUniform(UniformName.rendersettings, values);
             graphics.SetUniform(UniformName.projection, worldmatrix * viewmatrix);
         }

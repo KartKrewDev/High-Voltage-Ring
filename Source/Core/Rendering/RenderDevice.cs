@@ -27,6 +27,7 @@ using System.Reflection;
 using System.IO;
 using System.Text;
 using System.Linq;
+using CodeImp.DoomBuilder.Rendering.Shaders;
 
 #endregion
 
@@ -45,53 +46,64 @@ namespace CodeImp.DoomBuilder.Rendering
 
             CreateDevice();
 
-            DeclareUniform(UniformName.rendersettings, "rendersettings", UniformType.Vec4);
+            DeclareUniform(UniformName.rendersettings, "rendersettings", UniformType.Vec4f);
             DeclareUniform(UniformName.projection, "projection", UniformType.Mat4);
             DeclareUniform(UniformName.desaturation, "desaturation", UniformType.Float);
-            DeclareUniform(UniformName.highlightcolor, "highlightcolor", UniformType.Vec4);
+            DeclareUniform(UniformName.highlightcolor, "highlightcolor", UniformType.Vec4f);
             DeclareUniform(UniformName.view, "view", UniformType.Mat4);
             DeclareUniform(UniformName.world, "world", UniformType.Mat4);
             DeclareUniform(UniformName.modelnormal, "modelnormal", UniformType.Mat4);
-            DeclareUniform(UniformName.FillColor, "fillColor", UniformType.Vec4);
-            DeclareUniform(UniformName.vertexColor, "vertexColor", UniformType.Vec4);
-            DeclareUniform(UniformName.stencilColor, "stencilColor", UniformType.Vec4);
-            DeclareUniform(UniformName.lightPosAndRadius, "lightPosAndRadius", UniformType.Vec4);
-            DeclareUniform(UniformName.lightOrientation, "lightOrientation", UniformType.Vec3);
-            DeclareUniform(UniformName.light2Radius, "light2Radius", UniformType.Vec2);
-            DeclareUniform(UniformName.lightColor, "lightColor", UniformType.Vec4);
+            DeclareUniform(UniformName.FillColor, "fillColor", UniformType.Vec4f);
+            DeclareUniform(UniformName.vertexColor, "vertexColor", UniformType.Vec4f);
+            DeclareUniform(UniformName.stencilColor, "stencilColor", UniformType.Vec4f);
+            DeclareUniform(UniformName.lightPosAndRadius, "lightPosAndRadius", UniformType.Vec4fArray);
+            DeclareUniform(UniformName.lightOrientation, "lightOrientation", UniformType.Vec4fArray);
+            DeclareUniform(UniformName.light2Radius, "light2Radius", UniformType.Vec2fArray);
+            DeclareUniform(UniformName.lightColor, "lightColor", UniformType.Vec4fArray);
             DeclareUniform(UniformName.ignoreNormals, "ignoreNormals", UniformType.Float);
             DeclareUniform(UniformName.spotLight, "spotLight", UniformType.Float);
-            DeclareUniform(UniformName.campos, "campos", UniformType.Vec4);
-            DeclareUniform(UniformName.texturefactor, "texturefactor", UniformType.Vec4);
-            DeclareUniform(UniformName.fogsettings, "fogsettings", UniformType.Vec4);
-            DeclareUniform(UniformName.fogcolor, "fogcolor", UniformType.Vec4);
+            DeclareUniform(UniformName.campos, "campos", UniformType.Vec4f);
+            DeclareUniform(UniformName.texturefactor, "texturefactor", UniformType.Vec4f);
+            DeclareUniform(UniformName.fogsettings, "fogsettings", UniformType.Vec4f);
+            DeclareUniform(UniformName.fogcolor, "fogcolor", UniformType.Vec4f);
+            DeclareUniform(UniformName.sectorfogcolor, "sectorfogcolor", UniformType.Vec4f);
+            DeclareUniform(UniformName.lightsEnabled, "lightsEnabled", UniformType.Float);
 			DeclareUniform(UniformName.slopeHandleLength, "slopeHandleLength", UniformType.Float);
 
-            DeclareShader(ShaderName.display2d_fsaa, "display2d.vp", "display2d_fsaa.fp");
-            DeclareShader(ShaderName.display2d_normal, "display2d.vp", "display2d_normal.fp");
-            DeclareShader(ShaderName.display2d_fullbright, "display2d.vp", "display2d_fullbright.fp");
-            DeclareShader(ShaderName.things2d_thing, "things2d.vp", "things2d_thing.fp");
-            DeclareShader(ShaderName.things2d_sprite, "things2d.vp", "things2d_sprite.fp");
-            DeclareShader(ShaderName.things2d_fill, "things2d.vp", "things2d_fill.fp");
-            DeclareShader(ShaderName.plotter, "plotter.vp", "plotter.fp");
-            DeclareShader(ShaderName.world3d_main, "world3d_main.vp", "world3d_main.fp");
-            DeclareShader(ShaderName.world3d_fullbright, "world3d_main.vp", "world3d_fullbright.fp");
-            DeclareShader(ShaderName.world3d_main_highlight, "world3d_main.vp", "world3d_main_highlight.fp");
-            DeclareShader(ShaderName.world3d_fullbright_highlight, "world3d_main.vp", "world3d_fullbright_highlight.fp");
-            DeclareShader(ShaderName.world3d_main_vertexcolor, "world3d_customvertexcolor.vp", "world3d_main.fp");
-            DeclareShader(ShaderName.world3d_skybox, "world3d_skybox.vp", "world3d_skybox.fp");
-            DeclareShader(ShaderName.world3d_main_highlight_vertexcolor, "world3d_customvertexcolor.vp", "world3d_main_highlight.fp");
-            DeclareShader(ShaderName.world3d_main_fog, "world3d_lightpass.vp", "world3d_main_fog.fp");
-            DeclareShader(ShaderName.world3d_main_highlight_fog, "world3d_lightpass.vp", "world3d_main_highlight_fog.fp");
-            DeclareShader(ShaderName.world3d_main_fog_vertexcolor, "world3d_customvertexcolor_fog.vp", "world3d_main_fog.fp");
-            DeclareShader(ShaderName.world3d_main_highlight_fog_vertexcolor, "world3d_customvertexcolor_fog.vp", "world3d_main_highlight_fog.fp");
-            DeclareShader(ShaderName.world3d_vertex_color, "world3d_main.vp", "world3d_vertex_color.fp");
-            DeclareShader(ShaderName.world3d_constant_color, "world3d_customvertexcolor.vp", "world3d_constant_color.fp");
-            DeclareShader(ShaderName.world3d_lightpass, "world3d_lightpass.vp", "world3d_lightpass.fp");
+            // 2d fsaa
+            CompileShader(ShaderName.display2d_fsaa, "display2d.shader", "display2d_fsaa");
+            
+            // 2d normal
+            CompileShader(ShaderName.display2d_normal, "display2d.shader", "display2d_normal");
+            CompileShader(ShaderName.display2d_fullbright, "display2d.shader", "display2d_fullbright");
 
-			DeclareShader(ShaderName.world3d_slope_handle, "world3d_slopehandle.vp", "world3d_constant_color.fp");
+            // 2d things
+            CompileShader(ShaderName.things2d_thing, "things2d.shader", "things2d_thing");
+            CompileShader(ShaderName.things2d_sprite, "things2d.shader", "things2d_sprite");
+            CompileShader(ShaderName.things2d_fill, "things2d.shader", "things2d_fill");
 
-			SetupSettings();
+            // non-fog 3d shaders
+            CompileShader(ShaderName.world3d_main, "world3d.shader", "world3d_main");
+            CompileShader(ShaderName.world3d_fullbright, "world3d.shader", "world3d_fullbright");
+            CompileShader(ShaderName.world3d_main_highlight, "world3d.shader", "world3d_main_highlight");
+            CompileShader(ShaderName.world3d_fullbright_highlight, "world3d.shader", "world3d_fullbright_highlight");
+            CompileShader(ShaderName.world3d_vertex_color, "world3d.shader", "world3d_vertex_color");
+            CompileShader(ShaderName.world3d_main_vertexcolor, "world3d.shader", "world3d_main_vertexcolor");
+            CompileShader(ShaderName.world3d_constant_color, "world3d.shader", "world3d_constant_color");
+
+            // skybox shader
+            CompileShader(ShaderName.world3d_skybox, "world3d_skybox.shader", "world3d_skybox");
+
+            // fog 3d shaders
+            CompileShader(ShaderName.world3d_main_fog, "world3d.shader", "world3d_main_fog");
+            CompileShader(ShaderName.world3d_main_highlight_fog, "world3d.shader", "world3d_main_highlight_fog");
+            CompileShader(ShaderName.world3d_main_fog_vertexcolor, "world3d.shader", "world3d_main_fog_vertexcolor");
+            CompileShader(ShaderName.world3d_main_highlight_fog_vertexcolor, "world3d.shader", "world3d_main_highlight_fog_vertexcolor");
+
+			// Slope handle
+			CompileShader(ShaderName.world3d_slope_handle, "world3d.shader", "world3d_slope_handle");
+
+            SetupSettings();
         }
 
         ~RenderDevice()
@@ -112,7 +124,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
             Handle = RenderDevice_New(display, RenderTarget.Handle);
             if (Handle == IntPtr.Zero)
-                throw new Exception("RenderDevice_New failed");
+                throw new RenderDeviceException(string.Format("Could not create render device: {0}", BuilderNative_GetError()));
         }
 
         public bool Disposed { get { return Handle == IntPtr.Zero; } }
@@ -120,7 +132,7 @@ namespace CodeImp.DoomBuilder.Rendering
         void ThrowIfFailed(bool result)
         {
             if (!result)
-                throw new RenderDeviceException(Marshal.PtrToStringAnsi(RenderDevice_GetError(Handle)));
+                throw new RenderDeviceException(BuilderNative_GetError());
         }
 
         public void Dispose()
@@ -142,6 +154,26 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_DeclareShader(Handle, name, name.ToString(), GetResourceText(vertResourceName), GetResourceText(fragResourceName));
         }
 
+        // save precompiled shaders -- don't build from scratch every time
+        private static Dictionary<string, ShaderGroup> precompiledGroups = new Dictionary<string, ShaderGroup>();
+        public void CompileShader(ShaderName internalName, string groupName, string shaderName)
+        {
+            ShaderGroup sg;
+
+            if (precompiledGroups.ContainsKey(groupName))
+                sg = precompiledGroups[groupName];
+            else sg = ShaderCompiler.Compile(GetResourceText(groupName));
+
+            Shader s = sg.GetShader(shaderName);
+
+            if (s == null)
+                throw new RenderDeviceException(string.Format("Shader {0}::{1} not found", groupName, shaderName));
+
+            /*General.WriteLogLine(string.Format("===========================================\nDBG: loading shader {0} / {1}\n\nVertex source: {2}\n\nFragment source: {3}\n\n===========================================",
+                groupName, shaderName, s.GetVertexSource(), s.GetFragmentSource()));*/
+            RenderDevice_DeclareShader(Handle, internalName, internalName.ToString(), s.GetVertexSource(), s.GetFragmentSource());
+        }
+
         static string GetResourceText(string name)
         {
             string fullname = string.Format("CodeImp.DoomBuilder.Resources.{0}", name);
@@ -152,7 +184,10 @@ namespace CodeImp.DoomBuilder.Rendering
                 byte[] data = new byte[stream.Length];
                 if (stream.Read(data, 0, data.Length) != data.Length)
                     throw new Exception("Could not read resource stream");
-                return Encoding.UTF8.GetString(data);
+                int start = 0;
+                if (data.Length >= 3 && data[0] == 0xef && data[1] == 0xbb && data[2] == 0xbf)
+                    start = 3;
+                return Encoding.UTF8.GetString(data, start, data.Length - start);
             }
         }
 
@@ -163,42 +198,104 @@ namespace CodeImp.DoomBuilder.Rendering
 
         public void SetUniform(UniformName uniform, bool value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value ? 1.0f : 0.0f }, 1);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value ? 1.0f : 0.0f }, 1, sizeof(float));
         }
 
         public void SetUniform(UniformName uniform, float value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value }, 1);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value }, 1, sizeof(float));
         }
 
-        public void SetUniform(UniformName uniform, Vector2 value)
+        public void SetUniform(UniformName uniform, Vector2f value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y }, 2);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y }, 1, sizeof(float) * 2);
         }
 
-        public void SetUniform(UniformName uniform, Vector3 value)
+        public void SetUniform(UniformName uniform, Vector3f value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z }, 3);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z }, 1, sizeof(float) * 3);
         }
 
-        public void SetUniform(UniformName uniform, Vector4 value)
+        public void SetUniform(UniformName uniform, Vector4f value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z, value.W }, 4);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.X, value.Y, value.Z, value.W }, 1, sizeof(float) * 4);
         }
 
         public void SetUniform(UniformName uniform, Color4 value)
         {
-            RenderDevice_SetUniform(Handle, uniform, new float[] { value.Red, value.Green, value.Blue, value.Alpha }, 4);
+            RenderDevice_SetUniform(Handle, uniform, new float[] { value.Red, value.Green, value.Blue, value.Alpha }, 1, sizeof(float) * 4);
         }
 
         public void SetUniform(UniformName uniform, Matrix matrix)
         {
-            RenderDevice_SetUniform(Handle, uniform, ref matrix, 16);
+            RenderDevice_SetUniform(Handle, uniform, ref matrix, 1, sizeof(float) * 16);
         }
 
         public void SetUniform(UniformName uniform, ref Matrix matrix)
         {
-            RenderDevice_SetUniform(Handle, uniform, ref matrix, 16);
+            RenderDevice_SetUniform(Handle, uniform, ref matrix, 1, sizeof(float) * 16);
+        }
+
+        public void SetUniform(UniformName uniform, int value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new int[] { value }, 1, sizeof(int));
+        }
+
+        public void SetUniform(UniformName uniform, Vector2i value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new int[] { value.X, value.Y }, 1, sizeof(int) * 2);
+        }
+
+        public void SetUniform(UniformName uniform, Vector3i value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new int[] { value.X, value.Y, value.Z }, 1, sizeof(int) * 3);
+        }
+
+        public void SetUniform(UniformName uniform, Vector4i value)
+        {
+            RenderDevice_SetUniform(Handle, uniform, new int[] { value.X, value.Y, value.Z, value.W }, 1, sizeof(int) * 4);
+        }
+
+        public void SetUniform(UniformName uniform, Vector2f[] value)
+        {
+            float[] conv = new float[value.Length * 2];
+            int cv = 0;
+            for (int i = 0; i < conv.Length; i += 2)
+            {
+                conv[i] = value[cv].X;
+                conv[i + 1] = value[cv].Y;
+                cv++;
+            }
+            RenderDevice_SetUniform(Handle, uniform, conv, value.Length, sizeof(float) * conv.Length);
+        }
+
+        public void SetUniform(UniformName uniform, Vector3f[] value)
+        {
+            float[] conv = new float[value.Length * 3];
+            int cv = 0;
+            for (int i = 0; i < conv.Length; i += 3)
+            {
+                conv[i] = value[cv].X;
+                conv[i + 1] = value[cv].Y;
+                conv[i + 2] = value[cv].Z;
+                cv++;
+            }
+            RenderDevice_SetUniform(Handle, uniform, conv, value.Length, sizeof(float) * conv.Length);
+        }
+
+        public void SetUniform(UniformName uniform, Vector4f[] value)
+        {
+            float[] conv = new float[value.Length * 4];
+            int cv = 0;
+            for (int i = 0; i < conv.Length; i += 4)
+            {
+                conv[i] = value[cv].X;
+                conv[i + 1] = value[cv].Y;
+                conv[i + 2] = value[cv].Z;
+                conv[i + 3] = value[cv].W;
+                cv++;
+            }
+            RenderDevice_SetUniform(Handle, uniform, conv, value.Length, sizeof(float) * conv.Length);
         }
 
         public void SetVertexBuffer(VertexBuffer buffer)
@@ -465,17 +562,20 @@ namespace CodeImp.DoomBuilder.Rendering
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         static extern void RenderDevice_DeclareShader(IntPtr handle, ShaderName index, string name, string vertexShader, string fragShader);
 
-        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr RenderDevice_GetError(IntPtr handle);
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        static extern string BuilderNative_GetError();
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern bool RenderDevice_SetShader(IntPtr handle, ShaderName name);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, float[] data, int count);
+        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, int[] data, int count, int bytesize);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, ref Matrix data, int count);
+        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, float[] data, int count, int bytesize);
+
+        [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
+        static extern void RenderDevice_SetUniform(IntPtr handle, UniformName name, ref Matrix data, int count, int bytesize);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern void RenderDevice_SetVertexBuffer(IntPtr handle, IntPtr buffer);
@@ -585,25 +685,25 @@ namespace CodeImp.DoomBuilder.Rendering
         internal RenderTargetControl RenderTarget { get; private set; }
 
 		// This makes a Vector3 from Vector3D
-		public static Vector3 V3(Vector3D v3d)
+		public static Vector3f V3(Vector3D v3d)
 		{
-			return new Vector3(v3d.x, v3d.y, v3d.z);
+			return new Vector3f(v3d.x, v3d.y, v3d.z);
 		}
 
 		// This makes a Vector3D from Vector3
-		public static Vector3D V3D(Vector3 v3)
+		public static Vector3D V3D(Vector3f v3)
 		{
 			return new Vector3D(v3.X, v3.Y, v3.Z);
 		}
 
 		// This makes a Vector2 from Vector2D
-		public static Vector2 V2(Vector2D v2d)
+		public static Vector2f V2(Vector2D v2d)
 		{
-			return new Vector2(v2d.x, v2d.y);
+			return new Vector2f(v2d.x, v2d.y);
 		}
 
 		// This makes a Vector2D from Vector2
-		public static Vector2D V2D(Vector2 v2)
+		public static Vector2D V2D(Vector2f v2)
 		{
 			return new Vector2D(v2.X, v2.Y);
 		}
@@ -617,7 +717,6 @@ namespace CodeImp.DoomBuilder.Rendering
         things2d_thing,
         things2d_sprite,
         things2d_fill,
-        plotter,
         world3d_main,
         world3d_fullbright,
         world3d_main_highlight,
@@ -635,17 +734,23 @@ namespace CodeImp.DoomBuilder.Rendering
         world3d_main_highlight_fog_vertexcolor,
         world3d_vertex_color,
         world3d_constant_color,
-        world3d_lightpass,
 		world3d_slope_handle
     }
 
     public enum UniformType : int
     {
-        Vec4,
-        Vec3,
-        Vec2,
+        Vec4f,
+        Vec3f,
+        Vec2f,
         Float,
-        Mat4
+        Mat4,
+        Vec4i,
+        Vec3i,
+        Vec2i,
+        Int,
+        Vec4fArray,
+        Vec3fArray,
+        Vec2fArray
     }
 
     public enum UniformName : int
@@ -670,6 +775,8 @@ namespace CodeImp.DoomBuilder.Rendering
         texturefactor,
         fogsettings,
         fogcolor,
+        sectorfogcolor,
+        lightsEnabled,
 		slopeHandleLength
     }
 

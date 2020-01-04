@@ -679,24 +679,6 @@ bool GLRenderDevice::CheckGLError()
 	return false;
 }
 
-void GLRenderDevice::SetError(const char* fmt, ...)
-{
-	va_list va;
-	va_start(va, fmt);
-	mSetErrorBuffer[0] = 0;
-	mSetErrorBuffer[sizeof(mSetErrorBuffer) - 1] = 0;
-	_vsnprintf(mSetErrorBuffer, sizeof(mSetErrorBuffer)-1, fmt, va);
-	va_end(va);
-	mLastError = mSetErrorBuffer;
-}
-
-const char* GLRenderDevice::GetError()
-{
-	mReturnError.swap(mLastError);
-	mLastError.clear();
-	return mReturnError.c_str();
-}
-
 GLShader* GLRenderDevice::GetActiveShader()
 {
 	if (mAlphaTest)
@@ -716,12 +698,16 @@ void GLRenderDevice::SetShader(ShaderName name)
 	}
 }
 
-void GLRenderDevice::SetUniform(UniformName name, const void* values, int count)
+void GLRenderDevice::SetUniform(UniformName name, const void* values, int count, int bytesize)
 {
-	float* dest = mUniformData.data() + mUniformInfo[(int)name].Offset;
-	if (memcmp(dest, values, sizeof(float) * count) != 0)
+	// "count" should be in bytes now
+	UniformInfo& info = mUniformInfo[(int)name];
+	info.Count = count;
+	info.Data.resize(bytesize);
+	uint8_t* dest = info.Data.data();
+	if (memcmp(dest, values, bytesize) != 0)
 	{
-		memcpy(dest, values, sizeof(float) * count);
+		memcpy(dest, values, bytesize);
 		mUniformInfo[(int)name].LastUpdate++;
 		mNeedApply = true;
 		mUniformsChanged = true;
@@ -858,9 +844,6 @@ void GLRenderDevice::DeclareUniform(UniformName name, const char* glslname, Unif
 	UniformInfo& info = mUniformInfo[index];
 	info.Name = glslname;
 	info.Type = type;
-	info.Offset = (int)mUniformData.size();
-
-	mUniformData.resize(mUniformData.size() + (type == UniformType::Mat4 ? 16 : 4));
 }
 
 bool GLRenderDevice::ApplyUniforms()
@@ -872,18 +855,27 @@ bool GLRenderDevice::ApplyUniforms()
 	int count = (int)mUniformInfo.size();
 	for (int i = 0; i < count; i++)
 	{
-		if (lastupdates[i] != mUniformInfo.data()[i].LastUpdate)
+		UniformInfo& info = mUniformInfo.data()[i];
+		if (lastupdates[i] != info.LastUpdate)
 		{
-			float* data = mUniformData.data() + mUniformInfo[i].Offset;
+			float* data = (float*)info.Data.data();
+			int* idata = (int*)info.Data.data();
 			GLuint location = locations[i];
 			switch (mUniformInfo[i].Type)
 			{
-			default:
+			default: break;
 			case UniformType::Vec4f: glUniform4fv(location, 1, data); break;
 			case UniformType::Vec3f: glUniform3fv(location, 1, data); break;
 			case UniformType::Vec2f: glUniform2fv(location, 1, data); break;
 			case UniformType::Float: glUniform1fv(location, 1, data); break;
 			case UniformType::Mat4: glUniformMatrix4fv(location, 1, GL_FALSE, data); break;
+			case UniformType::Vec4i: glUniform4iv(location, 1, idata); break;
+			case UniformType::Vec3i: glUniform3iv(location, 1, idata); break;
+			case UniformType::Vec2i: glUniform2iv(location, 1, idata); break;
+			case UniformType::Int: glUniform1iv(location, 1, idata); break;
+			case UniformType::Vec4fArray: glUniform4fv(location, info.Count, data); break;
+			case UniformType::Vec3fArray: glUniform3fv(location, info.Count, data); break;
+			case UniformType::Vec2fArray: glUniform2fv(location, info.Count, data); break;
 			}
 			lastupdates[i] = mUniformInfo[i].LastUpdate;
 		}
