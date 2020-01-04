@@ -1173,8 +1173,11 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges)	return;
 			MakeUndo(); //mxd
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			brightness.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(brightness.Text)) 
+			if (string.IsNullOrEmpty(brightness.Text)) 
 			{
 				foreach(Sector s in sectors)
 					s.Brightness = sectorprops[s].Brightness;
@@ -1245,8 +1248,11 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges)	return;
 			MakeUndo(); //mxd
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			floorRotation.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(floorRotation.Text))
+			if (string.IsNullOrEmpty(floorRotation.Text))
 			{
 				floorAngleControl.Angle = AngleControlEx.NO_ANGLE;
 				
@@ -1276,8 +1282,11 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges) return;
 			MakeUndo(); //mxd
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			ceilRotation.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(ceilRotation.Text))
+			if (string.IsNullOrEmpty(ceilRotation.Text))
 			{
 				ceilAngleControl.Angle = AngleControlEx.NO_ANGLE;
 				
@@ -1341,7 +1350,10 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges) return;
 			MakeUndo(); //mxd
 
-			foreach(Sector s in sectors) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			ceilOffsets.ResetIncrementStep();
+
+			foreach (Sector s in sectors) 
 			{
 				ceilOffsets.ApplyTo(s.Fields, General.Map.FormatInterface.MinTextureOffset, General.Map.FormatInterface.MaxTextureOffset, sectorprops[s].CeilOffsetX, sectorprops[s].CeilOffsetY);
 				s.UpdateNeeded = true;
@@ -1356,7 +1368,10 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges) return;
 			MakeUndo(); //mxd
 
-			foreach(Sector s in sectors) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			floorOffsets.ResetIncrementStep();
+
+			foreach (Sector s in sectors) 
 			{
 				floorOffsets.ApplyTo(s.Fields, General.Map.FormatInterface.MinTextureOffset, General.Map.FormatInterface.MaxTextureOffset, sectorprops[s].FloorOffsetX, sectorprops[s].FloorOffsetY);
 				s.UpdateNeeded = true;
@@ -1371,7 +1386,10 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges) return;
 			MakeUndo(); //mxd
 
-			foreach(Sector s in sectors) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			ceilScale.ResetIncrementStep();
+
+			foreach (Sector s in sectors) 
 			{
 				ceilScale.ApplyTo(s.Fields, General.Map.FormatInterface.MinTextureOffset, General.Map.FormatInterface.MaxTextureOffset, sectorprops[s].CeilScaleX, sectorprops[s].CeilScaleY);
 				s.UpdateNeeded = true;
@@ -1386,7 +1404,10 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges) return;
 			MakeUndo(); //mxd
 
-			foreach(Sector s in sectors) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			floorScale.ResetIncrementStep();
+
+			foreach (Sector s in sectors) 
 			{
 				floorScale.ApplyTo(s.Fields, General.Map.FormatInterface.MinTextureOffset, General.Map.FormatInterface.MaxTextureOffset, sectorprops[s].FloorScaleX, sectorprops[s].FloorScaleY);
 				s.UpdateNeeded = true;
@@ -1401,8 +1422,11 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges) return;
 			MakeUndo(); //mxd
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			ceilBrightness.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(ceilBrightness.Text)) 
+			if (string.IsNullOrEmpty(ceilBrightness.Text)) 
 			{
 				foreach(Sector s in sectors) 
 				{
@@ -1441,8 +1465,11 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges) return;
 			MakeUndo(); //mxd
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			floorBrightness.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(floorBrightness.Text)) 
+			if (string.IsNullOrEmpty(floorBrightness.Text)) 
 			{
 				foreach(Sector s in sectors) 
 				{
@@ -1619,8 +1646,11 @@ namespace CodeImp.DoomBuilder.Windows
 			if(preventchanges) return;
 			MakeUndo();
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			fogdensity.ResetIncrementStep();
+
 			// Restore values
-			if(string.IsNullOrEmpty(fogdensity.Text))
+			if (string.IsNullOrEmpty(fogdensity.Text))
 			{
 				foreach(Sector s in sectors)
 				{

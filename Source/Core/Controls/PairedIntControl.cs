@@ -91,5 +91,11 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			CheckValues();
 		}
+
+		public void ResetIncrementStep()
+		{
+			value1.ResetIncrementStep();
+			value2.ResetIncrementStep();
+		}
 	}
 }

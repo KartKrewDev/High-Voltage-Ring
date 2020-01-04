@@ -130,6 +130,12 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 		}
 
+		public void ResetIncrementStep()
+		{
+			value1.ResetIncrementStep();
+			value2.ResetIncrementStep();
+		}
+
 		#endregion
 
 		#region ================== Events

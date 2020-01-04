@@ -535,8 +535,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			posX.ResetIncrementStep();
+
 			// Update values
-			foreach(Thing t in things)
+			foreach (Thing t in things)
 				t.Move(new Vector2D(posX.GetResultFloat(thingprops[i++].X), t.Position.y));
 
 			General.Map.IsChanged = true;
@@ -549,8 +552,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			posY.ResetIncrementStep();
+
 			// Update values
-			foreach(Thing t in things)
+			foreach (Thing t in things)
 				t.Move(new Vector2D(t.Position.x, posY.GetResultFloat(thingprops[i++].Y)));
 
 			General.Map.IsChanged = true;
@@ -563,7 +569,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			if(string.IsNullOrEmpty(posZ.Text)) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			posZ.ResetIncrementStep();
+
+			if (string.IsNullOrEmpty(posZ.Text)) 
 			{
 				// Restore values
 				foreach(Thing t in things)
@@ -624,8 +633,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			angle.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(angle.Text)) 
+			if (string.IsNullOrEmpty(angle.Text)) 
 			{
 				// Apply rotation
 				foreach(Thing t in things)
