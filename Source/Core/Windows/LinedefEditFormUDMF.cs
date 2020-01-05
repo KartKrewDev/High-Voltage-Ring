@@ -1247,8 +1247,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			lightFront.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(lightFront.Text)) 
+			if (string.IsNullOrEmpty(lightFront.Text)) 
 			{
 				foreach(Linedef l in lines) 
 				{
@@ -1483,7 +1486,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			frontTextureOffset.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Front != null) 
 				{
@@ -1512,7 +1518,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			backTextureOffset.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Back != null) 
 				{
@@ -1545,7 +1554,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcFrontOffsetTop.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Front != null) 
 				{
@@ -1566,7 +1578,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcFrontOffsetMid.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Front != null) 
 				{
@@ -1588,7 +1603,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcFrontOffsetBottom.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Front != null) 
 				{
@@ -1610,7 +1628,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcBackOffsetTop.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Back != null) 
 				{
@@ -1632,7 +1653,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcBackOffsetMid.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Back != null) 
 				{
@@ -1654,7 +1678,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcBackOffsetBottom.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Back != null) 
 				{
@@ -1680,7 +1707,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcFrontScaleTop.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Front != null) 
 				{
@@ -1702,7 +1732,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcFrontScaleMid.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Front != null) 
 				{
@@ -1724,7 +1757,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcFrontScaleBottom.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Front != null) 
 				{
@@ -1746,7 +1782,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcBackScaleTop.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Back != null) 
 				{
@@ -1768,7 +1807,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcBackScaleMid.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Back != null) 
 				{
@@ -1790,7 +1832,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pfcBackScaleBottom.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Back != null) 
 				{

@@ -743,7 +743,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			frontTextureOffset.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Front != null) 
 				{
@@ -772,7 +775,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			backTextureOffset.ResetIncrementStep();
+
+			foreach (Linedef l in lines) 
 			{
 				if(l.Back != null) 
 				{

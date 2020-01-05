@@ -670,8 +670,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			posX.ResetIncrementStep();
+
 			// Update values
-			foreach(Thing t in things)
+			foreach (Thing t in things)
 				t.Move(new Vector2D(posX.GetResultFloat(thingprops[i++].X), t.Position.y));
 
 			General.Map.IsChanged = true;
@@ -684,8 +687,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			posY.ResetIncrementStep();
+
 			// Update values
-			foreach(Thing t in things)
+			foreach (Thing t in things)
 				t.Move(new Vector2D(t.Position.x, posY.GetResultFloat(thingprops[i++].Y)));
 
 			General.Map.IsChanged = true;
@@ -698,7 +704,10 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			if(string.IsNullOrEmpty(posZ.Text)) 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			posZ.ResetIncrementStep();
+
+			if (string.IsNullOrEmpty(posZ.Text)) 
 			{
 				// Restore values
 				foreach(Thing t in things)
@@ -726,7 +735,7 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Thing t in things)
+			foreach (Thing t in things)
 			{
 				float sx = scale.GetValue1(thingprops[i].ScaleX);
 				float sy = scale.GetValue2(thingprops[i].ScaleY);
@@ -777,8 +786,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			angle.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(angle.Text)) 
+			if (string.IsNullOrEmpty(angle.Text)) 
 			{
 				foreach(Thing t in things) t.Rotate(thingprops[i++].AngleDoom);
 			} 
@@ -798,8 +810,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			pitch.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(pitch.Text)) 
+			if (string.IsNullOrEmpty(pitch.Text)) 
 			{
 				foreach(Thing t in things) t.SetPitch(thingprops[i++].Pitch);
 			} 
@@ -820,8 +835,11 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			int i = 0;
 
+			// Reset increment steps, otherwise it's just keep counting and counting
+			roll.ResetIncrementStep();
+
 			//restore values
-			if(string.IsNullOrEmpty(roll.Text)) 
+			if (string.IsNullOrEmpty(roll.Text)) 
 			{
 				foreach(Thing t in things) t.SetRoll(thingprops[i++].Roll);
 			} 
