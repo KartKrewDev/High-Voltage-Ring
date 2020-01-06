@@ -334,8 +334,8 @@ std::unique_ptr<IOpenGLContext> IOpenGLContext::Create(void* disp, void* window)
 class OpenGLContext : public IOpenGLContext
 {
 public:
-	OpenGLContext(void* window);
-	~OpenGLContext();
+	OpenGLContext(void* window) { }
+	~OpenGLContext() { }
 
 	void MakeCurrent() override { }
 	void ClearCurrent() override { }
