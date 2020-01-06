@@ -49,7 +49,7 @@ namespace CodeImp.DoomBuilder.Controls
 
         internal ScriptIconsManager Icons { get; private set; }
         internal ScriptResourceDocumentTab OpenResource(ScriptResource resource) { return null; }
-        internal ScriptResourcesControl ScriptResourcesControl { get; private set; }
+        //internal ScriptResourcesControl ScriptResourcesControl { get; private set; }
 
         public void DisplayStatus(ScriptStatusType type, string message) { }
         public void ShowError(TextResourceErrorItem error) { }

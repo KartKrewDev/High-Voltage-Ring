@@ -329,6 +329,34 @@ std::unique_ptr<IOpenGLContext> IOpenGLContext::Create(void* disp, void* window)
 	return ctx;
 }
 
+#elif defined(__APPLE__)
+
+class OpenGLContext : public IOpenGLContext
+{
+public:
+	OpenGLContext(void* window);
+	~OpenGLContext();
+
+	void MakeCurrent() override { }
+	void ClearCurrent() override { }
+	void SwapBuffers() override { }
+	bool IsCurrent() override { return false; }
+
+	int GetWidth() const override { return 320; }
+	int GetHeight() const override { return 200; }
+
+	bool IsValid() const { return false; }
+
+private:
+};
+
+std::unique_ptr<IOpenGLContext> IOpenGLContext::Create(void* disp, void* window)
+{
+	auto ctx = std::make_unique<OpenGLContext>(window);
+	if (!ctx->IsValid()) return nullptr;
+	return ctx;
+}
+
 #else
 
 #include <X11/Xlib.h>

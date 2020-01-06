@@ -35,7 +35,11 @@ void SetError(const char* fmt, ...)
 	va_list va;
 	va_start(va, fmt);
 	mSetErrorBuffer[0] = 0;
+#ifdef WIN32
 	_vsnprintf(mSetErrorBuffer, sizeof(mSetErrorBuffer) - 1, fmt, va);
+#else
+	vsnprintf(mSetErrorBuffer, sizeof(mSetErrorBuffer) - 1, fmt, va);
+#endif
 	va_end(va);
 	mSetErrorBuffer[sizeof(mSetErrorBuffer) - 1] = 0;
 	mLastError = mSetErrorBuffer;
