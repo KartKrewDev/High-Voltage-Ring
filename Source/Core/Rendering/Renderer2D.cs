@@ -759,23 +759,23 @@ namespace CodeImp.DoomBuilder.Rendering
 				backimageverts = CreateScreenVerts(windowsize);
 
 				// Determine map coordinates for view window
-				Vector2D ltpos = DisplayToMap(new Vector2D(0f, 0f));
-				Vector2D rbpos = DisplayToMap(new Vector2D(windowsize.Width, windowsize.Height));
-				
+				Vector2D lbpos = DisplayToMap(new Vector2D(0f, windowsize.Height));
+				Vector2D rtpos = DisplayToMap(new Vector2D(windowsize.Width, 0));
+
 				// Offset by given background offset
-				ltpos -= backoffset;
-				rbpos -= backoffset;
-				
+				lbpos -= backoffset;
+				rtpos -= backoffset;
+			
 				// Calculate UV coordinates
 				// NOTE: backimagesize.y is made negative to match Doom's coordinate system
-				backimageverts[0].u = ltpos.x / backimagesize.x;
-				backimageverts[0].v = ltpos.y / -backimagesize.y;
-				backimageverts[1].u = rbpos.x / backimagesize.x;
-				backimageverts[1].v = ltpos.y / -backimagesize.y;
-				backimageverts[2].u = ltpos.x / backimagesize.x;
-				backimageverts[2].v = rbpos.y / -backimagesize.y;
-				backimageverts[3].u = rbpos.x / backimagesize.x;
-				backimageverts[3].v = rbpos.y / -backimagesize.y;
+				backimageverts[0].u = lbpos.x / backimagesize.x;
+				backimageverts[0].v = lbpos.y / -backimagesize.y;
+				backimageverts[1].u = rtpos.x / backimagesize.x;
+				backimageverts[1].v = lbpos.y / -backimagesize.y;
+				backimageverts[2].u = lbpos.x / backimagesize.x;
+				backimageverts[2].v = rtpos.y / -backimagesize.y;
+				backimageverts[3].u = rtpos.x / backimagesize.x;
+				backimageverts[3].v = rtpos.y / -backimagesize.y;
 			}
 			else
 			{
