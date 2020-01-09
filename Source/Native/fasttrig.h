@@ -39,6 +39,12 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#ifdef WIN32
+#define FORCEINLINE __forceinline
+#else
+#define FORCEINLINE
+#endif
+
 // This uses a sine table with linear interpolation
 // For in-game calculations this is precise enough
 // and this code is more than 10x faster than the
@@ -51,7 +57,7 @@ struct FFastTrig
 	static const int REMAINDER = (1 << BITSHIFT) - 1;
 	float sinetable[2049];
 
-	__forceinline double sinq1(uint32_t bangle)
+	FORCEINLINE double sinq1(uint32_t bangle)
 	{
 		unsigned int index = bangle >> BITSHIFT;
 

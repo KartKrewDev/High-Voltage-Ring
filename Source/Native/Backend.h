@@ -113,6 +113,8 @@ public:
 class Backend
 {
 public:
+	virtual ~Backend() = default;
+
 	static Backend* Get();
 
 	virtual RenderDevice* NewRenderDevice(void* disp, void* window) = 0;

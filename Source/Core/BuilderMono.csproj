@@ -11,7 +11,7 @@
     <RootNamespace>CodeImp.DoomBuilder</RootNamespace>
     <AssemblyName>Builder</AssemblyName>
     <StartupObject>CodeImp.DoomBuilder.General</StartupObject>
-    <ApplicationIcon>Resources\UDB.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\UDB2.ico</ApplicationIcon>
     <Win32Resource>
     </Win32Resource>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -23,11 +23,26 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Build\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NO_SCINTILLA NO_FORMS_DESIGN NO_WIN32 NO_UPDATER</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -48,7 +63,7 @@
     <ErrorReport>prompt</ErrorReport>
     <DocumentationFile>
     </DocumentationFile>
-    <DefineConstants>NO_SCINTILLA NO_FORMS_DESIGN NO_WIN32 NO_UPDATER</DefineConstants>
+    <DefineConstants>NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591</NoWarn>
@@ -57,7 +72,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug + Profiler|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Build\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;PROFILE NO_SCINTILLA NO_FORMS_DESIGN NO_WIN32 NO_UPDATER</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>
     </DocumentationFile>
@@ -79,7 +94,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <DefineConstants>TRACE;PROFILE NO_SCINTILLA NO_FORMS_DESIGN NO_WIN32 NO_UPDATER</DefineConstants>
+    <DefineConstants>TRACE;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -89,7 +104,7 @@
     </DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;NO_SCINTILLA NO_FORMS_DESIGN NO_WIN32 NO_UPDATER</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -97,14 +112,14 @@
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;NO_SCINTILLA NO_FORMS_DESIGN NO_WIN32 NO_UPDATER</DefineConstants>
+    <DefineConstants>TRACE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug + Profiler|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>..\..\Build\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;PROFILE NO_SCINTILLA NO_FORMS_DESIGN NO_WIN32 NO_UPDATER</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release + Profiler|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -112,7 +127,6 @@
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <DefineConstants>PROFILE NO_SCINTILLA NO_FORMS_DESIGN NO_WIN32 NO_UPDATER</DefineConstants>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -178,12 +192,16 @@
     <Compile Include="Data\FileImage.cs" />
     <Compile Include="Data\FlatImage.cs" />
     <Compile Include="Data\ImageLoadState.cs" />
-    <Compile Include="Data\Scripting\ZScriptScriptHandler.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shaders\ShaderCompiler.cs" />
     <Compile Include="Data\UnknownImage.cs" />
     <Compile Include="Data\PatchNames.cs" />
     <Compile Include="Data\PK3Reader.cs" />
     <Compile Include="Data\Playpal.cs" />
-    <Compile Include="Data\PreviewManager.cs" />
     <Compile Include="Data\ResourceImage.cs" />
     <Compile Include="Data\SimpleTextureImage.cs" />
     <Compile Include="Data\SpriteImage.cs" />
@@ -208,9 +226,6 @@
     </Compile>
     <Compile Include="Controls\PairedFloatControl.Designer.cs">
       <DependentUpon>PairedFloatControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NoScintilla.cs">
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -546,11 +561,6 @@
     <Compile Include="Plugins\Plugin.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Rendering\Presentation.cs" />
     <Compile Include="Rendering\ColorCollection.cs" />
     <Compile Include="Rendering\ColorSetting.cs" />
@@ -582,6 +592,13 @@
     <Compile Include="ZDoom\ZScriptTokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Profiler.Core.Api, Version=1.3.1661.20096, Culture=neutral, PublicKeyToken=1010a0d8d6380325" Condition=" '$(Configuration)|$(Platform)' == 'Debug + Profiler|x86' Or '$(Configuration)|$(Platform)' == 'Release + Profiler|x86' ">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Build\ScintillaNET.dll</HintPath>
+    </Reference>
     <Reference Include="SharpCompress, Version=0.20.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Build\SharpCompress.dll</HintPath>
@@ -639,17 +656,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <EmbeddedResource Include="Resources\display2d.vp" />
-    <EmbeddedResource Include="Resources\display2d_fsaa.fp" />
-    <EmbeddedResource Include="Resources\display2d_fullbright.fp" />
-    <EmbeddedResource Include="Resources\display2d_normal.fp" />
+    <EmbeddedResource Include="Resources\display2d.shader" />
     <None Include="Resources\MissingTexture.png" />
-    <EmbeddedResource Include="Resources\plotter.fp" />
-    <EmbeddedResource Include="Resources\plotter.vp" />
-    <EmbeddedResource Include="Resources\things2d.vp" />
-    <EmbeddedResource Include="Resources\things2d_fill.fp" />
-    <EmbeddedResource Include="Resources\things2d_sprite.fp" />
-    <EmbeddedResource Include="Resources\things2d_thing.fp" />
+    <EmbeddedResource Include="Resources\things2d.shader" />
     <None Include="Resources\UnknownImage.png" />
     <None Include="Resources\treeview.png" />
     <None Include="Resources\Folder.png" />
@@ -665,21 +674,8 @@
     <None Include="Resources\Status2.png" />
     <None Include="Resources\Status0.png" />
     <None Include="Resources\ColorPick.png" />
-    <EmbeddedResource Include="Resources\world3d_constant_color.fp" />
-    <EmbeddedResource Include="Resources\world3d_customvertexcolor.vp" />
-    <EmbeddedResource Include="Resources\world3d_customvertexcolor_fog.vp" />
-    <EmbeddedResource Include="Resources\world3d_fullbright.fp" />
-    <EmbeddedResource Include="Resources\world3d_fullbright_highlight.fp" />
-    <EmbeddedResource Include="Resources\world3d_lightpass.fp" />
-    <EmbeddedResource Include="Resources\world3d_lightpass.vp" />
-    <EmbeddedResource Include="Resources\world3d_main.fp" />
-    <EmbeddedResource Include="Resources\world3d_main.vp" />
-    <EmbeddedResource Include="Resources\world3d_main_fog.fp" />
-    <EmbeddedResource Include="Resources\world3d_main_highlight.fp" />
-    <EmbeddedResource Include="Resources\world3d_main_highlight_fog.fp" />
-    <EmbeddedResource Include="Resources\world3d_skybox.fp" />
-    <EmbeddedResource Include="Resources\world3d_skybox.vp" />
-    <EmbeddedResource Include="Resources\world3d_vertex_color.fp" />
+    <EmbeddedResource Include="Resources\world3d.shader" />
+    <EmbeddedResource Include="Resources\world3d_skybox.shader" />
     <None Include="Resources\Zoom.png" />
     <None Include="Resources\Properties.png" />
     <None Include="Resources\NewMap2.png" />
@@ -775,12 +771,14 @@
     <EmbeddedResource Include="Resources\MissingTexture3D.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Updater.ico" />
+    <None Include="Resources\UDB2.ico" />
     <None Include="app.manifest" />
-    <EmbeddedResource Include="Controls\Scripting\FindUsagesControl.resx">
-      <DependentUpon>FindUsagesControl.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\Scripting\ScriptEditorControl.resx">
+      <DependentUpon>ScriptEditorControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Scripting\ScriptResourcesControl.resx">
-      <DependentUpon>ScriptResourcesControl.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\Scripting\ScriptEditorPreviewControl.resx">
+      <DependentUpon>ScriptEditorPreviewControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\SkySphere.md3" />
     <None Include="Resources\ThingStatistics.png" />
@@ -794,12 +792,6 @@
     <Compile Include="Controls\ImageSelectorPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\Scripting\FindUsagesControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Scripting\FindUsagesControl.Designer.cs">
-      <DependentUpon>FindUsagesControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\TransparentLabel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -807,12 +799,6 @@
     <Compile Include="Controls\Scripting\ScriptIconsManager.cs" />
     <Compile Include="Controls\Scripting\ScriptResourceDocumentTab.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\Scripting\ScriptResourcesControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Scripting\ScriptResourcesControl.designer.cs">
-      <DependentUpon>ScriptResourcesControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\VisualStudioTabControl.cs">
       <SubType>Component</SubType>
@@ -919,10 +905,12 @@
     <Compile Include="Data\ColormapImage.cs" />
     <Compile Include="Data\CvarsCollection.cs" />
     <Compile Include="Data\HiResImage.cs" />
+    <Compile Include="NoScintilla.cs" />
+    <Compile Include="Data\Scripting\ZScriptScriptHandler.cs" />
+    <Compile Include="Data\Scripting\ScriptHandler.cs" />
     <Compile Include="Data\Scripting\AccScriptHandler.cs" />
     <Compile Include="Data\Scripting\DecorateScriptHandler.cs" />
     <Compile Include="Data\Scripting\ModeldefScriptHandler.cs" />
-    <Compile Include="Data\Scripting\ScriptHandler.cs" />
     <Compile Include="Data\TEXTURESImage.cs" />
     <Compile Include="Data\PK3FileImage.cs" />
     <Compile Include="Data\PK3StructuredReader.cs" />
@@ -1255,6 +1243,7 @@
     <None Include="Resources\Angle5.png" />
     <None Include="Resources\Angle6.png" />
     <None Include="Resources\Angle7.png" />
+    <None Include="Resources\AboutBack.png" />
     <Content Include="Resources\DB2.ico" />
     <None Include="Resources\GZDB2.ico" />
     <None Include="Resources\UDB.ico" />
@@ -1389,6 +1378,10 @@
     <None Include="Resources\SaveScript.png" />
     <None Include="Resources\OpenScript.png" />
     <None Include="Resources\NewScript.png" />
+    <EmbeddedResource Include="Controls\Scripting\ScriptEditorPanel.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ScriptEditorPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Lexers.cfg" />
     <None Include="Resources\ViewBrightness.png" />
     <None Include="Resources\ViewTextureCeiling.png" />
@@ -1498,11 +1491,14 @@
       <DependentUpon>VertexEditForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PreBuildEvent></PreBuildEvent>
   </PropertyGroup>
 </Project>

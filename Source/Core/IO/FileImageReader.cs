@@ -79,6 +79,7 @@ namespace CodeImp.DoomBuilder.IO
 	{
         #region ================== APIs
 
+#if !NO_DEVIL
         [DllImport("devil.dll")]
         private static extern void ilEnable(int num);
 
@@ -108,6 +109,7 @@ namespace CodeImp.DoomBuilder.IO
 
 		[DllImport("devil.dll")]
 		private static extern uint ilCopyPixels(uint xoff, uint yoff, uint zoff, uint width, uint height, uint depth, uint format, uint type, IntPtr data);
+#endif
 
         //
         private const int IL_ORIGIN_SET = 0x0600;
@@ -529,6 +531,7 @@ namespace CodeImp.DoomBuilder.IO
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
+#if !NO_DEVIL
             string error;
             lock (syncobject) // DevIL is not thread safe.
             {
@@ -592,6 +595,9 @@ namespace CodeImp.DoomBuilder.IO
                     error = "Unable to make file image. " + e.GetType().Name + ": " + e.Message;
                 }
             }
+#else
+            string error = "No devil image support";
+#endif
 
             // [ZZ] try to make a guessed reader
             switch (guesstype)
@@ -679,6 +685,7 @@ namespace CodeImp.DoomBuilder.IO
 
         public bool Validate(Stream stream)
         {
+#if !NO_DEVIL
             uint _vimageid = 0;
             try
             {
@@ -737,6 +744,7 @@ namespace CodeImp.DoomBuilder.IO
                     }
                 }
             }
+#endif
 
             return true;
         }
