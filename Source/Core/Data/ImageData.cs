@@ -73,6 +73,7 @@ namespace CodeImp.DoomBuilder.Data
         // GDI bitmap
         private Bitmap bitmap;
         private Bitmap previewbitmap;
+        private Bitmap spritepreviewbitmap;
 
         // Direct3D texture
         private int mipmaplevels;	// 0 = all mipmaps
@@ -147,8 +148,12 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				// Clean up
 				bitmap?.Dispose();
-				texture?.Dispose();
-				bitmap = null;
+                previewbitmap?.Dispose();
+                spritepreviewbitmap?.Dispose();
+                texture?.Dispose();
+                bitmap = null;
+                previewbitmap = null;
+                spritepreviewbitmap = null;
 				texture = null;
 					
 				// Done
@@ -213,22 +218,24 @@ namespace CodeImp.DoomBuilder.Data
 
         public Image GetBackgroundBitmap()
         {
-            return GetBitmap();
+            return LocalGetBitmap();
         }
 
         public Bitmap GetSkyboxBitmap()
         {
-            return GetBitmap();
+            return LocalGetBitmap();
         }
 
         public Bitmap ExportBitmap()
         {
-            return GetBitmap();
+            return LocalGetBitmap();
         }
 
         public Bitmap GetSpritePreview()
         {
-            return GetBitmap();
+            if (spritepreviewbitmap == null)
+                spritepreviewbitmap = LocalGetBitmap();
+            return spritepreviewbitmap;
         }
 
         // Loads the image directly. This is needed by the background loader for some patches.
