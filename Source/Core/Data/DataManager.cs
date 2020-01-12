@@ -749,8 +749,10 @@ namespace CodeImp.DoomBuilder.Data
 					lock(syncobject)
 					{
 						// Fetch next image to process
-						if(imageque.Count > 0) image = imageque.Dequeue();
-                        if (imageque.Count == 0) Monitor.Wait(syncobject);
+						if(imageque.Count > 0)
+                            image = imageque.Dequeue();
+                        else
+                            Monitor.Wait(syncobject);
                     }
 
 					image?.BackgroundLoadImage();
