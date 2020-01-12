@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -70,8 +71,13 @@ namespace CodeImp.DoomBuilder.Data
         private ImageLoadState imagestate;
         private bool loadfailed;
 
+        // Alpha test
+        private BitArray alphatest;
+        private int alphatestWidth = 64;
+        private int alphatestHeight = 64;
+
         // GDI bitmap
-        private Bitmap bitmap;
+        private Bitmap loadedbitmap;
         private Bitmap previewbitmap;
         private Bitmap spritepreviewbitmap;
 
@@ -146,12 +152,12 @@ namespace CodeImp.DoomBuilder.Data
 			// Not already disposed?
 			if(!isdisposed)
 			{
-				// Clean up
-				bitmap?.Dispose();
+                // Clean up
+                loadedbitmap?.Dispose();
                 previewbitmap?.Dispose();
                 spritepreviewbitmap?.Dispose();
                 texture?.Dispose();
-                bitmap = null;
+                loadedbitmap = null;
                 previewbitmap = null;
                 spritepreviewbitmap = null;
 				texture = null;
@@ -190,30 +196,22 @@ namespace CodeImp.DoomBuilder.Data
 			shortnamewidth = (int)Math.Ceiling(General.Interface.MeasureString(shortname, SystemFonts.MessageBoxFont, 10000, StringFormat.GenericTypographic).Width) + 6;
 		}
 
-		// This returns the bitmap image
-		Bitmap GetBitmap()
-		{
-			// Image loaded successfully?
-			if(!loadfailed && (imagestate == ImageLoadState.Ready) && (bitmap != null))
-				return bitmap;
-				
-			// Image loading failed?
-			return (loadfailed ? Properties.Resources.Failed : Properties.Resources.Hourglass);
-		}
-
         public int GetAlphaTestWidth()
         {
-            return GetBitmap().Width;
+            return alphatestWidth;
         }
 
         public int GetAlphaTestHeight()
         {
-            return GetBitmap().Height;
+            return alphatestHeight;
         }
 
         public bool AlphaTestPixel(int x, int y)
         {
-            return GetBitmap().GetPixel(x, y).A > 0;
+            if (alphatest != null)
+                return alphatest.Get(x + y * alphatestWidth);
+            else
+                return true;
         }
 
         public Image GetBackgroundBitmap()
@@ -269,6 +267,7 @@ namespace CodeImp.DoomBuilder.Data
 
             ConvertImageFormat(loadResult);
             MakeImagePreview(loadResult);
+            MakeAlphaTestImage(loadResult);
 
             // Save memory by disposing the original image immediately if we only used it to load a preview image
             bool onlyPreview = false;
@@ -293,10 +292,13 @@ namespace CodeImp.DoomBuilder.Data
                         loadfailed = true;
                     }
 
-                    bitmap?.Dispose();
+                    loadedbitmap?.Dispose();
                     texture?.Dispose();
                     imagestate = ImageLoadState.Ready;
-                    bitmap = loadResult.bitmap;
+                    loadedbitmap = loadResult.bitmap;
+                    alphatest = loadResult.alphatest;
+                    alphatestWidth = loadResult.alphatestWidth;
+                    alphatestHeight = loadResult.alphatestHeight;
 
                     if (loadResult.uiThreadWork != null)
                         loadResult.uiThreadWork();
@@ -342,6 +344,9 @@ namespace CodeImp.DoomBuilder.Data
 
             public Bitmap bitmap;
             public Bitmap preview;
+            public BitArray alphatest;
+            public int alphatestWidth;
+            public int alphatestHeight;
             public List<LogMessage> messages;
             public Action uiThreadWork;
         }
@@ -610,6 +615,29 @@ namespace CodeImp.DoomBuilder.Data
             loadResult.preview = preview;
         }
 
+        void MakeAlphaTestImage(LocalLoadResult loadResult)
+        {
+            if (loadResult.bitmap == null)
+                return;
+
+            int width = loadResult.bitmap.Width;
+            int height = loadResult.bitmap.Height;
+            loadResult.alphatestWidth = width;
+            loadResult.alphatestHeight = height;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (loadResult.bitmap.GetPixel(x, y).A == 0)
+                    {
+                        if (loadResult.alphatest == null)
+                            loadResult.alphatest = new BitArray(width * height, true);
+                        loadResult.alphatest.Set(x + y * width, false);
+                    }
+                }
+            }
+        }
+
         Texture GetTexture()
 		{
             if (texture != null)
@@ -625,12 +653,17 @@ namespace CodeImp.DoomBuilder.Data
                 return General.Map.Data.LoadingTexture;
             }
 
-            texture = new Texture(General.Map.Graphics, bitmap);
+            texture = new Texture(General.Map.Graphics, loadedbitmap);
 
             if (dynamictexture)
             {
                 if ((width != texture.Width) || (height != texture.Height))
                     throw new Exception("Could not create a texture with the same size as the image.");
+            }
+            else
+            {
+                loadedbitmap.Dispose();
+                loadedbitmap = null;
             }
 
 #if DEBUG
@@ -647,7 +680,7 @@ namespace CodeImp.DoomBuilder.Data
 
 			if((texture != null) && !texture.Disposed)
 			{
-                General.Map.Graphics.SetPixels(texture, bitmap);
+                General.Map.Graphics.SetPixels(texture, loadedbitmap);
 			}
 		}
 		
