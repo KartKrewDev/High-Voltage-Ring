@@ -257,7 +257,7 @@ namespace CodeImp.DoomBuilder.Data
         }
 
 		// This loads the image
-		public virtual void LoadImage(bool notify)
+		protected void LoadImage(bool notify)
 		{
             if (imagestate == ImageLoadState.Ready && previewstate != ImageLoadState.Loading)
                 return;
@@ -321,8 +321,12 @@ namespace CodeImp.DoomBuilder.Data
             });
 
             // Notify the main thread about the change so that sectors can update their buffers
-            if (notify) General.MainWindow.ImageDataLoaded(this.name);
-		}
+            if (notify)
+            {
+                if (this is SpriteImage || this is VoxelImage) General.MainWindow.SpriteDataLoaded(this.Name);
+                else General.MainWindow.ImageDataLoaded(this.name);
+            }
+        }
 
         protected class LocalLoadResult
         {
