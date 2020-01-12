@@ -98,7 +98,7 @@ namespace CodeImp.DoomBuilder.Data
 			hasLongName = overridden.HasLongName;
 			overridesettingsapplied = true;
 
-			if(!overridden.IsImageLoaded) overridden.LoadImage();
+			overridden.LoadImageNow();
 			if(overridden.ImageState == ImageLoadState.Ready)
 			{
 				// Store source properteis

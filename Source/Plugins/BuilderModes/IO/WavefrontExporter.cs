@@ -94,7 +94,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 								continue;
 							}
 
-							if(!id.IsImageLoaded) id.LoadImage();
 							Bitmap bmp = id.ExportBitmap();
                             lock (bmp)
                             {
@@ -122,7 +121,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 								continue;
 							}
 
-							if(!id.IsImageLoaded) id.LoadImage();
 							Bitmap bmp = id.ExportBitmap();
 
 							// Handle duplicate names

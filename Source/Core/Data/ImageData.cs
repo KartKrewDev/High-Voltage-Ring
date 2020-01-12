@@ -106,8 +106,27 @@ namespace CodeImp.DoomBuilder.Data
 		internal bool HasLongName { get { return hasLongName; } } //mxd
 		public bool UseColorCorrection { get { return usecolorcorrection; } set { usecolorcorrection = value; } }
 		public Texture Texture { get { return GetTexture(); } }
-		public bool IsPreviewLoaded { get { return (previewstate == ImageLoadState.Ready); } }
-		public bool IsImageLoaded { get { return (imagestate == ImageLoadState.Ready); } }
+		public bool IsPreviewLoaded
+        {
+            get
+            {
+                if (previewstate == ImageLoadState.None)
+                    General.Map.Data.QueueLoadPreview(this);
+
+                return (previewstate == ImageLoadState.Ready);
+            }
+        }
+
+		public bool IsImageLoaded
+        {
+            get
+            {
+                if (imagestate == ImageLoadState.None)
+                    General.Map.Data.QueueLoadImage(this);
+
+                return (imagestate == ImageLoadState.Ready);
+            }
+        }
 		public bool LoadFailed { get { return loadfailed; } }
 		public bool IsDisposed { get { return isdisposed; } }
 		public bool AllowUnload { get; set; }
@@ -251,7 +270,16 @@ namespace CodeImp.DoomBuilder.Data
             return result.bitmap;
         }
 		
-        public void LoadImage()
+        public void LoadImageNow()
+        {
+            if (imagestate != ImageLoadState.Ready)
+            {
+                imagestate = ImageLoadState.Loading;
+                LoadImage(true);
+            }
+        }
+
+        internal void BackgroundLoadImage()
         {
             LoadImage(true);
         }
@@ -271,15 +299,16 @@ namespace CodeImp.DoomBuilder.Data
 
             // Save memory by disposing the original image immediately if we only used it to load a preview image
             bool onlyPreview = false;
-            if (imagestate == ImageLoadState.Ready)
+            if (imagestate != ImageLoadState.Loading)
             {
                 loadResult.bitmap?.Dispose();
+                loadResult.bitmap = null;
                 onlyPreview = true;
             }
 
             General.MainWindow.RunOnUIThread(() =>
             {
-                if (imagestate != ImageLoadState.Ready && !onlyPreview)
+                if (imagestate == ImageLoadState.Loading && !onlyPreview)
                 {
                     // Log errors and warnings
                     foreach (LogMessage message in loadResult.messages)
@@ -704,16 +733,21 @@ namespace CodeImp.DoomBuilder.Data
 				// Make a copy
 				return new Bitmap(previewbitmap);
 			}
-				
-			// Loading failed?
-			if(loadfailed)
+
+            // Loading failed?
+            if (loadfailed)
 			{
 				// Return error bitmap
 				return Properties.Resources.Failed;
 			}
 
-			// Return loading bitmap
-			return Properties.Resources.Hourglass;
+            if (previewstate == ImageLoadState.None)
+            {
+                General.Map.Data.QueueLoadPreview(this);
+            }
+
+            // Return loading bitmap
+            return Properties.Resources.Hourglass;
 		}
 
 		//mxd. This greatly speeds up Dictionary lookups

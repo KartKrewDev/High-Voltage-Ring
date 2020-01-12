@@ -1174,7 +1174,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			mode.SetActionResult("Auto-aligned textures " + rest + ".");
 			
 			// Make sure the texture is loaded (we need the texture size)
-			if(!base.Texture.IsImageLoaded) base.Texture.LoadImage();
+			if(!base.Texture.IsImageLoaded) base.Texture.LoadImageNow();
 			
 			if(mode.IsSingleSelection)
 			{

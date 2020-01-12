@@ -60,9 +60,8 @@ namespace CodeImp.DoomBuilder.Data
 			bmp.Dispose();
 			bitmapdata.Dispose();
 
-			// We have no destructor
-			GC.SuppressFinalize(this);
-		}
+            LoadImageNow();
+        }
 
 		#endregion
 

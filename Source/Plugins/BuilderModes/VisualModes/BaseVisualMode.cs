@@ -2988,7 +2988,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				BaseVisualGeometrySidedef side = (BaseVisualGeometrySidedef)i;
 				
 				// Make sure the texture is loaded (we need the texture size)
-				if(!side.Texture.IsImageLoaded) side.Texture.LoadImage();
+				if(!side.Texture.IsImageLoaded) side.Texture.LoadImageNow();
 
 				//Align textures
 				AutoAlignTextures(side, side.Texture, alignX, alignY, false, false);

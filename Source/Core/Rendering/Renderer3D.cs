@@ -718,13 +718,7 @@ namespace CodeImp.DoomBuilder.Rendering
             // Render the geometry collected
             foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geopass)
 			{
-				// What texture to use?
-				if(group.Key is UnknownImage)
-					curtexture = General.Map.Data.UnknownTexture3D;
-				else if(group.Key.IsImageLoaded && !group.Key.IsDisposed)
-					curtexture = group.Key;
-				else
-					curtexture = General.Map.Data.Hourglass3D;
+				curtexture = group.Key;
 
                 // Apply texture
                 graphics.SetTexture(curtexture.Texture);
@@ -865,11 +859,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				{
 					if(group.Key is UnknownImage) continue;
 					
-					// What texture to use?
-					if(!group.Key.IsImageLoaded || group.Key.IsDisposed)
-						curtexture = General.Map.Data.Hourglass3D;
-					else 
-						curtexture = group.Key;
+					curtexture = group.Key;
 
                     // Apply texture
                     graphics.SetTexture(curtexture.Texture);
@@ -1093,13 +1083,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				// Change texture?
 				if(g.Texture.LongName != curtexturename)
 				{
-					// What texture to use?
-					if(g.Texture is UnknownImage)
-						curtexture = General.Map.Data.UnknownTexture3D;
-					else if(g.Texture.IsImageLoaded && !g.Texture.IsDisposed)
-						curtexture = g.Texture;
-					else
-						curtexture = General.Map.Data.Hourglass3D;
+					curtexture = g.Texture;
 
                     // Apply texture
                     graphics.SetTexture(curtexture.Texture);
@@ -1226,11 +1210,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					// Change texture?
 					if(t.Texture.LongName != curtexturename)
 					{
-						// What texture to use?
-						if(t.Texture.IsImageLoaded && !t.Texture.IsDisposed)
-							curtexture = t.Texture;
-						else
-							curtexture = General.Map.Data.Hourglass3D;
+						curtexture = t.Texture;
 
                         // Apply texture
                         graphics.SetTexture(curtexture.Texture);

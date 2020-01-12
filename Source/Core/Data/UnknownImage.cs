@@ -42,10 +42,7 @@ namespace CodeImp.DoomBuilder.Data
 			this.loadbitmap = image;
 			SetName("");
 			
-			LoadImage(false);
-			
-			// We have no destructor
-			GC.SuppressFinalize(this);
+			LoadImageNow();
 		}
 
 		#endregion

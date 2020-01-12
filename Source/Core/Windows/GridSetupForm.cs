@@ -93,7 +93,6 @@ namespace CodeImp.DoomBuilder.Windows
 				backgroundname = result;
 				backgroundsource = GridSetup.SOURCE_TEXTURES;
 				ImageData img = General.Map.Data.GetTextureImage(result);
-				img.LoadImage();
 				General.DisplayZoomedImage(backgroundimage, img.GetBackgroundBitmap());
 			}
 		}
@@ -109,7 +108,6 @@ namespace CodeImp.DoomBuilder.Windows
 				backgroundname = result;
 				backgroundsource = GridSetup.SOURCE_FLATS;
 				ImageData img = General.Map.Data.GetFlatImage(result);
-				img.LoadImage();
 				General.DisplayZoomedImage(backgroundimage, img.GetBackgroundBitmap());
 			}
 		}
@@ -124,7 +122,6 @@ namespace CodeImp.DoomBuilder.Windows
 				backgroundname = browsefile.FileName;
 				backgroundsource = GridSetup.SOURCE_FILE;
 				ImageData img = new FileImage(Path.GetFileNameWithoutExtension(backgroundname), backgroundname, false, 1.0f, 1.0f);
-				img.LoadImage();
 				General.DisplayZoomedImage(backgroundimage, new Bitmap(img.GetBackgroundBitmap()));
 				img.Dispose();
 			}

@@ -217,8 +217,6 @@ namespace CodeImp.DoomBuilder.Data
 							ImageData img = General.Map.Data.GetTextureImage(p.LumpName);
 							if(!(img is UnknownImage) && img != this)
 							{
-								if(!img.IsImageLoaded) img.LoadImage();
-
                                 //mxd. Apply transformations from TexturePatch. We don't want to modify the original bitmap here, so make a copy
                                 Bitmap bmp = new Bitmap(img.LocalGetBitmap());
                                 Bitmap patchbmp = TransformPatch(bitmap, p, bmp);

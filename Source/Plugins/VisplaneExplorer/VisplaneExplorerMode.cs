@@ -280,7 +280,7 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 			image = new DynamicBitmapImage(canvas, "_CANVAS_");
 			image.UseColorCorrection = false;
 			image.MipMapLevels = 1;
-			image.LoadImage();
+			image.LoadImageNow();
 
 			// Make custom presentation
 			CustomPresentation p = new CustomPresentation();
