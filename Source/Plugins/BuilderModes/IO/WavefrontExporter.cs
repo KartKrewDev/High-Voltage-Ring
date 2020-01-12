@@ -95,7 +95,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 							}
 
 							if(!id.IsImageLoaded) id.LoadImage();
-							Bitmap bmp = id.GetBitmap();
+							Bitmap bmp = id.ExportBitmap();
                             lock (bmp)
                             {
                                 bmp.Save(Path.Combine(settings.ObjPath, Path.GetFileNameWithoutExtension(s) + ".PNG"), ImageFormat.Png);
@@ -123,7 +123,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 							}
 
 							if(!id.IsImageLoaded) id.LoadImage();
-							Bitmap bmp = id.GetBitmap();
+							Bitmap bmp = id.ExportBitmap();
 
 							// Handle duplicate names
 							string flatname = s;

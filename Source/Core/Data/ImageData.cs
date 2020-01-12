@@ -186,7 +186,7 @@ namespace CodeImp.DoomBuilder.Data
 		}
 
 		// This returns the bitmap image
-		public Bitmap GetBitmap()
+		Bitmap GetBitmap()
 		{
 			// Image loaded successfully?
 			if(!loadfailed && (imagestate == ImageLoadState.Ready) && (bitmap != null))
@@ -195,6 +195,41 @@ namespace CodeImp.DoomBuilder.Data
 			// Image loading failed?
 			return (loadfailed ? Properties.Resources.Failed : Properties.Resources.Hourglass);
 		}
+
+        public int GetAlphaTestWidth()
+        {
+            return GetBitmap().Width;
+        }
+
+        public int GetAlphaTestHeight()
+        {
+            return GetBitmap().Height;
+        }
+
+        public bool AlphaTestPixel(int x, int y)
+        {
+            return GetBitmap().GetPixel(x, y).A > 0;
+        }
+
+        public Image GetBackgroundBitmap()
+        {
+            return GetBitmap();
+        }
+
+        public Bitmap GetSkyboxBitmap()
+        {
+            return GetBitmap();
+        }
+
+        public Bitmap ExportBitmap()
+        {
+            return GetBitmap();
+        }
+
+        public Bitmap GetSpritePreview()
+        {
+            return GetBitmap();
+        }
 
         // Loads the image directly. This is needed by the background loader for some patches.
         public Bitmap LocalGetBitmap()

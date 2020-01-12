@@ -1101,7 +1101,7 @@ namespace CodeImp.DoomBuilder.Data
 				if(!img.LoadFailed)
 				{
 					// HiResImage will not give us it's actual scale
-					Bitmap texture = img.GetBitmap();
+					Bitmap texture = img.GetSkyboxBitmap();
                     lock (texture)
                     {
                         scale = new Vector2D((float)img.Width / texture.Width, (float)img.Height / texture.Height);
@@ -3255,7 +3255,7 @@ namespace CodeImp.DoomBuilder.Data
 				
 				// Use the built-in texture
 				ImageData tex = LoadInternalTexture("MissingSky3D.png");
-                Bitmap bmp = tex.GetBitmap();
+                Bitmap bmp = tex.GetSkyboxBitmap();
                 Bitmap sky;
                 lock (bmp)
                 {

@@ -85,7 +85,8 @@ namespace CodeImp.DoomBuilder.Data
         //mxd
         public override Image GetPreview() 
 		{
-			return base.GetBitmap();
+            Stream bitmapdata = assembly.GetManifestResourceStream(resourcename);
+            return Image.FromStream(bitmapdata);
 		}
 		
 		#endregion

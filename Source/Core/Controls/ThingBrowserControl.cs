@@ -229,7 +229,7 @@ namespace CodeImp.DoomBuilder.Controls
 				if(thinginfo.Sprite.ToLowerInvariant().StartsWith(DataManager.INTERNAL_PREFIX) &&
 				   (thinginfo.Sprite.Length > DataManager.INTERNAL_PREFIX.Length)) 
 				{
-					spritetex.Image = General.Map.Data.GetSpriteImage(thinginfo.Sprite).GetBitmap();
+					spritetex.Image = General.Map.Data.GetSpriteImage(thinginfo.Sprite).GetSpritePreview();
 					return;
 				} 
 
