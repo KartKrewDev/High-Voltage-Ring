@@ -230,7 +230,7 @@ namespace CodeImp.DoomBuilder.Data
             // Load special images (mxd: the rest is loaded in LoadInternalTextures())
             whitetexture = new ResourceImage("CodeImp.DoomBuilder.Resources.White.png") { UseColorCorrection = false };
 			blacktexture = new ResourceImage("CodeImp.DoomBuilder.Resources.Black.png") { UseColorCorrection = false }; //mxd
-			unknownimage = new UnknownImage(Properties.Resources.UnknownImage); //mxd. There should be only one!
+			unknownimage = new UnknownImage(); //mxd. There should be only one!
 
 			//mxd. Textures browser images
 			foldertexture = new ResourceImage("CodeImp.DoomBuilder.Resources.Folder96.png") { UseColorCorrection = false };

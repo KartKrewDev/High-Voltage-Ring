@@ -34,12 +34,12 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Constructor / Disposer
 
 		// Constructor
-		public UnknownImage(Bitmap image)
+		public UnknownImage()
 		{
 			// Initialize
 			this.width = 0;
 			this.height = 0;
-			this.loadbitmap = image;
+			this.loadbitmap = Properties.Resources.UnknownImage;
 			SetName("");
 			
 			LoadImageNow();
@@ -52,7 +52,7 @@ namespace CodeImp.DoomBuilder.Data
 		// This 'loads' the image
 		protected override LocalLoadResult LocalLoadImage()
 		{
-            return new LocalLoadResult(loadbitmap);
+            return new LocalLoadResult(new Bitmap(loadbitmap));
         }
 
         // This returns a preview image
