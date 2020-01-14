@@ -71,9 +71,15 @@ namespace CodeImp.DoomBuilder.Data
                     if (loader != null)
                     {
                         data.Seek(0, SeekOrigin.Begin);
-                        Bitmap image = loader.ReadAsBitmap(data, out offsetx, out offsety);
-                        if (image != null)
-                            return image;
+                        try
+                        {
+                            Bitmap image = loader.ReadAsBitmap(data, out offsetx, out offsety);
+                            if (image != null) // The older loaders return null when they should throw an exception
+                                return image;
+                        }
+                        catch
+                        {
+                        }
                     }
                 }
 
