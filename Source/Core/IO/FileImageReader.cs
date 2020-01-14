@@ -34,7 +34,177 @@ namespace CodeImp.DoomBuilder.IO
         {
             offsetx = int.MinValue;
             offsety = int.MinValue;
-            throw new NotImplementedException();
+
+            using (BinaryReader reader = new BinaryReader(stream))
+            {
+                int manufacturer = reader.ReadByte(); // 10=ZSoft
+                int version = reader.ReadByte();
+                // 0=PC Paintbrush v2.5
+                // 2=PC Paintbrush v2.8 w palette information
+                // 3=PC Paintbrush v2.8 w/o palette information
+                // 4=PC Paintbrush/Windows
+                // 5=PC Paintbrush v3.0+
+                int encoding = reader.ReadByte(); // 1 = RLE, none other known
+                int bitsPerComponent = reader.ReadByte();
+                int leftMargin = reader.ReadUInt16();
+                int topMargin = reader.ReadUInt16();
+                int rightMargin = reader.ReadUInt16();
+                int bottomMargin = reader.ReadUInt16();
+                int dpiX = reader.ReadUInt16();
+                int dpiY = reader.ReadUInt16();
+                byte[] egaPalette = reader.ReadBytes(48); // 16 RGB triplets
+                reader.ReadByte(); // reserved
+                int numColorPlanes = reader.ReadByte();
+                int planePitch = reader.ReadUInt16(); // always even
+                int paletteInfo = reader.ReadUInt16(); // 1=color/bw palette, 2=grayscale image
+                int width = reader.ReadUInt16();
+                int height = reader.ReadUInt16();
+                reader.ReadBytes(54); // reserved
+
+                int vgaPaletteID = 0;
+                byte[] vgaPalette = null;
+
+                int srcpitch = numColorPlanes * planePitch;
+                byte[] scanlines = new byte[srcpitch * height];
+
+                int pos = 0;
+                while (pos < scanlines.Length)
+                {
+                    byte value = reader.ReadByte();
+                    if ((value & 0xc0) == 0xc0) // two last bits
+                    {
+                        byte length = (byte)(value & 0x3f);
+                        value = reader.ReadByte();
+                        while (length > 0)
+                        {
+                            scanlines[pos++] = value;
+                            length--;
+                        }
+                    }
+                    else
+                    {
+                        scanlines[pos++] = value;
+                    }
+                }
+
+                byte[] imageData = new byte[width * height * 4];
+                int destpitch = width * 4;
+
+                if (bitsPerComponent == 4 && numColorPlanes == 1 && paletteInfo == 1) // 16 colors from a palette
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            int srcshift = ((x & 1) << 2);
+                            int srcoffset = (x >> 1) + y * srcpitch;
+                            int palentry = (scanlines[srcoffset] >> srcshift) & 15;
+                            int offset = x + y * destpitch;
+                            imageData[offset + 2] = egaPalette[palentry * 3];
+                            imageData[offset + 1] = egaPalette[palentry * 3 + 1];
+                            imageData[offset + 0] = egaPalette[palentry * 3 + 2];
+                            imageData[offset + 3] = 255;
+                        }
+                    }
+                }
+                else if (bitsPerComponent == 4 && numColorPlanes == 4 && paletteInfo == 2) // 4096 colors with 16 levels of transparency
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            int srcshift = ((x & 1) << 2);
+                            int srcoffset = (x >> 1) + y * srcpitch;
+                            int red = (scanlines[srcoffset] >> srcshift) & 15;
+                            int green = (scanlines[srcoffset + planePitch] >> srcshift) & 15;
+                            int blue = (scanlines[srcoffset + planePitch * 2] >> srcshift) & 15;
+                            int alpha = (scanlines[srcoffset + planePitch * 3] >> srcshift) & 15;
+
+                            int offset = x + y * destpitch;
+                            imageData[offset + 2] = (byte)((red * 255 + 7) / 15);
+                            imageData[offset + 1] = (byte)((green * 255 + 7) / 15);
+                            imageData[offset + 0] = (byte)((blue * 255 + 7) / 15);
+                            imageData[offset + 3] = (byte)((alpha * 255 + 7) / 15);
+                        }
+                    }
+                }
+                else if (bitsPerComponent == 8 && numColorPlanes == 1 && paletteInfo == 1) // 256 colors from a palette
+                {
+                    if (version == 5)
+                    {
+                        vgaPaletteID = reader.ReadByte(); // 0x0c
+                        vgaPalette = reader.ReadBytes(768); // 256 RGB triplets
+                    }
+                    else
+                    {
+                        throw new InvalidDataException("No vga palette in pcx");
+                    }
+
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            int palentry = scanlines[x + y * srcpitch];
+                            int offset = x + y * destpitch;
+                            imageData[offset + 2] = vgaPalette[palentry * 3];
+                            imageData[offset + 1] = vgaPalette[palentry * 3 + 1];
+                            imageData[offset + 0] = vgaPalette[palentry * 3 + 2];
+                            imageData[offset + 3] = 255;
+                        }
+                    }
+                }
+                else if (bitsPerComponent == 8 && numColorPlanes == 1 && paletteInfo == 2) // 256 shades of gray
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            byte gray = scanlines[x + y * srcpitch];
+                            int offset = x + y * destpitch;
+                            imageData[offset + 2] = gray;
+                            imageData[offset + 1] = gray;
+                            imageData[offset + 0] = gray;
+                            imageData[offset + 3] = 255;
+                        }
+                    }
+                }
+                else if (bitsPerComponent == 8 && numColorPlanes == 3) // 24 true color
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            int srcoffset = x + y * srcpitch;
+                            int offset = x + y * destpitch;
+                            imageData[offset + 2] = scanlines[srcoffset];
+                            imageData[offset + 1] = scanlines[srcoffset + planePitch];
+                            imageData[offset + 0] = scanlines[srcoffset + planePitch * 2];
+                            imageData[offset + 3] = 255;
+                        }
+                    }
+                }
+                else if (bitsPerComponent == 8 && numColorPlanes == 4) // 24 true color with alpha channel
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            int srcoffset = x + y * srcpitch;
+                            int offset = x + y * destpitch;
+                            imageData[offset + 2] = scanlines[srcoffset];
+                            imageData[offset + 1] = scanlines[srcoffset + planePitch];
+                            imageData[offset + 0] = scanlines[srcoffset + planePitch * 2];
+                            imageData[offset + 3] = scanlines[srcoffset + planePitch * 3];
+                        }
+                    }
+                }
+                else
+                {
+                    throw new InvalidDataException(string.Format("Unsupported pcx subformat (bits={0}, planes={1})", bitsPerComponent, numColorPlanes));
+                }
+
+                return new Bitmap(width, height, destpitch, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(imageData, 0));
+            }
         }
     }
 
