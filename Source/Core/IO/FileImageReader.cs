@@ -99,7 +99,7 @@ namespace CodeImp.DoomBuilder.IO
                             int srcshift = ((x & 1) << 2);
                             int srcoffset = (x >> 1) + y * srcpitch;
                             int palentry = (scanlines[srcoffset] >> srcshift) & 15;
-                            int offset = x + y * destpitch;
+                            int offset = x * 4 + y * destpitch;
                             imageData[offset + 2] = egaPalette[palentry * 3];
                             imageData[offset + 1] = egaPalette[palentry * 3 + 1];
                             imageData[offset + 0] = egaPalette[palentry * 3 + 2];
@@ -120,7 +120,7 @@ namespace CodeImp.DoomBuilder.IO
                             int blue = (scanlines[srcoffset + planePitch * 2] >> srcshift) & 15;
                             int alpha = (scanlines[srcoffset + planePitch * 3] >> srcshift) & 15;
 
-                            int offset = x + y * destpitch;
+                            int offset = x * 4 + y * destpitch;
                             imageData[offset + 2] = (byte)((red * 255 + 7) / 15);
                             imageData[offset + 1] = (byte)((green * 255 + 7) / 15);
                             imageData[offset + 0] = (byte)((blue * 255 + 7) / 15);
@@ -145,7 +145,7 @@ namespace CodeImp.DoomBuilder.IO
                         for (int x = 0; x < width; x++)
                         {
                             int palentry = scanlines[x + y * srcpitch];
-                            int offset = x + y * destpitch;
+                            int offset = x * 4 + y * destpitch;
                             imageData[offset + 2] = vgaPalette[palentry * 3];
                             imageData[offset + 1] = vgaPalette[palentry * 3 + 1];
                             imageData[offset + 0] = vgaPalette[palentry * 3 + 2];
@@ -160,7 +160,7 @@ namespace CodeImp.DoomBuilder.IO
                         for (int x = 0; x < width; x++)
                         {
                             byte gray = scanlines[x + y * srcpitch];
-                            int offset = x + y * destpitch;
+                            int offset = x * 4 + y * destpitch;
                             imageData[offset + 2] = gray;
                             imageData[offset + 1] = gray;
                             imageData[offset + 0] = gray;
@@ -175,7 +175,7 @@ namespace CodeImp.DoomBuilder.IO
                         for (int x = 0; x < width; x++)
                         {
                             int srcoffset = x + y * srcpitch;
-                            int offset = x + y * destpitch;
+                            int offset = x * 4 + y * destpitch;
                             imageData[offset + 2] = scanlines[srcoffset];
                             imageData[offset + 1] = scanlines[srcoffset + planePitch];
                             imageData[offset + 0] = scanlines[srcoffset + planePitch * 2];
@@ -190,7 +190,7 @@ namespace CodeImp.DoomBuilder.IO
                         for (int x = 0; x < width; x++)
                         {
                             int srcoffset = x + y * srcpitch;
-                            int offset = x + y * destpitch;
+                            int offset = x * 4 + y * destpitch;
                             imageData[offset + 2] = scanlines[srcoffset];
                             imageData[offset + 1] = scanlines[srcoffset + planePitch];
                             imageData[offset + 0] = scanlines[srcoffset + planePitch * 2];
