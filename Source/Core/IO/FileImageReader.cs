@@ -214,8 +214,342 @@ namespace CodeImp.DoomBuilder.IO
         {
             offsetx = int.MinValue;
             offsety = int.MinValue;
-            throw new NotImplementedException();
+
+            using (BinaryReader reader = new BinaryReader(stream))
+            {
+                read_header(reader);
+                read_image_id(reader);
+                read_color_map(reader);
+                read_image_data(reader);
+                decode_palette();
+                byte[] image = decode_image();
+                return new Bitmap(image_width, image_height, image_width * 4, PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(image, 0));
+            }
         }
+
+        void read_header(BinaryReader reader)
+        {
+            id_length = reader.ReadByte();
+            colormap_type = reader.ReadByte();
+            image_type = reader.ReadByte();
+
+            colormap_orig = reader.ReadUInt16();
+            colormap_length = reader.ReadUInt16();
+            colormap_entry_size = reader.ReadByte();
+
+            image_x_orig = reader.ReadInt16();
+            image_y_orig = reader.ReadInt16();
+            image_width = reader.ReadUInt16();
+            image_height = reader.ReadUInt16();
+            image_pixel_size = reader.ReadByte();
+            image_descriptor = reader.ReadByte();
+
+            if (colormap_type > 1)
+                throw new InvalidDataException("Invalid or unsupported targa image file");
+
+            if (colormap_type == 0)
+                colormap_length = 0;
+
+            bytes_per_colormap_entry = (colormap_entry_size + 7) / 8;
+            bytes_per_pixel_entry = (image_pixel_size + 7) / 8;
+
+            if (bytes_per_pixel_entry > 4)
+                throw new InvalidDataException("Unsupported targa image file");
+
+            num_alpha_bits = image_descriptor & 0x0f;
+            right_to_left = (image_descriptor & 0x10) != 0;
+            top_down = (image_descriptor & 0x20) != 0;
+        }
+
+        void read_image_id(BinaryReader reader)
+        {
+            image_id = reader.ReadBytes(id_length);
+        }
+
+        void read_color_map(BinaryReader reader)
+        {
+            colormap_data = reader.ReadBytes(bytes_per_colormap_entry * colormap_length);
+        }
+
+        void read_image_data(BinaryReader reader)
+        {
+            if (image_type == 9 || image_type == 10 || image_type == 11) // RLE compressed
+            {
+                image_data = new byte[bytes_per_pixel_entry * image_width * image_height];
+
+                byte[] rle_data = reader.ReadBytes((int)(reader.BaseStream.Length - reader.BaseStream.Position));
+
+                int input = 0;
+                int output = 0;
+                int pixels_left = image_width * image_height;
+                int input_available = rle_data.Length;
+                while (pixels_left > 0 && input_available > 0)
+                {
+                    int code = rle_data[input];
+                    int count = (code & 0x7f) + 1;
+                    bool rle_packet = (code & 0x80) != 0;
+
+                    input++;
+                    input_available--;
+
+                    if (rle_packet)
+                    {
+                        if (bytes_per_pixel_entry > input_available && pixels_left >= count) // Check for buffer overruns
+                            break;
+
+                        for (int i = 0; i < count; i++)
+                        {
+                            for (int j = 0; j < bytes_per_pixel_entry; j++)
+                                image_data[output + i * bytes_per_pixel_entry + j] = rle_data[input + j];
+                        }
+
+                        input += bytes_per_pixel_entry;
+                    }
+                    else
+                    {
+                        if (count * bytes_per_pixel_entry >= input_available && pixels_left >= count) // Check for buffer overruns
+                            break;
+
+                        for (int j = 0; j < count * bytes_per_pixel_entry; j++)
+                            image_data[output + j] = rle_data[input + j];
+
+                        input += count * bytes_per_pixel_entry;
+                    }
+
+                    output += bytes_per_pixel_entry * count;
+                    pixels_left -= count;
+                }
+            }
+            else
+            {
+                image_data = reader.ReadBytes(bytes_per_pixel_entry * image_width * image_height);
+            }
+        }
+
+        void decode_palette()
+        {
+            palette = new byte[colormap_length * 4];
+            if (image_type == 1 || image_type == 9)
+            {
+                if (colormap_entry_size == 32)
+                {
+                    for (int i = 0; i < colormap_length * 4; i++)
+                        palette[i] = colormap_data[i];
+
+                    if (num_alpha_bits == 0)
+                    {
+                        for (int i = 0; i < colormap_length; i++)
+                            palette[i * 4 + 3] = 255;
+                    }
+                }
+                else if (colormap_entry_size == 24)
+                {
+                    for (int i = 0; i < colormap_length; i++)
+                    {
+                        palette[i * 4] = colormap_data[i * 3];
+                        palette[i * 4 + 1] = colormap_data[i * 3 + 1];
+                        palette[i * 4 + 2] = colormap_data[i * 3 + 2];
+                        palette[i * 4 + 3] = 255;
+                    }
+                }
+                else if (colormap_entry_size == 16) // 5,5,5,1
+                {
+                    for (int i = 0; i < colormap_length; i++)
+                    {
+                        int color = colormap_data[i * 2] | (((int)colormap_data[i * 2 + 1]) << 8);
+                        int alpha_bit = (num_alpha_bits != 0) ? ((color >> 15) & 0x1) : 1;
+
+                        palette[i * 4] = (byte)(((color >> 10) & 0x1f) << 3);
+                        palette[i * 4 + 1] = (byte)(((color >> 5) & 0x1f) << 3);
+                        palette[i * 4 + 2] = (byte)((color & 0x1f) << 3);
+                        palette[i * 4 + 3] = (byte)((alpha_bit == 1) ? 255 : 0);
+                    }
+                }
+                else
+                {
+                    throw new InvalidDataException("Unsupported targa image file");
+                }
+            }
+        }
+
+        byte[] decode_image()
+        {
+            // single color-map index for Pseudo-Color
+            // Attribute, Red, Green and Blue ordered data for True-Color
+            // independent color-map indices for Direct-Color
+
+            if (image_type == 0) // no image data
+            {
+                return new byte[image_width * image_height * 4];
+            }
+            else if (image_type == 1 || image_type == 9) // color-mapped
+            {
+                return decode_color_mapped();
+            }
+            else if (image_type == 2 || image_type == 10) // true-color
+            {
+                return decode_true_color();
+            }
+            else if (image_type == 3 || image_type == 11) // black-and-white
+            {
+                return decode_grayscale();
+            }
+            else
+            {
+                throw new InvalidDataException("Invalid or unsupported targa image file");
+            }
+        }
+
+        byte[] decode_color_mapped()
+        {
+            var image = new byte[image_width * image_height * 4];
+
+            for (int y = 0; y < image_height; y++)
+            {
+                int output_line = (top_down ? y : image_height - y - 1) * image_width * 4;
+                for (int x = 0; x < image_width; x++)
+                {
+                    int inx = (x + y * image_width) * bytes_per_pixel_entry;
+                    int outx = output_line + (right_to_left ? image_width - 1 - x : x) * 4;
+
+                    int index = 0;
+                    for (int i = 0; i < bytes_per_pixel_entry; i++)
+                        index |= ((int)image_data[inx + i]) << (i * 8);
+                    index = Math.Min(Math.Max(index - colormap_orig, 0), (int)colormap_length - 1);
+                    index *= 4;
+
+                    image[outx] = palette[index];
+                    image[outx + 1] = palette[index + 1];
+                    image[outx + 2] = palette[index + 2];
+                    image[outx + 3] = palette[index + 3];
+                }
+            }
+
+            return image;
+        }
+
+        byte[] decode_true_color()
+        {
+            var image = new byte[image_width * image_height * 4];
+
+            if (image_pixel_size == 32)
+            {
+                for (int y = 0; y < image_height; y++)
+                {
+                    int input_line = y * image_width * 4;
+                    int output_line = (top_down ? y : image_height - y - 1) * image_width * 4;
+                    for (int x = 0; x < image_width; x++)
+                    {
+                        int inx = input_line + x * 4;
+                        int outx = output_line + (right_to_left ? image_width - 1 - x : x) * 4;
+                        image[outx] = image_data[inx];
+                        image[outx + 1] = image_data[inx + 1];
+                        image[outx + 2] = image_data[inx + 2];
+                        image[outx + 3] = (num_alpha_bits != 0) ? image_data[inx + 3] : (byte)255;
+                    }
+                }
+            }
+            else if (image_pixel_size == 24)
+            {
+                for (int y = 0; y < image_height; y++)
+                {
+                    int input_line = y * image_width * 3;
+                    int output_line = (top_down ? y : image_height - y - 1) * image_width * 4;
+                    for (int x = 0; x < image_width; x++)
+                    {
+                        int inx = input_line + x * 3;
+                        int outx = output_line + (right_to_left ? image_width - 1 - x : x) * 4;
+                        image[outx] = image_data[inx];
+                        image[outx + 1] = image_data[inx + 1];
+                        image[outx + 2] = image_data[inx + 2];
+                        image[outx + 3] = 255;
+                    }
+                }
+            }
+            else if (image_pixel_size == 16)
+            {
+                for (int y = 0; y < image_height; y++)
+                {
+                    int input_line = y * image_width * 2;
+                    int output_line = (top_down ? y : image_height - y - 1) * image_width * 4;
+                    for (int x = 0; x < image_width; x++)
+                    {
+                        int inx = input_line + x * 2;
+                        int outx = output_line + (right_to_left ? image_width - 1 - x : x) * 4;
+
+                        int color = image_data[inx] | (((int)image_data[inx + 1]) << 8);
+                        int alpha_bit = (num_alpha_bits != 0) ? ((color >> 15) & 0x1) : 1;
+
+                        image[outx] = (byte)(((color >> 10) & 0x1f) << 3);
+                        image[outx + 1] = (byte)(((color >> 5) & 0x1f) << 3);
+                        image[outx + 2] = (byte)((color & 0x1f) << 3);
+                        image[outx + 3] = (byte)((alpha_bit == 1) ? 255 : 0);
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidDataException("Unsupported targa image file");
+            }
+
+            return image;
+        }
+
+        byte[] decode_grayscale()
+        {
+            var image = new byte[image_width * image_height * 4];
+
+            if (image_pixel_size == 8)
+            {
+                for (int y = 0; y < image_height; y++)
+                {
+                    int input_line = y * image_width;
+                    int output_line = (top_down ? y : image_height - y - 1) * image_width * 4;
+                    for (int x = 0; x < image_width; x++)
+                    {
+                        int inx = input_line + x;
+                        int outx = output_line + (right_to_left ? image_width - 1 - x : x) * 4;
+                        image[outx] = image_data[inx];
+                        image[outx + 1] = image_data[inx];
+                        image[outx + 2] = image_data[inx];
+                        image[outx + 3] = 255;
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidDataException("Unsupported targa image file");
+            }
+
+            return image;
+        }
+
+        byte id_length;
+        byte colormap_type;
+        byte image_type;
+
+        ushort colormap_orig;
+        ushort colormap_length;
+        ushort colormap_entry_size;
+
+        short image_x_orig;
+        short image_y_orig;
+        ushort image_width;
+        ushort image_height;
+        byte image_pixel_size;
+        byte image_descriptor;
+
+        int bytes_per_colormap_entry;
+        int bytes_per_pixel_entry;
+
+        int num_alpha_bits;
+        bool right_to_left;
+        bool top_down;
+
+        byte[] image_id;
+        byte[] colormap_data;
+        byte[] palette;
+        byte[] image_data;
     }
 
     class FrameworkImageReader : IImageReader
