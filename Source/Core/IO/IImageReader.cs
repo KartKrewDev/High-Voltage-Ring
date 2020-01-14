@@ -26,9 +26,6 @@ namespace CodeImp.DoomBuilder.IO
 {
 	internal unsafe interface IImageReader
 	{
-		// Methods
-		Bitmap ReadAsBitmap(Stream stream);
 		Bitmap ReadAsBitmap(Stream stream, out int offsetx, out int offsety);
-		void DrawToPixelData(Stream stream, PixelColor* target, int targetwidth, int targetheight, int x, int y);
 	}
 }

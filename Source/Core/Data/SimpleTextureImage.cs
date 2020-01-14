@@ -79,19 +79,7 @@ namespace CodeImp.DoomBuilder.Data
 				MemoryStream mem = new MemoryStream(membytes);
 				mem.Seek(0, SeekOrigin.Begin);
 
-				// Get a reader for the data
-				IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-				if(!(reader is UnknownImageReader))
-				{
-					// Load the image
-					mem.Seek(0, SeekOrigin.Begin);
-					try { bitmap = reader.ReadAsBitmap(mem); }
-					catch(InvalidDataException)
-					{
-						// Data cannot be read!
-						bitmap = null;
-					}
-				}
+				bitmap = ImageDataFormat.TryLoadImage(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
 
 				// Not loaded?
 				if(bitmap == null)

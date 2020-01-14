@@ -16,6 +16,7 @@
 
 #region ================== Namespaces
 
+using System.Drawing;
 using System.IO;
 using CodeImp.DoomBuilder.IO;
 
@@ -39,80 +40,84 @@ namespace CodeImp.DoomBuilder.Data
 		private static readonly int[] JPG_SIGNATURE = new[] { 255, 216, 255 }; //mxd
 		private static readonly int[] PCX_SIGNATURE = new[] { 10, 5, 1, 8 }; //mxd
 
-		// This check image data and returns the appropriate image reader
-		public static IImageReader GetImageReader(Stream data, int guessformat, Playpal palette)
-		{
-			if(data == null) return new UnknownImageReader(); //mxd
+        // Try load image data with the appropriate image reader. Returns null if the image could not be loaded
+        public static Bitmap TryLoadImage(Stream data, int guessformat = UNKNOWN, Playpal palette = null)
+        {
+            int offsetx, offsety;
+            return TryLoadImage(data, guessformat, palette, out offsetx, out offsety);
+        }
 
-            // Data long enough to check for signatures?
-            if (data.Length > 10) 
-			{
-                uint ilType = DevilImageType.IL_TYPE_UNKNOWN;
+        public static Bitmap TryLoadImage(Stream data, int guessformat, Playpal palette, out int offsetx, out int offsety)
+        {
+            offsetx = int.MinValue;
+            offsety = int.MinValue;
+            try
+            {
+                if (data == null) return null;
 
-                // Check for PNG signature
-                if (CheckSignature(data, PNG_SIGNATURE))
-                    ilType = DevilImageType.IL_PNG;
-
-                // Check for DDS signature
-                else if (CheckSignature(data, DDS_SIGNATURE))
-                    ilType = DevilImageType.IL_DDS;
-
-                //mxd. Check for PCX signature
-                else if (CheckSignature(data, PCX_SIGNATURE))
-                    ilType = DevilImageType.IL_PCX;
-
-                //mxd. Check for JPG signature
-                else if (CheckSignature(data, JPG_SIGNATURE))
-                    ilType = DevilImageType.IL_JPG;
-
-                //mxd. TGA is VERY special in that it doesn't have a proper signature...
-                else if (CheckTgaSignature(data))
-                    ilType = DevilImageType.IL_TGA;
-
-                // 
-                if (ilType != DevilImageType.IL_TYPE_UNKNOWN)
+                // Data long enough to check for signatures?
+                if (data.Length > 10)
                 {
-                    FileImageReader ilreader = new FileImageReader(ilType, guessformat, palette);
-                    // also fill in the possible proxy type
-                    return ilreader;
+                    IImageReader loader = null;
+                    if (CheckSignature(data, PNG_SIGNATURE))
+                        loader = new FrameworkImageReader(true);
+                    else if (CheckSignature(data, JPG_SIGNATURE))
+                        loader = new FrameworkImageReader(false);
+                    else if (CheckSignature(data, PCX_SIGNATURE))
+                        loader = new PcxImageReader();
+                    else if (CheckTgaSignature(data))
+                        loader = new TgaImageReader();
+
+                    if (loader != null)
+                    {
+                        data.Seek(0, SeekOrigin.Begin);
+                        Bitmap image = loader.ReadAsBitmap(data, out offsetx, out offsety);
+                        if (image != null)
+                            return image;
+                    }
                 }
 
-                /*
-				// Check for GIF signature
-				if(CheckSignature(data, GIF_SIGNATURE)) return new UnknownImageReader(); //mxd. Not supported by (G)ZDoom
+                IImageReader doomloader = null;
 
-				// Check for BMP signature
-				if(CheckSignature(data, BMP_SIGNATURE)) return new UnknownImageReader(); //mxd. Not supported by (G)ZDoom
-                */
-			}
-				
-			// Could it be a doom picture?
-			switch(guessformat) 
-			{
-				case DOOMPICTURE:
-					// Check if data is valid for a doom picture
-					data.Seek(0, SeekOrigin.Begin);
-					DoomPictureReader picreader = new DoomPictureReader(palette);
-					if(picreader.Validate(data)) return picreader;
-					break;
+                // Could it be a doom picture?
+                switch (guessformat)
+                {
+                    case DOOMPICTURE:
+                        // Check if data is valid for a doom picture
+                        data.Seek(0, SeekOrigin.Begin);
+                        DoomPictureReader picreader = new DoomPictureReader(palette);
+                        if (picreader.Validate(data)) doomloader = picreader;
+                        break;
 
-				case DOOMFLAT:
-					// Check if data is valid for a doom flat
-					data.Seek(0, SeekOrigin.Begin);
-					DoomFlatReader flatreader = new DoomFlatReader(palette);
-					if(flatreader.Validate(data)) return flatreader;
-					break;
+                    case DOOMFLAT:
+                        // Check if data is valid for a doom flat
+                        data.Seek(0, SeekOrigin.Begin);
+                        DoomFlatReader flatreader = new DoomFlatReader(palette);
+                        if (flatreader.Validate(data)) doomloader = flatreader;
+                        break;
 
-				case DOOMCOLORMAP:
-					// Check if data is valid for a doom colormap
-					data.Seek(0, SeekOrigin.Begin);
-					DoomColormapReader colormapreader = new DoomColormapReader(palette);
-					if(colormapreader.Validate(data)) return colormapreader;
-					break;
-			}
-			
-			// Format not supported
-			return new UnknownImageReader();
+                    case DOOMCOLORMAP:
+                        // Check if data is valid for a doom colormap
+                        data.Seek(0, SeekOrigin.Begin);
+                        DoomColormapReader colormapreader = new DoomColormapReader(palette);
+                        if (colormapreader.Validate(data)) doomloader = colormapreader;
+                        break;
+                }
+
+                if (doomloader != null)
+                {
+                    data.Seek(0, SeekOrigin.Begin);
+                    Bitmap image = doomloader.ReadAsBitmap(data, out offsetx, out offsety);
+                    if (image != null)
+                        return image;
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
 		}
 
 		// This checks a signature as byte array

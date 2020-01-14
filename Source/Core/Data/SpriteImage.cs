@@ -78,19 +78,11 @@ namespace CodeImp.DoomBuilder.Data
 			if(lumpdata != null)
 			{
 				// Get a reader for the data
-				IImageReader reader = ImageDataFormat.GetImageReader(lumpdata, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-				if(reader is UnknownImageReader)
+				bitmap = ImageDataFormat.TryLoadImage(lumpdata, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette, out offsetx, out offsety);
+				if(bitmap == null)
 				{
 					// Data is in an unknown format!
 					error = "Sprite lump \"" + Path.Combine(spritelocation, Name) + "\" data format could not be read. Does this lump contain valid picture data at all?";
-					bitmap = null;
-				}
-				else
-				{
-                    // Read data as bitmap
-                    lumpdata.Seek(0, SeekOrigin.Begin);
-					if(bitmap != null) bitmap.Dispose();
-					bitmap = reader.ReadAsBitmap(lumpdata, out offsetx, out offsety);
 				}
 					
 				// Done
