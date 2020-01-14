@@ -308,7 +308,7 @@ shader world3d_main_highlight_fog extends world3d_main_fog
 	{
 		vec4 tcolor = texture(texture1, v2f.UV);
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
-		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
+		tcolor = vec4(getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal).rgb, tcolor.a);
 		if (tcolor.a == 0.0)
 		{
 			out.FragColor = tcolor;

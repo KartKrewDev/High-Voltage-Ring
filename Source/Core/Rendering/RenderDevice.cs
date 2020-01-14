@@ -95,6 +95,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
             // fog 3d shaders
             CompileShader(ShaderName.world3d_main_fog, "world3d.shader", "world3d_main_fog");
+            CompileShader(ShaderName.world3d_main_highlight_vertexcolor, "world3d.shader", "world3d_highlight_vertexcolor");
             CompileShader(ShaderName.world3d_main_highlight_fog, "world3d.shader", "world3d_main_highlight_fog");
             CompileShader(ShaderName.world3d_main_fog_vertexcolor, "world3d.shader", "world3d_main_fog_vertexcolor");
             CompileShader(ShaderName.world3d_main_highlight_fog_vertexcolor, "world3d.shader", "world3d_main_highlight_fog_vertexcolor");
