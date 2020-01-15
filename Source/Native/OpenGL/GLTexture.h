@@ -34,8 +34,8 @@ public:
 
 	void Finalize();
 
-	void Set2DImage(int width, int height) override;
-	void SetCubeImage(int size) override;
+	void Set2DImage(int width, int height, PixelFormat format) override;
+	void SetCubeImage(int size, PixelFormat format) override;
 
 	bool SetPixels(GLRenderDevice* device, const void* data);
 	bool SetCubePixels(GLRenderDevice* device, CubeMapFace face, const void* data);
@@ -55,8 +55,13 @@ public:
 	std::list<GLTexture*>::iterator ItTexture;
 
 private:
+	static GLint ToInternalFormat(PixelFormat format);
+	static GLenum ToDataFormat(PixelFormat format);
+	static GLenum ToDataType(PixelFormat format);
+
 	int mWidth = 0;
 	int mHeight = 0;
+	PixelFormat mFormat = {};
 	bool mCubeTexture = false;
 	bool mPBOTexture = false;
 	GLuint mTexture = 0;

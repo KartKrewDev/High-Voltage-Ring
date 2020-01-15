@@ -3243,7 +3243,7 @@ namespace CodeImp.DoomBuilder.Data
 
 			// Make custom rendertarget
 			const int cubemaptexsize = 1024;
-			Texture rendertarget = new Texture(cubemaptexsize, cubemaptexsize);
+			Texture rendertarget = new Texture(cubemaptexsize, cubemaptexsize, TextureFormat.Rgba8);
 
             // Start rendering
             General.Map.Graphics.StartRendering(true, new Color4(), rendertarget, true);

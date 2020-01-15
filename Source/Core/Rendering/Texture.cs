@@ -7,6 +7,20 @@ using System.Runtime.InteropServices;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
+    public enum TextureFormat : int
+    {
+        Rgba8,
+        Bgra8,
+        Rg16f,
+        Rgba16f,
+        R32f,
+        Rg32f,
+        Rgb32f,
+        Rgba32f,
+        D32f_S8,
+        D24_S8
+    }
+
     public class BaseTexture : IDisposable
     {
         public BaseTexture()
@@ -41,26 +55,28 @@ namespace CodeImp.DoomBuilder.Rendering
         protected static extern void Texture_Delete(IntPtr handle);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        protected static extern void Texture_Set2DImage(IntPtr handle, int width, int height);
+        protected static extern void Texture_Set2DImage(IntPtr handle, int width, int height, TextureFormat format);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        protected static extern void Texture_SetCubeImage(IntPtr handle, int size);
+        protected static extern void Texture_SetCubeImage(IntPtr handle, int size, TextureFormat format);
     }
 
     public class Texture : BaseTexture
     {
-        public Texture(int width, int height)
+        public Texture(int width, int height, TextureFormat format)
         {
             Width = width;
             Height = height;
-            Texture_Set2DImage(Handle, Width, Height);
+            Format = format;
+            Texture_Set2DImage(Handle, Width, Height, Format);
         }
 
         public Texture(RenderDevice device, System.Drawing.Bitmap bitmap)
         {
             Width = bitmap.Width;
             Height = bitmap.Height;
-            Texture_Set2DImage(Handle, Width, Height);
+            Format = TextureFormat.Bgra8;
+            Texture_Set2DImage(Handle, Width, Height, Format);
             device.SetPixels(this, bitmap);
         }
 
@@ -70,13 +86,15 @@ namespace CodeImp.DoomBuilder.Rendering
             {
                 Width = bitmap.Width;
                 Height = bitmap.Height;
-                Texture_Set2DImage(Handle, Width, Height);
+                Format = TextureFormat.Bgra8;
+                Texture_Set2DImage(Handle, Width, Height, Format);
                 device.SetPixels(this, bitmap);
             }
         }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
+        public TextureFormat Format { get; private set; }
 
         public object Tag { get; set; }
     }
@@ -85,7 +103,7 @@ namespace CodeImp.DoomBuilder.Rendering
     {
         public CubeTexture(RenderDevice device, int size)
         {
-            Texture_SetCubeImage(Handle, size);
+            Texture_SetCubeImage(Handle, size, TextureFormat.Bgra8);
         }
     }
 

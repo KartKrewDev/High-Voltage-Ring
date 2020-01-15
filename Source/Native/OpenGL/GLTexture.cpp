@@ -39,20 +39,23 @@ void GLTexture::Finalize()
 		Invalidate();
 }
 
-void GLTexture::Set2DImage(int width, int height)
+void GLTexture::Set2DImage(int width, int height, PixelFormat format)
 {
-	if (width < 1) width = 1;
-	if (height < 1) height = 1;
+	// This really shouldn't be here. The calling code should send valid input and this should throw an error.
+	if (width < 1) width = 16;
+	if (height < 1) height = 16;
 	mCubeTexture = false;
 	mWidth = width;
 	mHeight = height;
+	mFormat = format;
 }
 
-void GLTexture::SetCubeImage(int size)
+void GLTexture::SetCubeImage(int size, PixelFormat format)
 {
 	mCubeTexture = true;
 	mWidth = size;
 	mHeight = size;
+	mFormat = format;
 }
 
 bool GLTexture::SetPixels(GLRenderDevice* device, const void* data)
@@ -70,7 +73,7 @@ bool GLTexture::SetPixels(GLRenderDevice* device, const void* data)
 	
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, mTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), data);
 	if (data != nullptr)
 		glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -103,7 +106,7 @@ bool GLTexture::SetCubePixels(GLRenderDevice* device, CubeMapFace face, const vo
 
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
-	glTexImage2D(cubeMapFaceToGL[(int)face], 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(cubeMapFaceToGL[(int)face], 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), data);
 	if (data != nullptr && face == CubeMapFace::NegativeZ)
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
@@ -152,7 +155,7 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 			glBindTexture(GL_TEXTURE_2D, mTexture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_2D, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), nullptr);
 
 			glBindTexture(GL_TEXTURE_2D, oldBinding);
 		}
@@ -163,12 +166,12 @@ GLuint GLTexture::GetTexture(GLRenderDevice* device)
 
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, mWidth, mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), nullptr);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), nullptr);
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, oldBinding);
 		}
@@ -240,4 +243,58 @@ GLuint GLTexture::GetPBO(GLRenderDevice* device)
 	}
 
 	return mPBO;
+}
+
+GLint GLTexture::ToInternalFormat(PixelFormat format)
+{
+	static GLint cvt[] =
+	{
+		GL_RGBA8,
+		GL_RGBA8,
+		GL_RG16F,
+		GL_RGBA16F,
+		GL_R32F,
+		GL_RG32F,
+		GL_RGB32F,
+		GL_RGBA32F,
+		GL_DEPTH32F_STENCIL8,
+		GL_DEPTH24_STENCIL8
+	};
+	return cvt[(int)format];
+}
+
+GLenum GLTexture::ToDataFormat(PixelFormat format)
+{
+	static GLint cvt[] =
+	{
+		GL_RGBA,
+		GL_BGRA,
+		GL_RG,
+		GL_RGBA,
+		GL_RED,
+		GL_RG,
+		GL_RGB,
+		GL_RGBA,
+		GL_DEPTH_STENCIL,
+		GL_DEPTH_STENCIL
+	};
+	return cvt[(int)format];
+}
+
+GLenum GLTexture::ToDataType(PixelFormat format)
+{
+	static GLint cvt[] =
+	{
+		GL_UNSIGNED_BYTE,
+		GL_UNSIGNED_BYTE,
+		GL_FLOAT,
+		GL_FLOAT,
+		GL_FLOAT,
+		GL_FLOAT,
+		GL_FLOAT,
+		GL_FLOAT,
+		GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
+		GL_UNSIGNED_INT_24_8
+	};
+	return cvt[(int)format];
 }
