@@ -365,7 +365,7 @@ shader world3d_slope_handle extends world3d_vertex_color
 {
 	vertex
 	{
-		v2f.viewpos = view * world * vec4(in.Position.x * slopeHandleLength, in.Position.y, in.Position.z, 1.0);
+		v2f.viewpos = view * world * vec4(in.Position.x, in.Position.y * slopeHandleLength, in.Position.z, 1.0);
 		gl_Position = projection * v2f.viewpos;
 		v2f.Color = in.Color * vertexColor;
 		v2f.UV = in.TextureCoordinate;

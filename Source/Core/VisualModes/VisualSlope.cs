@@ -109,17 +109,63 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public virtual void Update() {}
 
-		public void SetPosition(Vector3D v1, Vector3D v2, Plane plane, float angle)
+		public void SetPosition(Vector3D v1, Vector3D v2x, Vector3D v3x, Plane plane, float angle)
 		{
 			//Matrix translate = Matrix.Translation(pos.x, pos.y, pos.z);
 			//Matrix rotate = Matrix.RotationZ(angle);
-			Matrix planerotate = Matrix.LookAt(RenderDevice.V3(v1), RenderDevice.V3(v2), RenderDevice.V3(plane.Normal));
+			//Matrix planerotate = Matrix.LookAt(RenderDevice.V3(v1), RenderDevice.V3(v2x), RenderDevice.V3(new Vector3D(0.0f, 0.0f, 1.0f)));
+			/*
+			float[] normal = new float[] { plane.Normal.x, plane.Normal.y, plane.Normal.z };
+			float[] vec2 = new float[] { 0.0f, 0.0f, 0.0f };
+			int imin = 0;
+
+			for (int i = 0; i < 3; ++i)
+				if (Math.Abs(normal[i]) < Math.Abs(normal[imin]))
+					imin = i;
+			
+			float dt = normal[imin];
+
+			vec2[imin] = 1;
+
+			for(int i=0;i<3;i++)
+				vec2[i] -= dt * normal[i];
+
+			Vector3D v2 = new Vector3D(vec2[0], vec2[1], vec2[2]);
+			*/
+
+			Vector3D v2 = new Vector3D(-plane.Normal.z, plane.Normal.x, plane.Normal.y);
+
+			v2 = Vector3D.CrossProduct(plane.Normal, v2x).GetNormal();
+
+			Vector3D v3 = Vector3D.CrossProduct(plane.Normal, v3x).GetNormal();
+
+			Matrix m = Matrix.Null;
+
+			m.M13 = plane.Normal.x;
+			m.M23 = plane.Normal.y;
+			m.M33 = plane.Normal.z;
+
+			m.M11 = v2.x;
+			m.M21 = v2.y;
+			m.M31 = v2.z;
+
+			m.M12 = v3.x;
+			m.M22 = v3.y;
+			m.M32 = v3.z;
+
+			m.M44 = 1.0f;
+
+			v1.z = plane.GetZ(v1);
+
+
+			Matrix rotation = Matrix.RotationZ(angle);
 
 			//Matrix xrotate = Matrix.RotationX(90.0f);
 			//Vector3 v = new Vector3(plane.Normal.x, plane.Normal.y, plane.Normal.z);
 			// Matrix rotate = Matrix.RotationAxis(v, angle);
 			//position = Matrix.Multiply(translate, planerotate);
-			position = planerotate;
+			position = Matrix.Multiply(m, Matrix.Multiply(rotation, Matrix.Translation(RenderDevice.V3(v1))));
+			// position = m;
 		}
 
 		#endregion

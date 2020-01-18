@@ -56,10 +56,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		// (when resized or display adapter was changed)
 		public void ReloadResource()
 		{
-			WorldVertex v0 = new WorldVertex(0.0f, 0.0f, 32.5f);
-			WorldVertex v1 = new WorldVertex(1.0f, 0.0f, 32.5f);
-			WorldVertex v2 = new WorldVertex(1.0f, 8.0f, 32.5f);
-			WorldVertex v3 = new WorldVertex(0.0f, 8.0f, 32.5f);
+			WorldVertex v0 = new WorldVertex(0.0f, 0.0f, 0.5f);
+			WorldVertex v1 = new WorldVertex(0.0f, 1.0f, 0.5f);
+			WorldVertex v2 = new WorldVertex(8.0f, 1.0f, 0.5f);
+			WorldVertex v3 = new WorldVertex(8.0f, 0.0f, 0.5f);
 
 			//WorldVertex v0 = new WorldVertex(0.0f, 0.0f, 0.5f);
 			//WorldVertex v1 = new WorldVertex(32.0f, 0.0f, 0.5f);
@@ -72,8 +72,8 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			WorldVertex[] vertices = new[]
 			{
-				v2, v1, v0,
-				v3, v2, v0
+				v0, v1, v2,
+				v0, v2, v3
 			};
 
 			geometry = new VertexBuffer();

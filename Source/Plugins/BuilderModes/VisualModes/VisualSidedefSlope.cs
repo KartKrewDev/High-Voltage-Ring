@@ -150,7 +150,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 				angle = sidedef.Line.Angle + (float)Math.PI / 2.0f;
 				if (angle > (float)Math.PI * 2.0f)
-					angle -= 2.0f * (float)Math.PI;
+					angle -= 2.0f * (float)Math.PI ;
 			}
 			else
 			{
@@ -165,7 +165,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					angle += 2.0f * (float)Math.PI;
 			}
 
-			SetPosition(v1, new Vector3D(0.0f, 0.0f, -1.0f), level.plane, angle);
+			SetPosition(v1, sidedef.Line.Line.GetPerpendicular(), sidedef.Line.Line.GetDelta(), level.plane, /* (float)Math.PI * 1.5f + */ sidedef.Line.Angle);
 		}
 
 		internal VisualSidedefSlope GetSmartPivotHandle(VisualSidedefSlope starthandle)
