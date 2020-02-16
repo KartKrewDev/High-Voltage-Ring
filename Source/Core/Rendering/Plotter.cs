@@ -59,7 +59,7 @@ namespace CodeImp.DoomBuilder.Rendering
         public Plotter(int width, int height)
         {
             // Initialize
-            Texture = new Texture(width, height);
+            Texture = new Texture(width, height, TextureFormat.Bgra8);
             this.pixels = new PixelColor[width*height];
             this.width = width;
             this.height = height;

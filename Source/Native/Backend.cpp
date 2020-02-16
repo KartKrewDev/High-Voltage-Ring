@@ -287,13 +287,13 @@ extern "C"
 		return Backend::Get()->DeleteTexture(tex);
 	}
 
-	void Texture_Set2DImage(Texture* tex, int width, int height)
+	void Texture_Set2DImage(Texture* tex, int width, int height, PixelFormat format)
 	{
-		tex->Set2DImage(width, height);
+		tex->Set2DImage(width, height, format);
 	}
 
-	void Texture_SetCubeImage(Texture* tex, int size)
+	void Texture_SetCubeImage(Texture* tex, int size, PixelFormat format)
 	{
-		tex->SetCubeImage(size);
+		tex->SetCubeImage(size, format);
 	}
 }

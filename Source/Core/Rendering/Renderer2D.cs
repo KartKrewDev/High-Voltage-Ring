@@ -356,9 +356,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Create rendertargets textures
 			plotter = new Plotter(windowsize.Width, windowsize.Height);
             gridplotter = new Plotter(windowsize.Width, windowsize.Height);
-            thingstex = new Texture(windowsize.Width, windowsize.Height);
-			overlaytex = new Texture(windowsize.Width, windowsize.Height);
-			surfacetex = new Texture(windowsize.Width, windowsize.Height);
+            thingstex = new Texture(windowsize.Width, windowsize.Height, TextureFormat.Rgba8);
+			overlaytex = new Texture(windowsize.Width, windowsize.Height, TextureFormat.Rgba8);
+			surfacetex = new Texture(windowsize.Width, windowsize.Height, TextureFormat.Rgba8);
 			
 			// Clear rendertargets
 			graphics.ClearTexture(General.Colors.Background.WithAlpha(0).ToColorValue(), thingstex);

@@ -34,7 +34,13 @@ namespace CodeImp.DoomBuilder.ZDoom
 			public const string FLICKER2 = "flickerlight2";
 			public const string SECTOR = "sectorlight";
 
-			public static readonly Dictionary<string, GZGeneral.LightModifier> GLDEFS_TO_GZDOOM_LIGHT_TYPE = new Dictionary<string, GZGeneral.LightModifier>(StringComparer.Ordinal) { { POINT, GZGeneral.LightModifier.NORMAL }, { PULSE, GZGeneral.LightModifier.PULSE }, { FLICKER, GZGeneral.LightModifier.FLICKER }, { FLICKER2, GZGeneral.LightModifier.FLICKERRANDOM }, { SECTOR, GZGeneral.LightModifier.SECTOR } };
+			public static readonly Dictionary<string, GZGeneral.LightModifier> GLDEFS_TO_GZDOOM_LIGHT_TYPE = new Dictionary<string, GZGeneral.LightModifier>(StringComparer.OrdinalIgnoreCase) {
+                { POINT, GZGeneral.LightModifier.NORMAL },
+                { PULSE, GZGeneral.LightModifier.PULSE },
+                { FLICKER, GZGeneral.LightModifier.FLICKER },
+                { FLICKER2, GZGeneral.LightModifier.FLICKERRANDOM },
+                { SECTOR, GZGeneral.LightModifier.SECTOR }
+            };
 		}
 
 		#endregion
@@ -158,7 +164,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 		private bool ParseLight(string lighttype)
 		{
-            DynamicLightData light = new DynamicLightData(new GZGeneral.LightData(GldefsLightType.GLDEFS_TO_GZDOOM_LIGHT_TYPE[lighttype]));
+            DynamicLightData light = new DynamicLightData(new GZGeneral.LightData(GldefsLightType.GLDEFS_TO_GZDOOM_LIGHT_TYPE[lighttype], GZGeneral.LightRenderStyle.NORMAL));
 
 			// Find classname
 			SkipWhitespace(true);
