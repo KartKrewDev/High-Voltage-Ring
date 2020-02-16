@@ -57,9 +57,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		public void ReloadResource()
 		{
 			WorldVertex v0 = new WorldVertex(0.0f, 0.0f, 0.5f);
-			WorldVertex v1 = new WorldVertex(0.0f, 1.0f, 0.5f);
-			WorldVertex v2 = new WorldVertex(8.0f, 1.0f, 0.5f);
-			WorldVertex v3 = new WorldVertex(8.0f, 0.0f, 0.5f);
+			WorldVertex v1 = new WorldVertex(1.0f, 0.0f, 0.5f);
+			WorldVertex v2 = new WorldVertex(1.0f, 8.0f, 0.5f);
+			WorldVertex v3 = new WorldVertex(0.0f, 8.0f, 0.5f);
 
 			//WorldVertex v0 = new WorldVertex(0.0f, 0.0f, 0.5f);
 			//WorldVertex v1 = new WorldVertex(32.0f, 0.0f, 0.5f);

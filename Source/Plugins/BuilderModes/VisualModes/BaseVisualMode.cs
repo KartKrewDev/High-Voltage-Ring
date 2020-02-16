@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.BuilderModes.Interface;
@@ -473,6 +474,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			// Apply new target
 			target = newtarget;
+
+			if(target.picked is VisualSlope)
+			{
+				Debug.WriteLine("Up: " + ((VisualSidedefSlope)target.picked).ToString());
+			}
 
 			// Show target info
 			if(updateinfo) ShowTargetInfo();

@@ -136,36 +136,39 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public void UpdatePosition()
 		{
-			float angle;
-			Vector3D pos;
-			Vector3D v1, v2;
+			bool invertline = false;
 
-			if (sidedef.IsFront)
+			if (up)
 			{
-				pos = sidedef.Line.End.Position;
-				pos.z = plane.GetZ(pos);
-
-				v1 = sidedef.Line.Start.Position;
-				v2 = sidedef.Line.End.Position;
-
-				angle = sidedef.Line.Angle + (float)Math.PI / 2.0f;
-				if (angle > (float)Math.PI * 2.0f)
-					angle -= 2.0f * (float)Math.PI ;
+				if (level.extrafloor && level.type == SectorLevelType.Ceiling)
+				{
+					if (sidedef.IsFront)
+						invertline = true;
+				}
+				else
+				{
+					if (!sidedef.IsFront)
+						invertline = true;
+				}
 			}
 			else
 			{
-				pos = sidedef.Line.Start.Position;
-				pos.z = plane.GetZ(pos);
-
-				v1 = sidedef.Line.End.Position;
-				v2 = sidedef.Line.Start.Position;
-
-				angle = sidedef.Line.Angle - (float)Math.PI / 2.0f;
-				if (angle < 0.0f)
-					angle += 2.0f * (float)Math.PI;
+				if (level.extrafloor && level.type == SectorLevelType.Floor)
+				{
+					if (!sidedef.IsFront)
+						invertline = true;
+				}
+				else
+				{
+					if (sidedef.IsFront)
+						invertline = true;
+				}
 			}
 
-			SetPosition(v1, sidedef.Line.Line.GetPerpendicular(), sidedef.Line.Line.GetDelta(), level.plane, /* (float)Math.PI * 1.5f + */ sidedef.Line.Angle);
+			if (invertline)
+				SetPosition(new Line2D(sidedef.Line.End.Position, sidedef.Line.Start.Position), level.plane);
+			else
+				SetPosition(sidedef.Line.Line, level.plane);
 		}
 
 		internal VisualSidedefSlope GetSmartPivotHandle(VisualSidedefSlope starthandle)
@@ -301,6 +304,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 			return handle;
 		}
 
+		public override string ToString()
+		{
+			return "Up: " + up.ToString() + " | level type: " + level.type.ToString();
+		}
+
 		#endregion
 
 		#region ================== Events
@@ -358,9 +366,38 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			foreach (SectorLevel l in levels)
 			{
+				bool applytoceiling = false;
 				Vector2D center = new Vector2D(l.sector.BBox.X + l.sector.BBox.Width / 2,
 												   l.sector.BBox.Y + l.sector.BBox.Height / 2);
 				
+				if(l.extrafloor)
+				{
+					if (l.type == SectorLevelType.Floor)
+						applytoceiling = true;
+				}
+				else
+				{
+					if (l.type == SectorLevelType.Ceiling)
+						applytoceiling = true;
+				}
+
+				if (applytoceiling)
+				{
+					Plane downplane = plane.GetInverted();
+					l.sector.CeilSlope = downplane.Normal;
+					l.sector.CeilSlopeOffset = downplane.Offset;
+					l.sector.CeilHeight = (int)new Plane(l.sector.CeilSlope, l.sector.CeilSlopeOffset).GetZ(center);
+				}
+				else
+				{
+					l.sector.FloorSlope = plane.Normal;
+					l.sector.FloorSlopeOffset = plane.Offset;
+					l.sector.FloorHeight = (int)new Plane(l.sector.FloorSlope, l.sector.FloorSlopeOffset).GetZ(center);
+				}
+
+
+
+				/*
 				if (l.plane.Normal.z >= 0.0f && !l.extrafloor)
 				{
 					l.sector.FloorSlope = plane.Normal;
@@ -374,6 +411,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					l.sector.CeilSlopeOffset = downplane.Offset;
 					l.sector.CeilHeight = (int)new Plane(l.sector.CeilSlope, l.sector.CeilSlopeOffset).GetZ(center);
 				}
+				*/
 
 				// Rebuild sector
 				BaseVisualSector vs;
