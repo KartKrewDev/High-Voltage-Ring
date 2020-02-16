@@ -57,9 +57,12 @@ namespace CodeImp.DoomBuilder.IO
                 int numColorPlanes = reader.ReadByte();
                 int planePitch = reader.ReadUInt16(); // always even
                 int paletteInfo = reader.ReadUInt16(); // 1=color/bw palette, 2=grayscale image
-                int width = reader.ReadUInt16();
-                int height = reader.ReadUInt16();
+                int screenwidth = reader.ReadUInt16();
+                int screenheight = reader.ReadUInt16();
                 reader.ReadBytes(54); // reserved
+
+                int width = rightMargin - leftMargin + 1;
+                int height = bottomMargin - topMargin + 1;
 
                 int vgaPaletteID = 0;
                 byte[] vgaPalette = null;
@@ -90,7 +93,7 @@ namespace CodeImp.DoomBuilder.IO
                 byte[] imageData = new byte[width * height * 4];
                 int destpitch = width * 4;
 
-                if (bitsPerComponent == 4 && numColorPlanes == 1 && paletteInfo == 1) // 16 colors from a palette
+                if (bitsPerComponent == 4 && numColorPlanes == 1 && paletteInfo < 2) // 16 colors from a palette
                 {
                     for (int y = 0; y < height; y++)
                     {
@@ -128,7 +131,7 @@ namespace CodeImp.DoomBuilder.IO
                         }
                     }
                 }
-                else if (bitsPerComponent == 8 && numColorPlanes == 1 && paletteInfo == 1) // 256 colors from a palette
+                else if (bitsPerComponent == 8 && numColorPlanes == 1 && paletteInfo < 2) // 256 colors from a palette
                 {
                     if (version == 5)
                     {
