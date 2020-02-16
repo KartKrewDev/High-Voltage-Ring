@@ -110,7 +110,7 @@ namespace CodeImp.DoomBuilder.Data
 					{
 						// Get a reader for the data
 						Bitmap patchbmp = ImageDataFormat.TryLoadImage(patchdata, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-						if(patchbmp != null)
+						if(patchbmp == null)
 						{
 							//mxd. Probably that's a flat?..
 							if(General.Map.Config.MixTexturesFlats) 
