@@ -228,12 +228,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 			foreach(KeyValuePair<Thing, VisualThing> vt in allthings)
 				if(vt.Value != null) vt.Value.Dispose();
 
-			foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
-			{
-				foreach (VisualSlope handle in kvp.Value)
-					if (handle != null) handle.Dispose();
-			}
-
 			// Apply camera position to thing
 			General.Map.VisualCamera.ApplyToThing();
 			

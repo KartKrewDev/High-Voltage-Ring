@@ -1163,10 +1163,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				foreach (VisualSlope handle in kvp.Value)
 					if (handle != null)
-					{
 						if (handle.Selected) RemoveSelectedObject((VisualSidedefSlope)handle);
-						handle.Dispose();
-					}
 
 				kvp.Value.Clear();
 			}
