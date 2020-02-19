@@ -19,7 +19,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private readonly Sidedef sidedef;
 		private readonly SectorLevel level;
 		private readonly bool up;
-		private RectangleF bbox;
 		private Vector3D pickintersect;
 		private float pickrayu;
 		private Plane plane;
@@ -53,8 +52,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			Update();
 
-			bbox = CreateBoundingBox();
-
 			// We have no destructor
 			GC.SuppressFinalize(this);
 		}
@@ -62,22 +59,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 		#endregion
 
 		#region ================== Methods
-
-		private RectangleF CreateBoundingBox()
-		{
-			Line2D l = sidedef.Line.Line;
-			float left = l.v1.x;
-			float right = l.v1.x;
-			float top = l.v1.y;
-			float bottom = l.v1.y;
-
-			if (l.v2.x < left) left = l.v2.x;
-			if (l.v2.x > right) right = l.v2.x;
-			if (l.v2.y > bottom) bottom = l.v2.y;
-			if (l.v2.y < top) top = l.v2.y;
-
-			return new RectangleF(left - SIZE, top - SIZE, right - left + SIZE*2, bottom - top + SIZE*2);
-		}
 
 		public override void Update()
 		{
@@ -95,6 +76,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		public override bool PickFastReject(Vector3D from, Vector3D to, Vector3D dir)
 		{
+			RectangleF bbox = sidedef.Sector.BBox;
+
 			if ((up && plane.Distance(from) > 0.0f) || (!up && plane.Distance(from) < 0.0f))
 			{
 				if (plane.GetIntersection(from, to, ref pickrayu))
@@ -125,10 +108,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				float side = sd.Line.SideOfLine(pickintersect);
 
 				if ((side <= 0.0f && sd.IsFront) || (side > 0.0f && !sd.IsFront))
-				{
-					if (sidedef.Line.DistanceTo(pickintersect, true) <= SIZE)
-						return true;
-				}
+					return true;
 			}
 
 			return false;
