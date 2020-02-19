@@ -3971,24 +3971,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			GetTargetEventReceiver(true).OnPaintSelectEnd();
 		}
 
-		// biwa
-		[BeginAction("selectvisualslopepivot")]
-		public void SelectVisualSlopePivot()
-		{
-			if (target.picked is VisualSlope)
-			{
-				// We can only have one pivot handle, so remove it from all first
-				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
-				{
-					foreach (VisualSlope handle in kvp.Value)
-						if (target.picked != handle)
-							handle.Pivot = false;
-				}
-
-				((VisualSlope)target.picked).Pivot = !((VisualSlope)target.picked).Pivot;
-			}
-		}
-
 		[BeginAction("togglevisualslopepicking")]
 		public void ToggleVisualSlopePicking()
 		{

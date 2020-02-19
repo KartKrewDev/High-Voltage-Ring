@@ -331,6 +331,21 @@ namespace CodeImp.DoomBuilder.VisualModes
 			}
 		}
 
+		public void OnEditEnd()
+		{
+			// We can only have one pivot handle, so remove it from all first
+			foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in mode.AllSlopeHandles)
+			{
+				foreach (VisualSlope handle in kvp.Value)
+				{
+					if (handle == mode.HighlightedTarget)
+						handle.Pivot = !handle.Pivot;
+					else
+						handle.Pivot = false;
+				}
+			}
+		}
+
 		// Return texture name
 		public string GetTextureName() { return ""; }
 
@@ -356,7 +371,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public void ApplyLowerUnpegged(bool set) { }
 		public void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight) { } //mxd
 		public virtual void OnPaintSelectEnd() { } // biwa
-		public void OnEditEnd() { }
 		public void OnChangeScale(int x, int y) { }
 		public void OnResetTextureOffset() { }
 		public void OnResetLocalTextureOffset() { }
