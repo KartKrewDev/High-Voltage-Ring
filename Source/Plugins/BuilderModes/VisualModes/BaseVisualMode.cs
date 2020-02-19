@@ -475,11 +475,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Apply new target
 			target = newtarget;
 
-			if(target.picked is VisualSlope)
-			{
-				Debug.WriteLine("Up: " + ((VisualSidedefSlope)target.picked).ToString());
-			}
-
 			// Show target info
 			if(updateinfo) ShowTargetInfo();
 		}
@@ -3992,6 +3987,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				((VisualSlope)target.picked).Pivot = !((VisualSlope)target.picked).Pivot;
 			}
+		}
+
+		[BeginAction("togglevisualslopepicking")]
+		public void ToggleVisualSlopePicking()
+		{
+			if (pickingmode != PickingMode.SlopeHandles)
+				pickingmode = PickingMode.SlopeHandles;
+			else
+				pickingmode = PickingMode.Default;
 		}
 
 		#endregion

@@ -30,6 +30,12 @@ using CodeImp.DoomBuilder.Editing;
 
 namespace CodeImp.DoomBuilder.VisualModes
 {
+	public enum PickingMode
+	{
+		Default,
+		SlopeHandles
+	}
+
 	/// <summary>
 	/// Provides specialized functionality for a visual (3D) Doom Builder editing mode.
 	/// </summary>
@@ -67,6 +73,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private Thing playerStart;
 		private Vector3D playerStartPosition;
 		private float playerStartAngle;
+
+		// For picking
+		protected PickingMode pickingmode;
 
 		// Map
 		protected VisualBlockMap blockmap;
@@ -113,6 +122,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.processgeometry = true;
 			this.processthings = true;
 			this.vertices = new Dictionary<Vertex, VisualVertexPair>(); //mxd
+			this.pickingmode = PickingMode.Default;
 
 			//mxd. Synch camera position to cursor position or center of the screen in 2d-mode
 			if(General.Settings.GZSynchCameras && General.Editing.Mode is ClassicMode) 
@@ -722,10 +732,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 			{
 				VisualSector vs = allsectors[General.Map.VisualCamera.Sector];
 				sectors.Add(General.Map.VisualCamera.Sector, vs);
-				foreach(VisualGeometry g in vs.FixedGeometry) pickables.Add(g);
+				if(pickingmode == PickingMode.Default)
+					foreach(VisualGeometry g in vs.FixedGeometry) pickables.Add(g);
 
 				// Add slope handles
-				if (General.Map.UDMF && General.Interface.AltState && allslopehandles.ContainsKey(General.Map.VisualCamera.Sector))
+				if (General.Map.UDMF && (General.Interface.AltState || pickingmode == PickingMode.SlopeHandles) && allslopehandles.ContainsKey(General.Map.VisualCamera.Sector))
 					pickables.AddRange(allslopehandles[General.Map.VisualCamera.Sector]);
 			}
 			
@@ -765,20 +776,23 @@ namespace CodeImp.DoomBuilder.VisualModes
 									if(!sectors.ContainsKey(ld.Front.Sector))
 									{
 										sectors.Add(ld.Front.Sector, vs);
-										foreach(VisualGeometry g in vs.FixedGeometry)
+										if (pickingmode == PickingMode.Default)
 										{
-											// Must have content
-											if(g.Triangles > 0)
-												pickables.Add(g);
+											foreach (VisualGeometry g in vs.FixedGeometry)
+											{
+												// Must have content
+												if (g.Triangles > 0)
+													pickables.Add(g);
+											}
 										}
 
 										// Add slope handles
-										if (General.Map.UDMF /* && General.Settings.ShowVisualSlopeHandles */ && General.Interface.AltState && allslopehandles.ContainsKey(ld.Front.Sector))
+										if (General.Map.UDMF /* && General.Settings.ShowVisualSlopeHandles */ && (General.Interface.AltState || pickingmode == PickingMode.SlopeHandles) && allslopehandles.ContainsKey(ld.Front.Sector))
 											pickables.AddRange(allslopehandles[ld.Front.Sector]);
 									}
 									
 									// Add sidedef if on the front side
-									if(side < 0.0f)
+									if(side < 0.0f && pickingmode == PickingMode.Default)
 									{
 										List<VisualGeometry> sidedefgeo = vs.GetSidedefGeometry(ld.Front);
 										foreach(VisualGeometry g in sidedefgeo)
@@ -806,20 +820,23 @@ namespace CodeImp.DoomBuilder.VisualModes
 									if(!sectors.ContainsKey(ld.Back.Sector))
 									{
 										sectors.Add(ld.Back.Sector, vs);
-										foreach(VisualGeometry g in vs.FixedGeometry)
+										if (pickingmode == PickingMode.Default)
 										{
-											// Must have content
-											if(g.Triangles > 0)
-												pickables.Add(g);
+											foreach (VisualGeometry g in vs.FixedGeometry)
+											{
+												// Must have content
+												if (g.Triangles > 0)
+													pickables.Add(g);
+											}
 										}
 
 										// Add slope handles
-										if (General.Map.UDMF /* && General.Settings.ShowVisualSlopeHandles */ && General.Interface.AltState && allslopehandles.ContainsKey(ld.Back.Sector))
+										if (General.Map.UDMF /* && General.Settings.ShowVisualSlopeHandles */ && (General.Interface.AltState || pickingmode == PickingMode.SlopeHandles) && allslopehandles.ContainsKey(ld.Back.Sector))
 											pickables.AddRange(allslopehandles[ld.Back.Sector]);
 									}
 
 									// Add sidedef if on the front side
-									if(side > 0.0f)
+									if(side > 0.0f && pickingmode == PickingMode.Default)
 									{
 										List<VisualGeometry> sidedefgeo = vs.GetSidedefGeometry(ld.Back);
 										foreach(VisualGeometry g in sidedefgeo)
@@ -840,12 +857,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 			}
 			
 			// Add all the visible things
-			foreach(VisualThing vt in visiblethings) pickables.Add(vt);
+			if(pickingmode == PickingMode.Default)
+				foreach(VisualThing vt in visiblethings) pickables.Add(vt);
 
 			//mxd. And all visual vertices
-			if(General.Map.UDMF && General.Settings.GZShowVisualVertices) 
+			if (General.Map.UDMF && General.Settings.GZShowVisualVertices && pickingmode == PickingMode.Default)
 			{
-				foreach(KeyValuePair<Vertex, VisualVertexPair> pair in vertices)
+				foreach (KeyValuePair<Vertex, VisualVertexPair> pair in vertices)
 					pickables.AddRange(pair.Value.Vertices);
 			}
 			
