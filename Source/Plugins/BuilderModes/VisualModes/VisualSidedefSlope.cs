@@ -48,7 +48,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.level = level;
 			this.up = up;
 
-			length = sidedef.Line.Length;
+			// length = sidedef.Line.Length;
 
 			Update();
 
@@ -68,6 +68,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 				plane = plane.GetInverted();
 
 			UpdatePosition();
+
+			length = new Line3D(new Vector3D(sidedef.Line.Line.v1, plane.GetZ(sidedef.Line.Line.v1)), new Vector3D(sidedef.Line.Line.v2, plane.GetZ(sidedef.Line.Line.v2))).GetDelta().GetLength();
 		}
 
 		/// <summary>
