@@ -2086,7 +2086,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(target.picked != null)
 			{
-				if(singleselection || target.picked.Selected || targetonly)
+				if(singleselection || target.picked.Selected || targetonly || target.picked is VisualSlope)
 				{
 					return (IVisualEventReceiver)target.picked;
 				}
