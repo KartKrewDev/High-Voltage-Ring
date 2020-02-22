@@ -736,7 +736,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					foreach(VisualGeometry g in vs.FixedGeometry) pickables.Add(g);
 
 				// Add slope handles
-				if (General.Map.UDMF && (General.Interface.AltState || pickingmode == PickingMode.SlopeHandles) && allslopehandles.ContainsKey(General.Map.VisualCamera.Sector))
+				if (General.Map.UDMF && pickingmode == PickingMode.SlopeHandles && allslopehandles.ContainsKey(General.Map.VisualCamera.Sector))
 					pickables.AddRange(allslopehandles[General.Map.VisualCamera.Sector]);
 			}
 			
@@ -787,7 +787,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 										}
 
 										// Add slope handles
-										if (General.Map.UDMF /* && General.Settings.ShowVisualSlopeHandles */ && (General.Interface.AltState || pickingmode == PickingMode.SlopeHandles) && allslopehandles.ContainsKey(ld.Front.Sector))
+										if (General.Map.UDMF && pickingmode == PickingMode.SlopeHandles && allslopehandles.ContainsKey(ld.Front.Sector))
 											pickables.AddRange(allslopehandles[ld.Front.Sector]);
 									}
 									
@@ -831,7 +831,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 										}
 
 										// Add slope handles
-										if (General.Map.UDMF /* && General.Settings.ShowVisualSlopeHandles */ && (General.Interface.AltState || pickingmode == PickingMode.SlopeHandles) && allslopehandles.ContainsKey(ld.Back.Sector))
+										if (General.Map.UDMF && pickingmode == PickingMode.SlopeHandles && allslopehandles.ContainsKey(ld.Back.Sector))
 											pickables.AddRange(allslopehandles[ld.Back.Sector]);
 									}
 
