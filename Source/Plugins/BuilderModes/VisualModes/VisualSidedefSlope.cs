@@ -328,6 +328,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 			}
 			else
 			{
+				if(this.pivot)
+				{
+					General.Interface.DisplayStatus(Windows.StatusType.Warning, "It is not allowed to mark pivot slope handles as selected.");
+					return;
+				}
+
 				this.selected = true;
 				mode.AddSelectedObject(this);
 			}
@@ -341,7 +347,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 				foreach (VisualSlope handle in kvp.Value)
 				{
 					if (handle == mode.HighlightedTarget)
-						handle.Pivot = !handle.Pivot;
+					{
+						if (handle.Selected)
+							General.Interface.DisplayStatus(Windows.StatusType.Warning, "It is not allowed to mark selected slope handles as pivot slope handles.");
+						else
+							handle.Pivot = !handle.Pivot;
+					}
 					else
 						handle.Pivot = false;
 				}
