@@ -28,7 +28,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		private Matrix position;
 
-
 		#endregion
 
 		#region ================== Properties
@@ -103,12 +102,14 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public void SetPosition(Line2D line, Plane plane)
 		{
+			Line3D line3d = new Line3D(new Vector3D(line.v1, plane.GetZ(line.v1)), new Vector3D(line.v2, plane.GetZ(line.v2)));
+
 			// This vector is perpendicular to the line, with a 90° angle between it and the plane normal
-			Vector3D perpendicularvector = Vector3D.CrossProduct(line.GetDelta().GetNormal(), plane.Normal);
+			Vector3D perpendicularvector = Vector3D.CrossProduct(line3d.GetDelta().GetNormal(), plane.Normal) * (-1);
 
 			// This vector is on the plane, with a 90° angle to the perpendicular vector (so effectively
 			// it's on the line, but in 3D
-			Vector3D linevector = Vector3D.CrossProduct(plane.Normal, perpendicularvector);
+			Vector3D linevector = Vector3D.CrossProduct(plane.Normal, perpendicularvector) * (-1);
 
 			Matrix m = Matrix.Null;
 
