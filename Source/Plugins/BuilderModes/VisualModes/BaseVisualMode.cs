@@ -2080,6 +2080,32 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			return verts;
 		}
+
+		// This returns all selected slope handles, no doubles
+		private List<VisualSidedefSlope> GetSelectedSlopeHandles()
+		{
+			HashSet<VisualSidedefSlope> added = new HashSet<VisualSidedefSlope>();
+			List<VisualSidedefSlope> handles = new List<VisualSidedefSlope>();
+
+			foreach(IVisualEventReceiver i in selectedobjects)
+			{
+				VisualSidedefSlope handle = i as VisualSidedefSlope;
+				if(handle != null && !added.Contains(handle))
+				{
+					handles.Add(handle);
+					added.Add(handle);
+				}
+			}
+
+			// Add highlight?
+			if((selectedobjects.Count == 0) && (target.picked is VisualSidedefSlope))
+			{
+				VisualSidedefSlope handle = (VisualSidedefSlope)target.picked;
+				if (!added.Contains(handle)) handles.Add(handle);
+			}
+
+			return handles;
+		}
 		
 		// This returns the IVisualEventReceiver on which the action must be performed
 		private IVisualEventReceiver GetTargetEventReceiver(bool targetonly)
@@ -3978,6 +4004,43 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				pickingmode = PickingMode.SlopeHandles;
 			else
 				pickingmode = PickingMode.Default;
+		}
+
+		[BeginAction("slopebetweenhandles")]
+		public void SlopeBetweenHandles()
+		{
+			List<VisualSidedefSlope> handles = GetSelectedSlopeHandles();
+			if(handles.Count != 2)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "You need to have exactly two slope handles selected to slope between them.");
+				return;
+			}
+
+			List<IVisualEventReceiver> selectedsectors = GetSelectedObjects(true, false, false, false, false);
+			if(selectedsectors.Count == 0)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "You need to select floors or ceilings to slope between slope handles.");
+				return;
+			}
+
+			General.Map.UndoRedo.CreateUndo("Slope between slope handles");
+
+			// Create the new plane
+			Vector3D p1 = new Vector3D(handles[0].Sidedef.Line.Start.Position, handles[0].Level.plane.GetZ(handles[0].Sidedef.Line.Start.Position));
+			Vector3D p2 = new Vector3D(handles[0].Sidedef.Line.End.Position, handles[0].Level.plane.GetZ(handles[0].Sidedef.Line.End.Position));
+			Vector3D p3 = new Vector3D(handles[1].Sidedef.Line.Line.GetCoordinatesAt(0.5f), handles[1].Level.plane.GetZ(handles[1].Sidedef.Line.Line.GetCoordinatesAt(0.5f)));
+			Plane plane = new Plane(p1, p2, p3, true);
+
+			// Apply slope
+			foreach (BaseVisualGeometrySector bvgs in selectedsectors)
+			{
+				VisualSidedefSlope.ApplySlope(bvgs.Level, plane, this);
+				bvgs.Sector.UpdateSectorGeometry(true);
+			}
+
+			UpdateChangedObjects();
+
+			General.Interface.DisplayStatus(StatusType.Action, "Sloped between slope handles.");
 		}
 
 		#endregion

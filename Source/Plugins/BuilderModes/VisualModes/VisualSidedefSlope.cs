@@ -213,6 +213,54 @@ namespace CodeImp.DoomBuilder.VisualModes
 			return handle;
 		}
 
+		public static void ApplySlope(SectorLevel level, Plane plane, BaseVisualMode mode)
+		{
+			bool applytoceiling = false;
+
+			Vector2D center = new Vector2D(level.sector.BBox.X + level.sector.BBox.Width / 2,
+											   level.sector.BBox.Y + level.sector.BBox.Height / 2);
+
+			if (level.extrafloor)
+			{
+				// The top side of 3D floors is the ceiling of the sector, but it's a "floor" in UDB, so the
+				// ceiling of the control sector has to be modified
+				if (level.type == SectorLevelType.Floor)
+					applytoceiling = true;
+			}
+			else
+			{
+				if (level.type == SectorLevelType.Ceiling)
+					applytoceiling = true;
+			}
+
+			if (applytoceiling)
+			{
+				Plane downplane = plane.GetInverted();
+				level.sector.CeilSlope = downplane.Normal;
+				level.sector.CeilSlopeOffset = downplane.Offset;
+				level.sector.CeilHeight = (int)new Plane(level.sector.CeilSlope, level.sector.CeilSlopeOffset).GetZ(center);
+			}
+			else
+			{
+				level.sector.FloorSlope = plane.Normal;
+				level.sector.FloorSlopeOffset = plane.Offset;
+				level.sector.FloorHeight = (int)new Plane(level.sector.FloorSlope, level.sector.FloorSlopeOffset).GetZ(center);
+			}
+
+			// Rebuild sector
+			BaseVisualSector vs;
+			if (mode.VisualSectorExists(level.sector))
+			{
+				vs = (BaseVisualSector)mode.GetVisualSector(level.sector);
+			}
+			else
+			{
+				vs = mode.CreateBaseVisualSector(level.sector);
+			}
+
+			if (vs != null) vs.UpdateSectorGeometry(true);
+		}
+
 		#endregion
 
 		#region ================== Events
@@ -274,51 +322,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			// Apply slope to surfaces
 			foreach (SectorLevel l in levels)
-			{
-				bool applytoceiling = false;
-				Vector2D center = new Vector2D(l.sector.BBox.X + l.sector.BBox.Width / 2,
-												   l.sector.BBox.Y + l.sector.BBox.Height / 2);
-				
-				if(l.extrafloor)
-				{
-					// The top side of 3D floors is the ceiling of the sector, but it's a "floor" in UDB, so the
-					// ceiling of the control sector has to be modified
-					if (l.type == SectorLevelType.Floor)
-						applytoceiling = true;
-				}
-				else
-				{
-					if (l.type == SectorLevelType.Ceiling)
-						applytoceiling = true;
-				}
-
-				if (applytoceiling)
-				{
-					Plane downplane = plane.GetInverted();
-					l.sector.CeilSlope = downplane.Normal;
-					l.sector.CeilSlopeOffset = downplane.Offset;
-					l.sector.CeilHeight = (int)new Plane(l.sector.CeilSlope, l.sector.CeilSlopeOffset).GetZ(center);
-				}
-				else
-				{
-					l.sector.FloorSlope = plane.Normal;
-					l.sector.FloorSlopeOffset = plane.Offset;
-					l.sector.FloorHeight = (int)new Plane(l.sector.FloorSlope, l.sector.FloorSlopeOffset).GetZ(center);
-				}
-
-				// Rebuild sector
-				BaseVisualSector vs;
-				if (mode.VisualSectorExists(l.sector))
-				{
-					vs = (BaseVisualSector)mode.GetVisualSector(l.sector);
-				}
-				else
-				{
-					vs = mode.CreateBaseVisualSector(l.sector);
-				}
-
-				if (vs != null) vs.UpdateSectorGeometry(true);
-			}
+				ApplySlope(l, plane, mode);
 
 			mode.SetActionResult("Changed slope.");
 		}
