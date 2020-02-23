@@ -226,8 +226,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if (selectedsectors.Count == 0)
 				levels.Add(level);
 			else
+			{
 				foreach (BaseVisualGeometrySector bvgs in selectedsectors)
 					levels.Add(bvgs.Level);
+
+				if (!levels.Contains(level))
+					levels.Add(level);
+			}
 
 			// Try to find a slope handle the user set to be the pivot handle
 			// TODO: doing this every time is kind of stupid. Maybe store the pivot handle in the mode?

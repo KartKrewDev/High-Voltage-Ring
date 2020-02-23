@@ -56,10 +56,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		// (when resized or display adapter was changed)
 		public void ReloadResource()
 		{
-			WorldVertex v0 = new WorldVertex(0.0f, -8.0f, 0.5f);
-			WorldVertex v1 = new WorldVertex(0.0f, 0.0f, 0.5f);
-			WorldVertex v2 = new WorldVertex(1.0f, 0.0f, 0.5f);
-			WorldVertex v3 = new WorldVertex(1.0f, -8.0f, 0.5f);
+			WorldVertex v0 = new WorldVertex(0.0f, -8.0f, 0.1f);
+			WorldVertex v1 = new WorldVertex(0.0f, 0.0f, 0.1f);
+			WorldVertex v2 = new WorldVertex(1.0f, 0.0f, 0.1f);
+			WorldVertex v3 = new WorldVertex(1.0f, -8.0f, 0.1f);
 
 			v1.c = v2.c = PixelColor.INT_WHITE;
 			v0.c = v3.c = PixelColor.INT_WHITE_NO_ALPHA;
