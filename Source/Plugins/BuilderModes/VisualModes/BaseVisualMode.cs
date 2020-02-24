@@ -4036,17 +4036,63 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		[BeginAction("slopebetweenhandles")]
 		public void SlopeBetweenHandles()
 		{
-			List<VisualSidedefSlope> handles = GetSelectedSlopeHandles();
-			if(handles.Count != 2)
+			List<IVisualEventReceiver> selectedsectors = GetSelectedObjects(true, false, false, false, false);
+			if (selectedsectors.Count == 0)
 			{
-				General.Interface.DisplayStatus(StatusType.Warning, "You need to have exactly two slope handles selected to slope between them.");
+				General.Interface.DisplayStatus(StatusType.Warning, "You need to select floors or ceilings to slope between slope handles.");
 				return;
 			}
 
-			List<IVisualEventReceiver> selectedsectors = GetSelectedObjects(true, false, false, false, false);
-			if(selectedsectors.Count == 0)
+			List<VisualSidedefSlope> handles = GetSelectedSlopeHandles();
+
+			// No handles selected, try to slope between highlighted handle and it smart pivot
+			if (handles.Count == 0 && HighlightedTarget is VisualSidedefSlope)
 			{
-				General.Interface.DisplayStatus(StatusType.Warning, "You need to select floors or ceilings to slope between slope handles.");
+				VisualSidedefSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
+				if (handle == null)
+				{
+					General.Interface.DisplayStatus(StatusType.Warning, "Couldn't find a smart pivot handle.");
+					return;
+				}
+
+				handles.Add((VisualSidedefSlope)HighlightedTarget);
+				handles.Add(handle);
+			}
+			// One handle selected, try to slope between it and the highlighted handle or the selected one's smart pivot
+			else if (handles.Count == 1)
+			{
+				if (HighlightedTarget == handles[0] || !(HighlightedTarget is VisualSidedefSlope))
+				{
+					VisualSidedefSlope handle;
+
+					if(HighlightedTarget is VisualSidedefSlope)
+						handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
+					else
+						handle = VisualSidedefSlope.GetSmartPivotHandle(handles[0], this);
+
+					if (handle == null)
+					{
+						General.Interface.DisplayStatus(StatusType.Warning, "Couldn't find a smart pivot handle.");
+						return;
+					}
+
+					handles.Add(handle);
+				}
+				else
+				{
+					handles.Add((VisualSidedefSlope)HighlightedTarget);
+				}
+			}
+			// Return if more than two handles are selected
+			else if(handles.Count > 2)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Too many slope handles selected.");
+				return;
+			}
+			// Everything else
+			else if(handles.Count != 2)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "No slope handles selected or highlighted.");
 				return;
 			}
 
