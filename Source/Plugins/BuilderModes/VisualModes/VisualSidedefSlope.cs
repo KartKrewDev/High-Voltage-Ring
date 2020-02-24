@@ -164,7 +164,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		/// <param name="starthandle">The slope handle to start from (the one we need to find a pivot handle for)</param>
 		/// <returns></returns>
-		internal VisualSidedefSlope GetSmartPivotHandle(VisualSidedefSlope starthandle)
+		public static VisualSidedefSlope GetSmartPivotHandle(VisualSidedefSlope starthandle, BaseVisualMode mode)
 		{
 			VisualSidedefSlope handle = starthandle;
 			List<VisualSidedefSlope> potentialhandles = new List<VisualSidedefSlope>();
@@ -206,9 +206,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			if (handle == starthandle)
 				return null;
-
-			if(handle != null)
-				handle.SmartPivot = true;
 
 			return handle;
 		}
@@ -298,11 +295,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			// User didn't set a pivot handle, try to find the smart pivot handle
 			if(pivothandle == null)
-				pivothandle = GetSmartPivotHandle(this);
+				pivothandle = GetSmartPivotHandle(this, mode);
 
 			// Still no pivot handle, cancle
 			if (pivothandle == null)
 				return;
+
+			pivothandle.SmartPivot = true;
 
 			mode.CreateUndo("Change slope");
 

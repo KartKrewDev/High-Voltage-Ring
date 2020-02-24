@@ -640,7 +640,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		private void RenderSlopeHandles()
 		{
-			if (visualslopehandles == null) return;
+			if (visualslopehandles == null || !showselection) return;
 
 			graphics.SetAlphaBlendEnable(true);
 			graphics.SetAlphaTestEnable(false);

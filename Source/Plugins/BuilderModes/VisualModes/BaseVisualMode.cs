@@ -471,12 +471,32 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			// Should we update the info on panels?
 			bool updateinfo = (newtarget.picked != target.picked);
-			
+
+			if (updateinfo)
+			{
+				if (newtarget.picked is VisualSidedefSlope)
+				{
+					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
+					VisualSidedefSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)newtarget.picked, this);
+					if (handle != null)
+						handle.SmartPivot = true;
+				}
+				else if(target.picked is VisualSidedefSlope)
+				{
+
+					// Clear smart pivot handles, otherwise it will keep being displayed
+					foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
+						foreach (VisualSidedefSlope checkhandle in kvp.Value)
+							checkhandle.SmartPivot = false;
+				}
+			}
+
 			// Apply new target
 			target = newtarget;
 
 			// Show target info
-			if(updateinfo) ShowTargetInfo();
+			if (updateinfo)
+				ShowTargetInfo();
 		}
 
 		// This shows the picked target information
@@ -1433,7 +1453,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				List<VisualSlope> handles = new List<VisualSlope>();
 				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
 					foreach (VisualSlope handle in kvp.Value)
-						if (handle.Selected || handle.Pivot || /* handle.SmartPivot || */ target.picked == handle)
+						if (handle.Selected || handle.Pivot || handle.SmartPivot || target.picked == handle)
 							handles.Add(handle);
 
 				renderer.SetVisualSlopeHandles(handles);
@@ -4003,7 +4023,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if (pickingmode != PickingMode.SlopeHandles)
 				pickingmode = PickingMode.SlopeHandles;
 			else
+			{
 				pickingmode = PickingMode.Default;
+
+				// Clear smart pivot handles, otherwise it will keep being displayed
+				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
+					foreach (VisualSidedefSlope checkhandle in kvp.Value)
+						checkhandle.SmartPivot = false;
+			}
 		}
 
 		[BeginAction("slopebetweenhandles")]
