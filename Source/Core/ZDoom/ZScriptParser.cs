@@ -84,7 +84,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 						if(_pname == _pstruct.ClassName.ToLowerInvariant())
 						{
-							Parser.LogWarning("Class \"" + _pstruct.ClassName + "\" is trying to inherit from itself. Class is being skipped.");
+							Parser.ReportError("Class \"" + _pstruct.ClassName + "\" is trying to inherit from itself. Class is being skipped.");
 							return false;
 						}
 
@@ -1004,11 +1004,6 @@ namespace CodeImp.DoomBuilder.ZDoom
             Dictionary<int, ThingTypeInfo> things = General.Map.Config.GetThingTypes();
             foreach (ZScriptClassStructure cls in allclasseslist)
             {
-				if (cls.ClassName == "zombiefoddergoodsoul")
-				{
-					int x = 123;
-				}
-
                 ActorStructure actor = cls.Actor;
 				if (actor != null)
 				{
