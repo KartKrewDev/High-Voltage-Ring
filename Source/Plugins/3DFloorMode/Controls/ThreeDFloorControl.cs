@@ -131,6 +131,11 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			alphaArgument.SetValue(ctrl.threeDFloor.Alpha);
 			sectorBrightness.Text = ctrl.threeDFloor.Brightness.ToString();
 
+			threeDFloor.FloorSlope = ctrl.ThreeDFloor.FloorSlope;
+			threeDFloor.FloorSlopeOffset = ctrl.ThreeDFloor.FloorSlopeOffset;
+			threeDFloor.CeilingSlope = ctrl.ThreeDFloor.CeilingSlope;
+			threeDFloor.CeilingSlopeOffset = ctrl.ThreeDFloor.CeilingSlopeOffset;
+
 			for (int i = 0; i < checkedListBoxSectors.Items.Count; i++)
 				checkedListBoxSectors.SetItemChecked(i, ctrl.checkedListBoxSectors.GetItemChecked(i));
 		}
