@@ -81,6 +81,13 @@ namespace CodeImp.DoomBuilder.ZDoom
                     if (_pstruct.ParentName != null)
                     {
                         string _pname = _pstruct.ParentName.ToLowerInvariant();
+
+						if(_pname == _pstruct.ClassName.ToLowerInvariant())
+						{
+							Parser.LogWarning("Class \"" + _pstruct.ClassName + "\" is trying to inherit from itself. Class is being skipped.");
+							return false;
+						}
+
                         Parser.allclasses.TryGetValue(_pname, out _pstruct);
                     }
                     else _pstruct = null;
@@ -997,6 +1004,11 @@ namespace CodeImp.DoomBuilder.ZDoom
             Dictionary<int, ThingTypeInfo> things = General.Map.Config.GetThingTypes();
             foreach (ZScriptClassStructure cls in allclasseslist)
             {
+				if (cls.ClassName == "zombiefoddergoodsoul")
+				{
+					int x = 123;
+				}
+
                 ActorStructure actor = cls.Actor;
 				if (actor != null)
 				{
