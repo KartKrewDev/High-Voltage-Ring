@@ -93,9 +93,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			type = 1;
 			flags = 0;
 			tags = new List<int>();
-			floorslope = new Vector3D(0.0f, 0.0f, 1.0f);
+			floorslope = new Vector3D(0.0f, 0.0f, 0.0f);
 			floorslopeoffset = 0.0f;
-			ceilingslope = new Vector3D(0.0f, 0.0f, 1.0f);
+			ceilingslope = new Vector3D(0.0f, 0.0f, 0.0f);
 			ceilingslopeoffset = 0.0f;
 
 			alpha = 255;
