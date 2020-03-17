@@ -109,15 +109,15 @@ namespace CodeImp.DoomBuilder.Data
 					if(patchdata != null)
 					{
 						// Get a reader for the data
-						IImageReader reader = ImageDataFormat.GetImageReader(patchdata, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-						if(reader is UnknownImageReader)
+						Bitmap patchbmp = ImageDataFormat.TryLoadImage(patchdata, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
+						if(patchbmp == null)
 						{
 							//mxd. Probably that's a flat?..
 							if(General.Map.Config.MixTexturesFlats) 
 							{
-								reader = ImageDataFormat.GetImageReader(patchdata, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
+								patchbmp = ImageDataFormat.TryLoadImage(patchdata, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
 							}
-							if(reader is UnknownImageReader) 
+							if(patchbmp == null) 
 							{
                                 // Data is in an unknown format!
                                 messages.Add(new LogMessage(ErrorType.Error, "Patch lump \"" + Path.Combine(patchlocation, p.LumpName) + "\" data format could not be read, while loading texture \"" + this.Name + "\". Does this lump contain valid picture data at all?"));
@@ -125,17 +125,11 @@ namespace CodeImp.DoomBuilder.Data
 							}
 						}
 
-						if(!(reader is UnknownImageReader))
+						if(patchbmp != null)
 						{
                             // Draw the patch
-                            patchdata.Seek(0, SeekOrigin.Begin);
-							try { reader.DrawToPixelData(patchdata, pixels, width, height, p.X, p.Y); }
-							catch(InvalidDataException)
-							{
-                                // Data cannot be read!
-                                messages.Add(new LogMessage(ErrorType.Error, "Patch lump \"" + p.LumpName + "\" data format could not be read, while loading texture \"" + this.Name + "\". Does this lump contain valid picture data at all?"));
-								missingpatches++; //mxd
-							}
+							DrawToPixelData(patchbmp, pixels, width, height, p.X, p.Y);
+                            patchbmp.Dispose();
 						}
 
                         // Done
@@ -163,6 +157,38 @@ namespace CodeImp.DoomBuilder.Data
             return new LocalLoadResult(bitmap, messages);
 		}
 
-		#endregion
-	}
+        // This draws the picture to the given pixel color data
+        static unsafe void DrawToPixelData(Bitmap bmp, PixelColor* target, int targetwidth, int targetheight, int x, int y)
+        {
+            // Get bitmap
+            int width = bmp.Size.Width;
+            int height = bmp.Size.Height;
+
+            // Lock bitmap pixels
+            BitmapData bmpdata = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            PixelColor* pixels = (PixelColor*)bmpdata.Scan0.ToPointer();
+
+            // Go for all pixels in the original image
+            for (int ox = 0; ox < width; ox++)
+            {
+                for (int oy = 0; oy < height; oy++)
+                {
+                    // Copy this pixel?
+                    if (pixels[oy * width + ox].a > 0.5f)
+                    {
+                        // Calculate target pixel and copy when within bounds
+                        int tx = x + ox;
+                        int ty = y + oy;
+                        if ((tx >= 0) && (tx < targetwidth) && (ty >= 0) && (ty < targetheight))
+                            target[ty * targetwidth + tx] = pixels[oy * width + ox];
+                    }
+                }
+            }
+
+            // Done
+            bmp.UnlockBits(bmpdata);
+        }
+
+        #endregion
+    }
 }

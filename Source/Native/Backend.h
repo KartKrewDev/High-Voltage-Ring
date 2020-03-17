@@ -39,6 +39,22 @@ enum class TextureFilter : int { Nearest, Linear };
 enum class MipmapFilter : int { None, Nearest, Linear };
 enum class UniformType : int { Vec4f, Vec3f, Vec2f, Float, Mat4, Vec4i, Vec3i, Vec2i, Int, Vec4fArray, Vec3fArray, Vec2fArray };
 
+enum class PixelFormat : int
+{
+	Rgba8,
+	Bgra8,
+	Rg16f,
+	Rgba16f,
+	R32f,
+	Rg32f,
+	Rgb32f,
+	Rgba32f,
+	D32f_S8,
+	D24_S8,
+	A2Bgr10,
+	A2Rgb10_snorm
+};
+
 typedef int UniformName;
 typedef int ShaderName;
 
@@ -106,8 +122,8 @@ class Texture
 {
 public:
 	virtual ~Texture() = default;
-	virtual void Set2DImage(int width, int height) = 0;
-	virtual void SetCubeImage(int size) = 0;
+	virtual void Set2DImage(int width, int height, PixelFormat format) = 0;
+	virtual void SetCubeImage(int size, PixelFormat format) = 0;
 };
 
 class Backend

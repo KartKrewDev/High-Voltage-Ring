@@ -81,6 +81,13 @@ namespace CodeImp.DoomBuilder.ZDoom
                     if (_pstruct.ParentName != null)
                     {
                         string _pname = _pstruct.ParentName.ToLowerInvariant();
+
+						if(_pname == _pstruct.ClassName.ToLowerInvariant())
+						{
+							Parser.ReportError("Class \"" + _pstruct.ClassName + "\" is trying to inherit from itself. Class is being skipped.");
+							return false;
+						}
+
                         Parser.allclasses.TryGetValue(_pname, out _pstruct);
                     }
                     else _pstruct = null;

@@ -344,29 +344,27 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(Sidedef != Sidedef.Line.Front) u = 1.0f - u;
 
 			// Some textures (e.g. HiResImage) may lie about their size, so use bitmap size instead
-			Bitmap image = Texture.GetBitmap();
+            int imageWidth = Texture.GetAlphaTestWidth();
+            int imageHeight = Texture.GetAlphaTestHeight();
 
-            lock (image)
-            {
-                // Determine texture scale...
-                Vector2D imgscale = new Vector2D((float)Texture.Width / image.Width, (float)Texture.Height / image.Height);
-                Vector2D texscale = (Texture is HiResImage) ? imgscale * Texture.Scale : Texture.Scale;
+            // Determine texture scale...
+            Vector2D imgscale = new Vector2D((float)Texture.Width / imageWidth, (float)Texture.Height / imageHeight);
+            Vector2D texscale = (Texture is HiResImage) ? imgscale * Texture.Scale : Texture.Scale;
 
-                // Get correct offset to texture space...
-                float texoffsetx = Sidedef.OffsetX + sourceside.OffsetX + UniFields.GetFloat(Sidedef.Fields, "offsetx_mid") + UniFields.GetFloat(sourceside.Fields, "offsetx_mid");
-                int ox = (int)Math.Floor((u * Sidedef.Line.Length * UniFields.GetFloat(sourceside.Fields, "scalex_mid", 1.0f) / texscale.x + (texoffsetx / imgscale.x)) % image.Width);
+            // Get correct offset to texture space...
+            float texoffsetx = Sidedef.OffsetX + sourceside.OffsetX + UniFields.GetFloat(Sidedef.Fields, "offsetx_mid") + UniFields.GetFloat(sourceside.Fields, "offsetx_mid");
+            int ox = (int)Math.Floor((u * Sidedef.Line.Length * UniFields.GetFloat(sourceside.Fields, "scalex_mid", 1.0f) / texscale.x + (texoffsetx / imgscale.x)) % imageWidth);
 
-                float texoffsety = Sidedef.OffsetY + sourceside.OffsetY + UniFields.GetFloat(Sidedef.Fields, "offsety_mid") + UniFields.GetFloat(sourceside.Fields, "offsety_mid");
-                int oy = (int)Math.Ceiling(((pickintersect.z - sourceside.Sector.CeilHeight) * UniFields.GetFloat(sourceside.Fields, "scaley_mid", 1.0f) / texscale.y - (texoffsety / imgscale.y)) % image.Height);
+            float texoffsety = Sidedef.OffsetY + sourceside.OffsetY + UniFields.GetFloat(Sidedef.Fields, "offsety_mid") + UniFields.GetFloat(sourceside.Fields, "offsety_mid");
+            int oy = (int)Math.Ceiling(((pickintersect.z - sourceside.Sector.CeilHeight) * UniFields.GetFloat(sourceside.Fields, "scaley_mid", 1.0f) / texscale.y - (texoffsety / imgscale.y)) % imageHeight);
 
-                // Make sure offsets are inside of texture dimensions...
-                if (ox < 0) ox += image.Width;
-                if (oy < 0) oy += image.Height;
+            // Make sure offsets are inside of texture dimensions...
+            if (ox < 0) ox += imageWidth;
+            if (oy < 0) oy += imageHeight;
 
-                // Check pixel alpha
-                Point pixelpos = new Point(General.Clamp(ox, 0, image.Width - 1), General.Clamp(image.Height - oy, 0, image.Height - 1));
-                return (image.GetPixel(pixelpos.X, pixelpos.Y).A > 0 && base.PickAccurate(@from, to, dir, ref u_ray));
-            }
+            // Check pixel alpha
+            Point pixelpos = new Point(General.Clamp(ox, 0, imageWidth - 1), General.Clamp(imageHeight - oy, 0, imageHeight - 1));
+            return (Texture.AlphaTestPixel(pixelpos.X, pixelpos.Y) && base.PickAccurate(@from, to, dir, ref u_ray));
 		}
 
 		// Return texture name

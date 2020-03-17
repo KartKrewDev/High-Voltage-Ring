@@ -163,17 +163,16 @@ namespace CodeImp.DoomBuilder.Data
 						MemoryStream mem = new MemoryStream(membytes);
 						mem.Seek(0, SeekOrigin.Begin);
 
-						// Get a reader for the data
-						IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-						if(reader is UnknownImageReader)
+						Bitmap patchbmp = ImageDataFormat.TryLoadImage(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
+						if(patchbmp == null)
 						{
 							//mxd. Probably that's a flat?..
 							if(General.Map.Config.MixTexturesFlats) 
 							{
-								reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
+								patchbmp = ImageDataFormat.TryLoadImage(mem, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
 							}
 
-							if(reader is UnknownImageReader) 
+							if(patchbmp == null) 
 							{
 								// Data is in an unknown format!
 								if(!nulltexture) messages.Add(new LogMessage(optional ? ErrorType.Warning : ErrorType.Error, "Patch lump \"" + Path.Combine(patchlocation, p.LumpName) + "\" data format could not be read, while loading texture \"" + this.Name + "\""));
@@ -181,29 +180,15 @@ namespace CodeImp.DoomBuilder.Data
 							}
 						}
 
-						if(!(reader is UnknownImageReader)) 
+						if(patchbmp != null) 
 						{
-							// Get the patch
-							mem.Seek(0, SeekOrigin.Begin);
-							Bitmap patchbmp = null;
-							try { patchbmp = reader.ReadAsBitmap(mem); }
-							catch(InvalidDataException)
-							{
-								// Data cannot be read!
-								if(!nulltexture) messages.Add(new LogMessage(optional ? ErrorType.Warning : ErrorType.Error, "Patch lump \"" + p.LumpName + "\" data format could not be read, while loading texture \"" + this.Name + "\""));
-								missingpatches++; //mxd
-							}
+							//mxd. Apply transformations from TexturePatch 
+							patchbmp = TransformPatch(bitmap, p, patchbmp);
 
-							if(patchbmp != null)
-							{
-								//mxd. Apply transformations from TexturePatch 
-								patchbmp = TransformPatch(bitmap, p, patchbmp);
-
-								// Draw the patch on the texture image
-								Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);
-								g.DrawImageUnscaledAndClipped(patchbmp, tgtrect);
-								patchbmp.Dispose();
-							}
+							// Draw the patch on the texture image
+							Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);
+							g.DrawImageUnscaledAndClipped(patchbmp, tgtrect);
+							patchbmp.Dispose();
 						}
 
 						// Done
@@ -217,8 +202,6 @@ namespace CodeImp.DoomBuilder.Data
 							ImageData img = General.Map.Data.GetTextureImage(p.LumpName);
 							if(!(img is UnknownImage) && img != this)
 							{
-								if(!img.IsImageLoaded) img.LoadImage();
-
                                 //mxd. Apply transformations from TexturePatch. We don't want to modify the original bitmap here, so make a copy
                                 Bitmap bmp = new Bitmap(img.LocalGetBitmap());
                                 Bitmap patchbmp = TransformPatch(bitmap, p, bmp);

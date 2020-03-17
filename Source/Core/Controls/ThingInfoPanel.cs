@@ -118,7 +118,7 @@ namespace CodeImp.DoomBuilder.Controls
 			if(ti.Sprite.ToLowerInvariant().StartsWith(DataManager.INTERNAL_PREFIX) && (ti.Sprite.Length > DataManager.INTERNAL_PREFIX.Length))
 			{
 				spritename.Text = "";
-				spritetex.Image = General.Map.Data.GetSpriteImage(ti.Sprite).GetBitmap();
+				spritetex.Image = General.Map.Data.GetSpriteImage(ti.Sprite).GetSpritePreview();
 			}
 			else if((ti.Sprite.Length <= 8) && (ti.Sprite.Length > 0))
 			{

@@ -60,9 +60,8 @@ namespace CodeImp.DoomBuilder.Data
 			bmp.Dispose();
 			bitmapdata.Dispose();
 
-			// We have no destructor
-			GC.SuppressFinalize(this);
-		}
+            LoadImageNow();
+        }
 
 		#endregion
 
@@ -85,7 +84,8 @@ namespace CodeImp.DoomBuilder.Data
         //mxd
         public override Image GetPreview() 
 		{
-			return base.GetBitmap();
+            Stream bitmapdata = assembly.GetManifestResourceStream(resourcename);
+            return Image.FromStream(bitmapdata);
 		}
 		
 		#endregion

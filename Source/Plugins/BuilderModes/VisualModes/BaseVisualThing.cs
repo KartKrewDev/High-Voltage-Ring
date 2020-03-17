@@ -301,7 +301,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Check if the texture is loaded
 				ImageData sprite = sprites[i];
                 if (!sprite.IsImageLoaded && !sprite.LoadFailed)
-				    sprite.LoadImage();
+				    sprite.LoadImageNow();
 				if(sprite.IsImageLoaded)
 				{
 					base.textures[i] = sprite;
@@ -354,7 +354,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				else
 				{
 					isloaded = false;
-					base.textures[i] = General.Map.Data.Hourglass3D;
+					base.textures[i] = sprite;
 
 					// Determine sprite size
 					float radius = Math.Min(thingradius, thingheight / 2f);

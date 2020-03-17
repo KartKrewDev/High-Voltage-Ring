@@ -1550,19 +1550,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Update floor slope?
 						if(s.FloorSlope.GetLengthSq() > 0 && !float.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z)) 
 						{
-							Plane floor = new Plane(s.FloorSlope, s.FloorSlopeOffset);
-							Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
-							s.FloorSlope = new Vector3D(new Vector2D(s.FloorSlope.x, s.FloorSlope.y).GetRotated(rotation), s.FloorSlope.z);
-							s.FloorSlopeOffset = -Vector3D.DotProduct(s.FloorSlope, new Vector3D(center + relativeoffset, floor.GetZ(center)));
+							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, s.FloorHeight);
+							Plane p = new Plane(center, s.FloorSlope.GetAngleXY() + rotation + Angle2D.PIHALF, -s.FloorSlope.GetAngleZ(), true);
+							s.FloorSlope = p.Normal;
+							s.FloorSlopeOffset = p.Offset;
 						}
 
 						// Update ceiling slope?
 						if(s.CeilSlope.GetLengthSq() > 0 && !float.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z)) 
 						{
-							Plane ceiling = new Plane(s.CeilSlope, s.CeilSlopeOffset);
-							Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
-							s.CeilSlope = new Vector3D(new Vector2D(s.CeilSlope.x, s.CeilSlope.y).GetRotated(rotation), s.CeilSlope.z);
-							s.CeilSlopeOffset = -Vector3D.DotProduct(s.CeilSlope, new Vector3D(center + relativeoffset, ceiling.GetZ(center)));
+							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, s.CeilHeight);
+							Plane p = new Plane(center, s.CeilSlope.GetAngleXY() + rotation + Angle2D.PIHALF, -s.CeilSlope.GetAngleZ(), false);
+							s.CeilSlope = p.Normal;
+							s.CeilSlopeOffset = p.Offset;
 						}
 					}
 				}

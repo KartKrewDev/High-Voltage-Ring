@@ -42,6 +42,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		private string bordertexture;
 		private string topflat;
 		private string bottomflat;
+		private Vector3D floorslope;
+		private float floorslopeoffset;
+		private Vector3D ceilingslope;
+		private float ceilingslopeoffset;
 		private int type;
 		private int flags;
 		private int alpha;
@@ -72,6 +76,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		public bool Rebuild { get { return rebuild; } set { rebuild = value; } }
 		public int UDMFTag { get { return udmftag; } set { udmftag = value; } }
 		public List<int> Tags { get { return tags; } set { tags = value; } }
+		public Vector3D FloorSlope {  get { return floorslope; } set { floorslope = value; } }
+		public float FloorSlopeOffset { get { return floorslopeoffset; } set { floorslopeoffset = value; } }
+		public Vector3D CeilingSlope { get { return ceilingslope; } set { ceilingslope = value; } }
+		public float CeilingSlopeOffset { get { return ceilingslopeoffset; } set { ceilingslopeoffset = value; } }
 
 		public ThreeDFloor()
 		{
@@ -85,7 +93,11 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			type = 1;
 			flags = 0;
 			tags = new List<int>();
-			
+			floorslope = new Vector3D(0.0f, 0.0f, 0.0f);
+			floorslopeoffset = 0.0f;
+			ceilingslope = new Vector3D(0.0f, 0.0f, 0.0f);
+			ceilingslopeoffset = 0.0f;
+
 			alpha = 255;
 		}
 
@@ -102,6 +114,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			bottomheight = sector.FloorHeight;
 			brightness = sector.Brightness;
 			tags = new List<int>();
+			floorslope = sector.FloorSlope;
+			floorslopeoffset = sector.FloorSlopeOffset;
+			ceilingslope = sector.CeilSlope;
+			ceilingslopeoffset = sector.CeilSlopeOffset;
 
 			foreach (Sidedef sd in sector.Sidedefs)
 			{
@@ -183,6 +199,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			sector.SetFloorTexture(bottomflat);
 			sector.Brightness = brightness;
 			sector.Tags = tags;
+			sector.FloorSlope = floorslope;
+			sector.FloorSlopeOffset = floorslopeoffset;
+			sector.CeilSlope = ceilingslope;
+			sector.CeilSlopeOffset = ceilingslopeoffset;
 
 			foreach (Sidedef sd in sector.Sidedefs)
 			{
@@ -219,6 +239,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			sector.CeilHeight = topheight;
 			sector.SetFloorTexture(bottomflat);
 			sector.SetCeilTexture(topflat);
+			sector.FloorSlope = floorslope;
+			sector.FloorSlopeOffset = floorslopeoffset;
+			sector.CeilSlope = ceilingslope;
+			sector.CeilSlopeOffset = ceilingslopeoffset;
 
 			foreach (Sidedef sd in sector.Sidedefs)
 			{

@@ -69,17 +69,11 @@ namespace CodeImp.DoomBuilder.IO
 
 		// This creates a Bitmap from the given data
 		// Returns null on failure
-		public Bitmap ReadAsBitmap(Stream stream, out int offsetx, out int offsety)
+		public unsafe Bitmap ReadAsBitmap(Stream stream, out int offsetx, out int offsety)
 		{
 			offsetx = int.MinValue;
 			offsety = int.MinValue;
-			return ReadAsBitmap(stream);
-		}
 
-		// This creates a Bitmap from the given data
-		// Returns null on failure
-		public unsafe Bitmap ReadAsBitmap(Stream stream)
-		{
 			int width, height;
 
 			// Read pixel data
@@ -114,41 +108,6 @@ namespace CodeImp.DoomBuilder.IO
 				// Failed loading picture
 				return null;
 			}
-		}
-
-		// This draws the picture to the given pixel color data
-		// Throws exception on failure
-		public unsafe void DrawToPixelData(Stream stream, PixelColor* target, int targetwidth, int targetheight, int x, int y)
-		{
-			// Get bitmap
-			Bitmap bmp = ReadAsBitmap(stream);
-			int width = bmp.Size.Width;
-			int height = bmp.Size.Height;
-
-			// Lock bitmap pixels
-			BitmapData bmpdata = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-			PixelColor* pixels = (PixelColor*)bmpdata.Scan0.ToPointer();
-
-			// Go for all pixels in the original image
-			for(int ox = 0; ox < width; ox++)
-			{
-				for(int oy = 0; oy < height; oy++)
-				{
-					// Copy this pixel?
-					if(pixels[oy * width + ox].a > 0.5f)
-					{
-						// Calculate target pixel and copy when within bounds
-						int tx = x + ox;
-						int ty = y + oy;
-						if((tx >= 0) && (tx < targetwidth) && (ty >= 0) && (ty < targetheight))
-							target[ty * targetwidth + tx] = pixels[oy * width + ox];
-					}
-				}
-			}
-
-			// Done
-			bmp.UnlockBits(bmpdata);
-			bmp.Dispose();
 		}
 
 		// This creates pixel color data from the given data

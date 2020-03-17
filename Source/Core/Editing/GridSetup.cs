@@ -55,7 +55,7 @@ namespace CodeImp.DoomBuilder.Editing
 		// Background
 		private string background = "";
 		private int backsource;
-		private ImageData backimage = new UnknownImage(null);
+		private ImageData backimage = new UnknownImage();
 		private int backoffsetx, backoffsety;
 		private float backscalex, backscaley;
 
@@ -234,7 +234,7 @@ namespace CodeImp.DoomBuilder.Editing
 			}
 
 			// Make sure it is loaded
-			backimage.LoadImage();
+			backimage.LoadImageNow();
 		}
 		
 		// This returns the next higher coordinate

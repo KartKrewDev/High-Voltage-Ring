@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -70,9 +71,15 @@ namespace CodeImp.DoomBuilder.Data
         private ImageLoadState imagestate;
         private bool loadfailed;
 
+        // Alpha test
+        private BitArray alphatest;
+        private int alphatestWidth = 64;
+        private int alphatestHeight = 64;
+
         // GDI bitmap
-        private Bitmap bitmap;
+        private Bitmap loadedbitmap;
         private Bitmap previewbitmap;
+        private Bitmap spritepreviewbitmap;
 
         // Direct3D texture
         private int mipmaplevels;	// 0 = all mipmaps
@@ -99,8 +106,27 @@ namespace CodeImp.DoomBuilder.Data
 		internal bool HasLongName { get { return hasLongName; } } //mxd
 		public bool UseColorCorrection { get { return usecolorcorrection; } set { usecolorcorrection = value; } }
 		public Texture Texture { get { return GetTexture(); } }
-		public bool IsPreviewLoaded { get { return (previewstate == ImageLoadState.Ready); } }
-		public bool IsImageLoaded { get { return (imagestate == ImageLoadState.Ready); } }
+		public bool IsPreviewLoaded
+        {
+            get
+            {
+                if (previewstate == ImageLoadState.None)
+                    General.Map.Data.QueueLoadPreview(this);
+
+                return (previewstate == ImageLoadState.Ready);
+            }
+        }
+
+		public bool IsImageLoaded
+        {
+            get
+            {
+                if (imagestate == ImageLoadState.None)
+                    General.Map.Data.QueueLoadImage(this);
+
+                return (imagestate == ImageLoadState.Ready);
+            }
+        }
 		public bool LoadFailed { get { return loadfailed; } }
 		public bool IsDisposed { get { return isdisposed; } }
 		public bool AllowUnload { get; set; }
@@ -145,10 +171,14 @@ namespace CodeImp.DoomBuilder.Data
 			// Not already disposed?
 			if(!isdisposed)
 			{
-				// Clean up
-				bitmap?.Dispose();
-				texture?.Dispose();
-				bitmap = null;
+                // Clean up
+                loadedbitmap?.Dispose();
+                previewbitmap?.Dispose();
+                spritepreviewbitmap?.Dispose();
+                texture?.Dispose();
+                loadedbitmap = null;
+                previewbitmap = null;
+                spritepreviewbitmap = null;
 				texture = null;
 					
 				// Done
@@ -185,16 +215,45 @@ namespace CodeImp.DoomBuilder.Data
 			shortnamewidth = (int)Math.Ceiling(General.Interface.MeasureString(shortname, SystemFonts.MessageBoxFont, 10000, StringFormat.GenericTypographic).Width) + 6;
 		}
 
-		// This returns the bitmap image
-		public Bitmap GetBitmap()
-		{
-			// Image loaded successfully?
-			if(!loadfailed && (imagestate == ImageLoadState.Ready) && (bitmap != null))
-				return bitmap;
-				
-			// Image loading failed?
-			return (loadfailed ? Properties.Resources.Failed : Properties.Resources.Hourglass);
-		}
+        public int GetAlphaTestWidth()
+        {
+            return alphatestWidth;
+        }
+
+        public int GetAlphaTestHeight()
+        {
+            return alphatestHeight;
+        }
+
+        public bool AlphaTestPixel(int x, int y)
+        {
+            if (alphatest != null)
+                return alphatest.Get(x + y * alphatestWidth);
+            else
+                return true;
+        }
+
+        public Image GetBackgroundBitmap()
+        {
+            return LocalGetBitmap();
+        }
+
+        public Bitmap GetSkyboxBitmap()
+        {
+            return LocalGetBitmap();
+        }
+
+        public Bitmap ExportBitmap()
+        {
+            return LocalGetBitmap();
+        }
+
+        public Bitmap GetSpritePreview()
+        {
+            if (spritepreviewbitmap == null)
+                spritepreviewbitmap = LocalGetBitmap();
+            return spritepreviewbitmap;
+        }
 
         // Loads the image directly. This is needed by the background loader for some patches.
         public Bitmap LocalGetBitmap()
@@ -211,13 +270,22 @@ namespace CodeImp.DoomBuilder.Data
             return result.bitmap;
         }
 		
-        public void LoadImage()
+        public void LoadImageNow()
+        {
+            if (imagestate != ImageLoadState.Ready)
+            {
+                imagestate = ImageLoadState.Loading;
+                LoadImage(true);
+            }
+        }
+
+        internal void BackgroundLoadImage()
         {
             LoadImage(true);
         }
 
 		// This loads the image
-		public virtual void LoadImage(bool notify)
+		protected void LoadImage(bool notify)
 		{
             if (imagestate == ImageLoadState.Ready && previewstate != ImageLoadState.Loading)
                 return;
@@ -227,18 +295,20 @@ namespace CodeImp.DoomBuilder.Data
 
             ConvertImageFormat(loadResult);
             MakeImagePreview(loadResult);
+            MakeAlphaTestImage(loadResult);
 
             // Save memory by disposing the original image immediately if we only used it to load a preview image
             bool onlyPreview = false;
-            if (imagestate == ImageLoadState.Ready)
+            if (imagestate != ImageLoadState.Loading)
             {
                 loadResult.bitmap?.Dispose();
+                loadResult.bitmap = null;
                 onlyPreview = true;
             }
 
             General.MainWindow.RunOnUIThread(() =>
             {
-                if (imagestate != ImageLoadState.Ready && !onlyPreview)
+                if (imagestate == ImageLoadState.Loading && !onlyPreview)
                 {
                     // Log errors and warnings
                     foreach (LogMessage message in loadResult.messages)
@@ -251,10 +321,13 @@ namespace CodeImp.DoomBuilder.Data
                         loadfailed = true;
                     }
 
-                    bitmap?.Dispose();
+                    loadedbitmap?.Dispose();
                     texture?.Dispose();
                     imagestate = ImageLoadState.Ready;
-                    bitmap = loadResult.bitmap;
+                    loadedbitmap = loadResult.bitmap;
+                    alphatest = loadResult.alphatest;
+                    alphatestWidth = loadResult.alphatestWidth;
+                    alphatestHeight = loadResult.alphatestHeight;
 
                     if (loadResult.uiThreadWork != null)
                         loadResult.uiThreadWork();
@@ -277,8 +350,12 @@ namespace CodeImp.DoomBuilder.Data
             });
 
             // Notify the main thread about the change so that sectors can update their buffers
-            if (notify) General.MainWindow.ImageDataLoaded(this.name);
-		}
+            if (notify)
+            {
+                if (this is SpriteImage || this is VoxelImage) General.MainWindow.SpriteDataLoaded(this.Name);
+                else General.MainWindow.ImageDataLoaded(this.name);
+            }
+        }
 
         protected class LocalLoadResult
         {
@@ -300,6 +377,9 @@ namespace CodeImp.DoomBuilder.Data
 
             public Bitmap bitmap;
             public Bitmap preview;
+            public BitArray alphatest;
+            public int alphatestWidth;
+            public int alphatestHeight;
             public List<LogMessage> messages;
             public Action uiThreadWork;
         }
@@ -568,6 +648,29 @@ namespace CodeImp.DoomBuilder.Data
             loadResult.preview = preview;
         }
 
+        void MakeAlphaTestImage(LocalLoadResult loadResult)
+        {
+            if (loadResult.bitmap == null)
+                return;
+
+            int width = loadResult.bitmap.Width;
+            int height = loadResult.bitmap.Height;
+            loadResult.alphatestWidth = width;
+            loadResult.alphatestHeight = height;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (loadResult.bitmap.GetPixel(x, y).A == 0)
+                    {
+                        if (loadResult.alphatest == null)
+                            loadResult.alphatest = new BitArray(width * height, true);
+                        loadResult.alphatest.Set(x + y * width, false);
+                    }
+                }
+            }
+        }
+
         Texture GetTexture()
 		{
             if (texture != null)
@@ -583,12 +686,17 @@ namespace CodeImp.DoomBuilder.Data
                 return General.Map.Data.LoadingTexture;
             }
 
-            texture = new Texture(General.Map.Graphics, bitmap);
+            texture = new Texture(General.Map.Graphics, loadedbitmap);
 
             if (dynamictexture)
             {
                 if ((width != texture.Width) || (height != texture.Height))
                     throw new Exception("Could not create a texture with the same size as the image.");
+            }
+            else
+            {
+                loadedbitmap.Dispose();
+                loadedbitmap = null;
             }
 
 #if DEBUG
@@ -605,7 +713,7 @@ namespace CodeImp.DoomBuilder.Data
 
 			if((texture != null) && !texture.Disposed)
 			{
-                General.Map.Graphics.SetPixels(texture, bitmap);
+                General.Map.Graphics.SetPixels(texture, loadedbitmap);
 			}
 		}
 		
@@ -625,16 +733,21 @@ namespace CodeImp.DoomBuilder.Data
 				// Make a copy
 				return new Bitmap(previewbitmap);
 			}
-				
-			// Loading failed?
-			if(loadfailed)
+
+            // Loading failed?
+            if (loadfailed)
 			{
 				// Return error bitmap
 				return Properties.Resources.Failed;
 			}
 
-			// Return loading bitmap
-			return Properties.Resources.Hourglass;
+            if (previewstate == ImageLoadState.None)
+            {
+                General.Map.Data.QueueLoadPreview(this);
+            }
+
+            // Return loading bitmap
+            return Properties.Resources.Hourglass;
 		}
 
 		//mxd. This greatly speeds up Dictionary lookups
