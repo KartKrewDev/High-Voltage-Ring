@@ -539,7 +539,6 @@
     <Compile Include="IO\Lump.cs" />
     <Compile Include="IO\MapSetIO.cs" />
     <Compile Include="IO\UniversalMapSetIO.cs" />
-    <Compile Include="IO\UnknownImageReader.cs" />
     <Compile Include="IO\WAD.cs" />
     <Compile Include="Windows\MainForm.cs">
       <SubType>Form</SubType>
