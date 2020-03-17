@@ -62,19 +62,11 @@ namespace CodeImp.DoomBuilder.Data
 				mem.Seek(0, SeekOrigin.Begin);
 
 				// Get a reader for the data
-				IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMCOLORMAP, General.Map.Data.Palette);
-				if(reader is UnknownImageReader)
+				bitmap = ImageDataFormat.TryLoadImage(mem, ImageDataFormat.DOOMCOLORMAP, General.Map.Data.Palette);
+				if(bitmap == null)
 				{
 					// Data is in an unknown format!
 					error = "Colormap lump \"" + Name + "\" data format could not be read. Does this lump contain valid colormap data at all?";
-					bitmap = null;
-				}
-				else
-				{
-					// Read data as bitmap
-					mem.Seek(0, SeekOrigin.Begin);
-					if(bitmap != null) bitmap.Dispose();
-					bitmap = reader.ReadAsBitmap(mem);
 				}
 
 				// Done

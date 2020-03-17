@@ -88,14 +88,6 @@ namespace CodeImp.DoomBuilder.IO
 		
 		// This creates a Bitmap from the given data
 		// Returns null on failure
-		public Bitmap ReadAsBitmap(Stream stream)
-		{
-			int x, y;
-			return ReadAsBitmap(stream, out x, out y);
-		}
-		
-		// This creates a Bitmap from the given data
-		// Returns null on failure
 		public Bitmap ReadAsBitmap(Stream stream, out int offsetx, out int offsety)
 		{
 			int width, height;
@@ -137,40 +129,6 @@ namespace CodeImp.DoomBuilder.IO
 			return bmp;
 		}
 		
-		// This draws the picture to the given pixel color data
-		// Throws exception on failure
-		public void DrawToPixelData(Stream stream, PixelColor* target, int targetwidth, int targetheight, int x, int y)
-		{
-			int width, height, ox, oy;
-
-			// Read pixel data
-			PixelColor[] pixeldata = ReadAsPixelData(stream, out width, out height, out ox, out oy);
-			if(pixeldata != null)
-			{
-				// Go for all source pixels
-				// We don't care about the original image offset, so reuse ox/oy
-				for(ox = 0; ox < width; ox++)
-				{
-					for(oy = 0; oy < height; oy++)
-					{
-						// Copy this pixel?
-						if(pixeldata[oy * width + ox].a > 0.5f)
-						{
-							// Calculate target pixel and copy when within bounds
-							int tx = x + ox;
-							int ty = y + oy;
-							if((tx >= 0) && (tx < targetwidth) && (ty >= 0) && (ty < targetheight))
-								target[ty * targetwidth + tx] = pixeldata[oy * width + ox];
-						}
-					}
-				}
-			}
-			else
-			{
-				throw new InvalidDataException("Failed to read pixeldata"); //mxd. Let's throw exception on failure
-			}
-		}
-
 		// This creates pixel color data from the given data
 		// Returns null on failure
 		private PixelColor[] ReadAsPixelData(Stream stream, out int width, out int height, out int offsetx, out int offsety)

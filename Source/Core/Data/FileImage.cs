@@ -160,18 +160,7 @@ namespace CodeImp.DoomBuilder.Data
             if (filedata != null)
             {
                 // Get a reader for the data
-                IImageReader reader = ImageDataFormat.GetImageReader(filedata, probableformat, General.Map.Data.Palette);
-                if (!(reader is UnknownImageReader))
-                {
-                    // Load the image
-                    filedata.Seek(0, SeekOrigin.Begin);
-                    try { bitmap = reader.ReadAsBitmap(filedata); }
-                    catch (InvalidDataException)
-                    {
-                        // Data cannot be read!
-                        bitmap = null;
-                    }
-                }
+                bitmap = ImageDataFormat.TryLoadImage(filedata, probableformat, General.Map.Data.Palette);
 
                 // Not loaded?
                 if (bitmap == null)

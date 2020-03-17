@@ -1035,22 +1035,8 @@ namespace CodeImp.DoomBuilder.Data
 				if(mem == null) continue;
 
 				// Is it an image?
-				IImageReader reader = ImageDataFormat.GetImageReader(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-				if(!(reader is UnknownImageReader))
-				{
-					// Load the image
-					mem.Seek(0, SeekOrigin.Begin);
-					Bitmap result;
-					try { result = reader.ReadAsBitmap(mem); }
-					catch(InvalidDataException)
-					{
-						// Data cannot be read!
-						result = null;
-					}
-
-					// Found it?
-					if(result != null) return result;
-				}
+				Bitmap bitmap = ImageDataFormat.TryLoadImage(mem, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
+				if(bitmap != null) return bitmap;
 			}
 
 			// No such image found
