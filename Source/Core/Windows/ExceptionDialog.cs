@@ -110,7 +110,6 @@ namespace CodeImp.DoomBuilder.Windows
 				"Deal with it",
 				"Error 47",
 				"YOU DIED",
-				"Thanks, Obama",
 				"The God Of Exceptions Demands MORE Exceptions!",
 				"Good. It's boring here anyway.",
 				"Shameful display!",
