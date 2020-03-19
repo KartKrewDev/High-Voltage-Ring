@@ -60,6 +60,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		#region ================== Methods
 
+		public Vector3D GetCenterPoint()
+		{
+			Vector2D p = sidedef.Line.GetCenterPoint();
+			return new Vector3D(p, level.plane.GetZ(p));
+		}
+
 		public override void Update()
 		{
 			plane = new Plane(level.plane.Normal, level.plane.Offset - 0.1f);
