@@ -35,7 +35,7 @@ namespace CodeImp.DoomBuilder.IO
             offsetx = int.MinValue;
             offsety = int.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(stream))
+            using (BinaryReader reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true))
             {
                 int manufacturer = reader.ReadByte(); // 10=ZSoft
                 int version = reader.ReadByte();
@@ -221,7 +221,7 @@ namespace CodeImp.DoomBuilder.IO
             offsetx = int.MinValue;
             offsety = int.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(stream))
+            using (BinaryReader reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true))
             {
                 read_header(reader);
                 read_image_id(reader);
@@ -590,7 +590,7 @@ namespace CodeImp.DoomBuilder.IO
             if (isPng)
             {
                 stream.Position = 8;
-                using (BinaryReader reader = new BinaryReader(stream))
+                using (BinaryReader reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true))
                 {
                     // Read chunks untill we encounter either "grAb" or "IDAT"
                     while (reader.BaseStream.Position < reader.BaseStream.Length)
