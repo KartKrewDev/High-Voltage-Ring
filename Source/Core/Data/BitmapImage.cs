@@ -38,7 +38,7 @@ namespace CodeImp.DoomBuilder.Data
 		public BitmapImage(Bitmap img, string name)
 		{
 			// Initialize
-			this.img = img;
+			this.img = new Bitmap(img);
 			this.AllowUnload = false;
 			SetName(name);
 
@@ -62,7 +62,7 @@ namespace CodeImp.DoomBuilder.Data
 			// No failure checking here. I anything fails here, it is not the user's fault,
 			// because the resources this loads are in the assembly.
 
-			return new LocalLoadResult(img);
+			return new LocalLoadResult(new Bitmap(img));
 		}
 
 		#endregion

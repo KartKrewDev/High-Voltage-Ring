@@ -64,6 +64,9 @@ namespace CodeImp.DoomBuilder.IO
                 int width = rightMargin - leftMargin + 1;
                 int height = bottomMargin - topMargin + 1;
 
+                if (width == 0 || height == 0)
+                    throw new InvalidDataException("Invalid pcx image file");
+
                 int vgaPaletteID = 0;
                 byte[] vgaPalette = null;
 
@@ -249,6 +252,12 @@ namespace CodeImp.DoomBuilder.IO
 
             if (colormap_type > 1)
                 throw new InvalidDataException("Invalid or unsupported targa image file");
+
+            if (image_type != 1 && image_type != 2 && image_type != 3 && image_type != 9 && image_type != 10 && image_type != 11)
+                throw new InvalidDataException("Invalid or unsupported targa image type");
+
+            if (image_width == 0 || image_height == 0)
+                throw new InvalidDataException("Invalid targa image file");
 
             if (colormap_type == 0)
                 colormap_length = 0;
