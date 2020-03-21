@@ -2416,7 +2416,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					return;
 				}
 
-				int startheight = (int)selectedhandles[0].GetCenterPoint().z;
+				int startheight = (int)Math.Round(selectedhandles[0].GetCenterPoint().z);
 				int targetheight = int.MaxValue;
 
 				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
@@ -2425,7 +2425,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						if (handle != selectedhandles[0] && handle.Sidedef.Line == selectedhandles[0].Sidedef.Line)
 						{
-							int z = (int)handle.GetCenterPoint().z;
+							int z = (int)Math.Round(handle.GetCenterPoint().z);
 
 							if (z > startheight && z < targetheight)
 								targetheight = z;
@@ -2657,7 +2657,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					return;
 				}
 
-				int startheight = (int)selectedhandles[0].GetCenterPoint().z;
+				int startheight = (int)Math.Round(selectedhandles[0].GetCenterPoint().z);
 				int targetheight = int.MinValue;
 
 				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
@@ -2666,7 +2666,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						if (handle != selectedhandles[0] && handle.Sidedef.Line == selectedhandles[0].Sidedef.Line)
 						{
-							int z = (int)handle.GetCenterPoint().z;
+							int z = (int)Math.Round(handle.GetCenterPoint().z);
 
 							if (z < startheight && z > targetheight)
 								targetheight = z;
