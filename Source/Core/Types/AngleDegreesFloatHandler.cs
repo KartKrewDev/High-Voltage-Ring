@@ -26,7 +26,7 @@ using CodeImp.DoomBuilder.Windows;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.AngleDegreesFloat, "Degrees (Decimal)", true)]
+	[TypeHandler(UniversalType.AngleDegreesFloat, "Degrees (Decimal)", false)]
 	internal class AngleDegreesFloatHandler : AngleDegreesHandler
 	{
 		#region ================== Constants

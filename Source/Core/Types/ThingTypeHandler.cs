@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.ThingType, "Thing Type", true)]
+	[TypeHandler(UniversalType.ThingType, "Thing Type", false)]
 	internal class ThingTypeHandler : TypeHandler
 	{
 		#region ================== Constants

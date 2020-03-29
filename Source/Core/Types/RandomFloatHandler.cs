@@ -8,7 +8,7 @@ using CodeImp.DoomBuilder.Config;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.RandomFloat, "Decimal (Random)", true)]
+	[TypeHandler(UniversalType.RandomFloat, "Decimal (Random)", false)]
 	internal class RandomFloatHandler : TypeHandler
 	{
 		#region ================== Constants

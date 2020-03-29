@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.LinedefType, "Linedef Action", true)]
+	[TypeHandler(UniversalType.LinedefType, "Linedef Action", false)]
 	internal class LinedefTypeHandler : TypeHandler
 	{
 		#region ================== Constants

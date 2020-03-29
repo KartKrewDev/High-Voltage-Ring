@@ -9,7 +9,7 @@ using CodeImp.DoomBuilder.Windows;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.AngleByte, "Byte Angle", true)]
+	[TypeHandler(UniversalType.AngleByte, "Byte Angle", false)]
 	internal class AngleByteHandler : AngleDegreesHandler
 	{
 		#region ================== Properties

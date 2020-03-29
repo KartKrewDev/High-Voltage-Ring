@@ -24,7 +24,7 @@ using CodeImp.DoomBuilder.Map;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.LinedefTag, "Linedef Tag", true)]
+	[TypeHandler(UniversalType.LinedefTag, "Linedef Tag", false)]
 	internal class LinedefTagHandler : SectorTagHandler
 	{
 		#region ================== Setup (mxd)

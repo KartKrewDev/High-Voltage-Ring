@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.SectorEffect, "Sector Effect", true)]
+	[TypeHandler(UniversalType.SectorEffect, "Sector Effect", false)]
 	internal class SectorEffectHandler : TypeHandler
 	{
 		#region ================== Constants

@@ -24,7 +24,7 @@ using CodeImp.DoomBuilder.Windows;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.Texture, "Texture", true)]
+	[TypeHandler(UniversalType.Texture, "Texture", false)]
 	internal class TextureHandler : TypeHandler
 	{
 		#region ================== Constants

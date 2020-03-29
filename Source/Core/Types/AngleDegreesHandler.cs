@@ -26,7 +26,7 @@ using CodeImp.DoomBuilder.Windows;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.AngleDegrees, "Degrees (Integer)", true)]
+	[TypeHandler(UniversalType.AngleDegrees, "Degrees (Integer)", false)]
 	internal class AngleDegreesHandler : TypeHandler
 	{
 		#region ================== Constants

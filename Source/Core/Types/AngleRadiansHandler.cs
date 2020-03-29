@@ -27,7 +27,7 @@ using CodeImp.DoomBuilder.Geometry;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.AngleRadians, "Radians", true)]
+	[TypeHandler(UniversalType.AngleRadians, "Radians", false)]
 	internal class AngleRadiansHandler : AngleDegreesHandler
 	{
 		#region ================== Constants
