@@ -106,8 +106,12 @@ namespace CodeImp.DoomBuilder.ZDoom
 				return false;
 			}
 
+			// There can be multiple different ambient sounds with the same sound name, so add the index to the name to
+			// differentiate them. See https://github.com/jewalky/UltimateDoomBuilder/issues/390
+			soundname = index.ToString() + ": " + soundname;
+
 			// Next token can be either [type] or <mode>...
-			if(!parser.SkipWhitespace(true)) return false;
+			if (!parser.SkipWhitespace(true)) return false;
 			string token = parser.ReadToken(false).ToLowerInvariant();
 
 			// Can be [type]
