@@ -4286,7 +4286,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					backwardoffset = j.offsetx;
 
 					if(!worldpanning)
-						forwardoffset = (float)Math.Round((j.offsetx + (float)Math.Round(j.sidedef.Line.Length) / scalex * first.scaleX) % vwidth, General.Map.FormatInterface.VertexDecimals);
+						forwardoffset = (float)Math.Round((j.offsetx + (float)Math.Round(j.sidedef.Line.Length) / scalex * Math.Abs(first.scaleX)) % vwidth, General.Map.FormatInterface.VertexDecimals);
 					else
 						forwardoffset = (float)Math.Round((j.offsetx + (float)Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals); 
 
