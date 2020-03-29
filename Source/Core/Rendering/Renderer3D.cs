@@ -1677,6 +1677,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This collects a visual sector's geometry for rendering
 		public void AddThingGeometry(VisualThing t)
 		{
+			// The thing might have changed, especially when doing realtime editing from the edit thing dialog, so update it if necessary
+			t.Update();
+
 			//mxd. Gather lights
 			if (General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && t.LightType != null)
 			{
