@@ -139,6 +139,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				tof = tof / tscaleAbs;
 				tof = tof * base.Texture.Scale;
+
+				// If the texture gets replaced with a "hires" texture it adds more fuckery
+				if (base.Texture is HiResImage)
+					tof *= tscaleAbs;
 			}
 
 			// Determine texture coordinates plane as they would be in normal circumstances.

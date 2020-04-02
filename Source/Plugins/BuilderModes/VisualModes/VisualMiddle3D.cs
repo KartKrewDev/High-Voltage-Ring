@@ -157,6 +157,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				tof = tof / tscaleAbs;
 				tof = tof * base.Texture.Scale;
+
+				// If the texture gets replaced with a "hires" texture it adds more fuckery
+				if (base.Texture is HiResImage)
+					tof *= tscaleAbs;
 			}
 
 			// For Vavoom type 3D floors the ceiling is lower than floor and they are reversed.
