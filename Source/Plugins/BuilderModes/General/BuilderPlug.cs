@@ -136,6 +136,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private bool alphabasedtexturehighlighting; //mxd
 		private bool showlightradii; //mxd
 		private bool showsoundradii; //mxd
+		private int scaletexturesonslopes; // 0 = base scale of 1, 1 = use current scale as base, 2 = don't scale
 		
 		#endregion
 
@@ -189,6 +190,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool AlphaBasedTextureHighlighting { get { return alphabasedtexturehighlighting; } internal set { alphabasedtexturehighlighting = value; } } //mxd
 		public bool ShowLightRadii { get { return showlightradii; } internal set { showlightradii = value; } } //mxd
 		public bool ShowSoundRadii { get { return showsoundradii; } internal set { showsoundradii = value; } } //mxd
+		public int ScaleTexturesOnSlopes { get { return scaletexturesonslopes; } internal set { scaletexturesonslopes = value; } }
 
 		//mxd. "Make Door" action persistent settings
 		internal MakeDoorSettings MakeDoor;
@@ -291,6 +293,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			autoAlignTextureOffsetsOnCreate = General.Settings.ReadPluginSetting("autoaligntextureoffsetsoncreate", false); //mxd
 			dontMoveGeometryOutsideMapBoundary = General.Settings.ReadPluginSetting("dontmovegeometryoutsidemapboundary", false); //mxd
 			syncSelection = General.Settings.ReadPluginSetting("syncselection", false); //mxd
+			scaletexturesonslopes = General.Settings.ReadPluginSetting("scaletexturesonslopes", 0);
 		}
 
 		//mxd. Load settings, which can be changed via UI
