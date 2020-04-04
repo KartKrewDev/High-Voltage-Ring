@@ -170,6 +170,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private ICollection<Vertex> unselectedvertices;
 		private ICollection<Linedef> unselectedlines;
 		private ICollection<Linedef> unstablelines; //mxd
+		private Dictionary<Sector, float[]> slopeheights;
 
 		// Modification
 		private float rotation;
@@ -1325,6 +1326,32 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					thingpos.Add(t.Position);
 					thingangle.Add(t.Angle);
 				}
+
+				// Get z heights of floor and ceiling slopes (from the center of the sector). This is used
+				// to easily compute the new slope after moving and rotating. We can't simply use the sector
+				// heights, since they might be wrong (as sector heights are technically irrelevant for slopes)
+				// Floor/ceiling heights are stored if there is no slope, but they won't get used anyway
+				// Important: this has to be done before the first call to UpdateGeometry, since that will change
+				// the sector and subsequently the bounding box, but not the slope
+				slopeheights = new Dictionary<Sector, float[]>();
+
+				foreach(Sector s in sectors)
+				{
+					// Make sure the sector has a valid bounding box
+					s.UpdateCache();
+
+					Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
+					float floorz = s.FloorHeight;
+					float ceilingz = s.CeilHeight;
+
+					if (!float.IsNaN(s.FloorSlopeOffset))
+						floorz = new Plane(s.FloorSlope, s.FloorSlopeOffset).GetZ(center);
+
+					if (!float.IsNaN(s.CeilSlopeOffset))
+						ceilingz = new Plane(s.CeilSlope, s.CeilSlopeOffset).GetZ(center);
+
+					slopeheights.Add(s, new float[] { floorz, ceilingz });
+				}
 				
 				// Calculate size
 				size = right - offset;
@@ -1550,7 +1577,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Update floor slope?
 						if(s.FloorSlope.GetLengthSq() > 0 && !float.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z)) 
 						{
-							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, s.FloorHeight);
+							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, slopeheights[s][0]);
 							Plane p = new Plane(center, s.FloorSlope.GetAngleXY() + rotation + Angle2D.PIHALF, -s.FloorSlope.GetAngleZ(), true);
 							s.FloorSlope = p.Normal;
 							s.FloorSlopeOffset = p.Offset;
@@ -1559,7 +1586,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Update ceiling slope?
 						if(s.CeilSlope.GetLengthSq() > 0 && !float.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z)) 
 						{
-							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, s.CeilHeight);
+							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, slopeheights[s][1]);
 							Plane p = new Plane(center, s.CeilSlope.GetAngleXY() + rotation + Angle2D.PIHALF, -s.CeilSlope.GetAngleZ(), false);
 							s.CeilSlope = p.Normal;
 							s.CeilSlopeOffset = p.Offset;
