@@ -24,7 +24,7 @@ using CodeImp.DoomBuilder.Map;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.ThingTag, "Thing Tag", true)]
+	[TypeHandler(UniversalType.ThingTag, "Thing Tag", false)]
 	internal class ThingTagHandler : SectorTagHandler
 	{
 		#region ================== Setup (mxd)

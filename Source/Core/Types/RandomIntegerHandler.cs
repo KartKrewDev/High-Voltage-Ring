@@ -8,7 +8,7 @@ using CodeImp.DoomBuilder.Config;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.RandomInteger, "Integer (Random)", true)]
+	[TypeHandler(UniversalType.RandomInteger, "Integer (Random)", false)]
 	internal class RandomIntegerHandler : TypeHandler
 	{
 		#region ================== Variables

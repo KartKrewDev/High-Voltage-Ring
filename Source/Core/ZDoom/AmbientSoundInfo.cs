@@ -27,6 +27,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 		#region ================== Variables
 
 		private string soundname;
+		private string sounddescription;
 		private int index = -1;
 
 		private AmbientType type = AmbientType.NONE;
@@ -48,6 +49,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 		#region ================== Properties
 
 		public string SoundName { get { return soundname; } }
+		public string SoundDescription { get { return sounddescription; } }
 		public int Index { get { return index; } } // Ambient sound index
 
 		// Sound settings
@@ -107,7 +109,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			}
 
 			// Next token can be either [type] or <mode>...
-			if(!parser.SkipWhitespace(true)) return false;
+			if (!parser.SkipWhitespace(true)) return false;
 			string token = parser.ReadToken(false).ToLowerInvariant();
 
 			// Can be [type]
@@ -190,6 +192,22 @@ namespace CodeImp.DoomBuilder.ZDoom
 				parser.ReportError("Expected ambient sound <volume> value");
 				return false;
 			}
+
+			// There can be multiple different ambient sounds with the same sound name, so build a description containing the index
+			// and the name to differentiate them. See https://github.com/jewalky/UltimateDoomBuilder/issues/390
+			sounddescription = index.ToString() + ": " + soundname + " (" + type.ToString().ToLowerInvariant();
+
+			if (type == AmbientType.POINT)
+				sounddescription += ", attenuation: " + attenuation;
+
+			if (mode == AmbientMode.CONTINUOUS)
+				sounddescription += ", " + mode.ToString().ToLowerInvariant();
+			else if (mode == AmbientMode.RANDOM)
+				sounddescription += ", every " + minsecs + " to " + maxsecs + " seconds";
+			else if (mode == AmbientMode.PERIODIC)
+				sounddescription += ", every " + secs + " seconds";
+
+			sounddescription += ", " + volume * 100 + "% volume)";
 
 			return true;
 		}

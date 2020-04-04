@@ -4621,8 +4621,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					backwardoffset = j.offsetx;
 
-					if(!worldpanning)
-						forwardoffset = (float)Math.Round((j.offsetx + (float)Math.Round(j.sidedef.Line.Length) / scalex * first.scaleX) % vwidth, General.Map.FormatInterface.VertexDecimals);
+					if (!worldpanning)
+					{
+						// If the texture gets replaced with a "hires" texture it adds more fuckery
+						if (texture is HiResImage)
+							forwardoffset = j.offsetx + (float)Math.Round(((float)Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
+						else
+							forwardoffset = j.offsetx + (float)Math.Round(((float)Math.Round(j.sidedef.Line.Length) / scalex * Math.Abs(first.scaleX)) % vwidth, General.Map.FormatInterface.VertexDecimals);
+					}
 					else
 						forwardoffset = (float)Math.Round((j.offsetx + (float)Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals); 
 
@@ -4646,7 +4652,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						float offset;
 						
 						if(!worldpanning)
-							offset = (float)Math.Round((j.offsetx - j.sidedef.OffsetX - (float)Math.Round(j.sidedef.Line.Length) / scalex * first.scaleX) % vwidth, General.Map.FormatInterface.VertexDecimals);
+						{
+							// If the texture gets replaced with a "hires" texture it adds more fuckery
+							if (texture is HiResImage)
+								offset = (float)Math.Round((j.offsetx - j.sidedef.OffsetX - (float)Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
+							else
+								offset = (float)Math.Round((j.offsetx - j.sidedef.OffsetX - (float)Math.Round(j.sidedef.Line.Length) / scalex * first.scaleX) % vwidth, General.Map.FormatInterface.VertexDecimals);
+						}
 						else
 							offset = (float)Math.Round((j.offsetx - j.sidedef.OffsetX - (float)Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals);
 
@@ -4762,7 +4774,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					forwardoffset = j.offsetx;
 
 					if (!worldpanning)
-						backwardoffset = (float)Math.Round((j.offsetx - (float)Math.Round(j.sidedef.Line.Length) / scalex * first.scaleX) % vwidth, General.Map.FormatInterface.VertexDecimals);
+					{
+						// If the texture gets replaced with a "hires" texture it adds more fuckery
+						if (texture is HiResImage)
+							backwardoffset = (float)Math.Round((j.offsetx - (float)Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
+						else
+							backwardoffset = (float)Math.Round((j.offsetx - (float)Math.Round(j.sidedef.Line.Length) / scalex * Math.Abs(first.scaleX)) % vwidth, General.Map.FormatInterface.VertexDecimals);
+					}
 					else
 						backwardoffset = (float)Math.Round((j.offsetx - (float)Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals);
 

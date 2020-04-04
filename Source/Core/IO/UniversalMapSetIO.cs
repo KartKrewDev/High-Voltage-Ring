@@ -151,7 +151,7 @@ namespace CodeImp.DoomBuilder.IO
 
 			// Read the UDMF data
 			lump.Stream.Seek(0, SeekOrigin.Begin);
-			udmfreader.SetKnownCustomTypes = true;
+			udmfreader.SetKnownCustomTypes = false;
 			udmfreader.Read(map, lump.Stream);
 			
 			// Return result

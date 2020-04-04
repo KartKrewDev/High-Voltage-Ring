@@ -165,10 +165,10 @@ namespace CodeImp.DoomBuilder.Data
 			data.Position += 9; // Skip some stuff...
 
 			int width = data.ReadByte() + (data.ReadByte() << 8);
-			if(width < 0 || width > 8192) return false;
+			if(width <= 0 || width > 8192) return false;
 
 			int height = data.ReadByte() + (data.ReadByte() << 8);
-			if(height < 0 || height > 8192) return false;
+			if(height <= 0 || height > 8192) return false;
 
 			int bitsperpixel = data.ReadByte();  // Can be 8, 16, 24, 32
 			return (bitsperpixel == 8 || bitsperpixel == 16 || bitsperpixel == 24 || bitsperpixel == 32);

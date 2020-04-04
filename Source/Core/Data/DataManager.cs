@@ -2531,7 +2531,7 @@ namespace CodeImp.DoomBuilder.Data
 
 				foreach(KeyValuePair<int, AmbientSoundInfo> group in parser.AmbientSounds)
 				{
-					configenums[group.Key] = new EnumItem(group.Key.ToString(), group.Value.SoundName);
+					configenums[group.Key] = new EnumItem(group.Key.ToString(), group.Value.SoundDescription);
 				}
 
 				// Store results in "ambient_sounds" enum

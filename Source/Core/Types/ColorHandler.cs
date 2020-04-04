@@ -25,7 +25,7 @@ using System.Drawing;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.Color, "Color", true)]
+	[TypeHandler(UniversalType.Color, "Color", false)]
 	internal class ColorHandler : TypeHandler
 	{
 		#region ================== Constants

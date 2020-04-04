@@ -24,7 +24,7 @@ using CodeImp.DoomBuilder.Windows;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	[TypeHandler(UniversalType.Flat, "Flat", true)]
+	[TypeHandler(UniversalType.Flat, "Flat", false)]
 	internal class FlatHandler : TypeHandler
 	{
 		#region ================== Constants

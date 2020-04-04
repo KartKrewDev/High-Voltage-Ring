@@ -39,7 +39,7 @@ namespace CodeImp.DoomBuilder.Data
 			// Initialize
 			this.width = 0;
 			this.height = 0;
-			this.loadbitmap = Properties.Resources.UnknownImage;
+			this.loadbitmap = new Bitmap(Properties.Resources.UnknownImage);
 			SetName("");
 			
 			LoadImageNow();

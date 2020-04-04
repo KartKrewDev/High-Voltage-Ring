@@ -452,39 +452,61 @@ namespace CodeImp.DoomBuilder.ZDoom
             return true;
         }
 
-        private string ParseVersion(bool required)
-        {
-            // read in the version.
-            tokenizer.SkipWhitespace();
-            ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.OpenParen);
-            if (token == null || !token.IsValid)
-            {
-                if (required)
-                    parser.ReportError("Expected (, got " + ((Object)token ?? "<null>").ToString());
-                return null;
-            }
+		private string ParseVersion(bool required)
+		{
+			// read in the version.
+			tokenizer.SkipWhitespace();
+			ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.OpenParen);
+			if (token == null || !token.IsValid)
+			{
+				if (required)
+					parser.ReportError("Expected (, got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
 
-            tokenizer.SkipWhitespace();
-            token = tokenizer.ExpectToken(ZScriptTokenType.String);
-            if (token == null || !token.IsValid)
-            {
-                parser.ReportError("Expected version, got " + ((Object)token ?? "<null>").ToString());
-                return null;
-            }
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.String);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected version, got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
 
-            string version = token.Value.Trim();
-            tokenizer.SkipWhitespace();
-            token = tokenizer.ExpectToken(ZScriptTokenType.CloseParen);
-            if (token == null || !token.IsValid)
-            {
-                parser.ReportError("Expected ), got " + ((Object)token ?? "<null>").ToString());
-                return null;
-            }
+			string version = token.Value.Trim();
+			tokenizer.SkipWhitespace();
 
-            return version;
-        }
+			// As of https://github.com/coelckers/gzdoom/commit/7a141f3aa3b67b5b1d326f5d9b3904da1b65f847
+			// there can be helper messages as the 2nd parameter
+			token = tokenizer.ExpectToken(ZScriptTokenType.CloseParen, ZScriptTokenType.Comma);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected ) or comma, got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
 
-        internal ZScriptActorStructure(ZDTextParser zdparser, DecorateCategoryInfo catinfo, string _classname, string _replacesname, string _parentname)
+			if (token.Type == ZScriptTokenType.CloseParen)
+				return version;
+
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.String);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected helper message string, got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
+
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.CloseParen);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected ), got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
+
+			return version;
+		}
+
+		internal ZScriptActorStructure(ZDTextParser zdparser, DecorateCategoryInfo catinfo, string _classname, string _replacesname, string _parentname)
         {
             this.catinfo = catinfo; //mxd
 
