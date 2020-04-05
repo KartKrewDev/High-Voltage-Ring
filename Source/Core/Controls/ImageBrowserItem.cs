@@ -38,6 +38,7 @@ namespace CodeImp.DoomBuilder.Controls
         private static Font pixelSizeFont;
 
     private static readonly Font messageBoxFont = SystemFonts.MessageBoxFont;
+    private static readonly int messageBoxFontHeight = messageBoxFont.Height;
 
         #endregion
 
@@ -151,7 +152,7 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			if(bmp == null) return;
 
-            int fontH = 4 + messageBoxFont.Height;
+            int fontH = 4 + messageBoxFontHeight;
             int h2 = h;
             if (General.Settings.ShowTextureSizes && General.Settings.TextureSizesBelow && ItemType == ImageBrowserItemType.IMAGE)
                 h2 -= fontH;
@@ -174,14 +175,14 @@ namespace CodeImp.DoomBuilder.Controls
 			int iy = (ih < h2 ? y + (h2 - ih) / 2 : y);
 
 			// Item bg
-			g.FillRectangle(bgbrush, x - 2, y - 2, w + 3, h + 8 + messageBoxFont.Height);
+			g.FillRectangle(bgbrush, x - 2, y - 2, w + 3, h + 8 + messageBoxFontHeight);
 
             // Selected image bg
             if (selected)
             {
                 if (!classicview)
                 {
-                    g.FillRectangle(selectedbgbrush, x - 2, y - 2, w + 4, h + 2 + messageBoxFont.Height);
+                    g.FillRectangle(selectedbgbrush, x - 2, y - 2, w + 4, h + 2 + messageBoxFontHeight);
                 }
                 else
                 {
@@ -204,7 +205,7 @@ namespace CodeImp.DoomBuilder.Controls
 				g.DrawRectangle(selection, x - 2, y - 2, w + 3, h2 + 3);
 
 				// Image name bg
-				g.FillRectangle(selectionbrush, x - 2, y + h2 + 2, w + 4, messageBoxFont.Height + (General.Settings.TextureSizesBelow ? fontH : 0));
+				g.FillRectangle(selectionbrush, x - 2, y + h2 + 2, w + 4, messageBoxFontHeight + (General.Settings.TextureSizesBelow ? fontH : 0));
 			}
 			else if (!classicview)
 			{
