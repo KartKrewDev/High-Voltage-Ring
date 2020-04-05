@@ -37,11 +37,14 @@ namespace CodeImp.DoomBuilder.Controls
         private static StringBuilder size_builder;
         private static Font pixelSizeFont;
 
+		private static readonly Font messageBoxFont = SystemFonts.MessageBoxFont;
+		private static readonly int messageBoxFontHeight = messageBoxFont.Height;
+
         #endregion
 
-        #region ================== Properties
+    #region ================== Properties
 
-        public ImageData Icon { get { return icon; } }
+		public ImageData Icon { get { return icon; } }
 		public ImageBrowserItemType ItemType { get { return itemtype; } }
 		public virtual bool IsPreviewLoaded { get { return icon.IsPreviewLoaded; } }
 		public bool ShowFullName { set { showfullname = value; } get { return showfullname && (!(icon is PK3FileImage) || !((PK3FileImage)icon).IsBadForLongTextureNames); } }
@@ -137,11 +140,11 @@ namespace CodeImp.DoomBuilder.Controls
 
             if (General.Settings.TextureSizesBelow)
             {
-                pixelSizeFont = new Font(SystemFonts.MessageBoxFont.FontFamily, SystemFonts.MessageBoxFont.Size * 0.8f, FontStyle.Regular);
+                pixelSizeFont = new Font(messageBoxFont.FontFamily, messageBoxFont.Size * 0.8f, FontStyle.Regular);
             }
             else
             {
-                pixelSizeFont = SystemFonts.MessageBoxFont;
+                pixelSizeFont = messageBoxFont;
             }
         }
 
@@ -149,7 +152,7 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			if(bmp == null) return;
 
-            int fontH = 4 + SystemFonts.MessageBoxFont.Height;
+            int fontH = 4 + messageBoxFontHeight;
             int h2 = h;
             if (General.Settings.ShowTextureSizes && General.Settings.TextureSizesBelow && ItemType == ImageBrowserItemType.IMAGE)
                 h2 -= fontH;
@@ -172,14 +175,14 @@ namespace CodeImp.DoomBuilder.Controls
 			int iy = (ih < h2 ? y + (h2 - ih) / 2 : y);
 
 			// Item bg
-			g.FillRectangle(bgbrush, x - 2, y - 2, w + 3, h + 8 + SystemFonts.MessageBoxFont.Height);
+			g.FillRectangle(bgbrush, x - 2, y - 2, w + 3, h + 8 + messageBoxFontHeight);
 
             // Selected image bg
             if (selected)
             {
                 if (!classicview)
                 {
-                    g.FillRectangle(selectedbgbrush, x - 2, y - 2, w + 4, h + 2 + SystemFonts.MessageBoxFont.Height);
+                    g.FillRectangle(selectedbgbrush, x - 2, y - 2, w + 4, h + 2 + messageBoxFontHeight);
                 }
                 else
                 {
@@ -202,7 +205,7 @@ namespace CodeImp.DoomBuilder.Controls
 				g.DrawRectangle(selection, x - 2, y - 2, w + 3, h2 + 3);
 
 				// Image name bg
-				g.FillRectangle(selectionbrush, x - 2, y + h2 + 2, w + 4, SystemFonts.MessageBoxFont.Height + (General.Settings.TextureSizesBelow ? fontH : 0));
+				g.FillRectangle(selectionbrush, x - 2, y + h2 + 2, w + 4, messageBoxFontHeight + (General.Settings.TextureSizesBelow ? fontH : 0));
 			}
 			else if (!classicview)
 			{
@@ -211,7 +214,7 @@ namespace CodeImp.DoomBuilder.Controls
 
             // Image name
             float textureNameX = classicview ? (x + (float)w / 2 - TextureNameWidth / 2) : (x - 2);
-            g.DrawString(TextureName, SystemFonts.MessageBoxFont, (selected ? selectiontextbrush : (used ? fgbrush_used : fgbrush_unused)), textureNameX, y + h2 + 1);
+            g.DrawString(TextureName, messageBoxFont, (selected ? selectiontextbrush : (used ? fgbrush_used : fgbrush_unused)), textureNameX, y + h2 + 1);
 
 			// Image size
 			if(General.Settings.ShowTextureSizes && icon.IsPreviewLoaded && itemtype == ImageBrowserItemType.IMAGE)
