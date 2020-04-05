@@ -37,14 +37,14 @@ namespace CodeImp.DoomBuilder.Controls
         private static StringBuilder size_builder;
         private static Font pixelSizeFont;
 
-    private static readonly Font messageBoxFont = SystemFonts.MessageBoxFont;
-    private static readonly int messageBoxFontHeight = messageBoxFont.Height;
+		private static readonly Font messageBoxFont = SystemFonts.MessageBoxFont;
+		private static readonly int messageBoxFontHeight = messageBoxFont.Height;
 
         #endregion
 
     #region ================== Properties
 
-    public ImageData Icon { get { return icon; } }
+		public ImageData Icon { get { return icon; } }
 		public ImageBrowserItemType ItemType { get { return itemtype; } }
 		public virtual bool IsPreviewLoaded { get { return icon.IsPreviewLoaded; } }
 		public bool ShowFullName { set { showfullname = value; } get { return showfullname && (!(icon is PK3FileImage) || !((PK3FileImage)icon).IsBadForLongTextureNames); } }
