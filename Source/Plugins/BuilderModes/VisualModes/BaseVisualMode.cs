@@ -2457,12 +2457,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if (target.picked is VisualFloor)
 					{
 						VisualFloor vf = (VisualFloor)target.picked;
-						floors.Add(vf.Level.sector, vf);
+						floors[vf.Level.sector] = vf;
 					}
 					else if (target.picked is VisualCeiling)
 					{
 						VisualCeiling vc = (VisualCeiling)target.picked;
-						ceilings.Add(vc.Level.sector, vc);
+						ceilings[vc.Level.sector] = vc;
 					}
 					else if (target.picked is BaseVisualThing)
 					{
@@ -2476,12 +2476,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if (i is VisualFloor)
 						{
 							VisualFloor vf = (VisualFloor)i;
-							floors.Add(vf.Level.sector, vf);
+							floors[vf.Level.sector] = vf;
 						}
 						else if (i is VisualCeiling)
 						{
 							VisualCeiling vc = (VisualCeiling)i;
-							ceilings.Add(vc.Level.sector, vc);
+							ceilings[vc.Level.sector] = vc;
 						}
 						else if (i is BaseVisualThing)
 						{
@@ -2698,12 +2698,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if (target.picked is VisualFloor)
 					{
 						VisualFloor vf = (VisualFloor)target.picked;
-						floors.Add(vf.Level.sector, vf);
+						floors[vf.Level.sector] = vf;
 					}
 					else if (target.picked is VisualCeiling)
 					{
 						VisualCeiling vc = (VisualCeiling)target.picked;
-						ceilings.Add(vc.Level.sector, vc);
+						ceilings[vc.Level.sector] = vc;
 					}
 					else if (target.picked is BaseVisualThing)
 					{
@@ -2717,12 +2717,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if (i is VisualFloor)
 						{
 							VisualFloor vf = (VisualFloor)i;
-							floors.Add(vf.Level.sector, vf);
+							floors[vf.Level.sector] = vf;
 						}
 						else if (i is VisualCeiling)
 						{
 							VisualCeiling vc = (VisualCeiling)i;
-							ceilings.Add(vc.Level.sector, vc);
+							ceilings[vc.Level.sector] = vc;
 						}
 						else if (i is BaseVisualThing)
 						{
