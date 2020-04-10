@@ -298,6 +298,32 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//update angle
 			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "rotationfloor" : "rotationceiling"), sourceAngle, 0f);
 
+			// Scale texture if it's a slope and the appropriate option is set
+			if (level.plane.Normal.z != 1.0f && BuilderPlug.Me.ScaleTexturesOnSlopes != 2)
+			{
+				Vector2D basescale = new Vector2D(1.0f, 1.0f);
+
+				// User wants to use the current scale as a base?
+				if(BuilderPlug.Me.ScaleTexturesOnSlopes == 1)
+				{
+					basescale.x = scaleX;
+					basescale.y = scaleY;
+				}
+
+				// Create a unit vector of the direction of the target line in 3D space
+				Vector3D targetlinevector = new Line3D(new Vector3D(targetLine.Start.Position, level.plane.GetZ(targetLine.Start.Position)), new Vector3D(targetLine.End.Position, level.plane.GetZ(targetLine.End.Position))).GetDelta().GetNormal();
+
+				// Get a perpendicular vector of the target line in 3D space. This is used to get the slope angle relative to the target line
+				Vector3D targetlineperpendicular = Vector3D.CrossProduct(targetlinevector, level.plane.Normal);
+
+				if (alignx)
+					scaleX = Math.Abs(basescale.x * (1.0f / (float)Math.Cos(targetlinevector.GetAngleZ())));
+
+				if (aligny)
+					scaleY = Math.Abs(basescale.y * (1.0f / (float)Math.Cos(targetlineperpendicular.GetAngleZ())));
+
+			}
+
 			//set scale
 			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "xscalefloor" : "xscaleceiling"), scaleX, 1.0f);
 			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "yscalefloor" : "yscaleceiling"), scaleY, 1.0f);
@@ -306,96 +332,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			float distToStart = Vector2D.Distance(hitpos, targetLine.Start.Position);
 			float distToEnd = Vector2D.Distance(hitpos, targetLine.End.Position);
 			Vector2D offset = (distToStart < distToEnd ? targetLine.Start.Position : targetLine.End.Position).GetRotated(Angle2D.DegToRad(sourceAngle));
-
-			if(alignx) 
-			{
-				if(Texture != null && Texture.IsImageLoaded) offset.x %= Texture.Width / scaleX;
-				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "xpanningfloor" : "xpanningceiling"), (float)Math.Round(-offset.x), 0f);
-			}
-
-			if(aligny) 
-			{
-				if(Texture != null && Texture.IsImageLoaded) offset.y %= Texture.Height / scaleY;
-				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "ypanningfloor" : "ypanningceiling"), (float)Math.Round(offset.y), 0f);
-			}
-
-			//update geometry
-			Sector.UpdateSectorGeometry(false);
-		}
-
-		//mxd
-		protected void AlignTextureToSlopeLine(Linedef slopeSource, float slopeAngle, bool isFront, bool alignx, bool aligny) 
-		{
-			bool isFloor = (geometrytype == VisualGeometryType.FLOOR);
-			Sector.Sector.Fields.BeforeFieldsChange();
-			float sourceAngle = (float)Math.Round(General.ClampAngle(isFront ? -Angle2D.RadToDeg(slopeSource.Angle) + 90 : -Angle2D.RadToDeg(slopeSource.Angle) - 90), 1);
-
-			if(isFloor) 
-			{
-				if((isFront && slopeSource.Front.Sector.FloorHeight > slopeSource.Back.Sector.FloorHeight) ||
-				  (!isFront && slopeSource.Front.Sector.FloorHeight < slopeSource.Back.Sector.FloorHeight)) 
-				{
-					sourceAngle = General.ClampAngle(sourceAngle + 180);
-				}
-			} 
-			else 
-			{
-				if((isFront && slopeSource.Front.Sector.CeilHeight < slopeSource.Back.Sector.CeilHeight) ||
-				  (!isFront && slopeSource.Front.Sector.CeilHeight > slopeSource.Back.Sector.CeilHeight)) 
-				{
-					sourceAngle = General.ClampAngle(sourceAngle + 180);
-				}
-			}
-
-			//update angle
-			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "rotationfloor" : "rotationceiling"), sourceAngle, 0f);
-
-			//update scaleY
-			string xScaleKey = (isFloor ? "xscalefloor" : "xscaleceiling");
-			string yScaleKey = (isFloor ? "yscalefloor" : "yscaleceiling");
-
-			float scaleX = Sector.Sector.Fields.GetValue(xScaleKey, 1.0f);
-			float scaleY;
-
-			//set scale
-			if(aligny) 
-			{
-				scaleY = (float)Math.Round(scaleX * (1 / (float)Math.Cos(slopeAngle)), 2);
-				UniFields.SetFloat(Sector.Sector.Fields, yScaleKey, scaleY, 1.0f);
-			} 
-			else 
-			{
-				scaleY = Sector.Sector.Fields.GetValue(yScaleKey, 1.0f);
-			}
-
-			//update texture offsets
-			Vector2D offset;
-			if(isFloor) 
-			{
-				if((isFront && slopeSource.Front.Sector.FloorHeight < slopeSource.Back.Sector.FloorHeight) ||
-				  (!isFront && slopeSource.Front.Sector.FloorHeight > slopeSource.Back.Sector.FloorHeight)) 
-				{
-					offset = slopeSource.End.Position;
-				} 
-				else 
-				{
-					offset = slopeSource.Start.Position;
-				}
-			} 
-			else 
-			{
-				if((isFront && slopeSource.Front.Sector.CeilHeight > slopeSource.Back.Sector.CeilHeight) ||
-				  (!isFront && slopeSource.Front.Sector.CeilHeight < slopeSource.Back.Sector.CeilHeight)) 
-				{
-					offset = slopeSource.End.Position;
-				} 
-				else 
-				{
-					offset = slopeSource.Start.Position;
-				}
-			}
-
-			offset = offset.GetRotated(Angle2D.DegToRad(sourceAngle));
 
 			if(alignx) 
 			{
@@ -878,8 +814,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			if(vs != null) vs.UpdateSectorGeometry(true);
+
+			// Visual slope handles need to be updated, too
+			if (General.Map.UDMF)
+			{
+				if (mode.AllSlopeHandles.ContainsKey(level.sector))
+					foreach (VisualSidedefSlope handle in mode.AllSlopeHandles[level.sector])
+						handle.Changed = true;
+			}
 		}
-		
+
 		// Sector brightness change
 		public virtual void OnChangeTargetBrightness(bool up)
 		{

@@ -351,6 +351,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//mxd. Modify slope offset?
 				if(level.sector.FloorSlope.GetLengthSq() > 0)
 				{
+					/*
 					Vector3D center = new Vector3D(level.sector.BBox.X + level.sector.BBox.Width / 2,
 												   level.sector.BBox.Y + level.sector.BBox.Height / 2, 
 												   level.sector.FloorHeight);
@@ -361,6 +362,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 										true);
 
 					level.sector.FloorSlopeOffset = p.Offset;
+					*/
+
+					level.sector.FloorSlopeOffset -= level.sector.FloorSlope.z * amount;
 				}
 			}
 
@@ -582,42 +586,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(!General.Map.UDMF) return;
 
-			//is is a surface with line slope?
-			float slopeAngle = level.plane.Normal.GetAngleZ() - Angle2D.PIHALF;
-
-			if(slopeAngle == 0) //it's a horizontal plane
-			{
-				AlignTextureToClosestLine(alignx, aligny);
-			} 
-			else //it can be a surface with line slope
-			{ 
-				Linedef slopeSource = null;
-				bool isFront = false;
-
-				foreach(Sidedef side in Sector.Sector.Sidedefs) 
-				{
-					if(side.Line.Action == 181) 
-					{
-						if(side.Line.Args[0] == 1 && side.Line.Front != null && side.Line.Front == side) 
-						{
-							slopeSource = side.Line;
-							isFront = true;
-							break;
-						}
-
-						if(side.Line.Args[0] == 2 && side.Line.Back != null && side.Line.Back == side) 
-						{
-							slopeSource = side.Line;
-							break;
-						}
-					}
-				}
-
-				if(slopeSource != null && slopeSource.Front != null && slopeSource.Front.Sector != null && slopeSource.Back != null && slopeSource.Back.Sector != null)
-					AlignTextureToSlopeLine(slopeSource, slopeAngle, isFront, alignx, aligny);
-				else
-					AlignTextureToClosestLine(alignx, aligny);
-			}
+			AlignTextureToClosestLine(alignx, aligny);
 		}
 		
 		#endregion

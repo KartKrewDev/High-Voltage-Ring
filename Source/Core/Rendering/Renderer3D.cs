@@ -64,7 +64,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		//mxd
 		private VisualVertexHandle vertexhandle;
 		private int[] lightOffsets;
-		
+
+		// Slope handle
+		private VisualSlopeHandle visualslopehandle;
+
 		// Crosshair
 		private FlatVertex[] crosshairverts;
 		private bool crosshairbusy;
@@ -111,6 +114,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		//mxd. Visual vertices
 		private List<VisualVertex> visualvertices;
+
+		// Visual slope handles
+		private List<VisualSlope> visualslopehandles;
 
 		//mxd. Event lines
 		private List<Line3D> eventlines;
@@ -166,7 +172,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				// Clean up
 				if(vertexhandle != null) vertexhandle.Dispose(); //mxd
-				
+				if (visualslopehandle != null) visualslopehandle.Dispose();
+
 				// Done
 				base.Dispose();
 			}
@@ -232,8 +239,17 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 		}
 
+		internal void UpdateVisualSlopeHandle()
+		{
+			if (visualslopehandle != null)
+			{
+				visualslopehandle.UnloadResource();
+				visualslopehandle.ReloadResource();
+			}
+		}
+
 		#endregion
-		
+
 		#region ================== Presentation
 
 		// This creates the projection
@@ -344,7 +360,10 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			//mxd. Crate vertex handle
 			if(vertexhandle == null) vertexhandle = new VisualVertexHandle();
-				
+
+			// Create slope handle
+			if (visualslopehandle == null) visualslopehandle = new VisualSlopeHandle();
+
 			// Ready
 			return true;
 		}
@@ -447,8 +466,12 @@ namespace CodeImp.DoomBuilder.Rendering
 			//mxd. Visual vertices
 			RenderVertices();
 
+			// Slope handles
+			if (General.Map.UDMF /* && General.Settings.ShowVisualSlopeHandles */)
+				RenderSlopeHandles();
+
 			//mxd. Event lines
-			if(General.Settings.GZShowEventLines) RenderArrows(eventlines);
+			if (General.Settings.GZShowEventLines) RenderArrows(eventlines);
 			
 			// Remove references
 			graphics.SetTexture(null);
@@ -614,6 +637,45 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Done
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
         }
+
+		private void RenderSlopeHandles()
+		{
+			if (visualslopehandles == null || !showselection) return;
+
+			graphics.SetAlphaBlendEnable(true);
+			graphics.SetAlphaTestEnable(false);
+			graphics.SetZWriteEnable(false);
+			graphics.SetSourceBlend(Blend.SourceAlpha);
+			graphics.SetDestinationBlend(Blend.InverseSourceAlpha);
+
+			graphics.SetShader(ShaderName.world3d_slope_handle);
+
+			foreach (VisualSlope handle in visualslopehandles)
+			{
+				PixelColor color = General.Colors.Vertices;
+
+				if (handle.Pivot)
+					color = General.Colors.Guideline;
+				else if (handle.Selected)
+					color = General.Colors.Selection3D;
+				else if (handle == highlighted)
+					color = General.Colors.Highlight3D;
+				else if (handle.SmartPivot)
+					color = General.Colors.Vertices;
+
+				world = handle.Position;
+				graphics.SetUniform(UniformName.world, ref world);
+				graphics.SetUniform(UniformName.slopeHandleLength, handle.Length);
+				graphics.SetUniform(UniformName.vertexColor, color.ToColorValue());
+
+				graphics.SetVertexBuffer(visualslopehandle.Geometry);
+				graphics.Draw(PrimitiveType.TriangleList, 0, 2);
+
+			}
+
+			// Done
+			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
+		}
 
 		//mxd
 		private void RenderArrows(ICollection<Line3D> lines) 
@@ -1754,6 +1816,8 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		//mxd
 		public void SetVisualVertices(List<VisualVertex> verts) { visualvertices = verts; }
+
+		public void SetVisualSlopeHandles(List<VisualSlope> handles) { visualslopehandles = handles; }
 
 		//mxd
 		public void SetEventLines(List<Line3D> lines) { eventlines = lines; }
