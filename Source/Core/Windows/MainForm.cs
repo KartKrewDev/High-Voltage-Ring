@@ -2963,6 +2963,31 @@ namespace CodeImp.DoomBuilder.Windows
 			General.Interface.RedrawDisplay();
 		}
 
+		[BeginAction("smartgridtransform")]
+		protected void SmartGridTransform()
+		{
+			if((General.Map.Map.SelectedVerticessCount >= 1 && General.Map.Map.SelectedLinedefsCount >= 1) || General.Map.Map.SelectedVerticessCount > 1 || General.Map.Map.SelectedLinedefsCount > 1)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Either nothing or either exactly one vertex or linedef must be selected");
+				General.Interface.MessageBeep(MessageBeepType.Warning);
+				return;
+			}
+
+			if(General.Map.Map.SelectedVerticessCount == 1)
+			{
+				SetGridOriginToVertex();
+				return;
+			}
+
+			if(General.Map.Map.SelectedLinedefsCount == 1)
+			{
+				AlignGridToLinedef();
+				return;
+			}
+
+			ResetGrid();
+		}
+
 		//mxd
 		[BeginAction("toggledynamicgrid")]
 		protected void ToggleDynamicGrid()
