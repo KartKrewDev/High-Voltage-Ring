@@ -244,6 +244,7 @@
     <Compile Include="Rendering\Vector3.cs" />
     <Compile Include="Rendering\Vector4.cs" />
     <Compile Include="Rendering\VertexBuffer.cs" />
+    <Compile Include="VisualModes\VisualSlope.cs" />
     <Compile Include="Windows\ThingStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -904,7 +905,9 @@
     <Compile Include="Data\ColormapImage.cs" />
     <Compile Include="Data\CvarsCollection.cs" />
     <Compile Include="Data\HiResImage.cs" />
-    <Compile Include="NoScintilla.cs" />
+    <Compile Include="NoScintilla.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Data\Scripting\ZScriptScriptHandler.cs" />
     <Compile Include="Data\Scripting\ScriptHandler.cs" />
     <Compile Include="Data\Scripting\AccScriptHandler.cs" />
@@ -1498,6 +1501,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <PropertyGroup>
-    <PreBuildEvent></PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
