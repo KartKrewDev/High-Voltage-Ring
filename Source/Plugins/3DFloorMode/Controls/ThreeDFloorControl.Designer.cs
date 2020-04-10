@@ -64,7 +64,7 @@
 			this.sectorTopFlat.MultipleTextures = false;
 			this.sectorTopFlat.Name = "sectorTopFlat";
 			this.sectorTopFlat.Size = new System.Drawing.Size(115, 136);
-			this.sectorTopFlat.TabIndex = 4;
+			this.sectorTopFlat.TabIndex = 2;
 			this.sectorTopFlat.TextureName = "";
 			// 
 			// sectorBorderTexture
@@ -83,7 +83,7 @@
 			this.sectorBottomFlat.MultipleTextures = false;
 			this.sectorBottomFlat.Name = "sectorBottomFlat";
 			this.sectorBottomFlat.Size = new System.Drawing.Size(115, 136);
-			this.sectorBottomFlat.TabIndex = 2;
+			this.sectorBottomFlat.TabIndex = 4;
 			this.sectorBottomFlat.TextureName = "";
 			// 
 			// sectorCeilingHeight
@@ -103,7 +103,7 @@
 			this.sectorCeilingHeight.Name = "sectorCeilingHeight";
 			this.sectorCeilingHeight.Size = new System.Drawing.Size(70, 24);
 			this.sectorCeilingHeight.StepValues = null;
-			this.sectorCeilingHeight.TabIndex = 1;
+			this.sectorCeilingHeight.TabIndex = 0;
 			this.sectorCeilingHeight.WhenTextChanged += new System.EventHandler(this.RecomputeBorderHeight);
 			// 
 			// sectorFloorHeight
@@ -123,7 +123,7 @@
 			this.sectorFloorHeight.Name = "sectorFloorHeight";
 			this.sectorFloorHeight.Size = new System.Drawing.Size(70, 24);
 			this.sectorFloorHeight.StepValues = null;
-			this.sectorFloorHeight.TabIndex = 0;
+			this.sectorFloorHeight.TabIndex = 1;
 			this.sectorFloorHeight.WhenTextChanged += new System.EventHandler(this.RecomputeBorderHeight);
 			// 
 			// label1
@@ -163,7 +163,7 @@
 			this.groupBox2.Location = new System.Drawing.Point(503, 0);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(124, 166);
-			this.groupBox2.TabIndex = 6;
+			this.groupBox2.TabIndex = 10;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Sectors";
 			// 
@@ -182,7 +182,7 @@
 			this.buttonDuplicate.Location = new System.Drawing.Point(633, 5);
 			this.buttonDuplicate.Name = "buttonDuplicate";
 			this.buttonDuplicate.Size = new System.Drawing.Size(75, 23);
-			this.buttonDuplicate.TabIndex = 7;
+			this.buttonDuplicate.TabIndex = 11;
 			this.buttonDuplicate.Text = "Duplicate";
 			this.buttonDuplicate.UseVisualStyleBackColor = true;
 			this.buttonDuplicate.Click += new System.EventHandler(this.buttonDuplicate_Click);
@@ -192,7 +192,7 @@
 			this.buttonSplit.Location = new System.Drawing.Point(633, 34);
 			this.buttonSplit.Name = "buttonSplit";
 			this.buttonSplit.Size = new System.Drawing.Size(75, 23);
-			this.buttonSplit.TabIndex = 8;
+			this.buttonSplit.TabIndex = 12;
 			this.buttonSplit.Text = "Split";
 			this.buttonSplit.UseVisualStyleBackColor = true;
 			this.buttonSplit.Click += new System.EventHandler(this.buttonSplit_Click);
@@ -202,7 +202,7 @@
 			this.buttonCheckAll.Location = new System.Drawing.Point(633, 92);
 			this.buttonCheckAll.Name = "buttonCheckAll";
 			this.buttonCheckAll.Size = new System.Drawing.Size(75, 23);
-			this.buttonCheckAll.TabIndex = 9;
+			this.buttonCheckAll.TabIndex = 14;
 			this.buttonCheckAll.Text = "Check all";
 			this.buttonCheckAll.UseVisualStyleBackColor = true;
 			this.buttonCheckAll.Click += new System.EventHandler(this.buttonCheckAll_Click);
@@ -212,7 +212,7 @@
 			this.buttonUncheckAll.Location = new System.Drawing.Point(633, 121);
 			this.buttonUncheckAll.Name = "buttonUncheckAll";
 			this.buttonUncheckAll.Size = new System.Drawing.Size(75, 23);
-			this.buttonUncheckAll.TabIndex = 10;
+			this.buttonUncheckAll.TabIndex = 15;
 			this.buttonUncheckAll.Text = "Uncheck all";
 			this.buttonUncheckAll.UseVisualStyleBackColor = true;
 			this.buttonUncheckAll.Click += new System.EventHandler(this.buttonUncheckAll_Click);
@@ -232,7 +232,7 @@
 			this.typeArgument.Location = new System.Drawing.Point(438, 0);
 			this.typeArgument.Name = "typeArgument";
 			this.typeArgument.Size = new System.Drawing.Size(59, 24);
-			this.typeArgument.TabIndex = 18;
+			this.typeArgument.TabIndex = 5;
 			// 
 			// flagsArgument
 			// 
@@ -240,14 +240,14 @@
 			this.flagsArgument.Location = new System.Drawing.Point(438, 30);
 			this.flagsArgument.Name = "flagsArgument";
 			this.flagsArgument.Size = new System.Drawing.Size(59, 24);
-			this.flagsArgument.TabIndex = 19;
+			this.flagsArgument.TabIndex = 6;
 			// 
 			// buttonEditSector
 			// 
 			this.buttonEditSector.Location = new System.Drawing.Point(376, 143);
 			this.buttonEditSector.Name = "buttonEditSector";
 			this.buttonEditSector.Size = new System.Drawing.Size(121, 23);
-			this.buttonEditSector.TabIndex = 24;
+			this.buttonEditSector.TabIndex = 9;
 			this.buttonEditSector.Text = "Edit control sector";
 			this.buttonEditSector.UseVisualStyleBackColor = true;
 			this.buttonEditSector.Click += new System.EventHandler(this.buttonEditSector_Click);
@@ -268,7 +268,7 @@
 			this.alphaArgument.Location = new System.Drawing.Point(438, 60);
 			this.alphaArgument.Name = "alphaArgument";
 			this.alphaArgument.Size = new System.Drawing.Size(59, 24);
-			this.alphaArgument.TabIndex = 20;
+			this.alphaArgument.TabIndex = 7;
 			// 
 			// label4
 			// 
@@ -327,7 +327,7 @@
 			this.sectorBrightness.Name = "sectorBrightness";
 			this.sectorBrightness.Size = new System.Drawing.Size(59, 24);
 			this.sectorBrightness.StepValues = null;
-			this.sectorBrightness.TabIndex = 27;
+			this.sectorBrightness.TabIndex = 8;
 			// 
 			// tagsLabel
 			// 
@@ -343,7 +343,7 @@
 			this.buttonDetach.Location = new System.Drawing.Point(633, 63);
 			this.buttonDetach.Name = "buttonDetach";
 			this.buttonDetach.Size = new System.Drawing.Size(75, 23);
-			this.buttonDetach.TabIndex = 29;
+			this.buttonDetach.TabIndex = 13;
 			this.buttonDetach.Text = "Detach";
 			this.buttonDetach.UseVisualStyleBackColor = true;
 			this.buttonDetach.Click += new System.EventHandler(this.buttonDetach_Click);
