@@ -1039,7 +1039,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							foreach(Linedef ld in linetags[t.Args[0]])
 							{
 								if (ld.Line.GetSideOfLine(t.Position) < 0.0f)
-									GetSectorData(ld.Front.Sector).AddEffectThingLineSlope(t, ld.Front);
+								{
+									if(ld.Front != null)
+										GetSectorData(ld.Front.Sector).AddEffectThingLineSlope(t, ld.Front);
+								}
 								else if (ld.Back != null)
 									GetSectorData(ld.Back.Sector).AddEffectThingLineSlope(t, ld.Back);
 							}
