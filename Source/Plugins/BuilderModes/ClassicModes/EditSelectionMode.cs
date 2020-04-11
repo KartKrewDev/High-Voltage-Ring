@@ -1344,10 +1344,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					float floorz = s.FloorHeight;
 					float ceilingz = s.CeilHeight;
 
-					if (!float.IsNaN(s.FloorSlopeOffset))
+					if (!float.IsNaN(s.FloorSlopeOffset) && s.FloorSlope.IsNormalized())
 						floorz = new Plane(s.FloorSlope, s.FloorSlopeOffset).GetZ(center);
 
-					if (!float.IsNaN(s.CeilSlopeOffset))
+					if (!float.IsNaN(s.CeilSlopeOffset) && s.CeilSlope.IsNormalized())
 						ceilingz = new Plane(s.CeilSlope, s.CeilSlopeOffset).GetZ(center);
 
 					slopeheights.Add(s, new float[] { floorz, ceilingz });
