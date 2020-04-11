@@ -169,19 +169,17 @@ namespace CodeImp.DoomBuilder.ZDoom
                         break;
 
                     case "states":
+						if (!parser.NextTokenIs("{", true))
+							return;
+
                         // Now parse actor states until we reach the end of the states structure
                         while (parser.SkipWhitespace(true))
                         {
                             string statetoken = parser.ReadToken();
                             if (!string.IsNullOrEmpty(statetoken))
                             {
-                                // Start of scope?
-                                if (statetoken == "{")
-                                {
-                                    // This is fine
-                                }
                                 // End of scope?
-                                else if (statetoken == "}")
+                                if (statetoken == "}")
                                 {
                                     // Done with the states,
                                     // break out of this parse loop
