@@ -1853,6 +1853,41 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		[BeginAction("smartgridtransform", BaseAction = true)]
+		protected void SmartGridTransform()
+		{
+			if (General.Map.Map.SelectedLinedefsCount > 1)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Either nothing or exactly one linedef must be selected");
+				General.Interface.MessageBeep(MessageBeepType.Warning);
+				return;
+			}
+
+			Linedef linedef = null;
+
+			if (General.Map.Map.SelectedLinedefsCount == 1)
+				linedef = General.Map.Map.GetSelectedLinedefs(true).First();
+			else if (highlighted != null)
+				linedef = highlighted;
+
+			if (linedef != null)
+			{
+				// Get the vertex that's closest to the mouse cursor
+				Vertex vertex = (new Vertex[] { linedef.Start, linedef.End }).OrderBy(v => Vector2D.Distance(v.Position, mousemappos)).First();
+				General.Map.Grid.SetGridRotation(linedef.Angle);
+				General.Map.Grid.SetGridOrigin(vertex.Position.x, vertex.Position.y);
+				General.Map.GridVisibilityChanged();
+				General.Interface.RedrawDisplay();
+			}
+			else
+			{
+				General.Map.Grid.SetGridRotation(0.0f);
+				General.Map.Grid.SetGridOrigin(0, 0);
+				General.Map.GridVisibilityChanged();
+				General.Interface.RedrawDisplay();
+			}
+		}
+
 		//mxd. gradientbrightness utility
 		private static bool SidedefHasVisibleParts(Sidedef side) 
 		{

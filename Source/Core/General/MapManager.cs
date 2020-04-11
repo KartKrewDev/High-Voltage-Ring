@@ -2656,6 +2656,11 @@ namespace CodeImp.DoomBuilder
 			return snappedCount;
 		}
 
+		public void GridVisibilityChanged()
+		{
+			renderer2d.GridVisibilityChanged();
+		}
+
 		#endregion
 	}
 }

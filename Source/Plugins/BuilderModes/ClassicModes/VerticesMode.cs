@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.BuilderModes.Interface;
 using CodeImp.DoomBuilder.Windows;
@@ -1099,11 +1100,43 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(form.Setup(this)) form.ShowDialog(General.Interface);
 		}
 
+		[BeginAction("smartgridtransform", BaseAction = true)]
+		protected void SmartGridTransform()
+		{
+			if (General.Map.Map.SelectedVerticessCount > 1)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Either nothing or exactly one vertex must be selected");
+				General.Interface.MessageBeep(MessageBeepType.Warning);
+				return;
+			}
+
+			Vertex vertex = null;
+
+			if (General.Map.Map.SelectedVerticessCount == 1)
+				vertex = General.Map.Map.GetSelectedVertices(true).First();
+			else if (highlighted != null)
+				vertex = highlighted;
+
+			if (vertex != null)
+			{
+				General.Map.Grid.SetGridOrigin(vertex.Position.x, vertex.Position.y);
+				General.Map.GridVisibilityChanged();
+				General.Interface.RedrawDisplay();
+			}
+			else
+			{
+				General.Map.Grid.SetGridRotation(0.0f);
+				General.Map.Grid.SetGridOrigin(0, 0);
+				General.Map.GridVisibilityChanged();
+				General.Interface.RedrawDisplay();
+			}
+		}
+
 		#endregion
 
 		#region ================== Action assist (mxd)
 
-		//mxd
+			//mxd
 		private static void MergeLines(ICollection<Vertex> selected, Linedef ld1, Linedef ld2, Vertex v) 
 		{
 			Vertex v1 = (ld1.Start == v) ? ld1.End : ld1.Start;

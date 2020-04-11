@@ -177,13 +177,13 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 
 		// Set the rotation angle of the grid
-		internal void SetGridRotation(float angle)
+		public void SetGridRotation(float angle)
 		{
 			gridrotate = angle;
 		}
 
 		// Set the origin of the grid
-		internal void SetGridOrigin(float x, float y)
+		public void SetGridOrigin(float x, float y)
 		{
 			gridoriginx = x;
 			gridoriginy = y;
