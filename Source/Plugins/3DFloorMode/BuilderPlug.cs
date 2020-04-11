@@ -78,6 +78,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		#region ================== Variables
 
 		private bool additiveselect;
+		private bool additivepaintselect;
+		private float highlightrange;
 		private bool autoclearselection;
 		private MenusForm menusform;
 		private bool usehighlight;
@@ -101,6 +103,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		#region ================== Properties
 
 		public bool AdditiveSelect { get { return additiveselect; } }
+		public bool AdditivePaintSelect { get { return additivepaintselect; } }
+		public float HighlightRange { get { return highlightrange; } }
 		public bool AutoClearSelection { get { return autoclearselection; } }
 		public MenusForm MenusForm { get { return menusform; } }
 		public bool UseHighlight
@@ -460,11 +464,14 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		private void LoadSettings()
 		{
 			additiveselect = General.Settings.ReadPluginSetting("BuilderModes", "additiveselect", false);
+			additivepaintselect = General.Settings.ReadPluginSetting("BuilderModes", "additivepaintselect", false);
+			highlightrange = General.Settings.ReadPluginSetting("BuilderModes", "highlightrange", 20);
 			autoclearselection = General.Settings.ReadPluginSetting("BuilderModes", "autoclearselection", false);
 			highlightsloperange = (float)General.Settings.ReadPluginSetting("BuilderModes", "highlightthingsrange", 10);
 			stitchrange = (float)General.Settings.ReadPluginSetting("BuilderModes", "stitchrange", 20);
 			slopevertexlabeldisplayoption = (LabelDisplayOption)General.Settings.ReadPluginSetting("slopevertexlabeldisplayoption", (int)LabelDisplayOption.Always);
 			sectorlabeldisplayoption = (LabelDisplayOption)General.Settings.ReadPluginSetting("sectorlabeldisplayoption", (int)LabelDisplayOption.Always);
+			
 		}
 
 		public void StoreSlopeVertexGroupsInSector()

@@ -87,6 +87,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		ControlSectorArea.Highlight csahighlight = ControlSectorArea.Highlight.None;
 		bool dragging = false;
 
+		bool paintselectpressed;
+
 		private List<ThreeDFloor> threedfloors;
 
 		#endregion
@@ -763,9 +765,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			// Item highlighted?
 			if((highlighted != null) && !highlighted.IsDisposed)
 			{
-				// Flip selection
-				SelectSector(highlighted, !highlighted.Selected, true);
-
 				// Update display
 				if(renderer.StartPlotter(false))
 				{
@@ -788,8 +787,11 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				// Item highlighted?
 				if((highlighted != null) && !highlighted.IsDisposed)
 				{
+					// Flip selection
+					SelectSector(highlighted, !highlighted.Selected, true);
+
 					// Update display
-					if(renderer.StartPlotter(false))
+					if (renderer.StartPlotter(false))
 					{
 						// Render highlighted item
 						renderer.PlotSector(highlighted, General.Colors.Highlight);
@@ -911,6 +913,59 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				{
 					// Start multiselecting
 					StartMultiSelection();
+				}
+			}
+			else if (paintselectpressed && !editpressed && !selecting) //mxd. Drag-select
+			{
+				// Find the nearest linedef within highlight range
+				Linedef l = General.Map.Map.NearestLinedefRange(mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
+				Sector s = null;
+
+				if (l != null)
+				{
+					// Check on which side of the linedef the mouse is
+					float side = l.SideOfLine(mousemappos);
+					if (side > 0)
+					{
+						// Is there a sidedef here?
+						if (l.Back != null) s = l.Back.Sector;
+					}
+					else
+					{
+						// Is there a sidedef here?
+						if (l.Front != null) s = l.Front.Sector;
+					}
+
+					if (s != null)
+					{
+						if (s != highlighted)
+						{
+							//toggle selected state
+							highlighted = s;
+							if (General.Interface.ShiftState ^ BuilderPlug.Me.AdditivePaintSelect)
+								SelectSector(highlighted, true, true);
+							else if (General.Interface.CtrlState)
+								SelectSector(highlighted, false, true);
+							else
+								SelectSector(highlighted, !highlighted.Selected, true);
+
+							// Update entire display
+							updateOverlaySurfaces();
+							UpdateOverlay();
+							General.Interface.RedrawDisplay();
+						}
+					}
+					else if (highlighted != null)
+					{
+						Highlight(null);
+
+						// Update entire display
+						updateOverlaySurfaces();
+						UpdateOverlay();
+						General.Interface.RedrawDisplay();
+					}
+
+					UpdateSelectionInfo(); //mxd
 				}
 			}
 			else if (e.Button == MouseButtons.None)
@@ -1163,7 +1218,35 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			SetupLabels();
 			UpdateLabels();
 		}
-		
+
+		//mxd
+		[BeginAction("classicpaintselect", Library = "BuilderModes" )]
+		void OnPaintSelectBegin()
+		{
+			if (highlighted != null)
+			{
+				if (General.Interface.ShiftState ^ BuilderPlug.Me.AdditivePaintSelect)
+					SelectSector(highlighted, true, true);
+				else if (General.Interface.CtrlState)
+					SelectSector(highlighted, false, true);
+				else
+					SelectSector(highlighted, !highlighted.Selected, true);
+
+				// Update entire display
+				updateOverlaySurfaces();
+				UpdateOverlay();
+				General.Interface.RedrawDisplay();
+			}
+
+			paintselectpressed = true;
+		}
+
+		[EndAction("classicpaintselect", Library = "BuilderModes")]
+		void OnPaintSelectEnd()
+		{
+			paintselectpressed = false;
+		}
+
 		#endregion
 
 		#region ================== Actions
