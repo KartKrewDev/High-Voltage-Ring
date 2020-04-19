@@ -16,7 +16,9 @@
 
 #region ================== Namespaces
 
+using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using CodeImp.DoomBuilder.Rendering;
 
 #endregion
@@ -34,6 +36,9 @@ namespace CodeImp.DoomBuilder.Data
 		// Constructor
 		public DynamicBitmapImage(Bitmap img, string name) : base(img, name)
 		{
+			if (img.PixelFormat != PixelFormat.Format32bppArgb)
+				throw new Exception("Dynamic images must be in 32 bits ARGB format.");
+
 			// Initialize
 			this.UseColorCorrection = false;
 			this.dynamictexture = true;

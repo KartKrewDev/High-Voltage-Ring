@@ -402,9 +402,6 @@ namespace CodeImp.DoomBuilder.Data
 				// Bitmap has incorrect format?
 				if(bitmap.PixelFormat != PixelFormat.Format32bppArgb)
 				{
-					if(dynamictexture)
-						throw new Exception("Dynamic images must be in 32 bits ARGB format.");
-						
 					//General.ErrorLogger.Add(ErrorType.Warning, "Image '" + name + "' does not have A8R8G8B8 pixel format. Conversion was needed.");
 					Bitmap oldbitmap = bitmap;
 					try
@@ -466,12 +463,6 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				width = bitmap.Size.Width;
 				height = bitmap.Size.Height;
-
-				if(dynamictexture)
-				{
-					if((width != General.NextPowerOf2(width)) || (height != General.NextPowerOf2(height)))
-						throw new Exception("Dynamic images must have a size in powers of 2.");
-				}
 
 				// Do we still have to set a scale?
 				if((scale.x == 0.0f) && (scale.y == 0.0f))
@@ -688,16 +679,8 @@ namespace CodeImp.DoomBuilder.Data
 
             texture = new Texture(General.Map.Graphics, loadedbitmap);
 
-            if (dynamictexture)
-            {
-                if ((width != texture.Width) || (height != texture.Height))
-                    throw new Exception("Could not create a texture with the same size as the image.");
-            }
-            else
-            {
-                loadedbitmap.Dispose();
-                loadedbitmap = null;
-            }
+            loadedbitmap.Dispose();
+            loadedbitmap = null;
 
 #if DEBUG
 			texture.Tag = name; //mxd. Helps with tracking undisposed resources...
@@ -706,15 +689,14 @@ namespace CodeImp.DoomBuilder.Data
 		}
 
 		// This updates a dynamic texture
-		public void UpdateTexture()
+		public void UpdateTexture(Bitmap canvas)
 		{
+			if (canvas.PixelFormat != PixelFormat.Format32bppArgb)
+				throw new Exception("Dynamic images must be in 32 bits ARGB format.");
 			if(!dynamictexture)
 				throw new Exception("The image must be a dynamic image to support direct updating.");
 
-			if((texture != null) && !texture.Disposed)
-			{
-                General.Map.Graphics.SetPixels(texture, loadedbitmap);
-			}
+            General.Map.Graphics.SetPixels(GetTexture(), canvas);
 		}
 		
 		// This destroys the Direct3D texture
