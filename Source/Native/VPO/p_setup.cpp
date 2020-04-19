@@ -25,14 +25,13 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 
 namespace vpo
 {
 
 
-// the error message returned from P_SetupLevel()
-static char  level_error_msg[1024];
 
 // this exception is thrown during P_SetupLevel() when a map with bad data
 // is detected (e.g. vertex number out of range).  The above message buffer
@@ -40,36 +39,8 @@ static char  level_error_msg[1024];
 class invalid_data_exception { };
 
 
-static bool level_is_hexen;
 
 
-//
-// MAP related Lookup tables.
-// Store VERTEXES, LINEDEFS, SIDEDEFS, etc.
-//
-vertex_t*	vertexes;
-int		numvertexes;
-
-seg_t*		segs;
-int		numsegs;
-
-sector_t*	sectors;
-int		numsectors;
-
-subsector_t*	subsectors;
-int		numsubsectors;
-
-node_t*		nodes;
-int		numnodes;
-
-line_t*		lines;
-int		numlines;
-
-side_t*		sides;
-int		numsides;
-
-
-fixed_t  Map_bbox[4];
 
 
 static int R_TextureNumForName (const char * name)
@@ -91,7 +62,7 @@ static int R_FlatNumForName (const char * name)
 }
 
 
-static void LevelError(const char *msg, ...)
+void Context::LevelError(const char *msg, ...)
 {
 	va_list argptr;
 
@@ -107,7 +78,7 @@ static void LevelError(const char *msg, ...)
 //
 // P_LoadVertexes
 //
-void P_LoadVertexes (int lump)
+void Context::P_LoadVertexes (int lump)
 {
 	byte*		data;
 	int			i;
@@ -143,7 +114,7 @@ void P_LoadVertexes (int lump)
 //
 // GetSectorAtNullAddress
 //
-sector_t * GetSectorAtNullAddress(void)
+sector_t * Context::GetSectorAtNullAddress(void)
 {
 	return sectors + 0;
 }
@@ -152,7 +123,7 @@ sector_t * GetSectorAtNullAddress(void)
 //
 // P_LoadSegs
 //
-void P_LoadSegs (int lump)
+void Context::P_LoadSegs (int lump)
 {
 	byte*		data;
 	int		i;
@@ -235,7 +206,7 @@ void P_LoadSegs (int lump)
 //
 // P_LoadSubsectors
 //
-void P_LoadSubsectors (int lump)
+void Context::P_LoadSubsectors (int lump)
 {
 	byte*		data;
 	int			i;
@@ -262,7 +233,7 @@ void P_LoadSubsectors (int lump)
 
 
 // andrewj: added this
-static void ValidateSubsectors ()
+void Context::ValidateSubsectors ()
 {
 	int i;
 	subsector_t * ss = subsectors;
@@ -281,7 +252,7 @@ static void ValidateSubsectors ()
 //
 // P_LoadSectors
 //
-void P_LoadSectors (int lump)
+void Context::P_LoadSectors (int lump)
 {
 	byte*		data;
 	int			i;
@@ -313,7 +284,7 @@ void P_LoadSectors (int lump)
 }
 
 
-static bool isChildValid(unsigned short child)
+bool Context::isChildValid(unsigned short child)
 {
 	if (child & NF_SUBSECTOR)
 		return ((child & ~NF_SUBSECTOR) < numsubsectors);
@@ -325,7 +296,7 @@ static bool isChildValid(unsigned short child)
 //
 // P_LoadNodes
 //
-void P_LoadNodes (int lump)
+void Context::P_LoadNodes (int lump)
 {
 	byte*	data;
 	int		i;
@@ -370,7 +341,7 @@ void P_LoadNodes (int lump)
 /* andrewj : removed P_LoadThings(), not needed for Visplane Explorer */
 
 
-static void LineDef_CommonSetup(line_t *ld)
+void Context::LineDef_CommonSetup(line_t *ld)
 {
 	vertex_t *v1 = ld->v1;
 	vertex_t *v2 = ld->v2;
@@ -441,7 +412,7 @@ static void LineDef_CommonSetup(line_t *ld)
 // P_LoadLineDefs
 // Also counts secret lines for intermissions.
 //
-void P_LoadLineDefs (int lump)
+void Context::P_LoadLineDefs (int lump)
 {
 	byte*		data;
 	int		i;
@@ -485,7 +456,7 @@ void P_LoadLineDefs (int lump)
 
 
 // andrewj: added this for Hexen support
-void P_LoadLineDefs_Hexen (int lump)
+void Context::P_LoadLineDefs_Hexen (int lump)
 {
 	byte*			data;
 	int			i, k;
@@ -534,7 +505,7 @@ void P_LoadLineDefs_Hexen (int lump)
 //
 // P_LoadSideDefs
 //
-void P_LoadSideDefs (int lump)
+void Context::P_LoadSideDefs (int lump)
 {
 	byte*		data;
 	int			i;
@@ -581,7 +552,7 @@ void P_LoadSideDefs (int lump)
 // Builds sector line lists and subsector sector numbers.
 // Finds block bounding boxes for sectors.
 //
-void P_GroupLines (void)
+void Context::P_GroupLines (void)
 {
 	line_t**		linebuffer;
 	int			i;
@@ -692,7 +663,7 @@ void P_GroupLines (void)
 // Main criterion is that sector is closed, and either has a tag
 // or one of the linedefs has a manual door type.
 //
-static int HasManualDoor(const sector_t *sec)
+int Context::HasManualDoor(const sector_t *sec)
 {
 	int k;
 
@@ -730,7 +701,7 @@ static int HasManualDoor(const sector_t *sec)
 	return 0;
 }
 
-static void CalcDoorAltHeight(sector_t *sec)
+void Context::CalcDoorAltHeight(sector_t *sec)
 {
 	fixed_t door_h = sec->floorheight;  // == sec->ceilingheight
 
@@ -776,7 +747,7 @@ static void CalcDoorAltHeight(sector_t *sec)
 	}
 }
 
-void P_DetectDoorSectors(void)
+void Context::P_DetectDoorSectors()
 {
 	int i;
 
@@ -803,7 +774,7 @@ void P_DetectDoorSectors(void)
 // Returns an error message if something went wrong
 // or NULL on success.
 //
-const char * P_SetupLevel ( const char *lumpname, bool *is_hexen )
+const char * Context::P_SetupLevel ( const char *lumpname, bool *is_hexen )
 {
 	int base = W_CheckNumForName(lumpname);
 
@@ -865,7 +836,7 @@ const char * P_SetupLevel ( const char *lumpname, bool *is_hexen )
 }
 
 
-void P_FreeLevelData (void)
+void Context::P_FreeLevelData ()
 {
 	if (vertexes)
 	{

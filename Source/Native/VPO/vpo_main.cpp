@@ -18,23 +18,16 @@
 //
 //------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 #include "vpo_api.h"
 
-
-static char error_buffer[1024];
-
-// cache for the sector lookup
-static int last_x, last_y;
-static vpo::sector_t *last_sector;
-
-
-static void ClearError(void)
+void vpo::Context::ClearError()
 {
 	strcpy(error_buffer, "(No Error)");
 }
 
-static void SetError(const char *msg, ...)
+void vpo::Context::SetError(const char *msg, ...)
 {
 	va_list argptr;
 
@@ -45,26 +38,40 @@ static void SetError(const char *msg, ...)
 }
 
 
-const char *VPO_GetError(void)
+const char *VPO_GetError(VPOContext ctx)
 {
-	return error_buffer;
+	vpo::Context* context = (vpo::Context*)ctx;
+	return context->error_buffer;
 }
 
 
 //------------------------------------------------------------------------
 
-int VPO_LoadWAD(const char *wad_filename)
+VPOContext VPO_NewContext()
 {
-	ClearError();
+	return new vpo::Context();
+}
+
+void VPO_DeleteContext(VPOContext ctx)
+{
+	vpo::Context* context = (vpo::Context*)ctx;
+	delete context;
+}
+
+int VPO_LoadWAD(VPOContext ctx, const char *wad_filename)
+{
+	vpo::Context* context = (vpo::Context*)ctx;
+
+	context->ClearError();
 
 	// free any previously loaded wad
-	VPO_FreeWAD();
+	VPO_FreeWAD(ctx);
 
-	vpo::R_Init();
+	context->R_Init();
 
-	if (! vpo::W_AddFile(wad_filename))
+	if (! context->W_AddFile(wad_filename))
 	{
-		SetError("Missing or invalid wad file: %s", wad_filename);
+		context->SetError("Missing or invalid wad file: %s", wad_filename);
 		return -1;
 	}
 
@@ -72,25 +79,27 @@ int VPO_LoadWAD(const char *wad_filename)
 }
 
 
-int VPO_OpenMap(const char *map_name, bool *is_hexen)
+int VPO_OpenMap(VPOContext ctx, const char *map_name, bool *is_hexen)
 {
+	vpo::Context* context = (vpo::Context*)ctx;
+
 	// check a wad is loaded
-	if (vpo::numlumps <= 0)
+	if (context->numlumps <= 0)
 	{
-		SetError("VPO_OpenMap called without any loaded wad");
+		context->SetError("VPO_OpenMap called without any loaded wad");
 		return -1;
 	}
 
-	ClearError();
+	context->ClearError();
 
 	// close any previously loaded map
-	VPO_CloseMap();
+	VPO_CloseMap(ctx);
 
-	const char *err_msg = vpo::P_SetupLevel(map_name, is_hexen);
+	const char *err_msg = context->P_SetupLevel(map_name, is_hexen);
 
 	if (err_msg)
 	{
-		SetError("%s", err_msg);
+		context->SetError("%s", err_msg);
 		return -1;
 	}
 
@@ -98,43 +107,49 @@ int VPO_OpenMap(const char *map_name, bool *is_hexen)
 }
 
 
-void VPO_FreeWAD(void)
+void VPO_FreeWAD(VPOContext ctx)
 {
-	VPO_CloseMap();
+	vpo::Context* context = (vpo::Context*)ctx;
 
-	vpo::W_RemoveFile();
+	VPO_CloseMap(ctx);
+
+	context->W_RemoveFile();
 }
 
 
-void VPO_CloseMap(void)
+void VPO_CloseMap(VPOContext ctx)
 {
-	ClearError();
+	vpo::Context* context = (vpo::Context*)ctx;
 
-	last_x = -77777;
-	last_y = -77777;
-	last_sector = NULL;
+	context->ClearError();
 
-	vpo::P_FreeLevelData();
+	context->last_x = -77777;
+	context->last_y = -77777;
+	context->last_sector = NULL;
+
+	context->P_FreeLevelData();
 }
 
 
-const char * VPO_GetMapName(unsigned int index, bool *is_hexen)
+const char * VPO_GetMapName(VPOContext ctx, unsigned int index, bool *is_hexen)
 {
-	static char buffer[16];
+	vpo::Context* context = (vpo::Context*)ctx;
 
-	for (int lump_i = 0 ; lump_i < vpo::numlumps ; lump_i++)
+	char *buffer = context->mapname_buffer;
+
+	for (int lump_i = 0 ; lump_i < context->numlumps ; lump_i++)
 	{
-		if (! vpo::lumpinfo[lump_i].is_map_header)
+		if (! context->lumpinfo[lump_i].is_map_header)
 			continue;
 
 		if (index == 0)
 		{
 			// found it
-			memcpy(buffer, vpo::lumpinfo[lump_i].name, 8);
+			memcpy(buffer, context->lumpinfo[lump_i].name, 8);
 			buffer[8] = 0;
 
 			if (is_hexen)
-				*is_hexen = vpo::lumpinfo[lump_i].is_hexen;
+				*is_hexen = context->lumpinfo[lump_i].is_hexen;
 
 			return buffer;
 		}
@@ -147,12 +162,14 @@ const char * VPO_GetMapName(unsigned int index, bool *is_hexen)
 }
 
 
-int VPO_GetLinedef(unsigned int index, int *x1, int *y1, int *x2, int *y2)
+int VPO_GetLinedef(VPOContext ctx, unsigned int index, int *x1, int *y1, int *x2, int *y2)
 {
-	if (index >= (unsigned int)vpo::numlines)
+	vpo::Context* context = (vpo::Context*)ctx;
+
+	if (index >= (unsigned int)context->numlines)
 		return -1;
 
-	const vpo::line_t *L = &vpo::lines[index];
+	const vpo::line_t *L = &context->lines[index];
 
 	*x1 = L->v1->x >> FRACBITS;
 	*y1 = L->v1->y >> FRACBITS;
@@ -164,13 +181,15 @@ int VPO_GetLinedef(unsigned int index, int *x1, int *y1, int *x2, int *y2)
 }
 
 
-int VPO_GetSeg(unsigned int index, int *linedef, int *side,
+int VPO_GetSeg(VPOContext ctx, unsigned int index, int *linedef, int *side,
                int *x1, int *y1, int *x2, int *y2)
 {
-	if (index >= (unsigned int)vpo::numsegs)
+	vpo::Context* context = (vpo::Context*)ctx;
+
+	if (index >= (unsigned int)context->numsegs)
 		return -1;
 	
-	const vpo::seg_t *seg = &vpo::segs[index];
+	const vpo::seg_t *seg = &context->segs[index];
 	const vpo::line_t *L  = seg->linedef;
 
 	*x1 = seg->v1->x >> FRACBITS;
@@ -179,30 +198,34 @@ int VPO_GetSeg(unsigned int index, int *linedef, int *side,
 	*x2 = seg->v2->x >> FRACBITS;
 	*y2 = seg->v2->y >> FRACBITS;
 
-	*linedef = (L - vpo::lines);
+	*linedef = (L - context->lines);
 	*side = 0;
 
-	if (L->sidenum[1] >= 0 && seg->sidedef == &vpo::sides[L->sidenum[1]])
+	if (L->sidenum[1] >= 0 && seg->sidedef == &context->sides[L->sidenum[1]])
 		*side = 1;
 
 	return 0;
 }
 
 
-void VPO_GetBBox(int *x1, int *y1, int *x2, int *y2)
+void VPO_GetBBox(VPOContext ctx, int *x1, int *y1, int *x2, int *y2)
 {
-	*x1 = (vpo::Map_bbox[vpo::BOXLEFT]   >> FRACBITS);
-	*y1 = (vpo::Map_bbox[vpo::BOXBOTTOM] >> FRACBITS);
-	*x2 = (vpo::Map_bbox[vpo::BOXRIGHT]  >> FRACBITS);
-	*y2 = (vpo::Map_bbox[vpo::BOXTOP]    >> FRACBITS);
+	vpo::Context* context = (vpo::Context*)ctx;
+
+	*x1 = (context->Map_bbox[vpo::BOXLEFT]   >> FRACBITS);
+	*y1 = (context->Map_bbox[vpo::BOXBOTTOM] >> FRACBITS);
+	*x2 = (context->Map_bbox[vpo::BOXRIGHT]  >> FRACBITS);
+	*y2 = (context->Map_bbox[vpo::BOXTOP]    >> FRACBITS);
 }
 
 
-void VPO_OpenDoorSectors(int dir)
+void VPO_OpenDoorSectors(VPOContext ctx, int dir)
 {
-	for (int i = 0 ; i < vpo::numsectors ; i++)
+	vpo::Context* context = (vpo::Context*)ctx;
+
+	for (int i = 0 ; i < context->numsectors ; i++)
 	{
-		vpo::sector_t *sec = &vpo::sectors[i];
+		vpo::sector_t *sec = &context->sectors[i];
 
 		if (sec->is_door == 0)
 			continue;
@@ -227,10 +250,12 @@ void VPO_OpenDoorSectors(int dir)
 
 //------------------------------------------------------------------------
 
-int VPO_TestSpot(int x, int y, int dz, int angle,
+int VPO_TestSpot(VPOContext ctx, int x, int y, int dz, int angle,
                  int *num_visplanes, int *num_drawsegs,
                  int *num_openings,  int *num_solidsegs)
 {
+	vpo::Context* context = (vpo::Context*)ctx;
+
 	// the actual spot we will use
 	// (this prevents issues with X_SectorForPoint getting the wrong
 	//  value when the casted ray hits a vertex)
@@ -238,10 +263,10 @@ int VPO_TestSpot(int x, int y, int dz, int angle,
 	vpo::fixed_t ry = (y << FRACBITS) + (FRACUNIT / 2);
 
 	// check if spot is outside the map
-	if (rx < vpo::Map_bbox[vpo::BOXLEFT]   ||
-	    rx > vpo::Map_bbox[vpo::BOXRIGHT]  ||
-	    ry < vpo::Map_bbox[vpo::BOXBOTTOM] ||
-		ry > vpo::Map_bbox[vpo::BOXTOP])
+	if (rx < context->Map_bbox[vpo::BOXLEFT]   ||
+	    rx > context->Map_bbox[vpo::BOXRIGHT]  ||
+	    ry < context->Map_bbox[vpo::BOXBOTTOM] ||
+		ry > context->Map_bbox[vpo::BOXTOP])
 	{
 		return RESULT_IN_VOID;
 	}
@@ -249,15 +274,15 @@ int VPO_TestSpot(int x, int y, int dz, int angle,
 	// optimization: we cache the last sector lookup
 	vpo::sector_t *sec;
 
-	if (x == last_x && y == last_y)
-		sec = last_sector;
+	if (x == context->last_x && y == context->last_y)
+		sec = context->last_sector;
 	else
 	{
-		sec = vpo::X_SectorForPoint(rx, ry);
+		sec = context->X_SectorForPoint(rx, ry);
 
-		last_x = x;
-		last_y = y;
-		last_sector = sec;
+		context->last_x = x;
+		context->last_y = y;
+		context->last_sector = sec;
 	}
 
 	if (! sec)
@@ -286,17 +311,17 @@ int VPO_TestSpot(int x, int y, int dz, int angle,
 	// perform a no-draw render and see how many visplanes were needed
 	try
 	{
-		vpo::R_RenderView(rx, ry, rz, r_ang);
+		context->R_RenderView(rx, ry, rz, r_ang);
 	}
-	catch (vpo::overflow_exception& e)
+	catch (vpo::overflow_exception&)
 	{
 		result = RESULT_OVERFLOW;
 	}
 
-	*num_visplanes = MAX(*num_visplanes, vpo::total_visplanes);
-	*num_drawsegs  = MAX(*num_drawsegs,  vpo::total_drawsegs);
-	*num_openings  = MAX(*num_openings,  vpo::total_openings);
-	*num_solidsegs = MAX(*num_solidsegs, vpo::max_solidsegs);
+	*num_visplanes = MAX(*num_visplanes, context->total_visplanes);
+	*num_drawsegs  = MAX(*num_drawsegs, context->total_drawsegs);
+	*num_openings  = MAX(*num_openings, context->total_openings);
+	*num_solidsegs = MAX(*num_solidsegs, context->max_solidsegs);
 
 	return result;
 }
@@ -336,14 +361,16 @@ int main(int argc, char **argv)
 
 	printf("Loading file: %s [%s]\n", filename, map);
 
-	if (VPO_LoadWAD(filename) != 0)
+	VPOContext context = VPO_NewContext();
+
+	if (VPO_LoadWAD(context, filename) != 0)
 	{
 		printf("ERROR: %s\n", VPO_GetError());
 		fflush(stdout);
 		return 1;
 	}
 
-	if (VPO_OpenMap(map) != 0)
+	if (VPO_OpenMap(context, map) != 0)
 	{
 		printf("ERROR: %s\n", VPO_GetError());
 		fflush(stdout);
@@ -351,14 +378,16 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	int vp_num = VPO_TestSpot(TEST_VISPLANES, x, y, EYE_HEIGHT, angle);
+	int vp_num = VPO_TestSpot(context, TEST_VISPLANES, x, y, EYE_HEIGHT, angle);
 
 	printf("\n");
 	printf("Visplanes @ (%d %d) ---> %d\n", x, y, vp_num);
 	fflush(stdout);
 
-	VPO_CloseMap();
-	VPO_FreeWAD();
+	VPO_CloseMap(context);
+	VPO_FreeWAD(context);
+
+	VPO_DeleteContext(context);
 
 	return 0;
 }

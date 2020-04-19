@@ -23,45 +23,11 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 
 namespace vpo
 {
-
-
-typedef struct
-{
-	// Should be "IWAD" or "PWAD".
-	char		identification[4];
-	int			numlumps;
-	int			infotableofs;
-
-} PACKEDATTR wadinfo_t;
-
-
-typedef struct
-{
-	int			filepos;
-	int			size;
-	char		name[8];
-
-} PACKEDATTR filelump_t;
-
-//
-// GLOBALS
-//
-
-// Location of each lump on disk.
-
-lumpinfo_t *lumpinfo;
-
-int numlumps = 0;
-
-static char * wad_filename;
-
-static wad_file_t * current_file;
-
-
 
 //
 // LUMP BASED ROUTINES.
@@ -69,7 +35,7 @@ static wad_file_t * current_file;
 
 // andrewj: added this to find level names
 //          returns 0 if not a level, 1 for DOOM, 2 for HEXEN format
-static int CheckMapHeader(filelump_t *lumps, int num_after)
+int Context::CheckMapHeader(filelump_t *lumps, int num_after)
 {
 	static const char *level_lumps[] =
 	{
@@ -113,7 +79,7 @@ static int CheckMapHeader(filelump_t *lumps, int num_after)
 // Other files are single lumps with the base filename
 //  for the lump name.
 
-bool W_AddFile (const char *filename)
+bool Context::W_AddFile (const char *filename)
 {
 	wadinfo_t header;
 	lumpinfo_t *lump_p;
@@ -206,7 +172,7 @@ bool W_AddFile (const char *filename)
 }
 
 
-void W_RemoveFile(void)
+void Context::W_RemoveFile(void)
 {
 	if (wad_filename)
 	{
@@ -225,7 +191,7 @@ void W_RemoveFile(void)
 //
 // W_NumLumps
 //
-int W_NumLumps (void)
+int Context::W_NumLumps (void)
 {
 	return numlumps;
 }
@@ -235,7 +201,7 @@ int W_NumLumps (void)
 // W_CheckNumForName
 // Returns -1 if name not found.
 //
-int W_CheckNumForName (const char* name)
+int Context::W_CheckNumForName (const char* name)
 {
 	int i;
 
@@ -259,7 +225,7 @@ int W_CheckNumForName (const char* name)
 // W_LumpLength
 // Returns the buffer size needed to load the given lump.
 //
-int W_LumpLength (int lumpnum)
+int Context::W_LumpLength (int lumpnum)
 {
 	if (lumpnum >= numlumps)
 	{
@@ -275,7 +241,7 @@ int W_LumpLength (int lumpnum)
 // Loads the lump into the given buffer,
 //  which must be >= W_LumpLength().
 //
-static void W_ReadLump(int lump, void *dest)
+void Context::W_ReadLump(int lump, void *dest)
 {
 	int c;
 	lumpinfo_t *l;
@@ -302,7 +268,7 @@ static void W_ReadLump(int lump, void *dest)
 // Load a lump into memory and return a pointer to a buffer containing
 // the lump data.
 //
-byte * W_LoadLump(int lumpnum)
+byte * Context::W_LoadLump(int lumpnum)
 {
 	byte *result;
 
@@ -324,13 +290,13 @@ byte * W_LoadLump(int lumpnum)
 }
 
 
-void W_FreeLump(byte * data)
+void Context::W_FreeLump(byte * data)
 {
 	delete[] data;
 }
 
 
-void W_BeginRead(void)
+void Context::W_BeginRead()
 {
 	// check API usage
 	if (! wad_filename)
@@ -348,7 +314,7 @@ void W_BeginRead(void)
 }
 
 
-void W_EndRead()
+void Context::W_EndRead()
 {
 	if (! current_file)
 		I_Error("W_EndRead called without a previous W_BeginRead.");

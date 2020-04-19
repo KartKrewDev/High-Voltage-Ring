@@ -20,36 +20,40 @@
 // 02111-1307, USA.
 //
 // DESCRIPTION:
-//    Nil.
-//    
+//	Refresh module, BSP traversal and handling.
+//
 //-----------------------------------------------------------------------------
 
+#ifndef __R_BSP__
+#define __R_BSP__
 
-#ifndef __M_BBOX__
-#define __M_BBOX__
+#if 0
+extern seg_t*		curline;
+extern side_t*		sidedef;
+extern line_t*		linedef;
+extern sector_t*	frontsector;
+extern sector_t*	backsector;
 
-#include <limits.h>
+extern int		rw_x;
+extern int		rw_stopx;
 
-#include "m_fixed.h"
+extern boolean		segtextured;
+
+// false if the back side is the same plane
+extern boolean		markfloor;		
+extern boolean		markceiling;
+
+extern boolean		skymap;
+
+extern drawseg_t	drawsegs[MAXDRAWSEGS+10];
+extern drawseg_t*	ds_p;
 
 
-// Bounding box coordinate storage.
-enum
-{
-    BOXTOP,
-    BOXBOTTOM,
-    BOXLEFT,
-    BOXRIGHT
-};	// bbox coordinates
+// BSP?
+void R_ClearClipSegs (void);
+void R_ClearDrawSegs (void);
 
-// Bounding box functions.
-void M_ClearBox (fixed_t*	box);
-
-void
-M_AddToBox
-( fixed_t*	box,
-  fixed_t	x,
-  fixed_t	y );
-
+void R_RenderBSPNode (int bspnum);
+#endif
 
 #endif

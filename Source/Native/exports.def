@@ -58,3 +58,14 @@ EXPORTS
 	Matrix_RotationZ
 	Matrix_Scaling
 	Matrix_Multiply
+	VPO_NewContext
+	VPO_DeleteContext
+	VPO_GetError
+	VPO_LoadWAD
+	VPO_FreeWAD
+	VPO_GetMapName
+	VPO_OpenMap
+	VPO_CloseMap
+	VPO_GetLinedef
+	VPO_OpenDoorSectors
+	VPO_TestSpot

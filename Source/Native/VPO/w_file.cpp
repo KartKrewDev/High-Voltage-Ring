@@ -2,7 +2,7 @@
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
-// Copyright(C) 2005 Simon Howard
+// Copyright(C) 2008 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,41 +20,66 @@
 // 02111-1307, USA.
 //
 // DESCRIPTION:
-//	Main loop menu stuff.
-//	Random number LUT.
-//	Default Config File.
-//	PCX Screenshots.
+//	WAD I/O functions.
 //
 //-----------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 
 namespace vpo
 {
 
 
-void M_ClearBox (fixed_t *box)
+wad_file_t *Context::W_OpenFile(const char *path)
 {
-    box[BOXTOP] = box[BOXRIGHT] = INT_MIN;
-    box[BOXBOTTOM] = box[BOXLEFT] = INT_MAX;
+    wad_file_t *result;
+
+    FILE *fstream = fopen(path, "rb");
+
+    if (fstream == NULL)
+    {
+        return NULL;
+    }
+
+    // Create a new wad_file_t to hold the file handle.
+
+    result = new wad_file_t;
+
+    result->fstream = fstream;
+
+//    result->length = M_FileLength(fstream);
+
+    return result;
 }
 
-void
-M_AddToBox
-( fixed_t*	box,
-  fixed_t	x,
-  fixed_t	y )
+
+void Context::W_CloseFile(wad_file_t *wad)
 {
-    if (x<box[BOXLEFT])
-	box[BOXLEFT] = x;
-    else if (x>box[BOXRIGHT])
-	box[BOXRIGHT] = x;
-    if (y<box[BOXBOTTOM])
-	box[BOXBOTTOM] = y;
-    else if (y>box[BOXTOP])
-	box[BOXTOP] = y;
+    fclose(wad->fstream);
+
+    delete wad;
 }
 
+
+// Read data from the specified position in the file into the 
+// provided buffer.  Returns the number of bytes read.
+
+size_t Context::W_Read(wad_file_t *wad, unsigned int offset,
+              void *buffer, size_t buffer_len)
+{
+    size_t result;
+
+    // Jump to the specified position in the file.
+
+    fseek(wad->fstream, offset, SEEK_SET);
+
+    // Read into the buffer.
+
+    result = fread(buffer, 1, buffer_len, wad->fstream);
+
+    return result;
+}
 
 
 } // namespace vpo

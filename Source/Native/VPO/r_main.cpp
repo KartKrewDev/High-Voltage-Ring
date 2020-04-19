@@ -26,6 +26,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 
 // #include "r_sky.h"
@@ -37,81 +38,6 @@ namespace vpo
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW		2048	
 
-int			viewangleoffset;
-
-// increment every time a check is made
-int			validcount = 1;		
-
-
-int			centerx;
-int			centery;
-
-fixed_t			centerxfrac;
-fixed_t			centeryfrac;
-fixed_t			projection;
-
-// just for profiling purposes
-int			framecount;	
-
-int			sscount;
-int			linecount;
-int			loopcount;
-
-fixed_t			viewx;
-fixed_t			viewy;
-fixed_t			viewz;
-
-angle_t			viewangle;
-
-fixed_t			viewcos;
-fixed_t			viewsin;
-
-
-//
-// precalculated math tables
-//
-angle_t			clipangle;
-
-// The viewangletox[viewangle + FINEANGLES/4] lookup
-// maps the visible view angles to screen X coordinates,
-// flattening the arc to a flat projection plane.
-// There will be many angles mapped to the same X. 
-int			viewangletox[FINEANGLES/2];
-
-// The xtoviewangleangle[] table maps a screen pixel
-// to the lowest viewangle that maps back to x ranges
-// from clipangle to -clipangle.
-angle_t			xtoviewangle[SCREENWIDTH+1];
-
-
-// UNUSED.
-// The finetangentgent[angle+FINEANGLES/4] table
-// holds the fixed_t tangent values for view angles,
-// ranging from INT_MIN to 0 to INT_MAX.
-// fixed_t		finetangent[FINEANGLES/2];
-
-// fixed_t		finesine[5*FINEANGLES/4];
-const fixed_t*		finecosine = &finesine[FINEANGLES/4];
-
-
-// bumped light from gun blasts
-int			extralight;			
-
-
-// from R_DRAW
-int		viewwidth;
-int		scaledviewwidth;
-int		viewheight;
-int		viewwindowx;
-int		viewwindowy; 
-
-
-// from R_THINGS
-fixed_t  pspritescale;
-fixed_t  pspriteiscale;
-
-short  screenheightarray[SCREENWIDTH];
-short  negonearray[SCREENWIDTH];
 
 
 //
@@ -119,7 +45,7 @@ short  negonearray[SCREENWIDTH];
 // Expand a given bbox
 // so that it encloses a given point.
 //
-void R_AddPointToBox ( int  x, int  y, fixed_t* box )
+void Context::R_AddPointToBox ( int  x, int  y, fixed_t* box )
 {
     if (x< box[BOXLEFT])
 	box[BOXLEFT] = x;
@@ -138,7 +64,7 @@ void R_AddPointToBox ( int  x, int  y, fixed_t* box )
 //  check point against partition plane.
 // Returns side 0 (front) or 1 (back).
 //
-int R_PointOnSide ( fixed_t	x, fixed_t	y, node_t*	node )
+int Context::R_PointOnSide ( fixed_t	x, fixed_t	y, node_t*	node )
 {
     fixed_t	dx;
     fixed_t	dy;
@@ -187,7 +113,7 @@ int R_PointOnSide ( fixed_t	x, fixed_t	y, node_t*	node )
 }
 
 
-int R_PointOnSegSide ( fixed_t	x, fixed_t	y, seg_t*	line )
+int Context::R_PointOnSegSide ( fixed_t	x, fixed_t	y, seg_t*	line )
 {
     fixed_t	lx;
     fixed_t	ly;
@@ -255,7 +181,7 @@ int R_PointOnSegSide ( fixed_t	x, fixed_t	y, seg_t*	line )
 //  tangent (slope) value which is looked up in the
 //  tantoangle[] table.
 
-angle_t R_PointToAngle ( fixed_t	x, fixed_t	y )
+angle_t Context::R_PointToAngle ( fixed_t	x, fixed_t	y )
 {	
     x -= viewx;
     y -= viewy;
@@ -338,7 +264,7 @@ angle_t R_PointToAngle ( fixed_t	x, fixed_t	y )
 }
 
 
-angle_t R_PointToAngle2 ( fixed_t	x1, fixed_t	y1, fixed_t	x2, fixed_t	y2 )
+angle_t Context::R_PointToAngle2 ( fixed_t	x1, fixed_t	y1, fixed_t	x2, fixed_t	y2 )
 {	
     viewx = x1;
     viewy = y1;
@@ -347,7 +273,7 @@ angle_t R_PointToAngle2 ( fixed_t	x1, fixed_t	y1, fixed_t	x2, fixed_t	y2 )
 }
 
 
-fixed_t R_PointToDist ( fixed_t	x, fixed_t	y )
+fixed_t Context::R_PointToDist ( fixed_t	x, fixed_t	y )
 {
     int		angle;
     fixed_t	dx;
@@ -393,7 +319,7 @@ fixed_t R_PointToDist ( fixed_t	x, fixed_t	y )
 //  at the given angle.
 // rw_distance must be calculated first.
 //
-fixed_t R_ScaleFromGlobalAngle (angle_t visangle)
+fixed_t Context::R_ScaleFromGlobalAngle (angle_t visangle)
 {
     fixed_t		scale;
     angle_t		anglea;
@@ -445,7 +371,7 @@ fixed_t R_ScaleFromGlobalAngle (angle_t visangle)
 }
 
 
-void R_InitBuffer ( int		width, int		height ) 
+void Context::R_InitBuffer ( int		width, int		height ) 
 { 
     int		i;
 	
@@ -482,7 +408,7 @@ void R_InitBuffer ( int		width, int		height )
 //
 // R_InitTextureMapping
 //
-void R_InitTextureMapping (void)
+void Context::R_InitTextureMapping (void)
 {
     int			i;
     int			x;
@@ -548,7 +474,7 @@ void R_InitTextureMapping (void)
 //
 // R_SetViewSize
 //
-void R_SetViewSize ( int  blocks, int  detail )
+void Context::R_SetViewSize ( int  blocks, int  detail )
 {
     fixed_t	cosadj;
     fixed_t	dy;
@@ -606,7 +532,7 @@ void R_SetViewSize ( int  blocks, int  detail )
 //
 // R_Init
 //
-void R_Init (void)
+void Context::R_Init (void)
 {
     R_SetViewSize (11, 0);
 	
@@ -617,7 +543,7 @@ void R_Init (void)
 //
 // R_PointInSubsector
 //
-subsector_t* R_PointInSubsector ( fixed_t	x, fixed_t	y )
+subsector_t* Context::R_PointInSubsector ( fixed_t	x, fixed_t	y )
 {
     node_t*	node;
     int		side;
@@ -643,7 +569,7 @@ subsector_t* R_PointInSubsector ( fixed_t	x, fixed_t	y )
 //
 // R_SetupFrame
 //
-void R_SetupFrame (fixed_t x, fixed_t y, fixed_t z, angle_t angle)
+void Context::R_SetupFrame (fixed_t x, fixed_t y, fixed_t z, angle_t angle)
 {		
     viewx = x;
     viewy = y;
@@ -664,7 +590,7 @@ void R_SetupFrame (fixed_t x, fixed_t y, fixed_t z, angle_t angle)
 //
 // R_RenderView
 //
-void R_RenderView (fixed_t x, fixed_t y, fixed_t z, angle_t angle)
+void Context::R_RenderView (fixed_t x, fixed_t y, fixed_t z, angle_t angle)
 {	
     R_SetupFrame (x, y, z, angle);
 

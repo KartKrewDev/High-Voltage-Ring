@@ -20,45 +20,48 @@
 // 02111-1307, USA.
 //
 // DESCRIPTION:
-//	Refresh, visplane stuff (floor, ceilings).
+//	Fixed point implementation.
 //
 //-----------------------------------------------------------------------------
 
-#ifndef __R_PLANE__
-#define __R_PLANE__
+#include "Precomp.h"
+#include "vpo_local.h"
+
+namespace vpo
+{
+
+// Fixme. __USE_C_FIXED__ or something.
+
+fixed_t
+FixedMul
+( fixed_t	a,
+  fixed_t	b )
+{
+    return ((int64_t) a * (int64_t) b) >> FRACBITS;
+}
 
 
-// Visplane related.
-extern  short * lastopening;
+
+//
+// FixedDiv, C version.
+//
+
+fixed_t FixedDiv(fixed_t a, fixed_t b)
+{
+    if ((abs(a) >> 14) >= abs(b))
+    {
+	return (a^b) < 0 ? INT_MIN : INT_MAX;
+    }
+    else
+    {
+	int64_t result;
+
+	result = ((int64_t) a << 16) / b;
+
+	return (fixed_t) result;
+    }
+}
 
 
-typedef void (*planefunction_t) (int top, int bottom);
+} // namespace vpo
 
-extern short		floorclip[SCREENWIDTH];
-extern short		ceilingclip[SCREENWIDTH];
-
-extern fixed_t		yslope[SCREENHEIGHT];
-extern fixed_t		distscale[SCREENWIDTH];
-
-void R_ClearPlanes (void);
-
-void R_MapPlane ( int y, int x1, int x2 );
-void R_MakeSpans ( int x, int t1, int b1, int t2, int b2 );
-void R_DrawPlanes (void);
-
-visplane_t* R_FindPlane ( fixed_t height, int picnum, int lightlevel );
-visplane_t* R_CheckPlane ( visplane_t* pl, int start, int stop );
-
-// #define MAXVISPLANES	128
-#define MAXVISPLANES	512   // andrewj: increased for Visplane Explorer
-
-// #define MAXOPENINGS	SCREENWIDTH*64
-#define MAXOPENINGS	SCREENWIDTH*256  // andrewj: increased for Visplane Explorer
-
-extern int total_visplanes;
-extern int total_drawsegs;
-extern int total_openings;
-extern int   max_solidsegs;
-
-
-#endif

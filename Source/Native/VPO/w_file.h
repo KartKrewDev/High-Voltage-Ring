@@ -24,62 +24,34 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "vpo_local.h"
+#ifndef __W_FILE__
+#define __W_FILE__
 
-namespace vpo
+#include <stdio.h>
+#include "doomtype.h"
+
+typedef struct _wad_file_s
 {
+    FILE *fstream;
 
+} wad_file_t;
 
-wad_file_t *W_OpenFile(const char *path)
-{
-    wad_file_t *result;
+/*
+// Open the specified file. Returns a pointer to a new wad_file_t 
+// handle for the WAD file, or NULL if it could not be opened.
 
-    FILE *fstream = fopen(path, "rb");
+wad_file_t *W_OpenFile(const char *path);
 
-    if (fstream == NULL)
-    {
-        return NULL;
-    }
+// Close the specified WAD file.
 
-    // Create a new wad_file_t to hold the file handle.
+void W_CloseFile(wad_file_t *wad);
 
-    result = new wad_file_t;
-
-    result->fstream = fstream;
-
-//    result->length = M_FileLength(fstream);
-
-    return result;
-}
-
-
-void W_CloseFile(wad_file_t *wad)
-{
-    fclose(wad->fstream);
-
-    delete wad;
-}
-
-
-// Read data from the specified position in the file into the 
-// provided buffer.  Returns the number of bytes read.
+// Read data from the specified file into the provided buffer.  The
+// data is read from the specified offset from the start of the file.
+// Returns the number of bytes read.
 
 size_t W_Read(wad_file_t *wad, unsigned int offset,
-              void *buffer, size_t buffer_len)
-{
-    size_t result;
+              void *buffer, size_t buffer_len);
+*/
 
-    // Jump to the specified position in the file.
-
-    fseek(wad->fstream, offset, SEEK_SET);
-
-    // Read into the buffer.
-
-    result = fread(buffer, 1, buffer_len, wad->fstream);
-
-    return result;
-}
-
-
-} // namespace vpo
-
+#endif /* #ifndef __W_FILE__ */

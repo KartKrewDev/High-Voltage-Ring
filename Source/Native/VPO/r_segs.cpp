@@ -24,72 +24,11 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 
 namespace vpo
 {
-
-
-// OPTIMIZE: closed two sided lines as single sided
-
-// True if any of the segs textures might be visible.
-boolean		segtextured;	
-
-// False if the back side is the same plane.
-boolean		markfloor;	
-boolean		markceiling;
-
-boolean		maskedtexture;
-int		toptexture;
-int		bottomtexture;
-int		midtexture;
-
-
-angle_t		rw_normalangle;
-// angle to line origin
-int		rw_angle1;	
-
-//
-// regular wall
-//
-int		rw_x;
-int		rw_stopx;
-angle_t		rw_centerangle;
-fixed_t		rw_offset;
-fixed_t		rw_distance;
-fixed_t		rw_scale;
-fixed_t		rw_scalestep;
-fixed_t		rw_midtexturemid;
-fixed_t		rw_toptexturemid;
-fixed_t		rw_bottomtexturemid;
-
-int		worldtop;
-int		worldbottom;
-int		worldhigh;
-int		worldlow;
-
-fixed_t		pixhigh;
-fixed_t		pixlow;
-fixed_t		pixhighstep;
-fixed_t		pixlowstep;
-
-fixed_t		topfrac;
-fixed_t		topstep;
-
-fixed_t		bottomfrac;
-fixed_t		bottomstep;
-
-
-short*		maskedtexturecol;
-
-
-// R_DRAW bits
-int              dc_x;
-int              dc_yl;
-int              dc_yh;
-fixed_t          dc_iscale;
-fixed_t          dc_texturemid;
-
 
 //
 // R_RenderSegLoop
@@ -102,7 +41,7 @@ fixed_t          dc_texturemid;
 #define HEIGHTBITS		12
 #define HEIGHTUNIT		(1<<HEIGHTBITS)
 
-void R_RenderSegLoop (void)
+void Context::R_RenderSegLoop (void)
 {
   angle_t		angle;
   int			yl;
@@ -266,7 +205,7 @@ void R_RenderSegLoop (void)
 // A wall segment will be drawn
 //  between start and stop pixels (inclusive).
 //
-void R_StoreWallRange ( int	start, int	stop )
+void Context::R_StoreWallRange ( int	start, int	stop )
 {
   fixed_t		hyp;
   fixed_t		sineval;
@@ -495,7 +434,7 @@ void R_StoreWallRange ( int	start, int	stop )
   }
 
   // calculate rw_offset (only needed for textured lines)
-  segtextured = midtexture | toptexture | bottomtexture | maskedtexture;
+  segtextured = midtexture | toptexture | bottomtexture | (int)maskedtexture;
 
   if (segtextured)
   {

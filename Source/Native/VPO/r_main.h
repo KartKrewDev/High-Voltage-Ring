@@ -27,7 +27,7 @@
 #ifndef __R_MAIN__
 #define __R_MAIN__
 
-
+/*
 //
 // POV related.
 //
@@ -51,7 +51,7 @@ extern int		validcount;
 
 extern int		linecount;
 extern int		loopcount;
-
+*/
 
 //
 // Lighting LUT.
@@ -74,7 +74,7 @@ extern int		loopcount;
 // There a 0-31, i.e. 32 LUT in the COLORMAP lump.
 #define NUMCOLORMAPS		32
 
-
+/*
 //
 // Utility functions.
 int R_PointOnSide ( fixed_t	x, fixed_t	y, node_t*	node );
@@ -109,5 +109,6 @@ extern short  negonearray[SCREENWIDTH];
 void R_Init (void);
 
 void R_RenderView (fixed_t x, fixed_t y, fixed_t z, angle_t angle);
+*/
 
 #endif

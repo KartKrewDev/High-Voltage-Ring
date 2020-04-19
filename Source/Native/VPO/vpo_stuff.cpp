@@ -18,13 +18,14 @@
 //
 //------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 
 namespace vpo
 {
 
 
-void I_Error (const char *error, ...)
+void Context::I_Error (const char *error, ...)
 {
 	va_list	argptr;
 
@@ -39,7 +40,7 @@ void I_Error (const char *error, ...)
 }
 
 
-static int ClosestLine_CastingHoriz(fixed_t x, fixed_t y, int *side)
+int Context::ClosestLine_CastingHoriz(fixed_t x, fixed_t y, int *side)
 {
 	int     best_match = -1;
 	fixed_t best_dist  = 32000 << FRACBITS;
@@ -84,7 +85,7 @@ static int ClosestLine_CastingHoriz(fixed_t x, fixed_t y, int *side)
 }
 
 
-sector_t * X_SectorForPoint(fixed_t x, fixed_t y)
+sector_t * Context::X_SectorForPoint(fixed_t x, fixed_t y)
 {
 	/* hack, hack...  I look for the first LineDef crossing
 	   an horizontal half-line drawn from the cursor */

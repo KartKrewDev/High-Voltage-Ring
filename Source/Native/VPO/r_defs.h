@@ -41,7 +41,7 @@
 #define skyflatnum  2
 
 
-extern fixed_t Map_bbox[4];
+//extern fixed_t Map_bbox[4];
 
 
 //

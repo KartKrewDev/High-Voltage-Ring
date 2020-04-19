@@ -24,61 +24,25 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 
 namespace vpo
 {
 
 
-seg_t*		curline;
-side_t*		sidedef;
-line_t*		linedef;
-sector_t*	frontsector;
-sector_t*	backsector;
-
-drawseg_t	drawsegs[MAXDRAWSEGS+10];
-drawseg_t*	ds_p;
-
-int total_drawsegs;
-
-
-void R_StoreWallRange ( int	start, int	stop );
 
 
 //
 // R_ClearDrawSegs
 //
-void R_ClearDrawSegs (void)
+void Context::R_ClearDrawSegs (void)
 {
     total_drawsegs = 0;
 
     ds_p = drawsegs;
 }
 
-
-
-//
-// ClipWallSegment
-// Clips the given range of columns
-// and includes it in the new clip list.
-//
-typedef	struct
-{
-    int	first;
-    int last;
-    
-} cliprange_t;
-
-
-// andrewj: increased limit to 128 for Visplane Explorer
-// #define MAXSOLIDSEGS		32
-#define MAXSOLIDSEGS  128
-
-// newend is one past the last valid seg
-cliprange_t	solidsegs[MAXSOLIDSEGS+8];
-cliprange_t*	newend;
-
-int max_solidsegs;
 
 
 
@@ -89,7 +53,7 @@ int max_solidsegs;
 //  that entirely block the view.
 // 
 void
-R_ClipSolidWallSegment ( int   first, int   last )
+Context::R_ClipSolidWallSegment ( int   first, int   last )
 {
     cliprange_t*	next;
     cliprange_t*	start;
@@ -189,7 +153,7 @@ R_ClipSolidWallSegment ( int   first, int   last )
 // Does handle windows,
 //  e.g. LineDefs with upper and lower texture.
 //
-void R_ClipPassWallSegment ( int first, int last )
+void Context::R_ClipPassWallSegment ( int first, int last )
 {
     cliprange_t*	start;
 
@@ -235,7 +199,7 @@ void R_ClipPassWallSegment ( int first, int last )
 //
 // R_ClearClipSegs
 //
-void R_ClearClipSegs (void)
+void Context::R_ClearClipSegs (void)
 {
     solidsegs[0].first = -0x7fffffff;
     solidsegs[0].last = -1;
@@ -251,7 +215,7 @@ void R_ClearClipSegs (void)
 // Clips the given segment
 // and adds any visible pieces to the line list.
 //
-void R_AddLine (seg_t*	line)
+void Context::R_AddLine (seg_t*	line)
 {
     int			x1;
     int			x2;
@@ -357,7 +321,7 @@ void R_AddLine (seg_t*	line)
 // Returns true
 //  if some part of the bbox might be visible.
 //
-int	checkcoord[12][4] =
+static const int checkcoord[12][4] =
 {
     {3,0,2,1},
     {3,0,2,0},
@@ -373,7 +337,7 @@ int	checkcoord[12][4] =
 };
 
 
-boolean R_CheckBBox (fixed_t*	bspcoord)
+boolean Context::R_CheckBBox (fixed_t*	bspcoord)
 {
     int			boxx;
     int			boxy;
@@ -489,7 +453,7 @@ boolean R_CheckBBox (fixed_t*	bspcoord)
 // Add sprites of things in sector.
 // Draw one or more line segments.
 //
-void R_Subsector (int num)
+void Context::R_Subsector (int num)
 {
     int			count;
     seg_t*		line;
@@ -544,7 +508,7 @@ void R_Subsector (int num)
 // Renders all subsectors below a given node,
 //  traversing subtree recursively.
 // Just call with BSP root.
-void R_RenderBSPNode (int bspnum)
+void Context::R_RenderBSPNode (int bspnum)
 {
     node_t*	bsp;
     int		side;

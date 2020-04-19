@@ -1,4 +1,3 @@
-// Emacs style mode select   -*- C++ -*- 
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
@@ -20,38 +19,66 @@
 // 02111-1307, USA.
 //
 // DESCRIPTION:
-//	Refresh module, BSP traversal and handling.
+//	WAD I/O functions.
 //
 //-----------------------------------------------------------------------------
 
-#ifndef __R_BSP__
-#define __R_BSP__
+#ifndef __W_WAD__
+#define __W_WAD__
 
-extern seg_t*		curline;
-extern side_t*		sidedef;
-extern line_t*		linedef;
-extern sector_t*	frontsector;
-extern sector_t*	backsector;
+#include <stdio.h>
 
-extern int		rw_x;
-extern int		rw_stopx;
-
-extern boolean		segtextured;
-
-// false if the back side is the same plane
-extern boolean		markfloor;		
-extern boolean		markceiling;
-
-extern boolean		skymap;
-
-extern drawseg_t	drawsegs[MAXDRAWSEGS+10];
-extern drawseg_t*	ds_p;
+#include "doomtype.h"
+#include "w_file.h"
 
 
-// BSP?
-void R_ClearClipSegs (void);
-void R_ClearDrawSegs (void);
+//
+// TYPES
+//
 
-void R_RenderBSPNode (int bspnum);
+//
+// WADFILE I/O related stuff.
+//
 
-#endif
+typedef struct lumpinfo_s lumpinfo_t;
+
+struct lumpinfo_s
+{
+	char	name[8];
+
+	int		position;
+	int		size;
+
+	bool  is_map_header;  // e.g. MAP01 or E1M1 
+	bool  is_hexen;
+};
+
+/*
+extern lumpinfo_t *lumpinfo;
+extern int numlumps;
+
+
+// andrewj: only a single file can be added now
+bool W_AddFile (const char *filename);
+
+void W_RemoveFile(void);
+
+
+int	W_CheckNumForName (const char *name);
+
+int	W_LumpLength (int lumpnum);
+
+
+// andrewj: all lump loading must occur between these calls
+void W_BeginRead(void);
+void W_EndRead();
+
+byte * W_LoadLump(int lumpnum);
+void   W_FreeLump(byte * data);
+*/
+
+#endif  /* __W_WAD__ */
+
+//--- editor settings ---
+// vi:ts=4:sw=4:noexpandtab
+// Emacs style mode select   -*- C++ -*- 

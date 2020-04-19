@@ -1,3 +1,4 @@
+// Emacs style mode select   -*- C++ -*- 
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
@@ -19,66 +20,43 @@
 // 02111-1307, USA.
 //
 // DESCRIPTION:
-//	WAD I/O functions.
+//	Main loop menu stuff.
+//	Random number LUT.
+//	Default Config File.
+//	PCX Screenshots.
 //
 //-----------------------------------------------------------------------------
 
-#ifndef __W_WAD__
-#define __W_WAD__
+#include "Precomp.h"
+#include "vpo_local.h"
 
-#include <stdio.h>
-
-#include "doomtype.h"
-#include "w_file.h"
-
-
-//
-// TYPES
-//
-
-//
-// WADFILE I/O related stuff.
-//
-
-typedef struct lumpinfo_s lumpinfo_t;
-
-struct lumpinfo_s
+namespace vpo
 {
-	char	name[8];
-
-	int		position;
-	int		size;
-
-	bool  is_map_header;  // e.g. MAP01 or E1M1 
-	bool  is_hexen;
-};
 
 
-extern lumpinfo_t *lumpinfo;
-extern int numlumps;
+void Context::M_ClearBox (fixed_t *box)
+{
+    box[BOXTOP] = box[BOXRIGHT] = INT_MIN;
+    box[BOXBOTTOM] = box[BOXLEFT] = INT_MAX;
+}
+
+void
+Context::M_AddToBox
+( fixed_t*	box,
+  fixed_t	x,
+  fixed_t	y )
+{
+    if (x<box[BOXLEFT])
+	box[BOXLEFT] = x;
+    else if (x>box[BOXRIGHT])
+	box[BOXRIGHT] = x;
+    if (y<box[BOXBOTTOM])
+	box[BOXBOTTOM] = y;
+    else if (y>box[BOXTOP])
+	box[BOXTOP] = y;
+}
 
 
-// andrewj: only a single file can be added now
-bool W_AddFile (const char *filename);
 
-void W_RemoveFile(void);
+} // namespace vpo
 
-
-int	W_CheckNumForName (const char *name);
-
-int	W_LumpLength (int lumpnum);
-
-
-// andrewj: all lump loading must occur between these calls
-void W_BeginRead(void);
-void W_EndRead();
-
-byte * W_LoadLump(int lumpnum);
-void   W_FreeLump(byte * data);
-
-
-#endif  /* __W_WAD__ */
-
-//--- editor settings ---
-// vi:ts=4:sw=4:noexpandtab
-// Emacs style mode select   -*- C++ -*- 

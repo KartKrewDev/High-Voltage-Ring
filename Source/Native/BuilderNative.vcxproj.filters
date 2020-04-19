@@ -32,6 +32,42 @@
       <Filter>OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="VPO\m_bbox.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\m_fixed.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\p_setup.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\r_bsp.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\r_main.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\r_plane.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\r_segs.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\tables.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\vpo_main.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\vpo_stuff.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\w_file.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
+    <ClCompile Include="VPO\w_wad.cpp">
+      <Filter>VPO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Precomp.h" />
@@ -67,6 +103,66 @@
     <ClInclude Include="OpenGL\GLBackend.h">
       <Filter>OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="VPO\doomdata.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\doomdef.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\doomtype.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\m_bbox.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\m_fixed.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\r_bsp.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\r_defs.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\r_main.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\r_plane.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\r_state.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\stdint.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\sys_endian.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\sys_macro.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\sys_type.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\tables.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\vpo_api.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\vpo_local.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\w_file.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\w_wad.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
+    <ClInclude Include="VPO\inttypes.h">
+      <Filter>VPO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
@@ -77,6 +173,9 @@
     </Filter>
     <Filter Include="OpenGL\gl_load">
       <UniqueIdentifier>{0acc1cd1-c19f-4410-95aa-718746ce8eaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VPO">
+      <UniqueIdentifier>{c9df2b45-2103-48f7-a0c7-39753781ee5c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

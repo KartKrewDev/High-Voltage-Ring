@@ -26,60 +26,11 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "Precomp.h"
 #include "vpo_local.h"
 
 namespace vpo
 {
-
-
-//
-// opening
-//
-
-// Here comes the obnoxious "visplane".
-visplane_t		visplanes[MAXVISPLANES+10];
-visplane_t*		lastvisplane;
-visplane_t*		floorplane;
-visplane_t*		ceilingplane;
-
-int total_visplanes;
-
-short			openings[MAXOPENINGS+400];
-short*			lastopening;
-
-int total_openings;
-
-
-//
-// Clip values are the solid pixel bounding the range.
-//  floorclip starts out SCREENHEIGHT
-//  ceilingclip starts out -1
-//
-short			floorclip[SCREENWIDTH];
-short			ceilingclip[SCREENWIDTH];
-
-//
-// spanstart holds the start of a plane span
-// initialized to 0 at start
-//
-int			spanstart[SCREENHEIGHT];
-int			spanstop[SCREENHEIGHT];
-
-//
-// texture mapping
-//
-fixed_t			planeheight;
-
-fixed_t			yslope[SCREENHEIGHT];
-fixed_t			distscale[SCREENWIDTH];
-fixed_t			basexscale;
-fixed_t			baseyscale;
-
-fixed_t			cachedheight[SCREENHEIGHT];
-fixed_t			cacheddistance[SCREENHEIGHT];
-fixed_t			cachedxstep[SCREENHEIGHT];
-fixed_t			cachedystep[SCREENHEIGHT];
-
 
 
 #if 0
@@ -158,7 +109,7 @@ void R_MapPlane ( int  y, int  x1, int  x2 )
 // R_ClearPlanes
 // At begining of frame.
 //
-void R_ClearPlanes (void)
+void Context::R_ClearPlanes (void)
 {
     int		i;
     angle_t	angle;
@@ -193,7 +144,7 @@ void R_ClearPlanes (void)
 //
 // R_FindPlane
 //
-visplane_t* R_FindPlane ( fixed_t height, int  picnum, int  lightlevel )
+visplane_t* Context::R_FindPlane ( fixed_t height, int  picnum, int  lightlevel )
 {
     visplane_t*	check;
 	
@@ -238,7 +189,7 @@ visplane_t* R_FindPlane ( fixed_t height, int  picnum, int  lightlevel )
 //
 // R_CheckPlane
 //
-visplane_t* R_CheckPlane ( visplane_t* pl, int  start, int  stop )
+visplane_t* Context::R_CheckPlane ( visplane_t* pl, int  start, int  stop )
 {
     int		intrl;
     int		intrh;

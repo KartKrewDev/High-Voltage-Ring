@@ -28,7 +28,7 @@
 #ifndef __R_STATE__
 #define __R_STATE__
 
-
+/*
 //
 // Refresh internal data structures,
 //  for rendering.
@@ -102,6 +102,6 @@ extern int		sscount;
 
 extern visplane_t*	floorplane;
 extern visplane_t*	ceilingplane;
-
+*/
 
 #endif

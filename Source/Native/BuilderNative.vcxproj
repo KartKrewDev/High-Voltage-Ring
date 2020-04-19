@@ -215,6 +215,18 @@
     </ClCompile>
     <ClCompile Include="RawMouse.cpp" />
     <ClCompile Include="Backend.cpp" />
+    <ClCompile Include="VPO\m_bbox.cpp" />
+    <ClCompile Include="VPO\m_fixed.cpp" />
+    <ClCompile Include="VPO\p_setup.cpp" />
+    <ClCompile Include="VPO\r_bsp.cpp" />
+    <ClCompile Include="VPO\r_main.cpp" />
+    <ClCompile Include="VPO\r_plane.cpp" />
+    <ClCompile Include="VPO\r_segs.cpp" />
+    <ClCompile Include="VPO\tables.cpp" />
+    <ClCompile Include="VPO\vpo_main.cpp" />
+    <ClCompile Include="VPO\vpo_stuff.cpp" />
+    <ClCompile Include="VPO\w_file.cpp" />
+    <ClCompile Include="VPO\w_wad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenGL\GLBackend.h" />
@@ -230,6 +242,26 @@
     <ClInclude Include="Precomp.h" />
     <ClInclude Include="RawMouse.h" />
     <ClInclude Include="Backend.h" />
+    <ClInclude Include="VPO\doomdata.h" />
+    <ClInclude Include="VPO\doomdef.h" />
+    <ClInclude Include="VPO\doomtype.h" />
+    <ClInclude Include="VPO\inttypes.h" />
+    <ClInclude Include="VPO\m_bbox.h" />
+    <ClInclude Include="VPO\m_fixed.h" />
+    <ClInclude Include="VPO\r_bsp.h" />
+    <ClInclude Include="VPO\r_defs.h" />
+    <ClInclude Include="VPO\r_main.h" />
+    <ClInclude Include="VPO\r_plane.h" />
+    <ClInclude Include="VPO\r_state.h" />
+    <ClInclude Include="VPO\stdint.h" />
+    <ClInclude Include="VPO\sys_endian.h" />
+    <ClInclude Include="VPO\sys_macro.h" />
+    <ClInclude Include="VPO\sys_type.h" />
+    <ClInclude Include="VPO\tables.h" />
+    <ClInclude Include="VPO\vpo_api.h" />
+    <ClInclude Include="VPO\vpo_local.h" />
+    <ClInclude Include="VPO\w_file.h" />
+    <ClInclude Include="VPO\w_wad.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="OpenGL\gl_load\gl_extlist.txt" />
