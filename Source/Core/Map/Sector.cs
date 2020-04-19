@@ -579,7 +579,6 @@ namespace CodeImp.DoomBuilder.Map
 		}
 		
 		// This creates a bounding box rectangle
-		// This requires the sector triangulation to be up-to-date!
 		private RectangleF CreateBBox()
 		{
 			if(sidedefs.Count == 0) return new RectangleF(); //mxd
@@ -592,7 +591,6 @@ namespace CodeImp.DoomBuilder.Map
 
 			HashSet<Vertex> processed = new HashSet<Vertex>(); //mxd
 
-			//mxd. This way bbox will be created even if triangulation failed (sector with 2 or less sidedefs and 2 vertices)
 			foreach(Sidedef s in sidedefs) 
 			{
 				//start...
@@ -621,7 +619,7 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		//mxd
-		internal void UpdateBBox()
+		public void UpdateBBox()
 		{
 			bbox = CreateBBox();
 		}

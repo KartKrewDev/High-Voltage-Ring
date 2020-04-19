@@ -1338,7 +1338,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				foreach(Sector s in sectors)
 				{
 					// Make sure the sector has a valid bounding box
-					s.UpdateCache();
+					s.UpdateBBox();
 
 					Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
 					float floorz = s.FloorHeight;
