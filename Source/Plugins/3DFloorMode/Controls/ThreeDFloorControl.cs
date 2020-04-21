@@ -41,6 +41,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		{
 			InitializeComponent();
 
+			sectorTopFlat.Initialize();
+			sectorBorderTexture.Initialize();
+			sectorBottomFlat.Initialize();
+
 			Update(threeDFloor);
 		}
 
@@ -54,6 +58,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		public ThreeDFloorHelperControl()
 		{
 			InitializeComponent();
+
+			sectorTopFlat.Initialize();
+			sectorBorderTexture.Initialize();
+			sectorBottomFlat.Initialize();
 
 			SetDefaults();
 		}
