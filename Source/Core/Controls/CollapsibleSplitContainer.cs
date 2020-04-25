@@ -35,6 +35,8 @@ namespace CodeImp.DoomBuilder.Controls
 		private int storedpanel1minsize;
 		private int storedpanel2minsize;
 		private int storedsplitterdistance;
+		private int storedheight;
+		private int storedwidth;
 
 		#endregion
 
@@ -98,6 +100,26 @@ namespace CodeImp.DoomBuilder.Controls
 		#endregion
 
 		#region ================== Event Handlers
+
+		protected override void OnResize(EventArgs e)
+		{
+			base.OnResize(e);
+
+			// When the window gets minimized the width and height of the control gets set to 0. That causes problems
+			// when the SplitterDistance is set in this state. So store the width and height and set them even when
+			// the window gets minimized. See https://github.com/jewalky/UltimateDoomBuilder/issues/402
+			if (this.Height != 0)
+			{
+				storedheight = this.Height;
+				storedwidth = this.Width;
+			}
+			else
+			{
+				this.Height = storedheight;
+				this.Width = storedwidth;
+			}
+				
+		}
 
 		protected override void OnMouseDown(MouseEventArgs e) 
 		{
