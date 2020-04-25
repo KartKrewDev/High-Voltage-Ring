@@ -4264,8 +4264,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if (j.sidedef.Marked)
 					continue;
 
-				DebugConsole.WriteLine("Aligning " + j.sidedef);
-
 				if(j.forward) 
 				{
 					// Apply alignment

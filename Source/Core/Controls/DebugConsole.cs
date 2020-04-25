@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -97,13 +98,28 @@ namespace CodeImp.DoomBuilder
 
 		#region ================== Methods
 
+		[Conditional("DEBUG")]
 		public static void StoreText(string text) { storedtext += text + Environment.NewLine; }
+
+		[Conditional("DEBUG")]
 		public static void SetStoredText() { Write(DebugMessageType.INFO, storedtext, false); storedtext = string.Empty; }
+
+		[Conditional("DEBUG")]
 		public static void SetText(string text) { Write(DebugMessageType.INFO, text, false); } // Useful to display frequently updated text without flickering
+
+		[Conditional("DEBUG")]
 		public static void WriteLine(string text) { Write(DebugMessageType.INFO, text + Environment.NewLine, true); }
+
+		[Conditional("DEBUG")]
 		public static void WriteLine(DebugMessageType type, string text) { Write(type, text + Environment.NewLine, true); }
+
+		[Conditional("DEBUG")]
 		public static void Write(string text) { Write(DebugMessageType.INFO, text, true); }
+
+		[Conditional("DEBUG")]
 		public static void Write(DebugMessageType type, string text) { Write(type, text, true); }
+
+		[Conditional("DEBUG")]
 		public static void Write(DebugMessageType type, string text, bool append)
 		{
             if (General.MainWindow == null)
@@ -119,6 +135,7 @@ namespace CodeImp.DoomBuilder
             });
 		}
 
+		[Conditional("DEBUG")]
 		public static void Clear()
 		{
             if (General.MainWindow == null)
@@ -130,11 +147,13 @@ namespace CodeImp.DoomBuilder
             });
 		}
 
+		[Conditional("DEBUG")]
 		public static void StartTimer() 
 		{
 			starttime = Clock.Timer.ElapsedMilliseconds;
 		}
 
+		[Conditional("DEBUG")]
 		public static void PauseTimer()
 		{
 			if(starttime == -1) throw new InvalidOperationException("DebugConsole.StartTimer() must be called before DebugConsole.PauseTimer()!");
@@ -142,6 +161,7 @@ namespace CodeImp.DoomBuilder
 			storedtime += Clock.Timer.ElapsedMilliseconds - starttime;
 		}
 
+		[Conditional("DEBUG")]
 		public static void StopTimer(string message) 
 		{
 			if(starttime == -1) throw new InvalidOperationException("DebugConsole.StartTimer() must be called before DebugConsole.StopTimer()!");
@@ -163,13 +183,19 @@ namespace CodeImp.DoomBuilder
 			storedtime = 0;
 		}
 
+		[Conditional("DEBUG")]
 		public static void IncrementCounter() { IncrementCounter(1); }
+
+		[Conditional("DEBUG")]
 		public static void IncrementCounter(int incrementby)
 		{
 			counter += incrementby;
 		}
 
+		[Conditional("DEBUG")]
 		public static void ResetCounter() { ResetCounter(string.Empty); }
+
+		[Conditional("DEBUG")]
 		public static void ResetCounter(string message)
 		{
 			if(!string.IsNullOrEmpty(message))
@@ -185,6 +211,7 @@ namespace CodeImp.DoomBuilder
 			counter = 0;
 		}
 
+		[Conditional("PROFILE")]
 		public static void StartProfiler()
 		{
 #if PROFILE
@@ -203,7 +230,10 @@ namespace CodeImp.DoomBuilder
 #endif
 		}
 
+		[Conditional("PROFILE")]
 		public static void StopProfiler() { StopProfiler(true); }
+
+		[Conditional("PROFILE")]
 		public static void StopProfiler(bool savesnapshot)
 		{
 #if PROFILE
@@ -224,6 +254,7 @@ namespace CodeImp.DoomBuilder
 #endif
 		}
 
+		[Conditional("DEBUG")]
 		private void AddMessage(DebugMessageType type, string text, bool scroll, bool append)
 		{
 			text = textheaders[type] + text;
@@ -245,6 +276,7 @@ namespace CodeImp.DoomBuilder
 			if(scroll && autoscroll.Checked) console.ScrollToCaret();
 		}
 
+		[Conditional("DEBUG")]
 		private void UpdateFilters(ToolStripMenuItem item)
 		{
 			DebugMessageType flag = (DebugMessageType)(int)item.Tag;
@@ -258,6 +290,7 @@ namespace CodeImp.DoomBuilder
 			}
 		}
 
+		[Conditional("DEBUG")]
 		private void UpdateMessages()
 		{
 			console.Clear();
