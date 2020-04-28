@@ -388,12 +388,6 @@ namespace CodeImp.DoomBuilder.Controls
 			Refresh();
 		}
 
-		protected override void OnMouseEnter(EventArgs e)
-		{
-			Focus();
-			base.OnMouseEnter(e);
-		}
-
 		//mxd
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
