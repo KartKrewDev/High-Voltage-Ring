@@ -2537,7 +2537,7 @@ namespace CodeImp.DoomBuilder.Data
 				// Store results in "ambient_sounds" enum
 				EnumList newenums = new EnumList();
 				newenums.AddRange(configenums.Values);
-				newenums.Sort((a, b) => a.Title.CompareTo(b.Title)); // Sort by title
+				newenums.Sort(); // Sort by ambient sound index
 				newenums.Insert(0, new EnumItem("0", "None")); // Add "None" value
 				General.Map.Config.Enums["ambient_sounds"] = newenums;
 
