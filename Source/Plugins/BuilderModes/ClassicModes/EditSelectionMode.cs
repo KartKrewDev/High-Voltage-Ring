@@ -1226,7 +1226,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			autodrag = (pasting && mouseinside && BuilderPlug.Me.AutoDragOnPaste);
 			snaptonearest = General.Interface.AutoMerge; //mxd
-			
+			selectedsectors = new Dictionary<Sector, SectorTextureInfo>(); //mxd
+
 			// Add toolbar buttons
 			General.Interface.BeginToolbarUpdate(); //mxd
 			General.Interface.AddButton(BuilderPlug.Me.MenusForm.FlipSelectionH);
@@ -1256,7 +1257,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			ICollection<Vertex> verts = General.Map.Map.GetVerticesFromLinesMarks(true);
 			foreach(Vertex v in verts) v.Marked = true;
 			ICollection<Sector> sectors = General.Map.Map.GetSelectedSectors(true); //mxd
-			selectedsectors = new Dictionary<Sector, SectorTextureInfo>(); //mxd
+
 			foreach(Sector s in sectors)
 			{
 				foreach(Sidedef sd in s.Sidedefs)
