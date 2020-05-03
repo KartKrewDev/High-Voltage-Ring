@@ -85,6 +85,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public ToolStripButton MarqueSelectTouching { get { return buttonMarqueSelectTouching; } } //mxd
 		public ToolStripButton AlignThingsToWall { get { return buttonAlignThingsToWall; } } //mxd
 		public ToolStripButton TextureOffsetLock { get { return buttonTextureOffsetLock; } } //mxd
+		public ToolStripButton TextureOffset3DFloorLock { get { return buttonTextureOffset3DFloorLock; } } 
 		public ToolStripButton SyncronizeThingEditButton { get { return syncthingteditbutton; } } //mxd
 		public ToolStripMenuItem SyncronizeThingEditSectorsItem { get { return syncthingeditsectorsitem; } } //mxd
 		public ToolStripMenuItem SyncronizeThingEditLinedefsItem { get { return syncthingeditlinedefsitem; } } //mxd
@@ -273,6 +274,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.DisplayStatus(StatusType.Info, (buttonTextureOffsetLock.Checked ? 
 				"Lock texture offsets when dragging sectors" : 
 				"Don't lock texture offsets when dragging sectors"));
+		}
+
+		private void buttonTextureOffset3DFloorLock_Click(object sender, EventArgs e)
+		{
+			BuilderPlug.Me.Lock3DFloorSectorTextureOffsetsWhileDragging = buttonTextureOffset3DFloorLock.Checked;
+			General.Interface.DisplayStatus(StatusType.Info, (buttonTextureOffset3DFloorLock.Checked ?
+				"Lock texture offsets of 3D floors when dragging tagged sectors" :
+				"Don't lock texture offsets of 3D floors when dragging tagged sectors"));
 		}
 
 		//mxd

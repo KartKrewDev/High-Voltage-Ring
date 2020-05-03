@@ -132,6 +132,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private bool marqueSelectTouching; //mxd. Select elements partially/fully inside of marque selection?
 		private bool syncSelection; //mxd. Sync selection between Visual and Classic modes.
 		private bool lockSectorTextureOffsetsWhileDragging; //mxd
+		private bool lock3DFloorSectorTextureOffsetsWhileDragging;
 		private bool syncthingedit; //mxd
 		private bool alphabasedtexturehighlighting; //mxd
 		private bool showlightradii; //mxd
@@ -186,6 +187,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool MarqueSelectTouching { get { return marqueSelectTouching; } set { marqueSelectTouching = value; } } //mxd
 		public bool SyncSelection { get { return syncSelection; } set { syncSelection = value; } } //mxd
 		public bool LockSectorTextureOffsetsWhileDragging { get { return lockSectorTextureOffsetsWhileDragging; } internal set { lockSectorTextureOffsetsWhileDragging = value; } } //mxd
+		public bool Lock3DFloorSectorTextureOffsetsWhileDragging { get { return lock3DFloorSectorTextureOffsetsWhileDragging; } internal set { lock3DFloorSectorTextureOffsetsWhileDragging = value; } } //mxd
 		public bool SyncronizeThingEdit { get { return syncthingedit; } internal set { syncthingedit = value; } } //mxd
 		public bool AlphaBasedTextureHighlighting { get { return alphabasedtexturehighlighting; } internal set { alphabasedtexturehighlighting = value; } } //mxd
 		public bool ShowLightRadii { get { return showlightradii; } internal set { showlightradii = value; } } //mxd
@@ -215,6 +217,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			menusform = new MenusForm();
 			menusform.Register();
 			menusform.TextureOffsetLock.Checked = lockSectorTextureOffsetsWhileDragging; //mxd
+			menusform.TextureOffset3DFloorLock.Checked = lock3DFloorSectorTextureOffsetsWhileDragging;
 			menusform.SyncronizeThingEditButton.Checked = syncthingedit; //mxd
 			menusform.SyncronizeThingEditSectorsItem.Checked = syncthingedit; //mxd
 			menusform.SyncronizeThingEditLinedefsItem.Checked = syncthingedit; //mxd
@@ -300,6 +303,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private void LoadUISettings()
 		{
 			lockSectorTextureOffsetsWhileDragging = General.Settings.ReadPluginSetting("locktextureoffsets", false);
+			lock3DFloorSectorTextureOffsetsWhileDragging = General.Settings.ReadPluginSetting("lock3dfloortextureoffsets", false);
 			viewselectionnumbers = General.Settings.ReadPluginSetting("viewselectionnumbers", true);
 			viewselectioneffects = General.Settings.ReadPluginSetting("viewselectioneffects", true);
 			syncthingedit = General.Settings.ReadPluginSetting("syncthingedit", true);
@@ -312,6 +316,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private void SaveUISettings() 
 		{
 			General.Settings.WritePluginSetting("locktextureoffsets", lockSectorTextureOffsetsWhileDragging);
+			General.Settings.WritePluginSetting("lock3dfloortextureoffsets", lock3DFloorSectorTextureOffsetsWhileDragging);
 			General.Settings.WritePluginSetting("viewselectionnumbers", viewselectionnumbers);
 			General.Settings.WritePluginSetting("viewselectioneffects", viewselectioneffects);
 			General.Settings.WritePluginSetting("syncthingedit", syncthingedit);

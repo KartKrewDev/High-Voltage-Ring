@@ -99,6 +99,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				General.Interface.AddButton(BuilderPlug.Me.MenusForm.PasteProperties);
 				General.Interface.AddButton(BuilderPlug.Me.MenusForm.PastePropertiesOptions); //mxd
 				General.Interface.AddButton(BuilderPlug.Me.MenusForm.TextureOffsetLock, ToolbarSection.Geometry); //mxd
+				General.Interface.AddButton(BuilderPlug.Me.MenusForm.TextureOffset3DFloorLock, ToolbarSection.Geometry);
 				General.Interface.EndToolbarUpdate(); //mxd
 			}
 
@@ -118,6 +119,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.RemoveButton(BuilderPlug.Me.MenusForm.PasteProperties);
 			General.Interface.RemoveButton(BuilderPlug.Me.MenusForm.PastePropertiesOptions); //mxd
 			General.Interface.RemoveButton(BuilderPlug.Me.MenusForm.TextureOffsetLock); //mxd
+			General.Interface.RemoveButton(BuilderPlug.Me.MenusForm.TextureOffset3DFloorLock);
 			General.Interface.EndToolbarUpdate();
 
 			// Going to EditSelectionMode?
