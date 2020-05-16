@@ -1725,6 +1725,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//mxd. We'll need sidedefs marked by StitchGeometry, not all sidedefs from selection...
 				General.Map.Map.ClearMarkedSidedefs(false);
 
+				// Snap to map format accuracy. We need to do that before stitching geometry because vertices that are very very slightly off the grid (like 0.00001) can
+				// cause problems with BlockMapGetBlockCoordinates in the 32bit version
+				General.Map.Map.SnapAllToAccuracy(General.Map.UDMF && usepreciseposition);
+
 				// Stitch geometry
 				General.Map.Map.StitchGeometry(General.Settings.MergeGeometryMode);
 
