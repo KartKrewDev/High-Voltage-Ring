@@ -1065,7 +1065,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Done
 			linesflipped = !linesflipped;
 		}
-		
+	
 		#endregion
 
 		#region ================== Sector height adjust methods (mxd)
@@ -1567,34 +1567,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Resume normal undo/redo recording
 				General.Map.UndoRedo.IgnorePropChanges = false;
 
-				//mxd. Update sector slopes?
-				if(General.Map.UDMF)
-				{
-					// We need a different kind of offset...
-					Vector2D relativeoffset = offset - baseoffset;
-					
-					foreach(Sector s in selectedsectors.Keys)
-					{
-						// Update floor slope?
-						if(s.FloorSlope.GetLengthSq() > 0 && !float.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z)) 
-						{
-							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, slopeheights[s][0]);
-							Plane p = new Plane(center, s.FloorSlope.GetAngleXY() + rotation + Angle2D.PIHALF, -s.FloorSlope.GetAngleZ(), true);
-							s.FloorSlope = p.Normal;
-							s.FloorSlopeOffset = p.Offset;
-						}
-
-						// Update ceiling slope?
-						if(s.CeilSlope.GetLengthSq() > 0 && !float.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z)) 
-						{
-							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, slopeheights[s][1]);
-							Plane p = new Plane(center, s.CeilSlope.GetAngleXY() + rotation + Angle2D.PIHALF, -s.CeilSlope.GetAngleZ(), false);
-							s.CeilSlope = p.Normal;
-							s.CeilSlopeOffset = p.Offset;
-						}
-					}
-				}
-
 				// Mark selected geometry
 				General.Map.Map.ClearAllMarks(false);
 				General.Map.Map.MarkAllSelectedGeometry(true, true, true, true, false);
@@ -1602,8 +1574,47 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Move geometry to new position
 				UpdateGeometry();
 
+				//mxd. Update sector slopes?
+				// Do this after UpdateGeometry() because it makes calculating the new slopes much easier
+				if (General.Map.UDMF)
+				{
+					foreach (Sector s in selectedsectors.Keys)
+					{
+						// Manually update the sector bounding boxes, because they still contain the old values
+						s.UpdateBBox();
+
+						// Update floor slope?
+						if (s.FloorSlope.GetLengthSq() > 0 && !float.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z))
+						{
+							float angle = s.FloorSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
+							// Not sure what the logic should be for flipping horizintally and/or vertically
+							//if (size.x < 0.0f) angle += Angle2D.PI;
+							//if (size.y < 0.0f) angle += Angle2D.PI;
+
+							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, slopeheights[s][0]);
+							Plane p = new Plane(center, angle, -s.FloorSlope.GetAngleZ(), true);
+							s.FloorSlope = p.Normal;
+							s.FloorSlopeOffset = p.Offset;
+						}
+
+						// Update ceiling slope?
+						if (s.CeilSlope.GetLengthSq() > 0 && !float.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z))
+						{
+							float angle = s.CeilSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
+							// Not sure what the logic should be for flipping horizintally and/or vertically
+							//if (size.x < 0.0f) angle += Angle2D.PI;
+							//if (size.y < 0.0f) angle += Angle2D.PI;
+
+							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, slopeheights[s][1]);
+							Plane p = new Plane(center, angle, -s.CeilSlope.GetAngleZ(), false);
+							s.CeilSlope = p.Normal;
+							s.CeilSlopeOffset = p.Offset;
+						}
+					}
+				}
+
 				//mxd. Update floor/ceiling texture settings
-				if(General.Map.UDMF) UpdateTextureTransform();
+				if (General.Map.UDMF) UpdateTextureTransform();
 				
 				General.Map.Map.Update(true, true);
 				
