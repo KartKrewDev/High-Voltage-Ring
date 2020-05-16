@@ -241,13 +241,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 				Plane downplane = plane.GetInverted();
 				level.sector.CeilSlope = downplane.Normal;
 				level.sector.CeilSlopeOffset = downplane.Offset;
-				level.sector.CeilHeight = (int)new Plane(level.sector.CeilSlope, level.sector.CeilSlopeOffset).GetZ(center);
 			}
 			else
 			{
 				level.sector.FloorSlope = plane.Normal;
 				level.sector.FloorSlopeOffset = plane.Offset;
-				level.sector.FloorHeight = (int)new Plane(level.sector.FloorSlope, level.sector.FloorSlopeOffset).GetZ(center);
 			}
 
 			// Rebuild sector

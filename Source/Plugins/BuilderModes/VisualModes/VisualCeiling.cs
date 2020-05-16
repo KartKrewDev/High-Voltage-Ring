@@ -377,38 +377,30 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This changes the height
 		protected override void ChangeHeight(int amount)
 		{
-			mode.CreateUndo("Change ceiling height", UndoGroup.CeilingHeightChange, level.sector.FixedIndex);
-			level.sector.CeilHeight += amount;
-
-			if(General.Map.UDMF)
+			if (level.sector.CeilSlope.GetLengthSq() > 0)
 			{
-				//mxd. Modify vertex offsets?
-				if(level.sector.Sidedefs.Count == 3)
-				{
-					ChangeVertexHeight(amount);
-				}
+				mode.CreateUndo("Change ceiling slope height", UndoGroup.CeilingHeightChange, level.sector.FixedIndex);
 
-				//mxd. Modify slope offset?
-				if(level.sector.CeilSlope.GetLengthSq() > 0) 
-				{
-					/*
-					Vector3D center = new Vector3D(level.sector.BBox.X + level.sector.BBox.Width / 2,
-												   level.sector.BBox.Y + level.sector.BBox.Height / 2,
-												   level.sector.CeilHeight);
-					
-					Plane p = new Plane(center,
-										level.sector.CeilSlope.GetAngleXY() - Angle2D.PIHALF,
-										level.sector.CeilSlope.GetAngleZ(),
-										false);
+				level.sector.CeilSlopeOffset -= level.sector.CeilSlope.z * amount;
 
-					level.sector.CeilSlopeOffset = p.Offset;
-					*/
-
-					level.sector.CeilSlopeOffset -= level.sector.CeilSlope.z * amount;
-				}
+				mode.SetActionResult("Changed ceiling slope height by " + amount + ".");
 			}
+			else
+			{
+				mode.CreateUndo("Change ceiling height", UndoGroup.CeilingHeightChange, level.sector.FixedIndex);
+				level.sector.CeilHeight += amount;
 
-			mode.SetActionResult("Changed ceiling height to " + level.sector.CeilHeight + ".");
+				if (General.Map.UDMF)
+				{
+					//mxd. Modify vertex offsets?
+					if (level.sector.Sidedefs.Count == 3)
+					{
+						ChangeVertexHeight(amount);
+					}
+				}
+
+				mode.SetActionResult("Changed ceiling height to " + level.sector.CeilHeight + ".");
+			}
 		}
 
 		//mxd

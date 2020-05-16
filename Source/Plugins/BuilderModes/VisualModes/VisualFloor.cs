@@ -337,38 +337,30 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This changes the height
 		protected override void ChangeHeight(int amount)
 		{
-			mode.CreateUndo("Change floor height", UndoGroup.FloorHeightChange, level.sector.FixedIndex);
-			level.sector.FloorHeight += amount;
-			
-			if(General.Map.UDMF) 
+			if (level.sector.FloorSlope.GetLengthSq() > 0)
 			{
-				//mxd. Modify vertex offsets?
-				if(level.sector.Sidedefs.Count == 3)
-				{
-					ChangeVertexHeight(amount);
-				}
+				mode.CreateUndo("Change floor slope height", UndoGroup.FloorHeightChange, level.sector.FixedIndex);
 
-				//mxd. Modify slope offset?
-				if(level.sector.FloorSlope.GetLengthSq() > 0)
-				{
-					/*
-					Vector3D center = new Vector3D(level.sector.BBox.X + level.sector.BBox.Width / 2,
-												   level.sector.BBox.Y + level.sector.BBox.Height / 2, 
-												   level.sector.FloorHeight);
-					
-					Plane p = new Plane(center, 
-										level.sector.FloorSlope.GetAngleXY() + Angle2D.PIHALF, 
-										-level.sector.FloorSlope.GetAngleZ(), 
-										true);
+				level.sector.FloorSlopeOffset -= level.sector.FloorSlope.z * amount;
 
-					level.sector.FloorSlopeOffset = p.Offset;
-					*/
-
-					level.sector.FloorSlopeOffset -= level.sector.FloorSlope.z * amount;
-				}
+				mode.SetActionResult("Changed floor slope height by " + amount + ".");
 			}
+			else
+			{
+				mode.CreateUndo("Change floor height", UndoGroup.FloorHeightChange, level.sector.FixedIndex);
+				level.sector.FloorHeight += amount;
 
-			mode.SetActionResult("Changed floor height to " + level.sector.FloorHeight + ".");
+				if (General.Map.UDMF)
+				{
+					//mxd. Modify vertex offsets?
+					if (level.sector.Sidedefs.Count == 3)
+					{
+						ChangeVertexHeight(amount);
+					}
+				}
+
+				mode.SetActionResult("Changed floor height to " + level.sector.FloorHeight + ".");
+			}
 		}
 
 		//mxd

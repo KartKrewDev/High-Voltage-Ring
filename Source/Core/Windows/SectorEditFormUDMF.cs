@@ -746,7 +746,6 @@ namespace CodeImp.DoomBuilder.Windows
 				{
 					offset = sectorprops[s].CeilHeight - sectorprops[s].FloorHeight;
 					s.CeilHeight += offset * sign;
-					SynchCeilSlopeOffsetToHeight(s);
 				}
 			}
 			else
@@ -762,7 +761,6 @@ namespace CodeImp.DoomBuilder.Windows
 						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
 						offset = heightoffset.GetResult(0);
 						s.CeilHeight = sectorprops[s].CeilHeight + offset;
-						SynchCeilSlopeOffsetToHeight(s);
 					}
 				}
 				else //update values
@@ -775,7 +773,6 @@ namespace CodeImp.DoomBuilder.Windows
 						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
 						offset = heightoffset.GetResult(0);
 						s.CeilHeight = ceilingheight.GetResult(sectorprops[s].CeilHeight) + offset;
-						SynchCeilSlopeOffsetToHeight(s);
 					}
 				}
 			}
@@ -809,7 +806,6 @@ namespace CodeImp.DoomBuilder.Windows
 						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
 						offset = heightoffset.GetResult(0);
 						s.FloorHeight = sectorprops[s].FloorHeight + offset;
-						SynchFloorSlopeOffsetToHeight(s);
 					}
 				}
 				else //update values
@@ -819,26 +815,9 @@ namespace CodeImp.DoomBuilder.Windows
 						// To get the steps for ---/+++ into effect the offset has to be retrieved again for each sector
 						offset = heightoffset.GetResult(0);
 						s.FloorHeight = floorheight.GetResult(sectorprops[s].FloorHeight) + offset;
-						SynchFloorSlopeOffsetToHeight(s);
 					}
 				}
 			}
-		}
-
-		//mxd
-		private void SynchCeilSlopeOffsetToHeight(Sector s) 
-		{
-			Vector3D center = GetSectorCenter(s, s.CeilHeight, SlopePivotMode.LOCAL);
-			Plane p = new Plane(center, s.CeilSlope.GetAngleXY() - Angle2D.PIHALF, s.CeilSlope.GetAngleZ(), false);
-			s.CeilSlopeOffset = p.Offset;
-		}
-
-		//mxd
-		private void SynchFloorSlopeOffsetToHeight(Sector s)
-		{
-			Vector3D center = GetSectorCenter(s, s.FloorHeight, SlopePivotMode.LOCAL);
-			Plane p = new Plane(center, s.FloorSlope.GetAngleXY() + Angle2D.PIHALF, -s.FloorSlope.GetAngleZ(), true);
-			s.FloorSlopeOffset = p.Offset;
 		}
 
 		#endregion
@@ -1795,7 +1774,6 @@ namespace CodeImp.DoomBuilder.Windows
 				Plane p = new Plane(center, Angle2D.DegToRad(anglexy), Angle2D.DegToRad(anglez), false);
 				s.CeilSlope = p.Normal;
 				s.CeilSlopeOffset = p.Offset;
-				s.CeilHeight = (int)Math.Round(p.GetZ(center.x, center.y));
 
 				s.UpdateNeeded = true;
 			}
@@ -1820,7 +1798,6 @@ namespace CodeImp.DoomBuilder.Windows
 				Plane p = new Plane(center, Angle2D.DegToRad(anglexy), Angle2D.DegToRad(anglez), true);
 				s.FloorSlope = p.Normal;
 				s.FloorSlopeOffset = p.Offset;
-				s.FloorHeight = (int)Math.Round(p.GetZ(center.x, center.y));
 
 				s.UpdateNeeded = true;
 			}
