@@ -170,7 +170,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private ICollection<Vertex> unselectedvertices;
 		private ICollection<Linedef> unselectedlines;
 		private ICollection<Linedef> unstablelines; //mxd
-		private Dictionary<Sector, Vector2D> oldsectorcenters;
 
 		// Modification
 		private float rotation;
@@ -1065,7 +1064,37 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Done
 			linesflipped = !linesflipped;
 		}
-	
+
+		/// <summary>
+		/// Returns a transformed Vector2D
+		/// </summary>
+		/// <param name="v">The Vector2D to transform</param>
+		/// <returns>Transformed Vector2D</returns>
+		private Vector2D GetTransformedVector(Vector2D v)
+		{
+			// We use optimized versions of the TransformedPoint depending on what needs to be done.
+			// This is mainly done because 0.0 rotation and 1.0 scale may still give slight inaccuracies.
+			bool norotate = Math.Abs(rotation) < 0.0001f;
+			bool noscale = Math.Abs(size.x - basesize.x) + Math.Abs(size.y - basesize.y) < 0.0001f;
+
+			if (norotate && noscale)
+			{
+				return new Vector2D(TransformedPointNoRotateNoScale(v));
+			}
+			else if (norotate)
+			{
+				return new Vector2D(TransformedPointNoRotate(v));
+			}
+			else if (noscale)
+			{
+				return new Vector2D(TransformedPointNoScale(v));
+			}
+			else
+			{
+				return new Vector2D(TransformedPoint(v));
+			}
+		}
+
 		#endregion
 
 		#region ================== Sector height adjust methods (mxd)
@@ -1266,8 +1295,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					sd.Line.Start.Marked = true;
 					sd.Line.End.Marked = true;
 				}
-
-				if(General.Map.UDMF) selectedsectors.Add(s, new SectorTextureInfo(s));
 			}
 			selectedvertices = General.Map.Map.GetMarkedVertices(true);
 			selectedthings = General.Map.Map.GetMarkedThings(true);
@@ -1280,6 +1307,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			selectedlines = General.Map.Map.LinedefsFromMarkedVertices(false, true, false);
 			unselectedlines = General.Map.Map.LinedefsFromMarkedVertices(true, false, false);
 			unstablelines = (pasting ? new List<Linedef>() : General.Map.Map.LinedefsFromMarkedVertices(false, false, true)); //mxd
+
+			if (General.Map.UDMF)
+			{
+				foreach (Sector s in General.Map.Map.GetSectorsFromLinedefs(selectedlines))
+						selectedsectors.Add(s, new SectorTextureInfo(s));
+			}
 			
 			// Array to keep original coordinates
 			vertexpos = new List<Vector2D>(selectedvertices.Count);
@@ -1328,19 +1361,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					thingangle.Add(t.Angle);
 				}
 
-				// Get the centers of all selected sectors. This will later be used to update slopes more easily
-				if (General.Map.UDMF)
-				{
-					oldsectorcenters = new Dictionary<Sector, Vector2D>();
-
-					foreach (Sector s in sectors)
-					{
-						// Make sure the sector has a valid bounding box
-						s.UpdateBBox();
-						oldsectorcenters[s] = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
-					}
-				}
-				
 				// Calculate size
 				size = right - offset;
 				
@@ -1558,9 +1578,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				General.Map.Map.ClearAllMarks(false);
 				General.Map.Map.MarkAllSelectedGeometry(true, true, true, true, false);
 				
-				// Move geometry to new position
-				UpdateGeometry();
-
 				//mxd. Update sector slopes?
 				// Do this after UpdateGeometry() because it makes calculating the new slopes much easier
 				if (General.Map.UDMF)
@@ -1612,10 +1629,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							//if (size.y < 0.0f) angle += Angle2D.PI;
 
 							// Get the center of the *new* sector position. Use the z value of the center *old* sector position
-							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, 0.0f);
-							center.z = new Plane(s.FloorSlope, s.FloorSlopeOffset).GetZ(oldsectorcenters[s]);
+							Vector2D originalcenter = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
+							Vector3D newcenter = GetTransformedVector(originalcenter);
+							newcenter.z = new Plane(s.FloorSlope, s.FloorSlopeOffset).GetZ(originalcenter);
 
-							Plane p = new Plane(center, angle, -s.FloorSlope.GetAngleZ(), true);
+							Plane p = new Plane(newcenter, angle, -s.FloorSlope.GetAngleZ(), true);
 							s.FloorSlope = p.Normal;
 							s.FloorSlopeOffset = p.Offset;
 						}
@@ -1625,16 +1643,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							foreach (Sector cs in controlsectors[s])
 							{
-								if (cs.CeilSlope.GetLengthSq() <= 0 || float.IsNaN(cs.CeilSlopeOffset / cs.CeilSlope.z))
+								if (cs.FloorSlope.GetLengthSq() <= 0 || float.IsNaN(cs.FloorSlopeOffset / cs.FloorSlope.z))
 									continue;
 
 								float angle = cs.FloorSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 								// Get the center of the *new* tagged sector position. Use the z value of the center *old* tagged sector position
-								Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, 0.0f);
-								center.z = new Plane(cs.FloorSlope, cs.FloorSlopeOffset).GetZ(oldsectorcenters[s]);
+								Vector2D originalcenter = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
+								Vector3D newcenter = GetTransformedVector(originalcenter);
+								newcenter.z = new Plane(cs.FloorSlope, cs.FloorSlopeOffset).GetZ(originalcenter);
 
-								Plane p = new Plane(center, angle, -cs.FloorSlope.GetAngleZ(), true);
+								Plane p = new Plane(newcenter, angle, -cs.FloorSlope.GetAngleZ(), true);
 								cs.FloorSlope = p.Normal;
 								cs.FloorSlopeOffset = p.Offset;
 							}
@@ -1649,10 +1668,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							//if (size.y < 0.0f) angle += Angle2D.PI;
 
 							// Get the center of the *new* sector position. Use the z value of the center *old* sector position
-							Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, 0.0f);
-							center.z = new Plane(s.CeilSlope, s.CeilSlopeOffset).GetZ(oldsectorcenters[s]);
+							Vector2D originalcenter = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
+							Vector3D newcenter = GetTransformedVector(originalcenter);
+							newcenter.z = new Plane(s.CeilSlope, s.CeilSlopeOffset).GetZ(originalcenter);
 
-							Plane p = new Plane(center, angle, -s.CeilSlope.GetAngleZ(), false);
+							Plane p = new Plane(newcenter, angle, -s.CeilSlope.GetAngleZ(), false);
 							s.CeilSlope = p.Normal;
 							s.CeilSlopeOffset = p.Offset;
 						}
@@ -1668,16 +1688,20 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								float angle = cs.CeilSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 								// Get the center of the *new* tagged sector position. Use the z value of the center *old* tagged sector position
-								Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, 0.0f);
-								center.z = new Plane(cs.CeilSlope, cs.CeilSlopeOffset).GetZ(oldsectorcenters[s]);
+								Vector2D originalcenter = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
+								Vector3D newcenter = GetTransformedVector(originalcenter);
+								newcenter.z = new Plane(cs.CeilSlope, cs.CeilSlopeOffset).GetZ(originalcenter);
 
-								Plane p = new Plane(center, angle, -cs.CeilSlope.GetAngleZ(), false);
+								Plane p = new Plane(newcenter, angle, -cs.CeilSlope.GetAngleZ(), false);
 								cs.CeilSlope = p.Normal;
 								cs.CeilSlopeOffset = p.Offset;
 							}
 						}
 					}
 				}
+
+				// Move geometry to new position
+				UpdateGeometry();
 
 				//mxd. Update floor/ceiling texture settings
 				if (General.Map.UDMF) UpdateTextureTransform();
