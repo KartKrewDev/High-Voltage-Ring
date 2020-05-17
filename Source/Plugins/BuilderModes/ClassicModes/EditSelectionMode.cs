@@ -171,6 +171,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private ICollection<Linedef> unselectedlines;
 		private ICollection<Linedef> unstablelines; //mxd
 		private Dictionary<Sector, float[]> slopeheights;
+		private Dictionary<Sector, Vector2D> oldsectorcenters;
 
 		// Modification
 		private float rotation;
@@ -1336,10 +1337,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// the sector and subsequently the bounding box, but not the slope
 				slopeheights = new Dictionary<Sector, float[]>();
 
+				oldsectorcenters = new Dictionary<Sector, Vector2D>();
+
 				foreach(Sector s in sectors)
 				{
 					// Make sure the sector has a valid bounding box
 					s.UpdateBBox();
+
+					oldsectorcenters[s] = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
 
 					Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
 					float floorz = s.FloorHeight;
@@ -1578,6 +1583,39 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Do this after UpdateGeometry() because it makes calculating the new slopes much easier
 				if (General.Map.UDMF)
 				{
+					Dictionary<Sector, List<Sector>> controlsectors = new Dictionary<Sector, List<Sector>>();
+
+					// Create cache of 3D floor control sectors that reference the selected sectors. Only do it if not pasting, since the slopes
+					// will only be updated when not pasting, since it'd otherwise screw up the original slopes 
+					if (!pasting)
+					{
+						foreach (Linedef ld in General.Map.Map.Linedefs)
+						{
+							if (ld.Action != 160) // Action 160 defines a 3D floor
+								continue;
+
+							if (ld.Args[0] == 0) // First argument of the action is the sector tag. 0 is not a valid value
+								continue;
+
+							Sector cs = ld.Front.Sector;
+
+							// Skip sectors that don't have a slope
+							if ((cs.FloorSlope.GetLengthSq() <= 0 || float.IsNaN(cs.FloorSlopeOffset / cs.FloorSlope.z)) && (cs.CeilSlope.GetLengthSq() <= 0 || float.IsNaN(cs.CeilSlopeOffset / cs.CeilSlope.z)))
+								continue;
+
+							foreach (Sector s in selectedsectors.Keys)
+							{
+								if (!s.Tags.Contains(ld.Args[0]))
+									continue;
+
+								if (!controlsectors.ContainsKey(s))
+									controlsectors.Add(s, new List<Sector>());
+
+								controlsectors[s].Add(cs);
+							}
+						}
+					}
+
 					foreach (Sector s in selectedsectors.Keys)
 					{
 						// Manually update the sector bounding boxes, because they still contain the old values
@@ -1597,6 +1635,24 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							s.FloorSlopeOffset = p.Offset;
 						}
 
+						// Update the slopes of 3D floor control sectors. Only do it if not pasting, since it'd otherwise screw up the original slopes 
+						if (!pasting && controlsectors.ContainsKey(s))
+						{
+							foreach (Sector cs in controlsectors[s])
+							{
+								if (cs.CeilSlope.GetLengthSq() <= 0 || float.IsNaN(cs.CeilSlopeOffset / cs.CeilSlope.z))
+									continue;
+
+								float angle = cs.FloorSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
+								Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, 0.0f);
+								center.z = new Plane(cs.FloorSlope, cs.FloorSlopeOffset).GetZ(oldsectorcenters[s]);
+
+								Plane p = new Plane(center, angle, -cs.FloorSlope.GetAngleZ(), true);
+								cs.FloorSlope = p.Normal;
+								cs.FloorSlopeOffset = p.Offset;
+							}
+						}
+
 						// Update ceiling slope?
 						if (s.CeilSlope.GetLengthSq() > 0 && !float.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z))
 						{
@@ -1609,6 +1665,24 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							Plane p = new Plane(center, angle, -s.CeilSlope.GetAngleZ(), false);
 							s.CeilSlope = p.Normal;
 							s.CeilSlopeOffset = p.Offset;
+						}
+
+						// Update the slopes of 3D floor control sectors. Only do it if not pasting, since it'd otherwise screw up the original slopes 
+						if (!pasting && controlsectors.ContainsKey(s))
+						{
+							foreach (Sector cs in controlsectors[s])
+							{
+								if (cs.CeilSlope.GetLengthSq() <= 0 || float.IsNaN(cs.CeilSlopeOffset / cs.CeilSlope.z))
+									continue;
+
+								float angle = cs.CeilSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
+								Vector3D center = new Vector3D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2, 0.0f);
+								center.z = new Plane(cs.CeilSlope, cs.CeilSlopeOffset).GetZ(oldsectorcenters[s]);
+
+								Plane p = new Plane(center, angle, -cs.CeilSlope.GetAngleZ(), false);
+								cs.CeilSlope = p.Normal;
+								cs.CeilSlopeOffset = p.Offset;
+							}
 						}
 					}
 				}
