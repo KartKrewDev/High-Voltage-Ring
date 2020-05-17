@@ -1623,10 +1623,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Update floor slope?
 						if (s.FloorSlope.GetLengthSq() > 0 && !float.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z))
 						{
-							float angle = s.FloorSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
-							// Not sure what the logic should be for flipping horizintally and/or vertically
-							//if (size.x < 0.0f) angle += Angle2D.PI;
-							//if (size.y < 0.0f) angle += Angle2D.PI;
+							// Flip the plane normal if necessary
+							Vector3D normal = s.FloorSlope;
+							if (size.x < 0.0f) normal.x *= -1;
+							if (size.y < 0.0f) normal.y *= -1;
+
+							float angle = normal.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 							// Get the center of the *new* sector position. Use the z value of the center *old* sector position
 							Vector2D originalcenter = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
@@ -1646,7 +1648,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								if (cs.FloorSlope.GetLengthSq() <= 0 || float.IsNaN(cs.FloorSlopeOffset / cs.FloorSlope.z))
 									continue;
 
-								float angle = cs.FloorSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
+								// Flip the plane normal if necessary
+								Vector3D normal = cs.FloorSlope;
+								if (size.x < 0.0f) normal.x *= -1;
+								if (size.y < 0.0f) normal.y *= -1;
+
+								float angle = normal.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 								// Get the center of the *new* tagged sector position. Use the z value of the center *old* tagged sector position
 								Vector2D originalcenter = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
@@ -1662,10 +1669,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Update ceiling slope?
 						if (s.CeilSlope.GetLengthSq() > 0 && !float.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z))
 						{
-							float angle = s.CeilSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
-							// Not sure what the logic should be for flipping horizintally and/or vertically
-							//if (size.x < 0.0f) angle += Angle2D.PI;
-							//if (size.y < 0.0f) angle += Angle2D.PI;
+							// Flip the plane normal if necessary
+							Vector3D normal = s.CeilSlope;
+							if (size.x < 0.0f) normal.x *= -1;
+							if (size.y < 0.0f) normal.y *= -1;
+
+							float angle = normal.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 							// Get the center of the *new* sector position. Use the z value of the center *old* sector position
 							Vector2D originalcenter = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
@@ -1685,7 +1694,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								if (cs.CeilSlope.GetLengthSq() <= 0 || float.IsNaN(cs.CeilSlopeOffset / cs.CeilSlope.z))
 									continue;
 
-								float angle = cs.CeilSlope.GetAngleXY() + rotation + Angle2D.PIHALF;
+								// Flip the plane normal if necessary
+								Vector3D normal = cs.CeilSlope;
+								if (size.x < 0.0f) normal.x *= -1;
+								if (size.y < 0.0f) normal.y *= -1;
+
+								float angle = normal.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 								// Get the center of the *new* tagged sector position. Use the z value of the center *old* tagged sector position
 								Vector2D originalcenter = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
