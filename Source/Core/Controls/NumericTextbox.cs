@@ -283,13 +283,13 @@ namespace CodeImp.DoomBuilder.Controls
 		}
 
 		//mxd. This determines the result value
-		public float GetResultFloat(float original)
+		public double GetResultFloat(double original)
 		{
 			return GetResultFloat(original, incrementstep++);
 		}
 
 		// This determines the result value
-		public float GetResultFloat(float original, int step)
+		public double GetResultFloat(double original, int step)
 		{
 			// Strip prefixes
 			string textpart = StripPrefixes(this.Text);
@@ -297,7 +297,7 @@ namespace CodeImp.DoomBuilder.Controls
 			// Any numbers left?
 			if(textpart.Length > 0)
 			{
-				float result;
+				double result;
 				if(allowrelative)
 				{
 					//mxd. Prefixed with +++?
@@ -317,7 +317,7 @@ namespace CodeImp.DoomBuilder.Controls
 						// Subtract number from original
 						if(TryGetResultValue(textpart, out result))
 						{
-							float newvalue = original - result * step;
+							double newvalue = original - result * step;
 							return (!allownegative && (newvalue < 0)) ? original : newvalue;
 						}
 
@@ -342,7 +342,7 @@ namespace CodeImp.DoomBuilder.Controls
 						// Subtract number from original
 						if(TryGetResultValue(textpart, out result))
 						{
-							float newvalue = original - result;
+							double newvalue = original - result;
 							return (!allownegative && (newvalue < 0)) ? original : newvalue;
 						}
 
@@ -356,7 +356,7 @@ namespace CodeImp.DoomBuilder.Controls
 						// Multiply original by number
 						if(TryGetResultValue(textpart, out result))
 						{
-							float newvalue = (float)Math.Round(original * result, ROUNDING_PRECISION);
+							double newvalue = Math.Round(original * result, ROUNDING_PRECISION);
 							return (!allownegative && (newvalue < 0f)) ? original : newvalue;
 						}
 
@@ -371,7 +371,7 @@ namespace CodeImp.DoomBuilder.Controls
 						if(TryGetResultValue(textpart, out result))
 						{
 							if(result == 0.0f) return original;
-							float newvalue = (float)Math.Round(original / result, ROUNDING_PRECISION);
+							double newvalue = Math.Round(original / result, ROUNDING_PRECISION);
 							return (!allownegative && (newvalue < 0f)) ? original : newvalue;
 						}
 
@@ -392,12 +392,12 @@ namespace CodeImp.DoomBuilder.Controls
 		//mxd
 		private bool IsValidResult(string expression)
 		{
-			float unused;
+			double unused;
 			return TryGetResultValue(expression, out unused);
 		}
 
 		//mxd
-		private bool TryGetResultValue(string expression, out float value)
+		private bool TryGetResultValue(string expression, out double value)
 		{
 			//Compute expression
 			if(allowexpressions)
@@ -411,7 +411,7 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 
 			// Parse result
-			return float.TryParse(expression, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+			return double.TryParse(expression, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
 		}
 
 		//mxd

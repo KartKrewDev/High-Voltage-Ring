@@ -60,7 +60,7 @@ namespace CodeImp.DoomBuilder.Map
         private GZGeneral.LightData dynamiclighttype;
 		private Vector3D pos;
 		private int angledoom;		// Angle as entered / stored in file
-		private float anglerad;		// Angle in radians
+		private double anglerad;		// Angle in radians
 		private Dictionary<string, bool> flags;
 		private int tag;
 		private int action;
@@ -70,8 +70,8 @@ namespace CodeImp.DoomBuilder.Map
 		private SizeF spritescale; //mxd
 		private int pitch; //mxd. Used in model rendering
 		private int roll; //mxd. Used in model rendering
-		private float pitchrad; //mxd
-		private float rollrad; //mxd
+		private double pitchrad; //mxd
+		private double rollrad; //mxd
 		private bool highlighted; //mxd
 
 		//mxd. GZDoom rendering properties
@@ -100,11 +100,11 @@ namespace CodeImp.DoomBuilder.Map
 		public float ScaleX { get { return scaleX; } } //mxd. This is UDMF property, not actual scale!
 		public float ScaleY { get { return scaleY; } } //mxd. This is UDMF property, not actual scale!
 		public int Pitch { get { return pitch; } } //mxd
-		public float PitchRad { get { return pitchrad; } }
+		public double PitchRad { get { return pitchrad; } }
 		public int Roll { get { return roll; } } //mxd
-		public float RollRad { get { return rollrad; } }
+		public double RollRad { get { return rollrad; } }
 		public SizeF ActorScale { get { return spritescale; } } //mxd. Actor scale set in DECORATE
-		public float Angle { get { return anglerad; } }
+		public double Angle { get { return anglerad; } }
 		public int AngleDoom { get { return angledoom; } }
 		internal Dictionary<string, bool> Flags { get { return flags; } }
 		public int Action { get { return action; } set { BeforePropsChange(); action = value; } }
@@ -399,7 +399,7 @@ namespace CodeImp.DoomBuilder.Map
 
 		// This moves the thing
 		// NOTE: This does not update sector! (call DetermineSector)
-		public void Move(float x, float y, float zoffset)
+		public void Move(double x, double y, double zoffset)
 		{
 			BeforePropsChange();
 			
@@ -411,7 +411,7 @@ namespace CodeImp.DoomBuilder.Map
 		}
 		
 		// This rotates the thing
-		public void Rotate(float newangle)
+		public void Rotate(double newangle)
 		{
 			BeforePropsChange();
 			
@@ -446,7 +446,7 @@ namespace CodeImp.DoomBuilder.Map
             switch (rendermode)
 			{
 				case ThingRenderMode.MODEL:
-                    float pmult = General.Map.Config.BuggyModelDefPitch ? 1 : -1;
+					double pmult = General.Map.Config.BuggyModelDefPitch ? 1 : -1;
                     ModelData md = General.Map.Data.ModeldefEntries[type];
                     if (md.InheritActorPitch || md.UseActorPitch)
                         pitchrad = Angle2D.DegToRad(pmult * (md.InheritActorPitch ? -pitch : pitch));
@@ -680,13 +680,13 @@ namespace CodeImp.DoomBuilder.Map
 		}
 		
 		// This returns the distance from given coordinates
-		public float DistanceToSq(Vector2D p)
+		public double DistanceToSq(Vector2D p)
 		{
 			return Vector2D.DistanceSq(p, pos);
 		}
 
 		// This returns the distance from given coordinates
-		public float DistanceTo(Vector2D p)
+		public double DistanceTo(Vector2D p)
 		{
 			return Vector2D.Distance(p, pos);
 		}

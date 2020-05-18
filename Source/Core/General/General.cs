@@ -1722,6 +1722,12 @@ namespace CodeImp.DoomBuilder
 		}
 
 		// This clamps a value
+		public static double Clamp(double value, double min, double max)
+		{
+			return Math.Min(Math.Max(min, value), max);
+		}
+
+		// This clamps a value
 		public static int Clamp(int value, int min, int max)
 		{
 			return Math.Min(Math.Max(min, value), max);
@@ -1746,6 +1752,14 @@ namespace CodeImp.DoomBuilder
 		{
 			angle %= 360;
 			if(angle < 0) angle += 360;
+			return angle;
+		}
+
+		// This clamps angle between 0 and 359
+		public static double ClampAngle(double angle)
+		{
+			angle %= 360;
+			if (angle < 0) angle += 360;
 			return angle;
 		}
 

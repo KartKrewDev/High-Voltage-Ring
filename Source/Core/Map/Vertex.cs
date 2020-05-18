@@ -95,8 +95,8 @@ namespace CodeImp.DoomBuilder.Map
 		{
             // [ZZ] Check coordinates
             //      Something in GZDB creates vertices with NaN coordinates. This needs to be found.
-            if (float.IsNaN(pos.x) ||
-                float.IsNaN(pos.y))
+            if (double.IsNaN(pos.x) ||
+				double.IsNaN(pos.y))
             {
                 throw new Exception("Tried to create a vertex at coordinates NaN,NaN");
             }
@@ -241,13 +241,13 @@ namespace CodeImp.DoomBuilder.Map
 		}
 		
 		// This returns the distance from given coordinates
-		public float DistanceToSq(Vector2D p)
+		public double DistanceToSq(Vector2D p)
 		{
 			return (p.x - pos.x) * (p.x - pos.x) + (p.y - pos.y) * (p.y - pos.y);
 		}
 		
 		// This returns the distance from given coordinates
-		public float DistanceTo(Vector2D p)
+		public double DistanceTo(Vector2D p)
 		{
 			return Vector2D.Distance(p, pos);
 		}
@@ -267,8 +267,8 @@ namespace CodeImp.DoomBuilder.Map
 				pos = newpos;
 
 				#if DEBUG
-				if(float.IsNaN(pos.x) || float.IsNaN(pos.y) ||
-				   float.IsInfinity(pos.x) || float.IsInfinity(pos.y))
+				if(double.IsNaN(pos.x) || double.IsNaN(pos.y) ||
+				   double.IsInfinity(pos.x) || double.IsInfinity(pos.y))
 				{
 					General.Fail("Invalid vertex position! The given vertex coordinates cannot be NaN or Infinite.");
 				}

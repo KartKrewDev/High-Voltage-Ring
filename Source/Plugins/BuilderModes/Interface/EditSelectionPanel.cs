@@ -46,7 +46,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private Vector2D relpos;
 		private Vector2D abssize;
 		private Vector2D relsize;
-		private float absrotate;
+		private double absrotate;
 		
 		#endregion
 		
@@ -96,7 +96,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 		
 		// This sets the dynamic values
-		public void ShowCurrentValues(Vector2D pos, Vector2D relpos, Vector2D size, Vector2D relsize, float rotation)
+		public void ShowCurrentValues(Vector2D pos, Vector2D relpos, Vector2D size, Vector2D relsize, double rotation)
 		{
 			// Set values
 			this.abspos = pos;
@@ -246,7 +246,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(userinput)
 			{
-				float rad = Angle2D.DegToRad(absrot.GetResultFloat(this.absrotate));
+				double rad = Angle2D.DegToRad(absrot.GetResultFloat(this.absrotate));
 				mode.SetAbsRotation(rad);
 			}
 		}

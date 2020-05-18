@@ -207,7 +207,7 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 
 		// This scrolls anywhere
-		private void ScrollBy(float deltax, float deltay)
+		private void ScrollBy(double deltax, double deltay)
 		{
 			//mxd. Don't stroll too far from map boundaries
 			Vector2D offset = ClampViewOffset(renderer2d.OffsetX + deltax, renderer2d.OffsetY + deltay);
@@ -287,7 +287,7 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 
 		//mxd. Makes sure given offset stays within map boundaries
-		private static Vector2D ClampViewOffset(float x, float y)
+		private static Vector2D ClampViewOffset(double x, double y)
 		{
 			Vector2D diff = new Vector2D(x, y);
 			Vector2D safediff = new Vector2D(General.Clamp(diff.x, General.Map.Config.LeftBoundary, General.Map.Config.RightBoundary),
@@ -851,7 +851,7 @@ namespace CodeImp.DoomBuilder.Editing
 		{
 			selecting = true;
 			selectstart = mousedownmappos;
-			selectionrect = new RectangleF(selectstart.x, selectstart.y, 0, 0);
+			selectionrect = new RectangleF((float)selectstart.x, (float)selectstart.y, 0, 0);
 
 			//mxd
 			General.Hints.ShowHints(this.GetType(), HintsManager.MULTISELECTION);
@@ -864,10 +864,10 @@ namespace CodeImp.DoomBuilder.Editing
 		{
 			marqueSelectionMode = GetMultiSelectionMode(); //mxd
 			
-			selectionrect.X = selectstart.x;
-			selectionrect.Y = selectstart.y;
-			selectionrect.Width = mousemappos.x - selectstart.x;
-			selectionrect.Height = mousemappos.y - selectstart.y;
+			selectionrect.X = (float)selectstart.x;
+			selectionrect.Y = (float)selectstart.y;
+			selectionrect.Width = (float)(mousemappos.x - selectstart.x);
+			selectionrect.Height = (float)(mousemappos.y - selectstart.y);
 			
 			if(selectionrect.Width < 0f)
 			{
@@ -926,7 +926,7 @@ namespace CodeImp.DoomBuilder.Editing
 		{
 			// We can only drag the map when the mouse pointer is inside
 			// otherwise we don't have coordinates where to drag the map to
-			if(mouseinside && !float.IsNaN(mouselastpos.x) && !float.IsNaN(mouselastpos.y))
+			if(mouseinside && !double.IsNaN(mouselastpos.x) && !double.IsNaN(mouselastpos.y))
 			{
 				// Get the map coordinates of the last mouse posision (before it moved)
 				Vector2D lastmappos = renderer2d.DisplayToMap(mouselastpos);

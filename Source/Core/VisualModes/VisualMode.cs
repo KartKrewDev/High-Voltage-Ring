@@ -749,9 +749,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 					if(!lines.ContainsKey(ld))
 					{
 						lines.Add(ld, ld);
-						
+
 						// Intersecting?
-						float u;
+						double u;
 						if(ld.Line.GetIntersection(ray2d, out u))
 						{
 							// Check on which side we are

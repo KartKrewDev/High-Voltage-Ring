@@ -26,22 +26,22 @@ namespace CodeImp.DoomBuilder.Geometry
 	{
 		#region ================== Constants
 
-		private const float TINY_VALUE = 0.0000000001f;
+		private const double TINY_VALUE = 0.0000000001f;
 
 		#endregion
 
 		#region ================== Variables
 
 		// Coordinates
-		public float x;
-		public float y;
+		public double x;
+		public double y;
 		
 		#endregion
 		
 		#region ================== Constructors
 
 		// Constructor
-		public Vector2D(float x, float y)
+		public Vector2D(double x, double y)
 		{
 			this.x = x;
 			this.y = y;
@@ -71,13 +71,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This adds to a vector
-		public static Vector2D operator +(float a, Vector2D b)
+		public static Vector2D operator +(double a, Vector2D b)
 		{
 			return new Vector2D(a + b.x, a + b.y);
 		}
 
 		// This adds to a vector
-		public static Vector2D operator +(Vector2D a, float b)
+		public static Vector2D operator +(Vector2D a, double b)
 		{
 			return new Vector2D(a.x + b, a.y + b);
 		}
@@ -89,13 +89,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This subtracts from a vector
-		public static Vector2D operator -(Vector2D a, float b)
+		public static Vector2D operator -(Vector2D a, double b)
 		{
 			return new Vector2D(a.x - b, a.y - b);
 		}
 
 		// This subtracts from a vector
-		public static Vector2D operator -(float a, Vector2D b)
+		public static Vector2D operator -(double a, Vector2D b)
 		{
 			return new Vector2D(a - b.x, a - b.y);
 		}
@@ -107,13 +107,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This scales a vector
-		public static Vector2D operator *(float s, Vector2D a)
+		public static Vector2D operator *(double s, Vector2D a)
 		{
 			return new Vector2D(a.x * s, a.y * s);
 		}
 
 		// This scales a vector
-		public static Vector2D operator *(Vector2D a, float s)
+		public static Vector2D operator *(Vector2D a, double s)
 		{
 			return new Vector2D(a.x * s, a.y * s);
 		}
@@ -125,13 +125,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This scales a vector
-		public static Vector2D operator /(float s, Vector2D a)
+		public static Vector2D operator /(double s, Vector2D a)
 		{
 			return new Vector2D(a.x / s, a.y / s);
 		}
 
 		// This scales a vector
-		public static Vector2D operator /(Vector2D a, float s)
+		public static Vector2D operator /(Vector2D a, double s)
 		{
 			return new Vector2D(a.x / s, a.y / s);
 		}
@@ -143,7 +143,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This calculates the dot product
-		public static float DotProduct(Vector2D a, Vector2D b)
+		public static double DotProduct(Vector2D a, Vector2D b)
 		{
 			// Calculate and return the dot product
 			return a.x * b.x + a.y * b.y;
@@ -178,7 +178,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		public static Vector2D Reflect(Vector2D v, Vector2D m)
 		{
 			// Get the dot product of v and m
-			float dp = Vector2D.DotProduct(m, v);
+			double dp = Vector2D.DotProduct(m, v);
 
 			// Make the reflected vector
 			Vector2D mv = new Vector2D();
@@ -197,42 +197,42 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This returns a vector from an angle
-		public static Vector2D FromAngle(float angle)
+		public static Vector2D FromAngle(double angle)
 		{
 			// Return vector from angle
-			return new Vector2D((float)Math.Sin(angle), -(float)Math.Cos(angle));
+			return new Vector2D(Math.Sin(angle), -Math.Cos(angle));
 		}
 
 		// This returns a vector from an angle with a given legnth
-		public static Vector2D FromAngle(float angle, float length)
+		public static Vector2D FromAngle(double angle, double length)
 		{
 			// Return vector from angle
 			return FromAngle(angle) * length;
 		}
 
 		// This calculates the angle
-		public static float GetAngle(Vector2D a, Vector2D b)
+		public static double GetAngle(Vector2D a, Vector2D b)
 		{
 			// Calculate and return the angle
-			return -(float)Math.Atan2(-(a.y - b.y), (a.x - b.x)) + Angle2D.PIHALF;//mxd //(float)Math.PI * 0.5f;
+			return -Math.Atan2(-(a.y - b.y), (a.x - b.x)) + Angle2D.PIHALF;//mxd //(float)Math.PI * 0.5f;
 		}
 
 		// This returns the square distance between two points
-		public static float DistanceSq(Vector2D a, Vector2D b)
+		public static double DistanceSq(Vector2D a, Vector2D b)
 		{
 			Vector2D d = a - b;
 			return d.GetLengthSq();
 		}
 
 		// This returns the distance between two points
-		public static float Distance(Vector2D a, Vector2D b)
+		public static double Distance(Vector2D a, Vector2D b)
 		{
 			Vector2D d = a - b;
 			return d.GetLength();
 		}
 
 		// This returns the manhattan distance between two points
-		public static float ManhattanDistance(Vector2D a, Vector2D b)
+		public static double ManhattanDistance(Vector2D a, Vector2D b)
 		{
 			Vector2D d = a - b;
 			return Math.Abs(d.x) + Math.Abs(d.y);
@@ -255,30 +255,30 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 		
 		// This calculates the angle
-		public float GetAngle()
+		public double GetAngle()
 		{
 			//mxd. Let's make sure the angle is in [0 .. PI2] range...
-			float angle = -(float)Math.Atan2(-y, x) + Angle2D.PIHALF;
+			double angle = -Math.Atan2(-y, x) + Angle2D.PIHALF;
 			if(angle < 0f) angle += Angle2D.PI2;
 			return angle;
 		}
 
 		// This calculates the length
-		public float GetLength()
+		public double GetLength()
 		{
 			// Calculate and return the length
-			return (float)Math.Sqrt(x * x + y * y);
+			return Math.Sqrt(x * x + y * y);
 		}
 
 		// This calculates the square length
-		public float GetLengthSq()
+		public double GetLengthSq()
 		{
 			// Calculate and return the square length
 			return x * x + y * y;
 		}
 
 		// This calculates the length
-		public float GetManhattanLength()
+		public double GetManhattanLength()
 		{
 			// Calculate and return the length
 			return Math.Abs(x) + Math.Abs(y);
@@ -287,11 +287,11 @@ namespace CodeImp.DoomBuilder.Geometry
 		// This returns a normalized vector
 		public Vector2D GetNormal()
 		{
-			float lensq = this.GetLengthSq();
+			double lensq = this.GetLengthSq();
 			if(lensq > TINY_VALUE)
 			{
 				// Divide each element by the length
-				float mul = 1f / (float)Math.Sqrt(lensq);
+				double mul = 1f / Math.Sqrt(lensq);
 				return new Vector2D(x * mul, y * mul);
 			}
 			else
@@ -302,14 +302,14 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This scales the vector
-		public Vector2D GetScaled(float s)
+		public Vector2D GetScaled(double s)
 		{
 			// Scale the vector
 			return new Vector2D(x * s, y * s);
 		}
 
 		// This changes the vector length
-		public Vector2D GetFixedLength(float l)
+		public Vector2D GetFixedLength(double l)
 		{
 			// Normalize, then scale
 			return this.GetNormal().GetScaled(l);
@@ -322,31 +322,31 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// Transform
-		public Vector2D GetTransformed(float offsetx, float offsety, float scalex, float scaley)
+		public Vector2D GetTransformed(double offsetx, double offsety, double scalex, double scaley)
 		{
 			return new Vector2D((x + offsetx) * scalex, (y + offsety) * scaley);
 		}
 
 		// Inverse Transform
-		public Vector2D GetInvTransformed(float invoffsetx, float invoffsety, float invscalex, float invscaley)
+		public Vector2D GetInvTransformed(double invoffsetx, double invoffsety, double invscalex, double invscaley)
 		{
 			return new Vector2D((x * invscalex) + invoffsetx, (y * invscaley) + invoffsety);
 		}
 		
 		// Rotate (Added by Anders Åstrand 2008-05-18)
-		public Vector2D GetRotated(float theta)
+		public Vector2D GetRotated(double theta)
 		{
-			float cos = (float)Math.Cos(theta);
-			float sin = (float)Math.Sin(theta);
-			float rx = cos * x - sin * y;
-			float ry = sin * x + cos * y;
+			double cos = Math.Cos(theta);
+			double sin = Math.Sin(theta);
+			double rx = cos * x - sin * y;
+			double ry = sin * x + cos * y;
 			return new Vector2D(rx, ry);
 		}
 
 		// Checks if the Vector has valid values for x and y
 		public bool IsFinite()
 		{
-			return !float.IsNaN(x) && !float.IsNaN(y) && !float.IsInfinity(x) && !float.IsInfinity(y);
+			return !double.IsNaN(x) && !double.IsNaN(y) && !double.IsInfinity(x) && !double.IsInfinity(y);
 		}
 
 		//mxd. Addeed to make compiler a bit more happy...

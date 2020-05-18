@@ -1859,10 +1859,10 @@ namespace CodeImp.DoomBuilder.Map
 		/// <summary>This creates an area from vertices.</summary>
 		public static RectangleF CreateArea(ICollection<Vertex> verts)
 		{
-			float l = float.MaxValue;
-			float t = float.MaxValue;
-			float r = float.MinValue;
-			float b = float.MinValue;
+			double l = double.MaxValue;
+			double t = double.MaxValue;
+			double r = double.MinValue;
+			double b = double.MinValue;
 
 			// Go for all vertices
 			foreach(Vertex v in verts)
@@ -1875,16 +1875,16 @@ namespace CodeImp.DoomBuilder.Map
 			}
 
 			// Return a rect
-			return new RectangleF(l, t, r - l, b - t);
+			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
 		}
 
 		/// <summary>This increases and existing area with the given vertices.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, ICollection<Vertex> verts)
 		{
-			float l = area.Left;
-			float t = area.Top;
-			float r = area.Right;
-			float b = area.Bottom;
+			double l = area.Left;
+			double t = area.Top;
+			double r = area.Right;
+			double b = area.Bottom;
 			
 			// Go for all vertices
 			foreach(Vertex v in verts)
@@ -1897,16 +1897,16 @@ namespace CodeImp.DoomBuilder.Map
 			}
 			
 			// Return a rect
-			return new RectangleF(l, t, r - l, b - t);
+			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
 		}
 
 		/// <summary>This increases and existing area with the given things.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, ICollection<Thing> things)
 		{
-			float l = area.Left;
-			float t = area.Top;
-			float r = area.Right;
-			float b = area.Bottom;
+			double l = area.Left;
+			double t = area.Top;
+			double r = area.Right;
+			double b = area.Bottom;
 			
 			// Go for all vertices
 			foreach(Thing th in things)
@@ -1919,16 +1919,16 @@ namespace CodeImp.DoomBuilder.Map
 			}
 			
 			// Return a rect
-			return new RectangleF(l, t, r - l, b - t);
+			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
 		}
 
 		/// <summary>This increases and existing area with the given vertices.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, ICollection<Vector2D> verts)
 		{
-			float l = area.Left;
-			float t = area.Top;
-			float r = area.Right;
-			float b = area.Bottom;
+			double l = area.Left;
+			double t = area.Top;
+			double r = area.Right;
+			double b = area.Bottom;
 			
 			// Go for all vertices
 			foreach(Vector2D v in verts)
@@ -1941,34 +1941,34 @@ namespace CodeImp.DoomBuilder.Map
 			}
 			
 			// Return a rect
-			return new RectangleF(l, t, r - l, b - t);
+			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
 		}
 
 		/// <summary>This increases and existing area with the given vertex.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, Vector2D vert)
 		{
-			float l = area.Left;
-			float t = area.Top;
-			float r = area.Right;
-			float b = area.Bottom;
+			double l = area.Left;
+			double t = area.Top;
+			double r = area.Right;
+			double b = area.Bottom;
 			
 			// Adjust boundaries by vertices
 			if(vert.x < l) l = vert.x;
 			if(vert.x > r) r = vert.x;
 			if(vert.y < t) t = vert.y;
 			if(vert.y > b) b = vert.y;
-			
+
 			// Return a rect
-			return new RectangleF(l, t, r - l, b - t);
+			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
 		}
 
 		/// <summary>This creates an area from linedefs.</summary>
 		public static RectangleF CreateArea(ICollection<Linedef> lines)
 		{
-			float l = float.MaxValue;
-			float t = float.MaxValue;
-			float r = float.MinValue;
-			float b = float.MinValue;
+			double l = double.MaxValue;
+			double t = double.MaxValue;
+			double r = double.MinValue;
+			double b = double.MinValue;
 
 			// Go for all linedefs
 			foreach(Linedef ld in lines)
@@ -1985,16 +1985,16 @@ namespace CodeImp.DoomBuilder.Map
 			}
 
 			// Return a rect
-			return new RectangleF(l, t, r - l, b - t);
+			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
 		}
 
 		/// <summary>This increases and existing area with the given linedefs.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, ICollection<Linedef> lines) //mxd
 		{
-			float l = area.Left;
-			float t = area.Top;
-			float r = area.Right;
-			float b = area.Bottom;
+			double l = area.Left;
+			double t = area.Top;
+			double r = area.Right;
+			double b = area.Bottom;
 
 			// Go for all vertices
 			foreach(Linedef ld in lines)
@@ -2011,7 +2011,7 @@ namespace CodeImp.DoomBuilder.Map
 			}
 
 			// Return a rect
-			return new RectangleF(l, t, r - l, b - t);
+			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
 		}
 
 		/// <summary>This filters lines by a rectangular area.</summary>
@@ -3152,7 +3152,7 @@ namespace CodeImp.DoomBuilder.Map
 
 							// Check for intersection
 							Vector2D intersection = Line2D.GetIntersectionPoint(new Line2D(l1), new Line2D(l2), true);
-							if(!float.IsNaN(intersection.x))
+							if(!double.IsNaN(intersection.x))
 							{
 								//mxd. Round to map format precision
 								intersection.x = (float)Math.Round(intersection.x, General.Map.FormatInterface.VertexDecimals);
@@ -3461,13 +3461,13 @@ namespace CodeImp.DoomBuilder.Map
 		public static Vertex NearestVertex(ICollection<Vertex> selection, Vector2D pos)
 		{
 			Vertex closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 
 			// Go for all vertices in selection
 			foreach(Vertex v in selection)
 			{
 				// Calculate distance and check if closer than previous find
-				float d = v.DistanceToSq(pos);
+				double d = v.DistanceToSq(pos);
 				if(d < distance)
 				{
 					// This one is closer
@@ -3484,13 +3484,13 @@ namespace CodeImp.DoomBuilder.Map
 		public static Thing NearestThing(ICollection<Thing> selection, Vector2D pos)
 		{
 			Thing closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 
 			// Go for all things in selection
 			foreach(Thing t in selection)
 			{
 				// Calculate distance and check if closer than previous find
-				float d = t.DistanceToSq(pos);
+				double d = t.DistanceToSq(pos);
 				if(d < distance)
 				{
 					// This one is closer
@@ -3507,7 +3507,7 @@ namespace CodeImp.DoomBuilder.Map
 		public static Thing NearestThing(ICollection<Thing> selection, Thing thing) 
 		{
 			Thing closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 
 			// Go for all things in selection
 			foreach(Thing t in selection) 
@@ -3515,7 +3515,7 @@ namespace CodeImp.DoomBuilder.Map
 				if(t == thing) continue;
 
 				// Calculate distance and check if closer than previous find
-				float d = t.DistanceToSq(thing.Position);
+				double d = t.DistanceToSq(thing.Position);
 				if(d < distance) 
 				{
 					// This one is closer
@@ -3529,17 +3529,17 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		/// <summary>This finds the vertex closest to the specified position.</summary>
-		public static Vertex NearestVertexSquareRange(ICollection<Vertex> selection, Vector2D pos, float maxrange)
+		public static Vertex NearestVertexSquareRange(ICollection<Vertex> selection, Vector2D pos, double maxrange)
 		{
-			RectangleF range = RectangleF.FromLTRB(pos.x - maxrange, pos.y - maxrange, pos.x + maxrange, pos.y + maxrange);
+			RectangleF range = RectangleF.FromLTRB((float)(pos.x - maxrange), (float)(pos.y - maxrange), (float)(pos.x + maxrange), (float)(pos.y + maxrange));
 			Vertex closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 
 			// Go for all vertices in selection
 			foreach(Vertex v in selection)
 			{
-				float px = v.Position.x;
-				float py = v.Position.y;
+				double px = v.Position.x;
+				double py = v.Position.y;
 				
 				//mxd. Within range?
 				if((v.Position.x < range.Left) || (v.Position.x > range.Right) 
@@ -3547,7 +3547,7 @@ namespace CodeImp.DoomBuilder.Map
 					continue;
 
 				// Close than previous find?
-				float d = Math.Abs(px - pos.x) + Math.Abs(py - pos.y);
+				double d = Math.Abs(px - pos.x) + Math.Abs(py - pos.y);
 				if(d < distance) 
 				{
 					// This one is closer
@@ -3563,19 +3563,19 @@ namespace CodeImp.DoomBuilder.Map
 		/// <summary>This finds the thing closest to the specified position.</summary>
 		public static Thing NearestThingSquareRange(ICollection<Thing> selection, Vector2D pos, float maxrange)
 		{
-			RectangleF range = RectangleF.FromLTRB(pos.x - maxrange, pos.y - maxrange, pos.x + maxrange, pos.y + maxrange);
+			RectangleF range = RectangleF.FromLTRB((float)(pos.x - maxrange), (float)(pos.y - maxrange), (float)(pos.x + maxrange), (float)(pos.y + maxrange));
 			Thing closest = null;
-			float distance = float.MaxValue;
-			float size = float.MaxValue; //mxd
+			double distance = double.MaxValue;
+			double size = double.MaxValue; //mxd
 
 			// Go for all things in selection
 			foreach(Thing t in selection)
 			{
-				float px = t.Position.x;
-				float py = t.Position.y;
+				double px = t.Position.x;
+				double py = t.Position.y;
 
 				//mxd. Determine displayed size
-				float ts;
+				double ts;
 				if(t.FixedSize && General.Map.Renderer2D.Scale > 1.0f)
 					ts = t.Size / General.Map.Renderer2D.Scale;
 				else if(General.Settings.FixedThingsScale && t.Size * General.Map.Renderer2D.Scale > Renderer2D.FIXED_THING_SIZE)
@@ -3587,7 +3587,7 @@ namespace CodeImp.DoomBuilder.Map
 				if(px < range.Left - ts || px > range.Right + ts || py < range.Top - ts || py > range.Bottom + ts) continue;
 
 				// Closer than previous find? mxd. Or smaller when distance is the same?
-				float d = Math.Abs(px - pos.x) + Math.Abs(py - pos.y);
+				double d = Math.Abs(px - pos.x) + Math.Abs(py - pos.y);
 				if(d < distance || (d == distance && ts < size))
 				{
 					// This one is closer

@@ -88,12 +88,12 @@ namespace CodeImp.DoomBuilder.Windows
 			//UDMF slopes. Angles are in degrees
 			public readonly Vector3D FloorSlope;
 			public readonly Vector3D CeilSlope;
-			public readonly float FloorSlopeAngleXY;
-			public readonly float FloorSlopeAngleZ;
-			public readonly float FloorSlopeOffset;
-			public readonly float CeilSlopeAngleXY;
-			public readonly float CeilSlopeAngleZ;
-			public readonly float CeilSlopeOffset;
+			public readonly double FloorSlopeAngleXY;
+			public readonly double FloorSlopeAngleZ;
+			public readonly double FloorSlopeOffset;
+			public readonly double CeilSlopeAngleXY;
+			public readonly double CeilSlopeAngleZ;
+			public readonly double CeilSlopeOffset;
 
             //[ZZ] UDMF Doom64 sector colors
             public readonly int D64ColorCeiling;
@@ -143,8 +143,8 @@ namespace CodeImp.DoomBuilder.Windows
 				if(s.FloorSlope.GetLengthSq() > 0)
 				{
 					FloorSlopeAngleXY = General.ClampAngle((float)Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleXY()) - 180, 1));
-					FloorSlopeAngleZ = -(float)Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleZ()) - 90, 1);
-					FloorSlopeOffset = (float.IsNaN(s.FloorSlopeOffset) ? s.FloorHeight : s.FloorSlopeOffset);
+					FloorSlopeAngleZ = -Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleZ()) - 90, 1);
+					FloorSlopeOffset = (double.IsNaN(s.FloorSlopeOffset) ? s.FloorHeight : s.FloorSlopeOffset);
 				} 
 				else 
 				{
@@ -157,8 +157,8 @@ namespace CodeImp.DoomBuilder.Windows
 				if(s.CeilSlope.GetLengthSq() > 0)
 				{
 					CeilSlopeAngleXY = General.ClampAngle((float)Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleXY()) - 180, 1));
-					CeilSlopeAngleZ = -(float)Math.Round(270 - Angle2D.RadToDeg(s.CeilSlope.GetAngleZ()), 1);
-					CeilSlopeOffset = (float.IsNaN(s.CeilSlopeOffset) ? s.CeilHeight : s.CeilSlopeOffset);
+					CeilSlopeAngleZ = -Math.Round(270 - Angle2D.RadToDeg(s.CeilSlope.GetAngleZ()), 1);
+					CeilSlopeOffset = (double.IsNaN(s.CeilSlopeOffset) ? s.CeilHeight : s.CeilSlopeOffset);
 				} 
 				else 
 				{
@@ -1766,8 +1766,8 @@ namespace CodeImp.DoomBuilder.Windows
 			//Set or restore values
 			foreach(Sector s in sectors) 
 			{
-				float anglexy = General.ClampAngle(ceilingslopecontrol.GetAngleXY(sectorprops[s].CeilSlopeAngleXY) + 270);
-				float anglez = -(ceilingslopecontrol.GetAngleZ(sectorprops[s].CeilSlopeAngleZ) + 90);
+				double anglexy = General.ClampAngle(ceilingslopecontrol.GetAngleXY(sectorprops[s].CeilSlopeAngleXY) + 270);
+				double anglez = -(ceilingslopecontrol.GetAngleZ(sectorprops[s].CeilSlopeAngleZ) + 90);
 
 				float virtualoffset = GetInitialVirtualSlopeOffset(s, ceilingslopecontrol.PivotMode, false);
 				Vector3D center = GetSectorCenter(s, ceilingslopecontrol.GetOffset(virtualoffset), ceilingslopecontrol.PivotMode);

@@ -26,42 +26,42 @@ namespace CodeImp.DoomBuilder.Geometry
 	{
 		#region ================== Constants
 
-		public const float PI = (float)Math.PI;
-		public const float PIHALF = (float)Math.PI * 0.5f;
-		public const float PI2 = (float)Math.PI * 2f;
-		public const float PIDEG = 57.295779513082320876798154814105f;
-		public const float SQRT2 = 1.4142135623730950488016887242097f;
+		public const double PI = Math.PI;
+		public const double PIHALF = Math.PI * 0.5f;
+		public const double PI2 = Math.PI * 2f;
+		public const double PIDEG = 57.295779513082320876798154814105f;
+		public const double SQRT2 = 1.4142135623730950488016887242097f;
 		
 		#endregion
 
 		#region ================== Methods
 
 		// This converts doom angle to real angle
-		public static float DoomToReal(int doomangle)
+		public static double DoomToReal(int doomangle)
 		{
-			return (float)Math.Round(Normalized(DegToRad((doomangle + 90))), 4);
+			return Math.Round(Normalized(DegToRad((doomangle + 90))), 4);
 		}
 
 		// This converts real angle to doom angle
-		public static int RealToDoom(float realangle)
+		public static int RealToDoom(double realangle)
 		{
 			return (int)Math.Round(RadToDeg(Normalized(realangle - PIHALF)));
 		}
 
 		// This converts degrees to radians
-		public static float DegToRad(float deg)
+		public static double DegToRad(double deg)
 		{
 			return deg / PIDEG;
 		}
 
 		// This converts radians to degrees
-		public static float RadToDeg(float rad)
+		public static double RadToDeg(double rad)
 		{
 			return rad * PIDEG;
 		}
 
 		// This normalizes an angle
-		public static float Normalized(float a)
+		public static double Normalized(double a)
 		{
 			while(a < 0f) a += PI2;
 			while(a >= PI2) a -= PI2;
@@ -69,10 +69,10 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This returns the difference between two angles
-		public static float Difference(float a, float b)
+		public static double Difference(double a, double b)
 		{
 			// Calculate delta angle
-			float d = Normalized(a) - Normalized(b);
+			double d = Normalized(a) - Normalized(b);
 
 			// Make corrections for zero barrier
 			if(d < 0f) d += PI2;
@@ -84,7 +84,7 @@ namespace CodeImp.DoomBuilder.Geometry
 
 		//mxd. Slade 3 MathStuff::angle2DRad ripoff...
 		//Returns the angle between the 2d points [p1], [p2] and [p3]
-		public static float GetAngle(Vector2D p1, Vector2D p2, Vector2D p3)
+		public static double GetAngle(Vector2D p1, Vector2D p2, Vector2D p3)
 		{
 			// From: http://stackoverflow.com/questions/3486172/angle-between-3-points
 			// modified not to bother converting to degrees
@@ -92,27 +92,27 @@ namespace CodeImp.DoomBuilder.Geometry
 			Vector2D cb = new Vector2D(p2.x - p3.x, p2.y - p3.y);
 
 			// dot product
-			float dot = (ab.x * cb.x + ab.y * cb.y);
+			double dot = (ab.x * cb.x + ab.y * cb.y);
 
 			// length square of both vectors
-			float abSqr = ab.x * ab.x + ab.y * ab.y;
-			float cbSqr = cb.x * cb.x + cb.y * cb.y;
+			double abSqr = ab.x * ab.x + ab.y * ab.y;
+			double cbSqr = cb.x * cb.x + cb.y * cb.y;
 
 			// square of cosine of the needed angle
-			float cosSqr = dot * dot / abSqr / cbSqr;
+			double cosSqr = dot * dot / abSqr / cbSqr;
 
 			// this is a known trigonometric equality:
 			// cos(alpha * 2) = [ cos(alpha) ]^2 * 2 - 1
-			float cos2 = 2.0f * cosSqr - 1.0f;
+			double cos2 = 2.0f * cosSqr - 1.0f;
 
 			// Here's the only invocation of the heavy function.
 			// It's a good idea to check explicitly if cos2 is within [-1 .. 1] range
-			float alpha2 =
+			double alpha2 =
 				(cos2 <= -1) ? PI :
 				(cos2 >= 1) ? 0.0f :
-				(float)Math.Acos(cos2);
+				Math.Acos(cos2);
 
-			float rs = alpha2 * 0.5f;
+			double rs = alpha2 * 0.5f;
 
 			// Now revolve the ambiguities.
 			// 1. If dot product of two vectors is negative - the angle is definitely
@@ -123,7 +123,7 @@ namespace CodeImp.DoomBuilder.Geometry
 			if(dot < 0) rs = PI - rs;
 
 			// 2. Determine the sign. For this we'll use the Determinant of two vectors.
-			float det = (ab.x * cb.y - ab.y * cb.x);
+			double det = (ab.x * cb.y - ab.y * cb.x);
 			if(det < 0) rs = (2.0f * PI) - rs;
 
 			return rs;

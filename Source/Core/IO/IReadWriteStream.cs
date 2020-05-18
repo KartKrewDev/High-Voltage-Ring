@@ -41,6 +41,7 @@ namespace CodeImp.DoomBuilder.IO
 		void rwUShort(ref ushort v);
 		void rwULong(ref ulong v);
 		void rwFloat(ref float v);
+		void rwDouble(ref double v);
 		void rwVector2D(ref Vector2D v);
 		void rwVector3D(ref Vector3D v);
 		void rwBool(ref bool v);
@@ -55,6 +56,7 @@ namespace CodeImp.DoomBuilder.IO
 		void wUShort(ushort v);
 		void wULong(ulong v);
 		void wFloat(float v);
+		void wDouble(double v);
 		void wVector2D(Vector2D v);
 		void wVector3D(Vector3D v);
 		void wBool(bool v);
@@ -69,6 +71,7 @@ namespace CodeImp.DoomBuilder.IO
 		void rUShort(out ushort v);
 		void rULong(out ulong v);
 		void rFloat(out float v);
+		void rDouble(out double v);
 		void rVector2D(out Vector2D v);
 		void rVector3D(out Vector3D v);
 		void rBool(out bool v);

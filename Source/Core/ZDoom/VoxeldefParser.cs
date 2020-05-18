@@ -78,7 +78,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 							if(!string.IsNullOrEmpty(modelName) && spriteNames.Count > 0) 
 							{
 								mde.ModelNames.Add(modelName);
-								mde.SetTransform(Matrix.RotationZ(Angle2D.DegToRad(mde.AngleOffset)), Matrix.Identity, new Vector3f(scale));
+								mde.SetTransform(Matrix.RotationZ((float)Angle2D.DegToRad(mde.AngleOffset)), Matrix.Identity, new Vector3f(scale));
 
 								foreach(string s in spriteNames)
 								{

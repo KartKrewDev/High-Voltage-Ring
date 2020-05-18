@@ -73,17 +73,17 @@ namespace CodeImp.DoomBuilder.Controls
 
 		#region ================== Property accessors
 
-		public float GetAngleXY(float defaultvalue) 
+		public double GetAngleXY(double defaultvalue) 
 		{
 			return sloperotation.GetResultFloat(defaultvalue);
 		}
 
-		public float GetAngleZ(float defaultvalue) 
+		public double GetAngleZ(double defaultvalue) 
 		{
 			return slopeangle.GetResultFloat(defaultvalue);
 		}
 
-		public float GetOffset(float defaultvalue) 
+		public double GetOffset(double defaultvalue) 
 		{
 			return slopeoffset.GetResultFloat(defaultvalue);
 		}

@@ -688,7 +688,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This makes a Vector3 from Vector3D
 		public static Vector3f V3(Vector3D v3d)
 		{
-			return new Vector3f(v3d.x, v3d.y, v3d.z);
+			return new Vector3f((float)v3d.x, (float)v3d.y, (float)v3d.z);
 		}
 
 		// This makes a Vector3D from Vector3
@@ -700,7 +700,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This makes a Vector2 from Vector2D
 		public static Vector2f V2(Vector2D v2d)
 		{
-			return new Vector2f(v2d.x, v2d.y);
+			return new Vector2f((float)v2d.x, (float)v2d.y);
 		}
 
 		// This makes a Vector2D from Vector2

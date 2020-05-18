@@ -124,6 +124,8 @@ namespace CodeImp.DoomBuilder.IO
 
 		public void rwFloat(ref float v) { v = reader.ReadSingle(); }
 
+		public void rwDouble(ref double v) { v = reader.ReadDouble(); }
+
 		public void rwBool(ref bool v) { v = reader.ReadBoolean(); }
 
 		public void rwVector2D(ref Vector2D v)
@@ -157,6 +159,8 @@ namespace CodeImp.DoomBuilder.IO
 		public void wULong(ulong v) { General.Fail("Write-only is not supported on deserialization stream. Consider passing the element by reference for bidirectional support."); }
 
 		public void wFloat(float v) { General.Fail("Write-only is not supported on deserialization stream. Consider passing the element by reference for bidirectional support."); }
+
+		public void wDouble(double v) { General.Fail("Write-only is not supported on deserialization stream. Consider passing the element by reference for bidirectional support."); }
 
 		public void wBool(bool v) { General.Fail("Write-only is not supported on deserialization stream. Consider passing the element by reference for bidirectional support."); }
 
@@ -192,6 +196,8 @@ namespace CodeImp.DoomBuilder.IO
 		public void rULong(out ulong v) { v = reader.ReadUInt64(); }
 
 		public void rFloat(out float v) { v = reader.ReadSingle(); }
+
+		public void rDouble(out double v) { v = reader.ReadDouble(); }
 
 		public void rBool(out bool v) { v = reader.ReadBoolean(); }
 

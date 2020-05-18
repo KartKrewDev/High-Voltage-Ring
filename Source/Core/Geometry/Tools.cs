@@ -295,10 +295,10 @@ namespace CodeImp.DoomBuilder.Geometry
 						//mxd. Intersection test is bounded, so extend end position x to the right map boundary
 						Line2D testline = new Line2D(foundv.Position, new Vector2D(General.Map.Config.RightBoundary, foundv.Position.y));
 						scanline = null;
-						float foundu = float.MaxValue;
+						double foundu = double.MaxValue;
 
-						float px = foundv.Position.x; //mxd
-						float py = foundv.Position.y; //mxd
+						double px = foundv.Position.x; //mxd
+						double py = foundv.Position.y; //mxd
 
 						foreach(Linedef ld in General.Map.Map.Linedefs) 
 						{
@@ -308,11 +308,11 @@ namespace CodeImp.DoomBuilder.Geometry
 								// Line intersecting the y axis?
 								if((ld.Start.Position.y >= py && ld.End.Position.y <= py) 
 									|| (ld.Start.Position.y <= py && ld.End.Position.y >= py)) //mxd
-								{ 
+								{
 									// Check if this linedef intersects our test line at a closer range
-									float thisu;
+									double thisu;
 									ld.Line.GetIntersection(testline, out thisu);
-									if(!float.IsNaN(thisu) && (thisu > 0.00001f))
+									if(!double.IsNaN(thisu) && (thisu > 0.00001f))
 									{
 										if(thisu < foundu)
 										{
@@ -1026,7 +1026,7 @@ namespace CodeImp.DoomBuilder.Geometry
 									if(processed.Contains(side.Line)) continue;
 									if(side.Line == ld) continue;
 
-									float u;
+									double u;
 									if(side.Line.Line.GetIntersection(measureline, out u)) 
 									{
 										if(float.IsNaN(u) || (u <= 0.0f) || (u >= 1.0f)) continue;

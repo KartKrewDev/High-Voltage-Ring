@@ -49,21 +49,21 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 		
 		// Constructor
-		public Line2D(Vector2D v1, float x2, float y2)
+		public Line2D(Vector2D v1, double x2, double y2)
 		{
 			this.v1 = v1;
 			this.v2 = new Vector2D(x2, y2);
 		}
 
 		// Constructor
-		public Line2D(float x1, float y1, Vector2D v2)
+		public Line2D(double x1, double y1, Vector2D v2)
 		{
 			this.v1 = new Vector2D(x1, y1);
 			this.v2 = v2;
 		}
 		
 		// Constructor
-		public Line2D(float x1, float y1, float x2, float y2)
+		public Line2D(double x1, double y1, double x2, double y2)
 		{
 			this.v1 = new Vector2D(x1, y1);
 			this.v2 = new Vector2D(x2, y2);
@@ -81,21 +81,21 @@ namespace CodeImp.DoomBuilder.Geometry
 		#region ================== Statics
 
 		// This calculates the length
-		public static float GetLength(float dx, float dy)
+		public static double GetLength(double dx, double dy)
 		{
 			// Calculate and return the length
-			return (float)Math.Sqrt(GetLengthSq(dx, dy));
+			return Math.Sqrt(GetLengthSq(dx, dy));
 		}
 
 		// This calculates the square of the length
-		public static float GetLengthSq(float dx, float dy)
+		public static double GetLengthSq(double dx, double dy)
 		{
 			// Calculate and return the length
 			return dx * dx + dy * dy;
 		}
 
 		// This calculates the normal of a line
-		public static Vector2D GetNormal(float dx, float dy)
+		public static Vector2D GetNormal(double dx, double dy)
 		{
 			return new Vector2D(dx, dy).GetNormal();
 		}
@@ -107,48 +107,48 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This tests if the line intersects with the given line coordinates
-		public static bool GetIntersection(Vector2D v1, Vector2D v2, float x3, float y3, float x4, float y4)
+		public static bool GetIntersection(Vector2D v1, Vector2D v2, double x3, double y3, double x4, double y4)
 		{
-			float u_ray, u_line;
+			double u_ray, u_line;
 			return GetIntersection(v1, v2, x3, y3, x4, y4, out u_ray, out u_line);
 		}
 
 		// This tests if the line intersects with the given line coordinates
-		public static bool GetIntersection(Vector2D v1, Vector2D v2, float x3, float y3, float x4, float y4, out float u_ray)
+		public static bool GetIntersection(Vector2D v1, Vector2D v2, double x3, double y3, double x4, double y4, out double u_ray)
 		{
-			float u_line;
+			double u_line;
 			return GetIntersection(v1, v2, x3, y3, x4, y4, out u_ray, out u_line, true);
 		}
 
 		//mxd. This tests if the line intersects with the given line coordinates
-		public static bool GetIntersection(Vector2D v1, Vector2D v2, float x3, float y3, float x4, float y4, out float u_ray, bool bounded)
+		public static bool GetIntersection(Vector2D v1, Vector2D v2, double x3, double y3, double x4, double y4, out double u_ray, bool bounded)
 		{
-			float u_line;
+			double u_line;
 			return GetIntersection(v1, v2, x3, y3, x4, y4, out u_ray, out u_line, bounded);
 		}
 
 		//mxd. Gets intersection point between given lines
 		public static Vector2D GetIntersectionPoint(Line2D line1, Line2D line2, bool bounded)
 		{
-			float u_ray, u_line;
+			double u_ray, u_line;
 			if(GetIntersection(line1.v1, line1.v2, line2.v1.x, line2.v1.y, line2.v2.x, line2.v2.y, out u_ray, out u_line, bounded))
 				return GetCoordinatesAt(line2.v1, line2.v2, u_ray);
 
 			// No dice...
-			return new Vector2D(float.NaN, float.NaN);
+			return new Vector2D(double.NaN, double.NaN);
 		}
 
 		// This tests if the line intersects with the given line coordinates
-		public static bool GetIntersection(Vector2D v1, Vector2D v2, float x3, float y3, float x4, float y4, out float u_ray, out float u_line)
+		public static bool GetIntersection(Vector2D v1, Vector2D v2, double x3, double y3, double x4, double y4, out double u_ray, out double u_line)
 		{
 			return GetIntersection(v1, v2, x3, y3, x4, y4, out u_ray, out u_line, true);
 		}
 
 		// This tests if the line intersects with the given line coordinates
-		public static bool GetIntersection(Vector2D v1, Vector2D v2, float x3, float y3, float x4, float y4, out float u_ray, out float u_line, bool bounded)
+		public static bool GetIntersection(Vector2D v1, Vector2D v2, double x3, double y3, double x4, double y4, out double u_ray, out double u_line, bool bounded)
 		{
 			// Calculate divider
-			float div = (y4 - y3) * (v2.x - v1.x) - (x4 - x3) * (v2.y - v1.y);
+			double div = (y4 - y3) * (v2.x - v1.x) - (x4 - x3) * (v2.y - v1.y);
 
 			// Can this be tested?
 			if(div != 0.0f)
@@ -165,30 +165,30 @@ namespace CodeImp.DoomBuilder.Geometry
 			}
 
 			// Unable to detect intersection
-			u_line = float.NaN;
-			u_ray = float.NaN;
+			u_line = double.NaN;
+			u_ray = double.NaN;
 			return false;
 		}
 
 		// This tests on which side of the line the given coordinates are
 		// returns < 0 for front (right) side, > 0 for back (left) side and 0 if on the line
-		public static float GetSideOfLine(Vector2D v1, Vector2D v2, Vector2D p)
+		public static double GetSideOfLine(Vector2D v1, Vector2D v2, Vector2D p)
 		{
 			// Calculate and return side information
 			return (p.y - v1.y) * (v2.x - v1.x) - (p.x - v1.x) * (v2.y - v1.y);
 		}
 
 		// This returns the shortest distance from given coordinates to line
-		public static float GetDistanceToLine(Vector2D v1, Vector2D v2, Vector2D p, bool bounded)
+		public static double GetDistanceToLine(Vector2D v1, Vector2D v2, Vector2D p, bool bounded)
 		{
-			return (float)Math.Sqrt(GetDistanceToLineSq(v1, v2, p, bounded));
+			return Math.Sqrt(GetDistanceToLineSq(v1, v2, p, bounded));
 		}
 
 		// This returns the shortest distance from given coordinates to line
-		public static float GetDistanceToLineSq(Vector2D v1, Vector2D v2, Vector2D p, bool bounded)
+		public static double GetDistanceToLineSq(Vector2D v1, Vector2D v2, Vector2D p, bool bounded)
 		{
 			// Calculate intersection offset
-			float u = ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) / GetLengthSq(v2.x - v1.x, v2.y - v1.y);
+			double u = ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) / GetLengthSq(v2.x - v1.x, v2.y - v1.y);
 
 			if(bounded)
 			{
@@ -207,26 +207,26 @@ namespace CodeImp.DoomBuilder.Geometry
 
 			// Return distance between intersection and point
 			// which is the shortest distance to the line
-			float ldx = p.x - i.x;
-			float ldy = p.y - i.y;
+			double ldx = p.x - i.x;
+			double ldy = p.y - i.y;
 			return ldx * ldx + ldy * ldy;
 		}
 
 		// This returns the offset coordinates on the line nearest to the given coordinates
-		public static float GetNearestOnLine(Vector2D v1, Vector2D v2, Vector2D p)
+		public static double GetNearestOnLine(Vector2D v1, Vector2D v2, Vector2D p)
 		{
 			// Calculate and return intersection offset
 			return ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) / GetLengthSq(v2.x - v1.x, v2.y - v1.y);
 		}
 
 		// This returns the coordinates at a specific position on the line
-		public static Vector2D GetCoordinatesAt(Vector2D v1, Vector2D v2, float u)
+		public static Vector2D GetCoordinatesAt(Vector2D v1, Vector2D v2, double u)
 		{
 			// Calculate and return intersection offset
 			return new Vector2D(v1.x + u * (v2.x - v1.x), v1.y + u * (v2.y - v1.y));
 		}
 
-        private static bool IsEqualFloat(float a, float b)
+        private static bool IsEqualFloat(double a, double b)
         {
             return Math.Abs(a - b) < 0.0001f;
         }
@@ -234,16 +234,16 @@ namespace CodeImp.DoomBuilder.Geometry
         // Some random self-written aglrithm instead of Cohen-Sutherland algorithm which used to hang up randomly
         public static Line2D ClipToRectangle(Line2D line, RectangleF rect, out bool intersects)
 		{
-            float rateXY = 0f;
+            double rateXY = 0f;
             if (line.v2.y != line.v1.y)
             {
-                float dx = line.v2.x - line.v1.x;
-                float dy = line.v2.y - line.v1.y;
+                double dx = line.v2.x - line.v1.x;
+                double dy = line.v2.y - line.v1.y;
                 rateXY = dx / dy;
             }
 
-            float x1 = line.v1.x, y1 = line.v1.y;
-            float x2 = line.v2.x, y2 = line.v2.y;
+            double x1 = line.v1.x, y1 = line.v1.y;
+            double x2 = line.v2.x, y2 = line.v2.y;
 
             for (int i = 0; i < 2; i++)
             {
@@ -316,17 +316,17 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This calculates the angle
-		public float GetAngle()
+		public double GetAngle()
 		{
 			// Calculate and return the angle
 			Vector2D d = GetDelta();
-			return -(float)Math.Atan2(-d.y, d.x) + Angle2D.PIHALF;
+			return -Math.Atan2(-d.y, d.x) + Angle2D.PIHALF;
 		}
 		
 		public Vector2D GetDelta() { return v2 - v1; }
 		
-		public float GetLength() { return Line2D.GetLength(v2.x - v1.x, v2.y - v1.y); }
-		public float GetLengthSq() { return Line2D.GetLengthSq(v2.x - v1.x, v2.y - v1.y); }
+		public double GetLength() { return Line2D.GetLength(v2.x - v1.x, v2.y - v1.y); }
+		public double GetLengthSq() { return Line2D.GetLengthSq(v2.x - v1.x, v2.y - v1.y); }
 
 		// Output
 		public override string ToString()
@@ -334,22 +334,22 @@ namespace CodeImp.DoomBuilder.Geometry
 			return "(" + v1 + ") - (" + v2 + ")";
 		}
 		
-		public bool GetIntersection(float x3, float y3, float x4, float y4)
+		public bool GetIntersection(double x3, double y3, double x4, double y4)
 		{
 			return Line2D.GetIntersection(v1, v2, x3, y3, x4, y4);
 		}
 
-		public bool GetIntersection(float x3, float y3, float x4, float y4, out float u_ray)
+		public bool GetIntersection(double x3, double y3, double x4, double y4, out double u_ray)
 		{
 			return Line2D.GetIntersection(v1, v2, x3, y3, x4, y4, out u_ray, true);
 		}
 
-		public bool GetIntersection(float x3, float y3, float x4, float y4, out float u_ray, bool bounded)
+		public bool GetIntersection(double x3, double y3, double x4, double y4, out double u_ray, bool bounded)
 		{
 			return Line2D.GetIntersection(v1, v2, x3, y3, x4, y4, out u_ray, bounded);
 		}
 
-		public bool GetIntersection(float x3, float y3, float x4, float y4, out float u_ray, out float u_line)
+		public bool GetIntersection(double x3, double y3, double x4, double y4, out double u_ray, out double u_line)
 		{
 			return Line2D.GetIntersection(v1, v2, x3, y3, x4, y4, out u_ray, out u_line);
 		}
@@ -359,54 +359,54 @@ namespace CodeImp.DoomBuilder.Geometry
 			return Line2D.GetIntersection(v1, v2, ray.v1.x, ray.v1.y, ray.v2.x, ray.v2.y);
 		}
 
-		public bool GetIntersection(Line2D ray, out float u_ray)
+		public bool GetIntersection(Line2D ray, out double u_ray)
 		{
 			return Line2D.GetIntersection(v1, v2, ray.v1.x, ray.v1.y, ray.v2.x, ray.v2.y, out u_ray, true);
 		}
 
-		public bool GetIntersection(Line2D ray, out float u_ray, bool bounded)
+		public bool GetIntersection(Line2D ray, out double u_ray, bool bounded)
 		{
 			return Line2D.GetIntersection(v1, v2, ray.v1.x, ray.v1.y, ray.v2.x, ray.v2.y, out u_ray, bounded);
 		}
 
-		public bool GetIntersection(Line2D ray, out float u_ray, out float u_line)
+		public bool GetIntersection(Line2D ray, out double u_ray, out double u_line)
 		{
 			return Line2D.GetIntersection(v1, v2, ray.v1.x, ray.v1.y, ray.v2.x, ray.v2.y, out u_ray, out u_line);
 		}
 
-		public float GetSideOfLine(Vector2D p)
+		public double GetSideOfLine(Vector2D p)
 		{
 			return Line2D.GetSideOfLine(v1, v2, p);
 		}
 
-		public float GetDistanceToLine(Vector2D p, bool bounded)
+		public double GetDistanceToLine(Vector2D p, bool bounded)
 		{
 			return Line2D.GetDistanceToLine(v1, v2, p, bounded);
 		}
 
-		public float GetDistanceToLineSq(Vector2D p, bool bounded)
+		public double GetDistanceToLineSq(Vector2D p, bool bounded)
 		{
 			return Line2D.GetDistanceToLineSq(v1, v2, p, bounded);
 		}
 
-		public float GetNearestOnLine(Vector2D p)
+		public double GetNearestOnLine(Vector2D p)
 		{
 			return Line2D.GetNearestOnLine(v1, v2, p);
 		}
 
-		public Vector2D GetCoordinatesAt(float u)
+		public Vector2D GetCoordinatesAt(double u)
 		{
 			return Line2D.GetCoordinatesAt(v1, v2, u);
 		}
 
-		public Line2D GetTransformed(float offsetx, float offsety, float scalex, float scaley)
+		public Line2D GetTransformed(double offsetx, double offsety, double scalex, double scaley)
 		{
 			return new Line2D(v1.GetTransformed(offsetx, offsety, scalex, scaley),
 				v2.GetTransformed(offsetx, offsety, scalex, scaley));
 		}
 
 		// Inverse Transform
-		public Line2D GetInvTransformed(float invoffsetx, float invoffsety, float invscalex, float invscaley)
+		public Line2D GetInvTransformed(double invoffsetx, double invoffsety, double invscalex, double invscaley)
 		{
 			return new Line2D(v1.GetInvTransformed(invoffsetx, invoffsety, invscalex, invscaley), 
 				v2.GetInvTransformed(invoffsetx, invoffsety, invscalex, invscaley));

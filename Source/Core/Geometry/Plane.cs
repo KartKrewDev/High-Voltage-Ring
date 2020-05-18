@@ -38,25 +38,25 @@ namespace CodeImp.DoomBuilder.Geometry
 		// D is the offset along the normal (negative)
 		//
 		private Vector3D normal;
-		private float offset;
+		private double offset;
 		
 		#endregion
 		
 		#region ================== Properties
 		
 		public Vector3D Normal { get { return normal; } }
-		public float Offset { get { return offset; } set { offset = value; } }
-		public float a { get { return normal.x; } }
-		public float b { get { return normal.y; } }
-		public float c { get { return normal.z; } }
-		public float d { get { return offset; } set { offset = value; } }
+		public double Offset { get { return offset; } set { offset = value; } }
+		public double a { get { return normal.x; } }
+		public double b { get { return normal.y; } }
+		public double c { get { return normal.z; } }
+		public double d { get { return offset; } set { offset = value; } }
 		
 		#endregion
 		
 		#region ================== Constructors
 		
 		/// <summary></summary>
-		public Plane(Vector3D normal, float offset)
+		public Plane(Vector3D normal, double offset)
 		{
 			#if DEBUG
 				if(!normal.IsNormalized())
@@ -89,13 +89,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		/// <summary></summary>
-		public Plane(Vector3D center, float anglexy, float anglez, bool up) //mxd
+		public Plane(Vector3D center, double anglexy, double anglez, bool up) //mxd
 		{
-			Vector2D point = new Vector2D(center.x + (float)Math.Cos(anglexy) * (float)Math.Sin(anglez), center.y + (float)Math.Sin(anglexy) * (float)Math.Sin(anglez));
+			Vector2D point = new Vector2D(center.x + Math.Cos(anglexy) * Math.Sin(anglez), center.y + Math.Sin(anglexy) * Math.Sin(anglez));
 			Vector2D perpendicular = new Line2D(center, point).GetPerpendicular();
 
-			Vector3D p2 = new Vector3D(point.x + perpendicular.x, point.y + perpendicular.y, center.z + (float)Math.Cos(anglez));
-			Vector3D p3 = new Vector3D(point.x - perpendicular.x, point.y - perpendicular.y, center.z + (float)Math.Cos(anglez));
+			Vector3D p2 = new Vector3D(point.x + perpendicular.x, point.y + perpendicular.y, center.z + Math.Cos(anglez));
+			Vector3D p3 = new Vector3D(point.x - perpendicular.x, point.y - perpendicular.y, center.z + Math.Cos(anglez));
 
 			this.normal = Vector3D.CrossProduct(p2 - center, p3 - center).GetNormal();
 
@@ -113,12 +113,12 @@ namespace CodeImp.DoomBuilder.Geometry
 		/// This tests for intersection with a line.
 		/// See http://local.wasp.uwa.edu.au/~pbourke/geometry/planeline/
 		/// </summary>
-		public bool GetIntersection(Vector3D from, Vector3D to, ref float u_ray)
+		public bool GetIntersection(Vector3D from, Vector3D to, ref double u_ray)
 		{
-			float w = Vector3D.DotProduct(normal, from - to);
+			double w = Vector3D.DotProduct(normal, from - to);
 			if(w != 0.0f)
 			{
-				float v = Vector3D.DotProduct(normal, from);
+				double v = Vector3D.DotProduct(normal, from);
 				u_ray = (offset + v) / w;
 				return true;
 			}
@@ -134,7 +134,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		/// Less than 0 means the point lies behind the plane
 		/// See http://mathworld.wolfram.com/Point-PlaneDistance.html
 		/// </summary>
-		public float Distance(Vector3D p)
+		public double Distance(Vector3D p)
 		{
 			return Vector3D.DotProduct(normal, p) + offset;
 		}
@@ -150,7 +150,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		/// <summary>
 		/// This returns Z on the plane at X, Y
 		/// </summary>
-		public float GetZ(Vector2D pos)
+		public double GetZ(Vector2D pos)
 		{
 			return (-offset - Vector2D.DotProduct(normal, pos)) / normal.z;
 		}
@@ -158,7 +158,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		/// <summary>
 		/// This returns Z on the plane at X, Y
 		/// </summary>
-		public float GetZ(float x, float y)
+		public double GetZ(double x, double y)
 		{
 			return (-offset - (normal.x * x + normal.y * y)) / normal.z;
 		}

@@ -27,23 +27,23 @@ namespace CodeImp.DoomBuilder.Geometry
 	{
 		#region ================== Constants
 
-		private const float TINY_VALUE = 0.0000000001f;
+		private const double TINY_VALUE = 0.0000000001f;
 		
 		#endregion
 
 		#region ================== Variables
 
 		// Coordinates
-		public float x;
-		public float y;
-		public float z;
+		public double x;
+		public double y;
+		public double z;
 
 		#endregion
 
 		#region ================== Constructors
 
 		// Constructor
-		public Vector3D(float x, float y, float z)
+		public Vector3D(double x, double y, double z)
 		{
 			this.x = x;
 			this.y = y;
@@ -59,7 +59,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// Constructor (mxd)
-		public Vector3D(Vector2D v, float z) 
+		public Vector3D(Vector2D v, double z) 
 		{
 			this.x = v.x;
 			this.y = v.y;
@@ -83,13 +83,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This adds to all dimensions
-		public static Vector3D operator +(Vector3D a, float b)
+		public static Vector3D operator +(Vector3D a, double b)
 		{
 			return new Vector3D(a.x + b, a.y + b, a.z + b);
 		}
 
 		// This adds to all dimensions
-		public static Vector3D operator +(float b, Vector3D a)
+		public static Vector3D operator +(double b, Vector3D a)
 		{
 			return new Vector3D(a.x + b, a.y + b, a.z + b);
 		}
@@ -101,13 +101,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This subtracts from all dimensions
-		public static Vector3D operator -(Vector3D a, float b)
+		public static Vector3D operator -(Vector3D a, double b)
 		{
 			return new Vector3D(a.x - b, a.y - b, a.z - b);
 		}
 
 		// This subtracts from all dimensions
-		public static Vector3D operator -(float a, Vector3D b)
+		public static Vector3D operator -(double a, Vector3D b)
 		{
 			return new Vector3D(a - b.x, a - b.y, a - b.z);
 		}
@@ -119,13 +119,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This scales a vector
-		public static Vector3D operator *(float s, Vector3D a)
+		public static Vector3D operator *(double s, Vector3D a)
 		{
 			return new Vector3D(a.x * s, a.y * s, a.z * s);
 		}
 
 		// This scales a vector
-		public static Vector3D operator *(Vector3D a, float s)
+		public static Vector3D operator *(Vector3D a, double s)
 		{
 			return new Vector3D(a.x * s, a.y * s, a.z * s);
 		}
@@ -137,13 +137,13 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 		
 		// This scales a vector
-		public static Vector3D operator /(float s, Vector3D a)
+		public static Vector3D operator /(double s, Vector3D a)
 		{
 			return new Vector3D(a.x / s, a.y / s, a.z / s);
 		}
 
 		// This scales a vector
-		public static Vector3D operator /(Vector3D a, float s)
+		public static Vector3D operator /(Vector3D a, double s)
 		{
 			return new Vector3D(a.x / s, a.y / s, a.z / s);
 		}
@@ -179,7 +179,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This calculates the dot product
-		public static float DotProduct(Vector3D a, Vector3D b)
+		public static double DotProduct(Vector3D a, Vector3D b)
 		{
 			// Calculate and return the dot product
 			return a.x * b.x + a.y * b.y + a.z * b.z;
@@ -190,7 +190,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		public static Vector3D Reflect(Vector3D v, Vector3D m)
 		{
 			// Get the dot product of v and m
-			float dp = Vector3D.DotProduct(v, m);
+			double dp = Vector3D.DotProduct(v, m);
 
 			// Make the reflected vector
 			Vector3D mv = new Vector3D();
@@ -210,26 +210,26 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This returns a vector from an angle
-		public static Vector3D FromAngleXY(float angle)
+		public static Vector3D FromAngleXY(double angle)
 		{
 			// Return vector from angle
-			return new Vector3D((float)Math.Sin(angle), -(float)Math.Cos(angle), 0f);
+			return new Vector3D(Math.Sin(angle), -Math.Cos(angle), 0f);
 		}
 		
 		// This returns a vector from an angle with a given legnth
-		public static Vector3D FromAngleXY(float angle, float length)
+		public static Vector3D FromAngleXY(double angle, double length)
 		{
 			// Return vector from angle
 			return FromAngleXY(angle) * length;
 		}
 
 		// This returns a vector from an angle with a given legnth
-		public static Vector3D FromAngleXYZ(float anglexy, float anglez)
+		public static Vector3D FromAngleXYZ(double anglexy, double anglez)
 		{
 			// Calculate x y and z
-			float ax = (float)Math.Sin(anglexy) * (float)Math.Cos(anglez);
-			float ay = -(float)Math.Cos(anglexy) * (float)Math.Cos(anglez);
-			float az = (float)Math.Sin(anglez);
+			double ax = Math.Sin(anglexy) * Math.Cos(anglez);
+			double ay = -Math.Cos(anglexy) * Math.Cos(anglez);
+			double az = Math.Sin(anglez);
 
 			// Return vector
 			return new Vector3D(ax, ay, az);
@@ -247,7 +247,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		//mxd
-		public static Vector3D Transform(float x, float y, float z, Matrix m)
+		public static Vector3D Transform(double x, double y, double z, Matrix m)
 		{
 			return new Vector3D
 			{
@@ -262,37 +262,37 @@ namespace CodeImp.DoomBuilder.Geometry
 		#region ================== Methods
 
 		// This calculates the angle
-		public float GetAngleXY()
+		public double GetAngleXY()
 		{
 			// Calculate and return the angle
-			return -(float)Math.Atan2(-y, x) + Angle2D.PIHALF;//mxd // (float)Math.PI * 0.5f;
+			return -Math.Atan2(-y, x) + Angle2D.PIHALF;//mxd // (float)Math.PI * 0.5f;
 		}
 
 		// This calculates the angle
-		public float GetAngleZ()
+		public double GetAngleZ()
 		{
 			Vector2D xy = new Vector2D(x, y);
 
 			// Calculate and return the angle
-			return (float)Math.Atan2(xy.GetLength(), z) + Angle2D.PIHALF;//mxd // (float)Math.PI * 0.5f;
+			return Math.Atan2(xy.GetLength(), z) + Angle2D.PIHALF;//mxd // (float)Math.PI * 0.5f;
 		}
 
 		// This calculates the length
-		public float GetLength()
+		public double GetLength()
 		{
 			// Calculate and return the length
-			return (float)Math.Sqrt(x * x + y * y + z * z);
+			return Math.Sqrt(x * x + y * y + z * z);
 		}
 
 		// This calculates the squared length
-		public float GetLengthSq()
+		public double GetLengthSq()
 		{
 			// Calculate and return the length
 			return x * x + y * y + z * z;
 		}
 
 		// This calculates the length
-		public float GetManhattanLength()
+		public double GetManhattanLength()
 		{
 			// Calculate and return the length
 			return Math.Abs(x) + Math.Abs(y) + Math.Abs(z);
@@ -301,11 +301,11 @@ namespace CodeImp.DoomBuilder.Geometry
 		// This normalizes the vector
 		public Vector3D GetNormal()
 		{
-			float lensq = this.GetLengthSq();
+			double lensq = this.GetLengthSq();
 			if(lensq > TINY_VALUE)
 			{
 				// Divide each element by the length
-				float mul = 1f / (float)Math.Sqrt(lensq);
+				double mul = 1f / Math.Sqrt(lensq);
 				return new Vector3D(x * mul, y * mul, z * mul);
 			}
 			else
@@ -316,14 +316,14 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This scales the vector
-		public Vector3D GetScaled(float s)
+		public Vector3D GetScaled(double s)
 		{
 			// Scale the vector
 			return new Vector3D(x * s, y * s, z * s);
 		}
 
 		// This changes the vector length
-		public Vector3D GetFixedLength(float l)
+		public Vector3D GetFixedLength(double l)
 		{
 			// Normalize, then scale
 			return this.GetNormal().GetScaled(l);
@@ -344,7 +344,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		// Checks if the Vector has valid values for x, y and z
 		public bool IsFinite()
 		{
-			return !float.IsNaN(x) && !float.IsNaN(y) && !float.IsNaN(z) && !float.IsInfinity(x) && !float.IsInfinity(y) && !float.IsInfinity(z);
+			return !double.IsNaN(x) && !double.IsNaN(y) && !double.IsNaN(z) && !double.IsInfinity(x) && !double.IsInfinity(y) && !double.IsInfinity(z);
 		}
 
 		//mxd. Addeed to make compiler a bit more happy...

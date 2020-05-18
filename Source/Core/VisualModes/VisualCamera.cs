@@ -14,10 +14,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 	{
 		#region ================== Constants
 
-		private const float ANGLE_FROM_MOUSE = 0.0001f;
-		public const float MAX_ANGLEZ_LOW = 91f / Angle2D.PIDEG;
-		public const float MAX_ANGLEZ_HIGH = (360f - 91f) / Angle2D.PIDEG;
-		public const float THING_Z_OFFSET = 41.0f;
+		private const double ANGLE_FROM_MOUSE = 0.0001f;
+		public const double MAX_ANGLEZ_LOW = 91f / Angle2D.PIDEG;
+		public const double MAX_ANGLEZ_HIGH = (360f - 91f) / Angle2D.PIDEG;
+		public const double THING_Z_OFFSET = 41.0f;
 		
 		#endregion
 
@@ -27,7 +27,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private Vector3D position;
 		private Vector3D target;
 		private Vector3D movemultiplier;
-		private float anglexy, anglez;
+		private double anglexy, anglez;
 		private Sector sector;
 		private float gravity = 1.0f; //mxd
 		
@@ -37,8 +37,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public Vector3D Position { get { return position; } set { position = value; } }
 		public Vector3D Target { get { return target; } }
-		public float AngleXY { get { return anglexy; } set { anglexy = value; } }
-		public float AngleZ { get { return anglez; } set { anglez = value; } }
+		public double AngleXY { get { return anglexy; } set { anglexy = value; } }
+		public double AngleZ { get { return anglez; } set { anglez = value; } }
 		public Sector Sector { get { return sector; } internal set { sector = value; UpdateGravity(); } } //mxd
 		public Vector3D MoveMultiplier { get { return movemultiplier; } set { movemultiplier = value; } }
 		public float Gravity { get { return gravity; } } //mxd
@@ -116,16 +116,16 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if(modething != null)
 			{
 				modething.DetermineSector();
-				float z = modething.Position.z;
+				double z = modething.Position.z;
 				if(modething.Sector != null) z += modething.Sector.FloorHeight;
 				
 				// Position camera here
 				Vector3D wantedposition = new Vector3D(modething.Position.x, modething.Position.y, z + THING_Z_OFFSET);
 				Vector3D delta = position - wantedposition;
 				if(delta.GetLength() > 1.0f) position = wantedposition;
-				
+
 				// Change angle
-				float wantedanglexy = modething.Angle + Angle2D.PI;
+				double wantedanglexy = modething.Angle + Angle2D.PI;
 				if(anglexy != wantedanglexy)
 				{
 					anglexy = wantedanglexy;

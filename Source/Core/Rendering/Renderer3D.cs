@@ -280,18 +280,18 @@ namespace CodeImp.DoomBuilder.Rendering
 			cameraposition = pos;
             Vector3D delta = lookat - pos;
             cameravector = delta.GetNormal();
-            float anglexy = delta.GetAngleXY();
-			float anglez = delta.GetAngleZ();
+			double anglexy = delta.GetAngleXY();
+			double anglez = delta.GetAngleZ();
 
 			// Create frustum
-			frustum = new ProjectedFrustum2D(pos, anglexy, anglez, PROJ_NEAR_PLANE,
-				General.Settings.ViewDistance, Angle2D.DegToRad(General.Settings.VisualFOV));
+			frustum = new ProjectedFrustum2D(pos, (float)anglexy, (float)anglez, PROJ_NEAR_PLANE,
+				General.Settings.ViewDistance, (float)Angle2D.DegToRad(General.Settings.VisualFOV));
 
             // Make the view matrix
             view3d = Matrix.LookAt(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3f(0f, 0f, 1f));
 			
 			// Make the billboard matrix
-			billboard = Matrix.RotationZ(anglexy + Angle2D.PI);
+			billboard = Matrix.RotationZ((float)(anglexy + Angle2D.PI));
 		}
 		
 		// This creates 2D view matrix
@@ -889,7 +889,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						//mxd. Set variables for fog rendering?
 						if(wantedshaderpass > ShaderName.world3d_p7)
 						{
-							graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
+							graphics.SetUniform(UniformName.campos, new Vector4f((float)cameraposition.x, (float)cameraposition.y, (float)cameraposition.z, g.FogFactor));
 							graphics.SetUniform(UniformName.sectorfogcolor, sector.Sector.FogColor);
 						}
                         
@@ -981,7 +981,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							if(wantedshaderpass > ShaderName.world3d_p7)
 							{
                                 graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
-                                graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                                graphics.SetUniform(UniformName.campos, new Vector4f((float)cameraposition.x, (float)cameraposition.y, (float)cameraposition.z, t.FogFactor));
 							}
 
 							// Set the colors to use
@@ -1199,7 +1199,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     // Set variables for fog rendering?
                     if (wantedshaderpass > ShaderName.world3d_p7 && g.FogFactor != fogfactor)
                     {
-                        graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, g.FogFactor));
+                        graphics.SetUniform(UniformName.campos, new Vector4f((float)cameraposition.x, (float)cameraposition.y, (float)cameraposition.z, g.FogFactor));
                         fogfactor = g.FogFactor;
                     }
 
@@ -1326,7 +1326,7 @@ namespace CodeImp.DoomBuilder.Rendering
                             graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                             if (t.FogFactor != fogfactor)
 							{
-                                graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                                graphics.SetUniform(UniformName.campos, new Vector4f((float)cameraposition.x, (float)cameraposition.y, (float)cameraposition.z, t.FogFactor));
 								fogfactor = t.FogFactor;
 							}
 						}
@@ -1381,7 +1381,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(t.Info.XYBillboard) // Apply billboarding?
 					{
 						return Matrix.Translation(0f, 0f, -t.LocalCenterZ)
-							* Matrix.RotationX(Angle2D.PI - General.Map.VisualCamera.AngleZ)
+							* Matrix.RotationX((float)(Angle2D.PI - General.Map.VisualCamera.AngleZ))
 							* Matrix.Translation(0f, 0f, t.LocalCenterZ)
 							* billboard
 							* t.Position;
@@ -1499,7 +1499,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				float sy = t.Thing.ScaleY * t.Thing.ActorScale.Height;
                 
 				Matrix modelscale = Matrix.Scaling(sx, sx, sy);
-				Matrix modelrotation = Matrix.RotationY(-t.Thing.RollRad) * Matrix.RotationX(-t.Thing.PitchRad) * Matrix.RotationZ(t.Thing.Angle);
+				Matrix modelrotation = Matrix.RotationY((float)-t.Thing.RollRad) * Matrix.RotationX((float)-t.Thing.PitchRad) * Matrix.RotationZ((float)t.Thing.Angle);
 
 				world = General.Map.Data.ModeldefEntries[t.Thing.Type].Transform * modelscale * modelrotation * t.Position;
                 graphics.SetUniform(UniformName.world, world);
@@ -1510,7 +1510,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     // this is not right...
                     graphics.SetUniform(UniformName.modelnormal, General.Map.Data.ModeldefEntries[t.Thing.Type].TransformRotation * modelrotation);
                     if (t.Thing.Sector != null) graphics.SetUniform(UniformName.sectorfogcolor, t.Thing.Sector.FogColor);
-                    graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, t.FogFactor));
+                    graphics.SetUniform(UniformName.campos, new Vector4f((float)cameraposition.x, (float)cameraposition.y, (float)cameraposition.z, t.FogFactor));
 				}
 
                 if (t.Thing.Sector != null)
@@ -1586,7 +1586,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Set render settings
 			graphics.SetShader(ShaderName.world3d_skybox);
             graphics.SetTexture(General.Map.Data.SkyBox);
-			graphics.SetUniform(UniformName.campos, new Vector4f(cameraposition.x, cameraposition.y, cameraposition.z, 0f));
+			graphics.SetUniform(UniformName.campos, new Vector4f((float)cameraposition.x, (float)cameraposition.y, (float)cameraposition.z, 0f));
 
 			foreach(VisualGeometry g in geo)
 			{

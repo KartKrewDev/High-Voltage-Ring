@@ -120,6 +120,8 @@ namespace CodeImp.DoomBuilder.IO
 
 		public void rwFloat(ref float v) { writer.Write(v); }
 
+		public void rwDouble(ref double v) { writer.Write(v); }
+
 		public void rwBool(ref bool v) { writer.Write(v); }
 
 		public void rwVector2D(ref Vector2D v)
@@ -162,6 +164,8 @@ namespace CodeImp.DoomBuilder.IO
 
 		public void wFloat(float v) { writer.Write(v); }
 
+		public void wDouble(double v) { writer.Write(v); }
+
 		public void wBool(bool v) { writer.Write(v); }
 
 		public void wVector2D(Vector2D v)
@@ -195,6 +199,8 @@ namespace CodeImp.DoomBuilder.IO
 		public void rULong(out ulong v) { v = 0; General.Fail("Read-only is not supported on serialization stream. Consider passing the element by reference for bidirectional support."); }
 
 		public void rFloat(out float v) { v = 0; General.Fail("Read-only is not supported on serialization stream. Consider passing the element by reference for bidirectional support."); }
+
+		public void rDouble(out double v) { v = 0; General.Fail("Read-only is not supported on serialization stream. Consider passing the element by reference for bidirectional support."); }
 
 		public void rBool(out bool v) { v = false; General.Fail("Read-only is not supported on serialization stream. Consider passing the element by reference for bidirectional support."); }
 

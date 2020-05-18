@@ -430,7 +430,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 		
 		// This changes view position
-		public void PositionView(float x, float y)
+		public void PositionView(double x, double y)
 		{
 			// Change position in world coordinates
 			offsetx = x;
@@ -466,8 +466,8 @@ namespace CodeImp.DoomBuilder.Rendering
             viewmatrix = Matrix.Scaling(2.0f / windowsize.Width, -2.0f / windowsize.Height, 1.0f) * Matrix.Translation(-1.0f, 1.0f, 0.0f);
 			Vector2D lt = DisplayToMap(new Vector2D(0.0f, 0.0f));
 			Vector2D rb = DisplayToMap(new Vector2D(windowsize.Width, windowsize.Height));
-			viewport = new RectangleF(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
-			yviewport = new RectangleF(lt.x, rb.y, rb.x - lt.x, lt.y - rb.y);
+			viewport = new RectangleF((float)lt.x, (float)lt.y, (float)(rb.x - lt.x), (float)(rb.y - lt.y));
+			yviewport = new RectangleF((float)lt.x, (float)rb.y, (float)(rb.x - lt.x), (float)(lt.y - rb.y));
 		}
 
 		// This sets the world matrix for transformation
@@ -886,8 +886,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			Vector2D dx = new Vector2D((float)Math.Cos(angle), (float)Math.Sin(angle));
 			Vector2D dy = new Vector2D((float)-Math.Sin(angle), (float)Math.Cos(angle));
 
-			float maxextent = Math.Max(mapsize.x, mapsize.y);
-			RectangleF bounds = new RectangleF(tlb.x, tlb.y, rbb.x - tlb.x, rbb.y - tlb.y);
+			double maxextent = Math.Max(mapsize.x, mapsize.y);
+			RectangleF bounds = new RectangleF((float)tlb.x, (float)tlb.y, (float)(rbb.x - tlb.x), (float)(rbb.y - tlb.y));
 			bounds.Intersect(new RectangleF(0, 0, windowsize.Width, windowsize.Height));
 
 			bool xminintersect = true, xmaxintersect = true, yminintersect = true, ymaxintersect = true;
@@ -1500,8 +1500,8 @@ namespace CodeImp.DoomBuilder.Rendering
 							float sy = t.ScaleY * t.ActorScale.Height;
 							
 							Matrix modelscale = Matrix.Scaling(sx, sx, sy);
-							Matrix rotation = Matrix.RotationY(-t.RollRad) * Matrix.RotationX(-t.PitchRad) * Matrix.RotationZ(t.Angle);
-							Matrix position = Matrix.Translation(screenpos.x, screenpos.y, 0.0f);
+							Matrix rotation = Matrix.RotationY((float)-t.RollRad) * Matrix.RotationX((float)-t.PitchRad) * Matrix.RotationZ((float)t.Angle);
+							Matrix position = Matrix.Translation((float)screenpos.x, (float)screenpos.y, 0.0f);
 							Matrix world = General.Map.Data.ModeldefEntries[t.Type].Transform * modelscale * rotation * viewscale * position;
 
 							SetThings2DTransformSettings(world);
@@ -2038,7 +2038,7 @@ namespace CodeImp.DoomBuilder.Rendering
             return new Vector2D(v.x, TransformY(v.y));
         }
 
-        private float TransformY(float y)
+        private double TransformY(double y)
         {
             return windowsize.Height - y;
         }
@@ -2054,9 +2054,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Transform vertex coordinates
 			Vector2D v1 = l.Start.Position.GetTransformed(translatex, translatey, scale, -scale);
 			Vector2D v2 = l.End.Position.GetTransformed(translatex, translatey, scale, -scale);
-			
+
 			//mxd. Should we bother?
-			float lengthsq = (v2 - v1).GetLengthSq();
+			double lengthsq = (v2 - v1).GetLengthSq();
 			if(lengthsq < minlinelength) return; //mxd
 
 			// Draw line. mxd: added 3d-floor indication
@@ -2069,8 +2069,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(lengthsq < minlinenormallength) return; //mxd
 
 			// Calculate normal indicator
-			float mx = (v2.x - v1.x) * 0.5f;
-			float my = (v2.y - v1.y) * 0.5f;
+			double mx = (v2.x - v1.x) * 0.5f;
+			double my = (v2.y - v1.y) * 0.5f;
 
 			// Draw normal indicator
 			plotter.DrawLineSolid((int)(v1.x + mx), TransformY((int)(v1.y + my)),
@@ -2089,7 +2089,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				Vector2D v2 = l.End.Position.GetTransformed(translatex, translatey, scale, -scale);
 
 				//mxd. Should we bother?
-				float lengthsq = (v2 - v1).GetLengthSq();
+				double lengthsq = (v2 - v1).GetLengthSq();
 				if(lengthsq < minlinelength) continue; //mxd
 
 				// Determine color
@@ -2105,8 +2105,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(lengthsq < minlinenormallength) continue; //mxd
 
 				// Calculate normal indicator
-				float mx = (v2.x - v1.x) * 0.5f;
-				float my = (v2.y - v1.y) * 0.5f;
+				double mx = (v2.x - v1.x) * 0.5f;
+				double my = (v2.y - v1.y) * 0.5f;
 
 				// Draw normal indicator
 				plotter.DrawLineSolid((int)(v1.x + mx), TransformY((int)(v1.y + my)),
