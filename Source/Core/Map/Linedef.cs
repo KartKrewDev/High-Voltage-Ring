@@ -57,11 +57,11 @@ namespace CodeImp.DoomBuilder.Map
 
 		// Cache
 		private bool updateneeded;
-		private float lengthsq;
-		private float lengthsqinv;
-		private float length;
-		private float lengthinv;
-		private float angle;
+		private double lengthsq;
+		private double lengthsqinv;
+		private double length;
+		private double lengthinv;
+		private double angle;
 		private RectangleF rect;
 		private bool impassableflag;
 		
@@ -96,10 +96,10 @@ namespace CodeImp.DoomBuilder.Map
 
 		public int Tag { get { return tags[0]; } set { BeforePropsChange(); tags[0] = value; if((value < General.Map.FormatInterface.MinTag) || (value > General.Map.FormatInterface.MaxTag)) throw new ArgumentOutOfRangeException("Tag", "Invalid tag number"); } } //mxd
 		public List<int> Tags { get { return tags; } set { BeforePropsChange(); tags = value; } } //mxd
-		public float LengthSq { get { return lengthsq; } }
-		public float Length { get { return length; } }
-		public float LengthInv { get { return lengthinv; } }
-		public float Angle { get { return angle; } }
+		public double LengthSq { get { return lengthsq; } }
+		public double Length { get { return length; } }
+		public double LengthInv { get { return lengthinv; } }
+		public double Angle { get { return angle; } }
 		public int AngleDeg { get { return (int)(angle * Angle2D.PIDEG); } }
 		public RectangleF Rect { get { return rect; } }
 		public int[] Args { get { return args; } }
@@ -392,11 +392,11 @@ namespace CodeImp.DoomBuilder.Map
 				if(length > 0f) lengthinv = 1f / length; else lengthinv = 1f / 0.0000000001f;
 				if(lengthsq > 0f) lengthsqinv = 1f / lengthsq; else lengthsqinv = 1f / 0.0000000001f;
 				angle = delta.GetAngle();
-				float l = Math.Min(start.Position.x, end.Position.x);
-				float t = Math.Min(start.Position.y, end.Position.y);
-				float r = Math.Max(start.Position.x, end.Position.x);
-				float b = Math.Max(start.Position.y, end.Position.y);
-				rect = new RectangleF(l, t, r - l, b - t);
+				double l = Math.Min(start.Position.x, end.Position.x);
+				double t = Math.Min(start.Position.y, end.Position.y);
+				double r = Math.Max(start.Position.x, end.Position.x);
+				double b = Math.Max(start.Position.y, end.Position.y);
+				rect = new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
 				
 				// Cached flags
 				impassableflag = IsFlagSet(General.Map.Config.ImpassableFlag);
@@ -903,17 +903,17 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		
-		public List<Vector2D> GetGridIntersections(float gridrotation, float gridoriginx = 0.0f, float gridoriginy = 0.0f) 
+		public List<Vector2D> GetGridIntersections(double gridrotation, double gridoriginx = 0.0f, double gridoriginy = 0.0f) 
 		{
 			return GetGridIntersections(new Vector2D(), gridrotation, gridoriginx, gridoriginy);
 		}
 
 		// This returns all points at which the line intersects with the grid
-		public List<Vector2D> GetGridIntersections(Vector2D gridoffset, float gridrotation = 0.0f, float gridoriginx = 0.0f, float gridoriginy = 0.0f)
+		public List<Vector2D> GetGridIntersections(Vector2D gridoffset, double gridrotation = 0.0f, double gridoriginx = 0.0f, double gridoriginy = 0.0f)
 		{
 			List<Vector2D> coords = new List<Vector2D>();
 			Vector2D v = new Vector2D();
-			float minx, maxx, miny, maxy;
+			double minx, maxx, miny, maxy;
 			bool reversex, reversey;
 
 			Vector2D v1 = start.Position;
@@ -953,28 +953,28 @@ namespace CodeImp.DoomBuilder.Map
 			}
 
 			// Go for all vertical grid lines in between line start and end
-			float gx = General.Map.Grid.GetHigher(minx) + gridoffset.x;
+			double gx = General.Map.Grid.GetHigher(minx) + gridoffset.x;
 			if(gx < maxx)
 			{
 				for(; gx < maxx; gx += General.Map.Grid.GridSizeF)
 				{
 					// Add intersection point at this x coordinate
-					float u = (gx - minx) / (maxx - minx);
+					double u = (gx - minx) / (maxx - minx);
 					if(reversex) u = 1.0f - u;
 					v.x = gx;
 					v.y = v1.y + (v2.y - v1.y) * u;
 					coords.Add(v);
 				}
 			}
-			
+
 			// Go for all horizontal grid lines in between line start and end
-			float gy = General.Map.Grid.GetHigher(miny) + gridoffset.y;
+			double gy = General.Map.Grid.GetHigher(miny) + gridoffset.y;
 			if(gy < maxy)
 			{
 				for(; gy < maxy; gy += General.Map.Grid.GridSizeF)
 				{
 					// Add intersection point at this y coordinate
-					float u = (gy - miny) / (maxy - miny);
+					double u = (gy - miny) / (maxy - miny);
 					if(reversey) u = 1.0f - u;
 					v.x = v1.x + (v2.x - v1.x) * u;
 					v.y = gy;
@@ -997,19 +997,19 @@ namespace CodeImp.DoomBuilder.Map
 		// This returns the closest coordinates ON the line
 		public Vector2D NearestOnLine(Vector2D pos)
 		{
-			float u = Line2D.GetNearestOnLine(start.Position, end.Position, pos);
+			double u = Line2D.GetNearestOnLine(start.Position, end.Position, pos);
 			if(u < 0f) u = 0f; else if(u > 1f) u = 1f;
 			return Line2D.GetCoordinatesAt(start.Position, end.Position, u);
 		}
 
 		// This returns the shortest distance from given coordinates to line
-		public float SafeDistanceToSq(Vector2D p, bool bounded)
+		public double SafeDistanceToSq(Vector2D p, bool bounded)
 		{
 			Vector2D v1 = start.Position;
 			Vector2D v2 = end.Position;
 
 			// Calculate intersection offset
-			float u = ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) * lengthsqinv;
+			double u = ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) * lengthsqinv;
 
 			// Limit intersection offset to the line
 			if (bounded)
@@ -1040,8 +1040,8 @@ namespace CodeImp.DoomBuilder.Map
 
 			// ano - let's check to see if we can do the previous faster without using operator overloading and etc
 			// the answer: running it  int.MaxValue / 64 times it tended to be around 100ms faster
-			float ldx = p.x - (v1.x + u * (v2.x - v1.x));
-			float ldy = p.y - (v1.y + u * (v2.y - v1.y));
+			double ldx = p.x - (v1.x + u * (v2.x - v1.x));
+			double ldy = p.y - (v1.y + u * (v2.y - v1.y));
 			return ldx * ldx + ldy * ldy;
 		}
 
@@ -1052,13 +1052,13 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		// This returns the shortest distance from given coordinates to line
-		public float DistanceToSq(Vector2D p, bool bounded)
+		public double DistanceToSq(Vector2D p, bool bounded)
 		{
 			Vector2D v1 = start.Position;
 			Vector2D v2 = end.Position;
-			
+
 			// Calculate intersection offset
-			float u = ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) * lengthsqinv;
+			double u = ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) * lengthsqinv;
 
 			// Limit intersection offset to the line
 			if(bounded) if(u < 0f) u = 0f; else if(u > 1f) u = 1f;
@@ -1068,8 +1068,8 @@ namespace CodeImp.DoomBuilder.Map
 
 			// Return distance between intersection and point
 			// which is the shortest distance to the line
-			float ldx = p.x - i.x;
-			float ldy = p.y - i.y;
+			double ldx = p.x - i.x;
+			double ldy = p.y - i.y;
 			return ldx * ldx + ldy * ldy;
 		}
 
@@ -1081,7 +1081,7 @@ namespace CodeImp.DoomBuilder.Map
 
 		// This tests on which side of the line the given coordinates are
 		// returns < 0 for front (right) side, > 0 for back (left) side and 0 if on the line
-		public float SideOfLine(Vector2D p)
+		public double SideOfLine(Vector2D p)
 		{
 			Vector2D v1 = start.Position;
 			Vector2D v2 = end.Position;

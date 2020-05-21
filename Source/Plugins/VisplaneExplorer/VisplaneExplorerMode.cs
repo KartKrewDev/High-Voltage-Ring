@@ -312,10 +312,10 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 					// If the tile is obviously outside the map, don't create it
 					Vector2D pc = new Vector2D(x + (Tile.TILE_SIZE >> 1), y + (Tile.TILE_SIZE >> 1));
 					Linedef ld = MapSet.NearestLinedef(blockmap.GetBlockAt(pc).Lines, pc);
-					float distancesq = ld.DistanceToSq(pc, true);
+					double distancesq = ld.DistanceToSq(pc, true);
 					if(distancesq > (Tile.TILE_SIZE * Tile.TILE_SIZE))
 					{
-						float side = ld.SideOfLine(pc);
+						double side = ld.SideOfLine(pc);
 						if((side > 0.0f) && (ld.Back == null))
 							continue;
 					}
@@ -443,7 +443,7 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 				int viewstats = (int)BuilderPlug.InterfaceForm.ViewStats;
 				
 				// Get the tile data for the current position
-				Point tp = TileForPoint(mousemappos.x, mousemappos.y);
+				Point tp = TileForPoint((float)mousemappos.x, (float)mousemappos.y);
 				Tile t;
 				if(tiles.TryGetValue(tp, out t))
 				{

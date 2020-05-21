@@ -93,7 +93,7 @@ namespace CodeImp.DoomBuilder.Controls
 			blockUpdate = false;
 		}
 
-		public void ApplyTo(UniFields fields, int min, int max, float oldValue1, float oldValue2) 
+		public void ApplyTo(UniFields fields, int min, int max, double oldValue1, double oldValue2) 
 		{
 			if(!string.IsNullOrEmpty(value1.Text))
 				UniFields.SetFloat(fields, field1, General.Clamp(value1.GetResultFloat(oldValue1), min, max), defaultValue);

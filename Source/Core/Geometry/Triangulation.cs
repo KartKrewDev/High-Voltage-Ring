@@ -487,17 +487,17 @@ namespace CodeImp.DoomBuilder.Geometry
 		private static void SplitOuterWithInner(LinkedListNode<EarClipVertex> start, EarClipPolygon p)
 		{
 			LinkedListNode<EarClipVertex> insertbefore = null;
-			float foundu = float.MaxValue;
+			double foundu = double.MaxValue;
 			Vector2D foundpos = new Vector2D();
 
 			// Create a line from start that goes beyond the right most vertex of p
 			LinkedListNode<EarClipVertex> pr = FindRightMostVertex(p);
-			float startx = start.Value.Position.x;
-			float endx = pr.Value.Position.x + 10.0f;
+			double startx = start.Value.Position.x;
+			double endx = pr.Value.Position.x + 10.0f;
 			Line2D starttoright = new Line2D(start.Value.Position, new Vector2D(endx, start.Value.Position.y));
-			
+
 			// Calculate a small bonus (0.1 mappixel)
-			float bonus = starttoright.GetNearestOnLine(new Vector2D(start.Value.Position.x + 0.1f, start.Value.Position.y));
+			double bonus = starttoright.GetNearestOnLine(new Vector2D(start.Value.Position.x + 0.1f, start.Value.Position.y));
 			
 			// Go for all lines in the outer polygon
 			LinkedListNode<EarClipVertex> v1 = p.Last;
@@ -510,9 +510,9 @@ namespace CodeImp.DoomBuilder.Geometry
 				{
 					// Find intersection
 					Line2D pl = new Line2D(v1.Value.Position, v2.Value.Position);
-					float u, ul;
+					double u, ul;
 					pl.GetIntersection(starttoright, out u, out ul);
-					if(float.IsNaN(u))
+					if(double.IsNaN(u))
 					{
 						// We have found a line that is perfectly horizontal
 						// (parallel to the cut scan line) Check if the line
@@ -529,10 +529,10 @@ namespace CodeImp.DoomBuilder.Geometry
 							ul = starttoright.GetNearestOnLine(v2.Value.Position);
 							
 							// Rule out vertices before the scan line
-							if(u < 0.0f) u = float.MaxValue;
-							if(ul < 0.0f) ul = float.MaxValue;
-							
-							float insert_u = Math.Min(u, ul);
+							if(u < 0.0f) u = double.MaxValue;
+							if(ul < 0.0f) ul = double.MaxValue;
+
+							double insert_u = Math.Min(u, ul);
 							Vector2D inserpos = starttoright.GetCoordinatesAt(insert_u);
 							
 							// Check in which direction the line goes.
@@ -815,10 +815,10 @@ namespace CodeImp.DoomBuilder.Geometry
 							vpos.y < Math.Min(pos0.y, Math.Min(pos1.y, pos2.y)) ||
 							vpos.y > Math.Max(pos0.y, Math.Max(pos1.y, pos2.y))) continue;
 
-						float lineside01 = Line2D.GetSideOfLine(pos0, pos1, vpos);
-						float lineside12 = Line2D.GetSideOfLine(pos1, pos2, vpos);
-						float lineside20 = Line2D.GetSideOfLine(pos2, pos0, vpos);
-						float u_on_line = 0.5f;
+						double lineside01 = Line2D.GetSideOfLine(pos0, pos1, vpos);
+						double lineside12 = Line2D.GetSideOfLine(pos1, pos2, vpos);
+						double lineside20 = Line2D.GetSideOfLine(pos2, pos0, vpos);
+						double u_on_line = 0.5f;
 
 						// If point p is on the line of an edge, find out where on the edge segment p is.
 						if(lineside01 == 0.0f)
@@ -877,11 +877,11 @@ namespace CodeImp.DoomBuilder.Geometry
 		// NOTE: We already know p1 is on an edge segment of the triangle
 		private static bool LineInsideTriangle(EarClipVertex[] t, Vector2D p1, Vector2D p2)
 		{
-			float s01 = Line2D.GetSideOfLine(t[0].Position, t[1].Position, p2);
-			float s12 = Line2D.GetSideOfLine(t[1].Position, t[2].Position, p2);
-			float s20 = Line2D.GetSideOfLine(t[2].Position, t[0].Position, p2);
-			float p2_on_edge = 2.0f;		// somewhere outside the 0 .. 1 range
-			float p1_on_same_edge = 2.0f;
+			double s01 = Line2D.GetSideOfLine(t[0].Position, t[1].Position, p2);
+			double s12 = Line2D.GetSideOfLine(t[1].Position, t[2].Position, p2);
+			double s20 = Line2D.GetSideOfLine(t[2].Position, t[0].Position, p2);
+			double p2_on_edge = 2.0f;		// somewhere outside the 0 .. 1 range
+			double p1_on_same_edge = 2.0f;
 			
 			// Test if p2 is inside the triangle
 			if((s01 < 0.0f) && (s12 < 0.0f) && (s20 < 0.0f))
@@ -923,7 +923,7 @@ namespace CodeImp.DoomBuilder.Geometry
 			Line2D t01 = new Line2D(t[0].Position, t[1].Position);
 			Line2D t12 = new Line2D(t[1].Position, t[2].Position);
 			Line2D t20 = new Line2D(t[2].Position, t[0].Position);
-			float pu, pt;
+			double pu, pt;
 			
 			//mxd. Test intersections
 			if(t01.GetIntersection(p, out pu, out pt)) return true;

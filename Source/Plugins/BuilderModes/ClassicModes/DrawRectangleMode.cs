@@ -163,7 +163,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					//vertices
 					for(int i = 0; i < shape.Length; i++)
-						renderer.RenderRectangleFilled(new RectangleF(shape[i].x - vsize, shape[i].y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
+						renderer.RenderRectangleFilled(new RectangleF((float)(shape[i].x - vsize), (float)(shape[i].y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 
 					//and labels
 					if(shape.Length == 2)
@@ -195,19 +195,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 							//and shape corners
 							for(int i = 0; i < 4; i++)
-								renderer.RenderRectangleFilled(new RectangleF(labelCoords[i].x - vsize, labelCoords[i].y - vsize, vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine, true);
+								renderer.RenderRectangleFilled(new RectangleF((float)(labelCoords[i].x - vsize), (float)(labelCoords[i].y - vsize), vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine, true);
 						}
 					}
 					else
 					{
 						// Render vertex at points[0]
-						renderer.RenderRectangleFilled(new RectangleF(start.x - vsize, start.y - vsize, vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine, true);
+						renderer.RenderRectangleFilled(new RectangleF((float)(start.x - vsize), (float)(start.y - vsize), vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine, true);
 					}
 				} 
 				else 
 				{
 					// Render vertex at cursor
-					renderer.RenderRectangleFilled(new RectangleF(curp.pos.x - vsize, curp.pos.y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
+					renderer.RenderRectangleFilled(new RectangleF((float)(curp.pos.x - vsize), (float)(curp.pos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 				}
 
 				// Done
@@ -275,15 +275,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			Vector2D[] points;
 			Vector2D center = (bevelwidth > 0 ? new Vector2D(startPoint.x + bevel_width, startPoint.y + bevel_height) : startPoint);
-			float curAngle = Angle2D.PI;
+			double curAngle = Angle2D.PI;
 
 			int steps = subdivisions + 2;
 			points = new Vector2D[steps];
-			float stepAngle = Angle2D.PIHALF / (subdivisions + 1);
+			double stepAngle = Angle2D.PIHALF / (subdivisions + 1);
 
 			for(int i = 0; i < steps; i++) 
 			{
-				points[i] = new Vector2D(center.x + (float)Math.Sin(curAngle) * bevel_width, center.y + (float)Math.Cos(curAngle) * bevel_height);
+				points[i] = new Vector2D(center.x + Math.Sin(curAngle) * bevel_width, center.y + Math.Cos(curAngle) * bevel_height);
 				curAngle += stepAngle;
 			}
 

@@ -64,10 +64,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		private float gridsizeinv;
 		private float sectorsize;
 
-		private float outerleft;
-		private float outerright;
-		private float outertop;
-		private float outerbottom;
+		private double outerleft;
+		private double outerright;
+		private double outertop;
+		private double outerbottom;
 
 		private bool usecustomtagrange;
 		private int firsttag;
@@ -77,30 +77,30 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		#region ================== Properties
 
-		public float GridSize { get { return gridsize; } }
-		public float SectorSize { get { return sectorsize; } }
+		public double GridSize { get { return gridsize; } }
+		public double SectorSize { get { return sectorsize; } }
 
 		public RectangleF OuterBorder { get { return outerborder; } }
 
-		public float OuterLeft
+		public double OuterLeft
 		{
 			get { return outerleft; }
 			set { outerleft = value; UpdateLinesAndPoints();	}
 		}
 
-		public float OuterRight
+		public double OuterRight
 		{
 			get { return outerright; }
 			set { outerright = value; UpdateLinesAndPoints(); }
 		}
 
-		public float OuterTop
+		public double OuterTop
 		{
 			get { return outertop; }
 			set { outertop = value; UpdateLinesAndPoints(); }
 		}
 
-		public float OuterBottom
+		public double OuterBottom
 		{
 			get { return outerbottom; }
 			set { outerbottom = value; UpdateLinesAndPoints(); }
@@ -148,7 +148,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			points[Highlight.OuterBottomLeft] = new Vector2D(outerleft, outerbottom);
 			points[Highlight.OuterBottomRight] = new Vector2D(outerright, outerbottom);
 
-			outerborder = new RectangleF(outerleft, outertop, outerright - outerleft, outerbottom - outertop);
+			outerborder = new RectangleF((float)outerleft, (float)outertop, (float)(outerright - outerleft), (float)(outerbottom - outertop));
 		}
 
 		public void Draw(IRenderer2D renderer, Highlight highlight)
@@ -156,7 +156,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			PixelColor fcolor = highlight == Highlight.Body ? fillhighlightcolor : fillcolor;
 
 			renderer.RenderRectangleFilled(
-				new RectangleF(outerleft, outertop, outerright - outerleft, outerbottom - outertop),
+				new RectangleF((float)outerleft, (float)outertop, (float)(outerright - outerleft), (float)(outerbottom - outertop)),
 				fcolor,
 				true
 			);
@@ -193,10 +193,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			}
 		}
 
-		public Highlight CheckHighlight(Vector2D pos, float scale)
+		public Highlight CheckHighlight(Vector2D pos, double scale)
 		{
-			float distance = float.MaxValue;
-			float d;
+			double distance = double.MaxValue;
+			double d;
 			Highlight highlight = Highlight.None;
 
 			// Find a line to highlight
@@ -214,7 +214,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				}
 			}
 
-			distance = float.MaxValue;
+			distance = double.MaxValue;
 
 			// Find a corner to highlight
 			foreach (Highlight h in (Highlight[])Enum.GetValues(typeof(Highlight)))
@@ -537,13 +537,13 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		}
 
 		// Turns a position into a DrawnVertex and returns it
-		private DrawnVertex SectorVertex(float x, float y)
+		private DrawnVertex SectorVertex(double x, double y)
 		{
 			DrawnVertex v = new DrawnVertex();
 
 			v.stitch = true;
 			v.stitchline = true;
-			v.pos = new Vector2D((float)Math.Round(x, General.Map.FormatInterface.VertexDecimals), (float)Math.Round(y, General.Map.FormatInterface.VertexDecimals));
+			v.pos = new Vector2D(Math.Round(x, General.Map.FormatInterface.VertexDecimals), Math.Round(y, General.Map.FormatInterface.VertexDecimals));
 
 			return v;
 		}

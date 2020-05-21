@@ -47,17 +47,17 @@ namespace CodeImp.DoomBuilder.Editing
 
 		// Grid
 		private int gridsize;
-		private float gridsizef;
-		private float gridsizefinv;
-		private float gridrotate;
-		private float gridoriginx, gridoriginy;
+		private double gridsizef;
+		private double gridsizefinv;
+		private double gridrotate;
+		private double gridoriginx, gridoriginy;
 
 		// Background
 		private string background = "";
 		private int backsource;
 		private ImageData backimage = new UnknownImage();
 		private int backoffsetx, backoffsety;
-		private float backscalex, backscaley;
+		private double backscalex, backscaley;
 
 		// Disposing
 		private bool isdisposed;
@@ -67,17 +67,17 @@ namespace CodeImp.DoomBuilder.Editing
 		#region ================== Properties
 
 		public int GridSize { get { return gridsize; } } //mxd
-		public float GridSizeF { get { return gridsizef; } }
-		public float GridRotate { get { return gridrotate; }}
-		public float GridOriginX { get { return gridoriginx; }}
-		public float GridOriginY { get { return gridoriginy; }}
+		public double GridSizeF { get { return gridsizef; } }
+		public double GridRotate { get { return gridrotate; }}
+		public double GridOriginX { get { return gridoriginx; }}
+		public double GridOriginY { get { return gridoriginy; }}
 		internal string BackgroundName { get { return background; } }
 		internal int BackgroundSource { get { return backsource; } }
 		internal ImageData Background { get { return backimage; } }
 		internal int BackgroundX { get { return backoffsetx; } }
 		internal int BackgroundY { get { return backoffsety; } }
-		internal float BackgroundScaleX { get { return backscalex; } }
-		internal float BackgroundScaleY { get { return backscaley; } }
+		internal double BackgroundScaleX { get { return backscalex; } }
+		internal double BackgroundScaleY { get { return backscaley; } }
 		internal bool Disposed { get { return isdisposed; } }
 		
 		#endregion
@@ -162,7 +162,7 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 
 		// This sets the grid size
-		internal void SetGridSize(float size)
+		internal void SetGridSize(double size)
 		{
 			//mxd. Bad things happen when size <= 0
 			size = Math.Max(size, ((General.Map != null && General.Map.UDMF) ? MINIMUM_GRID_SIZE_UDMF : MINIMUM_GRID_SIZE));
@@ -177,13 +177,13 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 
 		// Set the rotation angle of the grid
-		public void SetGridRotation(float angle)
+		public void SetGridRotation(double angle)
 		{
 			gridrotate = angle;
 		}
 
 		// Set the origin of the grid
-		public void SetGridOrigin(float x, float y)
+		public void SetGridOrigin(double x, double y)
 		{
 			gridoriginx = x;
 			gridoriginy = y;
@@ -238,15 +238,15 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 		
 		// This returns the next higher coordinate
-		public float GetHigher(float offset)
+		public double GetHigher(double offset)
 		{
-			return (float)Math.Round((offset + (gridsizef * 0.5f)) * gridsizefinv) * gridsizef;
+			return Math.Round((offset + (gridsizef * 0.5f)) * gridsizefinv) * gridsizef;
 		}
 
 		// This returns the next lower coordinate
-		public float GetLower(float offset)
+		public double GetLower(double offset)
 		{
-			return (float)Math.Round((offset - (gridsizef * 0.5f)) * gridsizefinv) * gridsizef;
+			return Math.Round((offset - (gridsizef * 0.5f)) * gridsizefinv) * gridsizef;
 		}
 		
 		// This snaps to the nearest grid coordinate
@@ -256,7 +256,7 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 
 		// This snaps to the nearest grid coordinate
-		public static Vector2D SnappedToGrid(Vector2D v, float gridsize, float gridsizeinv, float gridrotate = 0.0f, float gridoriginx = 0, float gridoriginy = 0)
+		public static Vector2D SnappedToGrid(Vector2D v, double gridsize, double gridsizeinv, double gridrotate = 0.0f, double gridoriginx = 0, double gridoriginy = 0)
 		{
 			Vector2D origin = new Vector2D(gridoriginx, gridoriginy);
 			bool transformed = Math.Abs(gridrotate) > 1e-4 || gridoriginx != 0 || gridoriginx != 0;
@@ -266,8 +266,8 @@ namespace CodeImp.DoomBuilder.Editing
 				v = ((v - origin).GetRotated(-gridrotate));
 			}
 		
-			Vector2D sv = new Vector2D((float)Math.Round(v.x * gridsizeinv) * gridsize,
-								(float)Math.Round(v.y * gridsizeinv) * gridsize);
+			Vector2D sv = new Vector2D(Math.Round(v.x * gridsizeinv) * gridsize,
+								Math.Round(v.y * gridsizeinv) * gridsize);
 
 			if (transformed)
 			{

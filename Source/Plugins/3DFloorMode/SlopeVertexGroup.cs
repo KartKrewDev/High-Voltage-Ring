@@ -419,7 +419,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 			if (vertices.Count == 2)
 			{
-				float z = sp[0].z;
+				double z = sp[0].z;
 				Line2D line = new Line2D(sp[0], sp[1]);
 				Vector3D perpendicular = line.GetPerpendicular();
 
@@ -430,11 +430,11 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 			Plane p = new Plane(sp[0], sp[1], sp[2], true);
 
-			float fheight = p.GetZ(GetCircumcenter(sp));
+			double fheight = p.GetZ(GetCircumcenter(sp));
 
 			// If something went wrong with computing the height use the height
 			// of the first vertex as a workaround
-			if (float.IsNaN(fheight))
+			if (double.IsNaN(fheight))
 				height = Convert.ToInt32(sp[0].z);
 			else
 				height = Convert.ToInt32(fheight);
@@ -442,7 +442,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		private Vector2D GetCircumcenter(List<Vector3D> points)
 		{
-			float u_ray;
+			double u_ray;
 
 			Line2D line1 = new Line2D(points[0], points[1]);
 			Line2D line2 = new Line2D(points[2], points[0]);
@@ -463,7 +463,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 			if (vertices.Count == 3)
 			{
-				float side = Line2D.GetSideOfLine(vertices[0].Pos, vertices[1].Pos, vertices[3].Pos);
+				double side = Line2D.GetSideOfLine(vertices[0].Pos, vertices[1].Pos, vertices[3].Pos);
 
 				if (side == 0.0f)
 					return false;

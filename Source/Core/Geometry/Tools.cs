@@ -75,9 +75,9 @@ namespace CodeImp.DoomBuilder.Geometry
 			foreach(Vector2D v2 in polygon)
 			{
 				// Determine min/max values
-				float miny = Math.Min(v1.y, v2.y);
-				float maxy = Math.Max(v1.y, v2.y);
-				float maxx = Math.Max(v1.x, v2.x);
+				double miny = Math.Min(v1.y, v2.y);
+				double maxy = Math.Max(v1.y, v2.y);
+				double maxx = Math.Max(v1.x, v2.x);
 
 				// Check for intersection
 				if((point.y > miny) && (point.y <= maxy))
@@ -86,7 +86,7 @@ namespace CodeImp.DoomBuilder.Geometry
 					{
 						if(v1.y != v2.y)
 						{
-							float xint = (point.y - v1.y) * (v2.x - v1.x) / (v2.y - v1.y) + v1.x;
+							double xint = (point.y - v1.y) * (v2.x - v1.x) / (v2.y - v1.y) + v1.x;
 							if((v1.x == v2.x) || (point.x <= xint)) c++;
 						}
 					}
@@ -139,7 +139,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		private static void FindInnerLines(EarClipPolygon p, List<LinedefSide> alllines)
 		{
 			bool findmore;
-			float foundangle = 0f;
+			double foundangle = 0f;
 			RectangleF bbox = p.CreateBBox();
 			
 			do
@@ -185,16 +185,16 @@ namespace CodeImp.DoomBuilder.Geometry
 				if(foundv != null)
 				{
 					// Find the attached linedef with the smallest angle to the right
-					const float targetangle = Angle2D.PIHALF;
+					const double targetangle = Angle2D.PIHALF;
 					Linedef foundline = null;
 					foreach(Linedef l in foundv.Linedefs)
 					{
 						// We need an angle unrelated to line direction, so correct for that
-						float lineangle = l.Angle;
+						double lineangle = l.Angle;
 						if(l.End == foundv) lineangle += Angle2D.PI;
 
 						// Better result?
-						float deltaangle = Angle2D.Difference(targetangle, lineangle);
+						double deltaangle = Angle2D.Difference(targetangle, lineangle);
 						if((foundline == null) || (deltaangle < foundangle))
 						{
 							foundline = l;
@@ -323,7 +323,7 @@ namespace CodeImp.DoomBuilder.Geometry
 										// prefer the line, which is clser to being parallel to the x axis
 										else if(scanline != null && Math.Round(thisu, 4) == Math.Round(foundu, 4))
 										{
-											float ldanglerel, scanlineanglerel;
+											double ldanglerel, scanlineanglerel;
 											if(GetRelativeAngle(ld, foundv.Position, out ldanglerel) 
 												&& GetRelativeAngle(scanline, foundv.Position, out scanlineanglerel)
 												&& (ldanglerel < scanlineanglerel))
@@ -359,7 +359,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		//mxd. Gets angle between pos and l when pos.y matches l.Start.Position.y or l.End.Position.y
-		private static bool GetRelativeAngle(Linedef l, Vector2D pos, out float result)
+		private static bool GetRelativeAngle(Linedef l, Vector2D pos, out double result)
 		{
 			if(l.Start.Position.y == pos.y)
 			{
@@ -566,7 +566,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				Linedef nearest = MapSet.NearestLinedef(nearbylines, testpoint);
 				if(nearest != null)
 				{
-					float side = nearest.SideOfLine(testpoint);
+					double side = nearest.SideOfLine(testpoint);
 					Sidedef defaultside = (side < 0.0f ? nearest.Front : nearest.Back);
 
 					if(defaultside != null)
@@ -830,12 +830,12 @@ namespace CodeImp.DoomBuilder.Geometry
 				{
 					Dictionary<Sidedef, Linedef> sides = new Dictionary<Sidedef, Linedef>(triangles.IslandVertices[i] >> 1);
 					List<Vector2D> candidatepositions = new List<Vector2D>(triangles.IslandVertices[i] >> 1);
-					float founddistance = float.MinValue;
+					double founddistance = double.MinValue;
 					Vector2D foundposition = new Vector2D();
-					float minx = float.MaxValue;
-					float miny = float.MaxValue;
-					float maxx = float.MinValue;
-					float maxy = float.MinValue;
+					double minx = double.MaxValue;
+					double miny = double.MaxValue;
+					double maxx = double.MinValue;
+					double maxy = double.MinValue;
 					
 					// Make candidate lines that are not along sidedefs
 					// We do this before testing the candidate against the sidedefs so that
@@ -882,11 +882,11 @@ namespace CodeImp.DoomBuilder.Geometry
 						foreach(Vector2D candidatepos in candidatepositions)
 						{
 							// Check distance against other lines
-							float smallestdist = int.MaxValue;
+							double smallestdist = int.MaxValue;
 							foreach(KeyValuePair<Sidedef, Linedef> sd in sides)
 							{
 								// Check the distance
-								float distance = sd.Value.DistanceToSq(candidatepos, true);
+								double distance = sd.Value.DistanceToSq(candidatepos, true);
 								smallestdist = Math.Min(smallestdist, distance);
 							}
 							
@@ -911,7 +911,7 @@ namespace CodeImp.DoomBuilder.Geometry
 							// Use the center of the triangle
 							// TODO: Use the 'incenter' instead, see http://mathworld.wolfram.com/Incenter.html
 							Vector2D v = (triangles.Vertices[islandoffset] + triangles.Vertices[islandoffset + 1] + triangles.Vertices[islandoffset + 2]) / 3.0f;
-							float d = Line2D.GetDistanceToLineSq(triangles.Vertices[islandoffset], triangles.Vertices[islandoffset + 1], v, false);
+							double d = Line2D.GetDistanceToLineSq(triangles.Vertices[islandoffset], triangles.Vertices[islandoffset + 1], v, false);
 							d = Math.Min(d, Line2D.GetDistanceToLineSq(triangles.Vertices[islandoffset + 1], triangles.Vertices[islandoffset + 2], v, false));
 							d = Math.Min(d, Line2D.GetDistanceToLineSq(triangles.Vertices[islandoffset + 2], triangles.Vertices[islandoffset], v, false));
 							positions.Add(new LabelPositionInfo(v, (float)Math.Sqrt(d)));
@@ -919,7 +919,7 @@ namespace CodeImp.DoomBuilder.Geometry
 						else
 						{
 							// Use the center of this island.
-							float d = Math.Min((maxx - minx) * 0.5f, (maxy - miny) * 0.5f);
+							double d = Math.Min((maxx - minx) * 0.5f, (maxy - miny) * 0.5f);
 							positions.Add(new LabelPositionInfo(new Vector2D(minx + (maxx - minx) * 0.5f, miny + (maxy - miny) * 0.5f), d));
 						}
 					}
@@ -1011,7 +1011,7 @@ namespace CodeImp.DoomBuilder.Geometry
 					if(points[i - 1].stitchline && points[i].stitchline)
 					{
 						// Check if any other lines intersect this line
-						List<float> intersections = new List<float>();
+						List<double> intersections = new List<double>();
 						Line2D measureline = ld.Line;
 						HashSet<Linedef> processed = new HashSet<Linedef>(); //mxd
 
@@ -1029,7 +1029,7 @@ namespace CodeImp.DoomBuilder.Geometry
 									double u;
 									if(side.Line.Line.GetIntersection(measureline, out u)) 
 									{
-										if(float.IsNaN(u) || (u <= 0.0f) || (u >= 1.0f)) continue;
+										if(double.IsNaN(u) || (u <= 0.0f) || (u >= 1.0f)) continue;
 
 										//mxd. Skip intersection if both start and end of one line are closer than given distance from the other line.
 										// This allows to avoid creating "unexpected" splits when drawing on top of non-cardinal lines.
@@ -1056,7 +1056,7 @@ namespace CodeImp.DoomBuilder.Geometry
 
 						// Go for all found intersections
 						Linedef splitline = ld;
-						foreach(float u in intersections)
+						foreach(double u in intersections)
 						{
 							// Calculate exact coordinates where to split
 							// We use measureline for this, because the original line
@@ -1116,7 +1116,7 @@ namespace CodeImp.DoomBuilder.Geometry
 							Linedef nld = MapSet.NearestLinedef(oldlinesmap, ldcp); //mxd. Lines collection -> Blockmap
 							if(nld != null)
 							{
-								float ldside = nld.SideOfLine(ldcp);
+								double ldside = nld.SideOfLine(ldcp);
 								if(ldside < 0.0f)
 								{
 									if(nld.Front != null)
@@ -1625,7 +1625,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		{
 			if(strip.Count < 2) return;
 
-			float totalLength = 0f;
+			double totalLength = 0f;
 			foreach(Linedef l in strip) totalLength += l.Length;
 
 			if(General.Map.UDMF && General.Map.Config.UseLocalSidedefTextureOffsets)
@@ -1635,9 +1635,9 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		//mxd
-		private static void AutoAlignTexturesOnSides(List<Linedef> lines, float totalLength, bool reversed) 
+		private static void AutoAlignTexturesOnSides(List<Linedef> lines, double totalLength, bool reversed) 
 		{
-			float curLength = 0f;
+			double curLength = 0f;
 			
 			foreach(Linedef l in lines) 
 			{
@@ -1676,9 +1676,9 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		//mxd
-		private static void AutoAlignTexturesOnSidesUdmf(List<Linedef> lines, float totalLength, bool reversed) 
+		private static void AutoAlignTexturesOnSidesUdmf(List<Linedef> lines, double totalLength, bool reversed) 
 		{
-			float curLength = 0f;
+			double curLength = 0f;
 
 			foreach(Linedef l in lines) 
 			{
@@ -1912,7 +1912,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		//mxd. This converts offsetY from/to "normalized" offset for given wall part
-		public static float GetSidedefOffsetY(Sidedef side, VisualGeometryType part, float offset, float scaleY, bool fromNormalized)
+		public static double GetSidedefOffsetY(Sidedef side, VisualGeometryType part, double offset, double scaleY, bool fromNormalized)
 		{
 			switch(part)
 			{
@@ -1932,7 +1932,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		//mxd. This converts offsetY from/to "normalized" offset for given upper wall
-		public static float GetSidedefTopOffsetY(Sidedef side, float offset, float scaleY, bool fromNormalized) 
+		public static double GetSidedefTopOffsetY(Sidedef side, double offset, double scaleY, bool fromNormalized) 
 		{
 			if(side.Line.IsFlagSet(General.Map.Config.UpperUnpeggedFlag) || side.Other == null || side.Other.Sector == null)
 				return offset;
@@ -1941,12 +1941,12 @@ namespace CodeImp.DoomBuilder.Geometry
 			scaleY = Math.Abs(scaleY);
 
 			//if we don't have UpperUnpegged flag, normalize offset
-			float surfaceHeight = side.GetHighHeight() * scaleY;
-			return (float)Math.Round((fromNormalized ? offset + surfaceHeight : offset - surfaceHeight), General.Map.FormatInterface.VertexDecimals);
+			double surfaceHeight = side.GetHighHeight() * scaleY;
+			return Math.Round((fromNormalized ? offset + surfaceHeight : offset - surfaceHeight), General.Map.FormatInterface.VertexDecimals);
 		}
 
 		//mxd. This converts offsetY from/to "normalized" offset for given middle wall
-		public static float GetSidedefMiddleOffsetY(Sidedef side, float offset, float scaleY, bool fromNormalized) 
+		public static double GetSidedefMiddleOffsetY(Sidedef side, double offset, double scaleY, bool fromNormalized) 
 		{
 			if(side.Sector == null) return offset;
 
@@ -1954,7 +1954,7 @@ namespace CodeImp.DoomBuilder.Geometry
 			scaleY = Math.Abs(scaleY);
 
 			// Normalize offset
-			float surfaceHeight;
+			double surfaceHeight;
 			if(side.Other != null && side.Other.Sector != null)
 			{
 				if(side.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag)) 
@@ -1984,13 +1984,13 @@ namespace CodeImp.DoomBuilder.Geometry
 				}
 			}
 
-			return (float)Math.Round((fromNormalized ? offset + surfaceHeight : offset - surfaceHeight), General.Map.FormatInterface.VertexDecimals);
+			return Math.Round((fromNormalized ? offset + surfaceHeight : offset - surfaceHeight), General.Map.FormatInterface.VertexDecimals);
 		}
 
 		//mxd. This converts offsetY from/to "normalized" offset for given lower wall
-		public static float GetSidedefBottomOffsetY(Sidedef side, float offset, float scaleY, bool fromNormalized) 
+		public static double GetSidedefBottomOffsetY(Sidedef side, double offset, double scaleY, bool fromNormalized) 
 		{
-			float surfaceHeight;
+			double surfaceHeight;
 
 			// Make sure the offset doesn't go in the wrong direction
 			scaleY = Math.Abs(scaleY);
@@ -2010,7 +2010,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				surfaceHeight = (side.Sector.CeilHeight - side.Other.Sector.FloorHeight) * scaleY;
 			}
 
-			return (float)Math.Round((fromNormalized ? offset + surfaceHeight : offset - surfaceHeight), General.Map.FormatInterface.VertexDecimals);
+			return Math.Round((fromNormalized ? offset + surfaceHeight : offset - surfaceHeight), General.Map.FormatInterface.VertexDecimals);
 		}
 		
 		#endregion
@@ -2119,7 +2119,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				return false;
 			}
 
-			float side = l.SideOfLine(t.Position);
+			double side = l.SideOfLine(t.Position);
 
 			//already on line
 			if(side == 0) 

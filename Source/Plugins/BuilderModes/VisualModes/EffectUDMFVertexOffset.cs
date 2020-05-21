@@ -34,7 +34,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				ceilingVerts[index] = new Vector3D(v.Position);
 
 				//check ceiling
-				if(!float.IsNaN(v.ZCeiling)) 
+				if(!double.IsNaN(v.ZCeiling)) 
 				{
 					//vertex offset is absolute
 					ceilingVerts[index].z = v.ZCeiling;
@@ -46,7 +46,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				//and floor
-				if(!float.IsNaN(v.ZFloor)) 
+				if(!double.IsNaN(v.ZFloor)) 
 				{
 					//vertex offset is absolute
 					floorVerts[index].z = v.ZFloor;

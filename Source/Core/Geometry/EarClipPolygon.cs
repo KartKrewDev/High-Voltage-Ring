@@ -71,9 +71,9 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This calculates the area
-		public float CalculateArea()
+		public double CalculateArea()
 		{
-            float area = 0;
+			double area = 0;
             LinkedListNode<EarClipVertex> v = First;
             do
             {
@@ -93,10 +93,10 @@ namespace CodeImp.DoomBuilder.Geometry
 		// This creates a bounding box from the outer polygon
 		public RectangleF CreateBBox()
 		{
-			float left = float.MaxValue;
-			float right = float.MinValue;
-			float top = float.MaxValue;
-			float bottom = float.MinValue;
+			double left = float.MaxValue;
+			double right = float.MinValue;
+			double top = float.MaxValue;
+			double bottom = float.MinValue;
 			foreach(EarClipVertex v in this)
 			{
 				if(v.Position.x < left) left = v.Position.x;
@@ -104,7 +104,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				if(v.Position.y < top) top = v.Position.y;
 				if(v.Position.y > bottom) bottom = v.Position.y;
 			}
-			return new RectangleF(left, top, right - left, bottom - top);
+			return new RectangleF((float)left, (float)top, (float)(right - left), (float)(bottom - top));
 		}
 		
 		// Point inside the polygon?

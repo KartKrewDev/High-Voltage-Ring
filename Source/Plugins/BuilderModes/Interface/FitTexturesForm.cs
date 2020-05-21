@@ -26,12 +26,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public Rectangle Bounds;
 
 		//Initial texture coordinats
-		public float InitialOffsetX;
-		public float InitialOffsetY;
-		public float ControlSideOffsetX;
-		public float ControlSideOffsetY;
-		public float InitialScaleX;
-		public float InitialScaleY;
+		public double InitialOffsetX;
+		public double InitialOffsetY;
+		public double ControlSideOffsetX;
+		public double ControlSideOffsetY;
+		public double InitialScaleX;
+		public double InitialScaleY;
 	}
 	
 	internal partial class FitTexturesForm : DelayedForm

@@ -47,12 +47,12 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 		private struct HeightOffsetVertexData
 		{
 			public Vertex Vertex;
-			public float InitialFloorHeight;
-			public float InitialCeilingHeight;
-			public float ZFloor;
-			public float ZCeiling;
-			public float JitterFloorHeight;
-			public float JitterCeilingHeight;
+			public double InitialFloorHeight;
+			public double InitialCeilingHeight;
+			public double ZFloor;
+			public double ZCeiling;
+			public double JitterFloorHeight;
+			public double JitterCeilingHeight;
 		}
 
 		private struct SectorData
@@ -210,7 +210,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 
 				//get nearest linedef
 				Linedef closestLine = null;
-				float distance = float.MaxValue;
+				double distance = double.MaxValue;
 
 				// Go for all linedefs in selection
 				foreach(Linedef l in General.Map.Map.Linedefs) 
@@ -218,7 +218,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 					if(v.Linedefs.Contains(l)) continue;
 
 					// Calculate distance and check if closer than previous find
-					float d = l.SafeDistanceToSq(v.Position, true);
+					double d = l.SafeDistanceToSq(v.Position, true);
 					if(d < distance) 
 					{
 						// This one is closer
@@ -229,7 +229,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 
 				if(closestLine == null) continue;
 
-				float closestLineDistance = Vector2D.Distance(v.Position, closestLine.NearestOnLine(v.Position));
+				double closestLineDistance = Vector2D.Distance(v.Position, closestLine.NearestOnLine(v.Position));
 
 				//check SafeDistance of closest line
 				if(data.ContainsKey(closestLine.Start) 
@@ -291,8 +291,8 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 						vd.Vertex = sectorverts[i];
 						vd.ZFloor = sectorverts[i].ZFloor;
 						vd.ZCeiling = sectorverts[i].ZCeiling;
-						vd.InitialFloorHeight = float.IsNaN(vd.ZFloor) ? GetHighestFloor(sectorverts[i]) : sectorverts[i].ZFloor;
-						vd.InitialCeilingHeight = float.IsNaN(vd.ZCeiling) ? GetLowestCeiling(sectorverts[i]) : sectorverts[i].ZCeiling;
+						vd.InitialFloorHeight = double.IsNaN(vd.ZFloor) ? GetHighestFloor(sectorverts[i]) : sectorverts[i].ZFloor;
+						vd.InitialCeilingHeight = double.IsNaN(vd.ZCeiling) ? GetLowestCeiling(sectorverts[i]) : sectorverts[i].ZCeiling;
 
 						sd.Verts[i] = vd;
 					}
@@ -397,13 +397,13 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 			return target;
 		}
 
-		private static float GetHighestFloor(Vertex v) 
+		private static double GetHighestFloor(Vertex v) 
 		{
-			if(v.Linedefs.Count == 0) return float.NaN;
+			if(v.Linedefs.Count == 0) return double.NaN;
 			List<Sector> sectors = GetSectors(v);
-			if(sectors.Count == 0) return float.NaN;
+			if(sectors.Count == 0) return double.NaN;
 
-			float target = sectors[0].FloorHeight;
+			double target = sectors[0].FloorHeight;
 			for(int i = 1; i < sectors.Count; i++) 
 			{
 				if(target < sectors[i].FloorHeight && sectors[i].Sidedefs.Count == 3)
@@ -528,7 +528,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 			UpdateLowerTextures(cbLowerTexStyle.SelectedIndex, false);
 		}
 
-		private static float ModifyByOffsetMode(float value, int mode)
+		private static double ModifyByOffsetMode(double value, int mode)
 		{
 			switch(mode)
 			{

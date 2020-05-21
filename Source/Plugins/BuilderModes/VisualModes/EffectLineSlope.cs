@@ -35,11 +35,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			// Find the vertex furthest from the line
 			Vertex foundv = null;
-			float founddist = -1.0f;
+			double founddist = -1.0f;
 			foreach(Sidedef sd in data.Sector.Sidedefs)
 			{
 				Vertex v = sd.IsFront ? sd.Line.Start : sd.Line.End;
-				float d = l.DistanceToSq(v.Position, false);
+				double d = l.DistanceToSq(v.Position, false);
 				if(d > founddist)
 				{
 					foundv = v;

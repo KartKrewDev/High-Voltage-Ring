@@ -46,8 +46,8 @@ namespace CodeImp.DoomBuilder.BuilderModes.ClassicModes
 		private SectorProperties[] sectorProps1;
 		private SectorProperties[] sectorProps2;
 
-		private float[] relLenGroup1;
-		private float[] relLenGroup2;
+		private double[] relLenGroup1;
+		private double[] relLenGroup2;
 
 		private ControlHandle[] controlHandles;
 		private int curControlHandle = -1;
@@ -159,11 +159,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.ClassicModes
 				{
 					Vector2D pos = handle.RelativePosition;
 					//handle angle
-					float angle = (float)Math.Atan2(-pos.y, -pos.x) + Angle2D.PIHALF;
+					double angle = Math.Atan2(-pos.y, -pos.x) + Angle2D.PIHALF;
 					//angle of line, connecting handles ControlledPoints
-					float dirAngle = -(float)Math.Atan2(handle.Pair.ControlledPoint.y - handle.ControlledPoint.y, handle.Pair.ControlledPoint.x - handle.ControlledPoint.x); 
-					float length = (float)Math.Sqrt(Math.Pow(Math.Abs(pos.x), 2.0) + Math.Pow(Math.Abs(pos.y), 2.0));
-					float mirroredAngle = angle + dirAngle * 2.0f;
+					double dirAngle = -Math.Atan2(handle.Pair.ControlledPoint.y - handle.ControlledPoint.y, handle.Pair.ControlledPoint.x - handle.ControlledPoint.x);
+					double length = Math.Sqrt(Math.Pow(Math.Abs(pos.x), 2.0) + Math.Pow(Math.Abs(pos.y), 2.0));
+					double mirroredAngle = angle + dirAngle * 2.0f;
 
 					handle.Pair.RelativePosition = new Vector2D((float)Math.Sin(mirroredAngle) * length, (float)Math.Cos(mirroredAngle) * length);
 				} 
@@ -460,7 +460,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.ClassicModes
 				{
 					for(int i = 1; i < points.Length - 1; i++ ) 
 					{
-						renderer.RenderRectangleFilled(new RectangleF(points[i].x - vsize, points[i].y - vsize, vsize * 2.0f, vsize * 2.0f), linesColor, true);
+						renderer.RenderRectangleFilled(new RectangleF((float)(points[i].x - vsize), (float)(points[i].y - vsize), vsize * 2.0f, vsize * 2.0f), linesColor, true);
 					}
 				}
 
@@ -475,7 +475,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.ClassicModes
 
 				for(int i = 0; i < 4; i++) 
 				{
-					RectangleF handleRect = new RectangleF(controlHandles[i].Position.x - gripsize * 0.5f, controlHandles[i].Position.y - gripsize * 0.5f, gripsize, gripsize);
+					RectangleF handleRect = new RectangleF((float)(controlHandles[i].Position.x - gripsize * 0.5f), (float)(controlHandles[i].Position.y - gripsize * 0.5f), gripsize, gripsize);
 					renderer.RenderRectangleFilled(handleRect, General.Colors.Background, true);
 					renderer.RenderRectangle(handleRect, 2, General.Colors.Highlight, true);
 				}
@@ -529,23 +529,23 @@ namespace CodeImp.DoomBuilder.BuilderModes.ClassicModes
 		#region ================== Point ops
 
 		//this returns an array of linedef lengths relative to total segment length
-		private float[] GetRelativeLengths(Vector2D[] pointGroup) 
+		private double[] GetRelativeLengths(Vector2D[] pointGroup) 
 		{
-			float[] relLenGroup = new float[pointGroup.Length];
+			double[] relLenGroup = new double[pointGroup.Length];
 			relLenGroup[0] = 0.0f;
 
 			//get length and angle of line, which defines the shape
-			float length = Vector2D.Distance(pointGroup[0], pointGroup[segmentsCount - 1]);
-			float angle = (float)Math.Atan2(pointGroup[0].y - pointGroup[segmentsCount - 1].y, pointGroup[0].x - pointGroup[segmentsCount - 1].x);
+			double length = Vector2D.Distance(pointGroup[0], pointGroup[segmentsCount - 1]);
+			double angle = Math.Atan2(pointGroup[0].y - pointGroup[segmentsCount - 1].y, pointGroup[0].x - pointGroup[segmentsCount - 1].x);
 
 			//get relative length of every line
 			for(int i = 1; i < pointGroup.Length - 1; i++) 
 			{
 				Vector2D p0 = pointGroup[i - 1];
 				Vector2D p1 = pointGroup[i];
-				float curAngle = (float)Math.Atan2(p0.y - p1.y, p0.x - p1.x);
-				float diff = (angle + Angle2D.PI) - (curAngle + Angle2D.PI);
-				float segLen = (int)(Vector2D.Distance(p0, p1) * Math.Cos(diff));
+				double curAngle = Math.Atan2(p0.y - p1.y, p0.x - p1.x);
+				double diff = (angle + Angle2D.PI) - (curAngle + Angle2D.PI);
+				double segLen = (int)(Vector2D.Distance(p0, p1) * Math.Cos(diff));
 				relLenGroup[i] = relLenGroup[i - 1] + segLen / length;
 			}
 
@@ -557,23 +557,23 @@ namespace CodeImp.DoomBuilder.BuilderModes.ClassicModes
 		//this returns relative handle location
 		private static Vector2D GetHandleLocation(Vector2D start, Vector2D end, Vector2D direction) 
 		{
-			float angle = -(float)Math.Atan2(start.y - end.y, start.x - end.x);
-			float dirAngle = -(float)Math.Atan2(direction.y - start.y, direction.x - start.x);
-			float length = (float)Math.Sqrt(Math.Pow(Math.Abs(start.x - end.x), 2.0) + Math.Pow(Math.Abs(start.y - end.y), 2.0)) * 0.3f;
-			float diff = (angle + Angle2D.PI) - (dirAngle + Angle2D.PI);
+			double angle = -Math.Atan2(start.y - end.y, start.x - end.x);
+			double dirAngle = -Math.Atan2(direction.y - start.y, direction.x - start.x);
+			double length = Math.Sqrt(Math.Pow(Math.Abs(start.x - end.x), 2.0) + Math.Pow(Math.Abs(start.y - end.y), 2.0)) * 0.3f;
+			double diff = (angle + Angle2D.PI) - (dirAngle + Angle2D.PI);
 
 			if(diff > Angle2D.PI || (diff < 0 && diff > -Angle2D.PI)) angle += Angle2D.PI;
 
-			return new Vector2D((float)(Math.Sin(angle) * length), (float)(Math.Cos(angle) * length));
+			return new Vector2D(Math.Sin(angle) * length, Math.Cos(angle) * length);
 		}
 
 //LINE DRAWING
 		//returns true if 2 lines intersect
 		private static bool LinesIntersect(Line line1, Line line2) 
 		{
-			float zn = (line2.End.y - line2.Start.y) * (line1.End.x - line1.Start.x) - (line2.End.x - line2.Start.x) * (line1.End.y - line1.Start.y);
-			float ch1 = (line2.End.x - line2.Start.x) * (line1.Start.y - line2.Start.y) - (line2.End.y - line2.Start.y) * (line1.Start.x - line2.Start.x);
-			float ch2 = (line1.End.x - line1.Start.x) * (line1.Start.y - line2.Start.y) - (line1.End.y - line1.Start.y) * (line1.Start.x - line2.Start.x);
+			double zn = (line2.End.y - line2.Start.y) * (line1.End.x - line1.Start.x) - (line2.End.x - line2.Start.x) * (line1.End.y - line1.Start.y);
+			double ch1 = (line2.End.x - line2.Start.x) * (line1.Start.y - line2.Start.y) - (line2.End.y - line2.Start.y) * (line1.Start.x - line2.Start.x);
+			double ch2 = (line1.End.x - line1.Start.x) * (line1.Start.y - line2.Start.y) - (line1.End.y - line1.Start.y) * (line1.Start.x - line2.Start.x);
 
 			if(zn == 0) return false;
 			return (ch1 / zn <= 1 && ch1 / zn >= 0) && (ch2 / zn <= 1 && ch2 / zn >= 0);

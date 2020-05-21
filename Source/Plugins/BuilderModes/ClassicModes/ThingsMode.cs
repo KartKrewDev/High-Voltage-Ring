@@ -874,14 +874,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					case MarqueSelectionMode.SUBTRACT:
 						// Selection order doesn't matter here
 						foreach(Thing t in General.Map.ThingsFilter.VisibleThings)
-							if(selectionrect.Contains(t.Position.x, t.Position.y)) t.Selected = false;
+							if(selectionrect.Contains((float)t.Position.x, (float)t.Position.y)) t.Selected = false;
 						break;
 
 					// Should be Intersect selection mode
 					default:
 						// Selection order doesn't matter here
 						foreach(Thing t in General.Map.ThingsFilter.VisibleThings)
-							if(!selectionrect.Contains(t.Position.x, t.Position.y)) t.Selected = false;
+							if(!selectionrect.Contains((float)t.Position.x, (float)t.Position.y)) t.Selected = false;
 						break;
 				}
 
@@ -946,7 +946,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(index != -1) iconindex = index;
 				}
 
-				RectangleF rect = new RectangleF(t.Position.x + size - 10 / renderer.Scale, t.Position.y + size + 18 / renderer.Scale, 16 / renderer.Scale, -16 / renderer.Scale);
+				RectangleF rect = new RectangleF((float)(t.Position.x + size - 10 / renderer.Scale), (float)(t.Position.y + size + 18 / renderer.Scale), 16 / renderer.Scale, -16 / renderer.Scale);
 				PixelColor c = (t == highlighted ? General.Colors.Highlight : (t.Selected ? General.Colors.Selection : PixelColor.FromColor(Color.White)));
 				renderer.RenderRectangleFilled(rect, c, true, General.Map.Data.CommentTextures[iconindex]);
 			}
@@ -959,7 +959,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			List<Thing> result = new List<Thing>();
 			foreach(Thing t in General.Map.ThingsFilter.VisibleThings)
 			{
-				if(selection.Contains(t.Position.x, t.Position.y)) result.Add(t);
+				if(selection.Contains((float)t.Position.x, (float)t.Position.y)) result.Add(t);
 			}
 
 			if(result.Count == 0) return result;
@@ -970,8 +970,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(t1 == t2) return 0;
 
 				// Get closest distance from thing to selectstart
-				float closest1 = Vector2D.DistanceSq(t1.Position, targetpoint);
-				float closest2 = Vector2D.DistanceSq(t2.Position, targetpoint);
+				double closest1 = Vector2D.DistanceSq(t1.Position, targetpoint);
+				double closest2 = Vector2D.DistanceSq(t2.Position, targetpoint);
 
 				// Return closer one
 				return (int)(closest1 - closest2);

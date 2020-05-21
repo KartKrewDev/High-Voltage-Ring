@@ -24,10 +24,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.ErrorChecks
 			int progress = 0;
 			int stepprogress = 0;
 
-			float minx = int.MaxValue;
-			float maxx = int.MinValue;
-			float miny = int.MaxValue;
-			float maxy = int.MinValue;
+			double minx = int.MaxValue;
+			double maxx = int.MinValue;
+			double miny = int.MaxValue;
+			double maxy = int.MinValue;
 
 			// Go for all vertices
 			foreach(Vertex v in General.Map.Map.Vertices) 

@@ -430,7 +430,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 		
 		// This changes view position
-		public void PositionView(double x, double y)
+		public void PositionView(float x, float y)
 		{
 			// Change position in world coordinates
 			offsetx = x;
@@ -768,14 +768,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 				// Calculate UV coordinates
 				// NOTE: backimagesize.y is made negative to match Doom's coordinate system
-				backimageverts[0].u = lbpos.x / backimagesize.x;
-				backimageverts[0].v = lbpos.y / -backimagesize.y;
-				backimageverts[1].u = rtpos.x / backimagesize.x;
-				backimageverts[1].v = lbpos.y / -backimagesize.y;
-				backimageverts[2].u = lbpos.x / backimagesize.x;
-				backimageverts[2].v = rtpos.y / -backimagesize.y;
-				backimageverts[3].u = rtpos.x / backimagesize.x;
-				backimageverts[3].v = rtpos.y / -backimagesize.y;
+				backimageverts[0].u = (float)(lbpos.x / backimagesize.x);
+				backimageverts[0].v = (float)(lbpos.y / -backimagesize.y);
+				backimageverts[1].u = (float)(rtpos.x / backimagesize.x);
+				backimageverts[1].v = (float)(lbpos.y / -backimagesize.y);
+				backimageverts[2].u = (float)(lbpos.x / backimagesize.x);
+				backimageverts[2].v = (float)(rtpos.y / -backimagesize.y);
+				backimageverts[3].u = (float)(rtpos.x / backimagesize.x);
+				backimageverts[3].v = (float)(rtpos.y / -backimagesize.y);
 			}
 			else
 			{
@@ -813,7 +813,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					else
 					{
 						// Render normal grid
-						RenderGrid(General.Map.Grid.GridSizeF, General.Colors.Grid, gridplotter);
+						RenderGrid((float)General.Map.Grid.GridSizeF, General.Colors.Grid, gridplotter);
 
 						// Render 64 grid
 						if(General.Map.Grid.GridSizeF <= 64) RenderGrid(64f, General.Colors.Grid64, gridplotter);
@@ -846,7 +846,7 @@ namespace CodeImp.DoomBuilder.Rendering
                 // Done
                 gridplotter.DrawContents(graphics);
 				lastgridscale = scale;
-				lastgridsize = General.Map.Grid.GridSizeF;
+				lastgridsize = (float)General.Map.Grid.GridSizeF;
 				lastgridx = offsetx;
 				lastgridy = offsety;
 				lastdrawmapcenter = drawmapcenter; //mxd
@@ -854,16 +854,16 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 		
 		// This renders the grid with a transform applied
-		private void RenderGridTransformed(float size, float angle, float originx, float originy, PixelColor c, Plotter gridplotter)
+		private void RenderGridTransformed(double size, double angle, double originx, double originy, PixelColor c, Plotter gridplotter)
 		{
             uint mask = 0x55555555;
 
 			//mxd. Increase rendered grid size if needed
 			if(!General.Settings.DynamicGridSize && size * scale <= 6f)
 				do { size *= 2; } while(size * scale <= 6f);
-			float sizeinv = 1f / size;
+			double sizeinv = 1f / size;
 
-			if (float.IsInfinity(size) || size < 1e-10)
+			if (double.IsInfinity(size) || size < 1e-10)
 			{
 				return;
 			}
@@ -963,16 +963,16 @@ namespace CodeImp.DoomBuilder.Rendering
 			Vector2D rbb = new Vector2D(General.Map.Config.RightBoundary, General.Map.Config.BottomBoundary).GetTransformed(translatex, translatey, scale, -scale);
 
 			// Draw all horizontal grid lines
-			float ystart = rbpos.y > General.Map.Config.BottomBoundary ? rbpos.y : General.Map.Config.BottomBoundary;
-			float yend = ltpos.y < General.Map.Config.TopBoundary ? ltpos.y : General.Map.Config.TopBoundary;
+			float ystart = (float)(rbpos.y > General.Map.Config.BottomBoundary ? rbpos.y : General.Map.Config.BottomBoundary);
+			float yend = (float)(ltpos.y < General.Map.Config.TopBoundary ? ltpos.y : General.Map.Config.TopBoundary);
 
 			for(float y = ystart; y < yend + size; y += size) 
 			{
 				if(y > General.Map.Config.TopBoundary) y = General.Map.Config.TopBoundary;
 				else if(y < General.Map.Config.BottomBoundary) y = General.Map.Config.BottomBoundary;
 
-				float from = tlb.x < 0 ? 0 : tlb.x;
-				float to = rbb.x > windowsize.Width ? windowsize.Width : rbb.x;
+				float from = (float)(tlb.x < 0 ? 0 : tlb.x);
+				float to = (float)(rbb.x > windowsize.Width ? windowsize.Width : rbb.x);
 
 				pos.y = y;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
@@ -981,16 +981,16 @@ namespace CodeImp.DoomBuilder.Rendering
             }
 
 			// Draw all vertical grid lines
-			float xstart = ltpos.x > General.Map.Config.LeftBoundary ? ltpos.x : General.Map.Config.LeftBoundary;
-			float xend = rbpos.x < General.Map.Config.RightBoundary ? rbpos.x : General.Map.Config.RightBoundary;
+			float xstart = (float)(ltpos.x > General.Map.Config.LeftBoundary ? ltpos.x : General.Map.Config.LeftBoundary);
+			float xend = (float)(rbpos.x < General.Map.Config.RightBoundary ? rbpos.x : General.Map.Config.RightBoundary);
 
 			for(float x = xstart; x < xend + size; x += size) 
 			{
 				if(x > General.Map.Config.RightBoundary) x = General.Map.Config.RightBoundary;
 				else if(x < General.Map.Config.LeftBoundary) x = General.Map.Config.LeftBoundary;
 
-				float from = tlb.y < 0 ? 0 : tlb.y;
-				float to = rbb.y > windowsize.Height ? windowsize.Height : rbb.y;
+				float from = (float)(tlb.y < 0 ? 0 : tlb.y);
+				float to = (float)(rbb.y > windowsize.Height ? windowsize.Height : rbb.y);
 
 				pos.x = x;
 				pos = pos.GetTransformed(translatex, translatey, scale, -scale);
@@ -1048,20 +1048,20 @@ namespace CodeImp.DoomBuilder.Rendering
 			int color = c.ToInt();
 
 			// Setup fixed rect for circle
-			verts[offset].x = screenpos.x - circlesize;
-			verts[offset].y = screenpos.y - circlesize;
+			verts[offset].x = (float)screenpos.x - circlesize;
+			verts[offset].y = (float)screenpos.y - circlesize;
 			verts[offset].c = color;
 			verts[offset].u = 0f;
 			verts[offset].v = 0f;
 			offset++;
-			verts[offset].x = screenpos.x + circlesize;
-			verts[offset].y = screenpos.y - circlesize;
+			verts[offset].x = (float)screenpos.x + circlesize;
+			verts[offset].y = (float)screenpos.y - circlesize;
 			verts[offset].c = color;
 			verts[offset].u = 0.5f;
 			verts[offset].v = 0f;
 			offset++;
-			verts[offset].x = screenpos.x - circlesize;
-			verts[offset].y = screenpos.y + circlesize;
+			verts[offset].x = (float)screenpos.x - circlesize;
+			verts[offset].y = (float)screenpos.y + circlesize;
 			verts[offset].c = color;
 			verts[offset].u = 0f;
 			verts[offset].v = 1f;
@@ -1070,8 +1070,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			offset++;
 			verts[offset] = verts[offset - 2];
 			offset++;
-			verts[offset].x = screenpos.x + circlesize;
-			verts[offset].y = screenpos.y + circlesize;
+			verts[offset].x = (float)screenpos.x + circlesize;
+			verts[offset].y = (float)screenpos.y + circlesize;
 			verts[offset].c = color;
 			verts[offset].u = 0.5f;
 			verts[offset].v = 1f;
@@ -1132,20 +1132,20 @@ namespace CodeImp.DoomBuilder.Rendering
 				ub = 0.999f;
 			}
 
-			verts[offset].x = screenpos.x + sinarrowsize;
-			verts[offset].y = screenpos.y + cosarrowsize;
+			verts[offset].x = (float)screenpos.x + sinarrowsize;
+			verts[offset].y = (float)screenpos.y + cosarrowsize;
 			verts[offset].c = -1;
 			verts[offset].u = ul;
 			verts[offset].v = ut;
 			offset++;
-			verts[offset].x = screenpos.x - cosarrowsize;
-			verts[offset].y = screenpos.y + sinarrowsize;
+			verts[offset].x = (float)screenpos.x - cosarrowsize;
+			verts[offset].y = (float)screenpos.y + sinarrowsize;
 			verts[offset].c = -1;
 			verts[offset].u = ur;
 			verts[offset].v = ut;
 			offset++;
-			verts[offset].x = screenpos.x + cosarrowsize;
-			verts[offset].y = screenpos.y - sinarrowsize;
+			verts[offset].x = (float)screenpos.x + cosarrowsize;
+			verts[offset].y = (float)screenpos.y - sinarrowsize;
 			verts[offset].c = -1;
 			verts[offset].u = ul;
 			verts[offset].v = ub;
@@ -1154,8 +1154,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			offset++;
 			verts[offset] = verts[offset - 2];
 			offset++;
-			verts[offset].x = screenpos.x - sinarrowsize;
-			verts[offset].y = screenpos.y - cosarrowsize;
+			verts[offset].x = (float)screenpos.x - sinarrowsize;
+			verts[offset].y = (float)screenpos.y - cosarrowsize;
 			verts[offset].c = -1;
 			verts[offset].u = ur;
 			verts[offset].v = ub;
@@ -1168,20 +1168,20 @@ namespace CodeImp.DoomBuilder.Rendering
 			float ur = (mirror ? 0f : 1f);
 			
 			// Setup fixed rect for circle
-			verts[offset].x = screenpos.x - width;
-			verts[offset].y = screenpos.y - height;
+			verts[offset].x = (float)screenpos.x - width;
+			verts[offset].y = (float)screenpos.y - height;
 			verts[offset].c = color;
 			verts[offset].u = ul;
 			verts[offset].v = 0;
 			offset++;
-			verts[offset].x = screenpos.x + width;
-			verts[offset].y = screenpos.y - height;
+			verts[offset].x = (float)screenpos.x + width;
+			verts[offset].y = (float)screenpos.y - height;
 			verts[offset].c = color;
 			verts[offset].u = ur;
 			verts[offset].v = 0;
 			offset++;
-			verts[offset].x = screenpos.x - width;
-			verts[offset].y = screenpos.y + height;
+			verts[offset].x = (float)screenpos.x - width;
+			verts[offset].y = (float)screenpos.y + height;
 			verts[offset].c = color;
 			verts[offset].u = ul;
 			verts[offset].v = 1;
@@ -1190,8 +1190,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			offset++;
 			verts[offset] = verts[offset - 2];
 			offset++;
-			verts[offset].x = screenpos.x + width;
-			verts[offset].y = screenpos.y + height;
+			verts[offset].x = (float)screenpos.x + width;
+			verts[offset].y = (float)screenpos.y + height;
 			verts[offset].c = color;
 			verts[offset].u = ur;
 			verts[offset].v = 1;
@@ -1486,7 +1486,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						{
 							if((General.Settings.GZDrawModelsMode == ModelRenderMode.SELECTION && !t.Selected) || (General.Settings.GZDrawModelsMode == ModelRenderMode.ACTIVE_THINGS_FILTER && alpha < 1.0f)) continue;
 							Vector2D screenpos = ((Vector2D)t.Position).GetTransformed(translatex, translatey, scale, -scale);
-							float modelScale = scale * t.ActorScale.Width * t.ScaleX;
+							double modelScale = scale * t.ActorScale.Width * t.ScaleX;
 
 							//should we render this model?
 							if(((screenpos.x + mde.Model.Radius * modelScale) <= 0.0f) || ((screenpos.x - mde.Model.Radius * modelScale) >= windowsize.Width) ||
@@ -1496,10 +1496,10 @@ namespace CodeImp.DoomBuilder.Rendering
 							graphics.SetUniform(UniformName.FillColor, (t.Selected ? cSelection : cWire));
 
 							// Set transform settings
-							float sx = t.ScaleX * t.ActorScale.Width;
-							float sy = t.ScaleY * t.ActorScale.Height;
+							double sx = t.ScaleX * t.ActorScale.Width;
+							double sy = t.ScaleY * t.ActorScale.Height;
 							
-							Matrix modelscale = Matrix.Scaling(sx, sx, sy);
+							Matrix modelscale = Matrix.Scaling((float)sx, (float)sx, (float)sy);
 							Matrix rotation = Matrix.RotationY((float)-t.RollRad) * Matrix.RotationX((float)-t.PitchRad) * Matrix.RotationZ((float)t.Angle);
 							Matrix position = Matrix.Translation((float)screenpos.x, (float)screenpos.y, 0.0f);
 							Matrix world = General.Map.Data.ModeldefEntries[t.Type].Transform * modelscale * rotation * viewscale * position;
@@ -1746,10 +1746,10 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 			
 			// Make quads
-			quads[0] = new FlatQuad(PrimitiveType.TriangleStrip, lt.x, lt.y, rb.x, lt.y - bordersize);
-			quads[1] = new FlatQuad(PrimitiveType.TriangleStrip, lt.x, rb.y + bordersize, rb.x, rb.y);
-			quads[2] = new FlatQuad(PrimitiveType.TriangleStrip, lt.x, lt.y - bordersize, lt.x + bordersize, rb.y + bordersize);
-			quads[3] = new FlatQuad(PrimitiveType.TriangleStrip, rb.x - bordersize, lt.y - bordersize, rb.x, rb.y + bordersize);
+			quads[0] = new FlatQuad(PrimitiveType.TriangleStrip, (float)lt.x, (float)lt.y, (float)rb.x, (float)lt.y - bordersize);
+			quads[1] = new FlatQuad(PrimitiveType.TriangleStrip, (float)lt.x, (float)rb.y + bordersize, (float)rb.x, (float)rb.y);
+			quads[2] = new FlatQuad(PrimitiveType.TriangleStrip, (float)lt.x, (float)lt.y - bordersize, (float)lt.x + bordersize, (float)rb.y + bordersize);
+			quads[3] = new FlatQuad(PrimitiveType.TriangleStrip, (float)rb.x - bordersize, (float)lt.y - bordersize, (float)rb.x, (float)rb.y + bordersize);
 			quads[0].SetColors(c.ToInt());
 			quads[1].SetColors(c.ToInt());
 			quads[2].SetColors(c.ToInt());
@@ -1786,7 +1786,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			// Make quad
-			FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, lt.x, lt.y, rb.x, rb.y);
+			FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, (float)lt.x, (float)lt.y, (float)rb.x, (float)rb.y);
 			quad.SetColors(c.ToInt());
 			
 			// Set renderstates for rendering
@@ -1817,7 +1817,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 
 			// Make quad
-			FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, lt.x, lt.y, rb.x, rb.y);
+			FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, (float)lt.x, (float)lt.y, (float)rb.x, (float)rb.y);
 			quad.SetColors(c.ToInt());
 
 			// Set renderstates for rendering
@@ -1852,10 +1852,10 @@ namespace CodeImp.DoomBuilder.Rendering
 					line.End2D = ((Vector2D)line.End).GetTransformed(translatex, translatey, scale, -scale); //end
 				}
 
-				float maxx = Math.Max(line.Start2D.x, line.End2D.x);
-				float minx = Math.Min(line.Start2D.x, line.End2D.x);
-				float maxy = Math.Max(line.Start2D.y, line.End2D.y);
-				float miny = Math.Min(line.Start2D.y, line.End2D.y);
+				float maxx = (float)Math.Max(line.Start2D.x, line.End2D.x);
+				float minx = (float)Math.Min(line.Start2D.x, line.End2D.x);
+				float maxy = (float)Math.Max(line.Start2D.y, line.End2D.y);
+				float miny = (float)Math.Min(line.Start2D.y, line.End2D.y);
 
 				// Too small / not on screen?
 				if(((line.End2D - line.Start2D).GetLengthSq() < MINIMUM_SPRITE_RADIUS) || ((maxx <= 0.0f) || (minx >= windowsize.Width) || (maxy <= 0.0f) || (miny >= windowsize.Height)))
@@ -1883,31 +1883,31 @@ namespace CodeImp.DoomBuilder.Rendering
 				int color = line.Color.ToInt();
 
 				// Add regular points
-				verts[pointscount].x = line.Start2D.x;
-				verts[pointscount].y = line.Start2D.y;
+				verts[pointscount].x = (float)line.Start2D.x;
+				verts[pointscount].y = (float)line.Start2D.y;
 				verts[pointscount].c = color;
 				pointscount++;
 
-				verts[pointscount].x = line.End2D.x;
-				verts[pointscount].y = line.End2D.y;
+				verts[pointscount].x = (float)line.End2D.x;
+				verts[pointscount].y = (float)line.End2D.y;
 				verts[pointscount].c = color;
 				pointscount++;
 
 				// Add arrowhead
 				if(line.RenderArrowhead)
 				{
-					float angle = line.GetAngle();
+					double angle = line.GetAngle();
 					Vector2D a1 = new Vector2D(line.End.x - scaler * (float)Math.Sin(angle - 0.46f), line.End.y + scaler * (float)Math.Cos(angle - 0.46f)).GetTransformed(translatex, translatey, scale, -scale); //arrowhead end 1
 					Vector2D a2 = new Vector2D(line.End.x - scaler * (float)Math.Sin(angle + 0.46f), line.End.y + scaler * (float)Math.Cos(angle + 0.46f)).GetTransformed(translatex, translatey, scale, -scale); //arrowhead end 2
 					
 					verts[pointscount] = verts[pointscount - 1];
-					verts[pointscount + 1].x = a1.x;
-					verts[pointscount + 1].y = a1.y;
+					verts[pointscount + 1].x = (float)a1.x;
+					verts[pointscount + 1].y = (float)a1.y;
 					verts[pointscount + 1].c = color;
 
 					verts[pointscount + 2] = verts[pointscount - 1];
-					verts[pointscount + 3].x = a2.x;
-					verts[pointscount + 3].y = a2.y;
+					verts[pointscount + 3].x = (float)a2.x;
+					verts[pointscount + 3].y = (float)a2.y;
 					verts[pointscount + 3].c = color;
 
 					pointscount += 4;
@@ -1952,20 +1952,20 @@ namespace CodeImp.DoomBuilder.Rendering
 			Vector2D dn = delta.GetNormal() * thickness;
 			
 			// Make vertices
-			verts[0].x = start.x - dn.x + dn.y;
-			verts[0].y = start.y - dn.y - dn.x;
+			verts[0].x = (float)(start.x - dn.x + dn.y);
+			verts[0].y = (float)(start.y - dn.y - dn.x);
 			verts[0].z = 0.0f;
 			verts[0].c = c.ToInt();
-			verts[1].x = start.x - dn.x - dn.y;
-			verts[1].y = start.y - dn.y + dn.x;
+			verts[1].x = (float)(start.x - dn.x - dn.y);
+			verts[1].y = (float)(start.y - dn.y + dn.x);
 			verts[1].z = 0.0f;
 			verts[1].c = c.ToInt();
-			verts[2].x = end.x + dn.x + dn.y;
-			verts[2].y = end.y + dn.y - dn.x;
+			verts[2].x = (float)(end.x + dn.x + dn.y);
+			verts[2].y = (float)(end.y + dn.y - dn.x);
 			verts[2].z = 0.0f;
 			verts[2].c = c.ToInt();
-			verts[3].x = end.x + dn.x - dn.y;
-			verts[3].y = end.y + dn.y + dn.x;
+			verts[3].x = (float)(end.x + dn.x - dn.y);
+			verts[3].y = (float)(end.y + dn.y + dn.x);
 			verts[3].z = 0.0f;
 			verts[3].c = c.ToInt();
 			

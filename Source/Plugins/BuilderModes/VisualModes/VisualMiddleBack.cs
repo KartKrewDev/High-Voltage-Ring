@@ -142,22 +142,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Make the right-top coordinates
 			tp.trt = new Vector2D(tp.trb.x, tp.tlt.y);
 			tp.vrt = new Vector3D(tp.vrb.x, tp.vrb.y, tp.vlt.z);
-			
+
 			// Get ceiling and floor heights
-			float flo = Sector.Floor.Level.plane.GetZ(vl);
-			float fro = Sector.Floor.Level.plane.GetZ(vr);
-			float clo = Sector.Ceiling.Level.plane.GetZ(vl);
-			float cro = Sector.Ceiling.Level.plane.GetZ(vr);
+			double flo = Sector.Floor.Level.plane.GetZ(vl);
+			double fro = Sector.Floor.Level.plane.GetZ(vr);
+			double clo = Sector.Ceiling.Level.plane.GetZ(vl);
+			double cro = Sector.Ceiling.Level.plane.GetZ(vr);
 
-			float fle = sd.Floor.plane.GetZ(vl);
-			float fre = sd.Floor.plane.GetZ(vr);
-			float cle = sd.Ceiling.plane.GetZ(vl);
-			float cre = sd.Ceiling.plane.GetZ(vr);
+			double fle = sd.Floor.plane.GetZ(vl);
+			double fre = sd.Floor.plane.GetZ(vr);
+			double cle = sd.Ceiling.plane.GetZ(vl);
+			double cre = sd.Ceiling.plane.GetZ(vr);
 
-			float fl = flo > fle ? flo : fle;
-			float fr = fro > fre ? fro : fre;
-			float cl = clo < cle ? clo : cle;
-			float cr = cro < cre ? cro : cre;
+			double fl = flo > fle ? flo : fle;
+			double fr = fro > fre ? fro : fre;
+			double cl = clo < cle ? clo : cle;
+			double cr = cro < cre ? cro : cre;
 			
 			// Anything to see?
 			if(((cl - fl) > 0.01f) || ((cr - fr) > 0.01f))

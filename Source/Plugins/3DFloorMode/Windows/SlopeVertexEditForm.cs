@@ -126,8 +126,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			foreach (SlopeVertex sv in vertices)
 			{
 				SlopeVertexGroup svg = BuilderPlug.Me.GetSlopeVertexGroup(sv);
-				float x = positionx.GetResultFloat(sv.Pos.x);
-				float y = positiony.GetResultFloat(sv.Pos.y);
+				double x = positionx.GetResultFloat(sv.Pos.x);
+				double y = positiony.GetResultFloat(sv.Pos.y);
 
 				sv.Pos = new Vector2D(x, y);
 

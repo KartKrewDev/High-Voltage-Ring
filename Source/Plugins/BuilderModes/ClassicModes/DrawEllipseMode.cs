@@ -27,7 +27,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private DrawEllipseOptionsPanel panel;
 
 		// Drawing
-		private float angle; // in radians
+		private double angle; // in radians
 
 		#endregion
 
@@ -119,12 +119,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			float hh = height / 2.0f;
 
 			Vector2D center = new Vector2D(pStart.x + hw, pStart.y + hh);
-			float curAngle = angle;
-			float angleStep = -Angle2D.PI / subdivisions * 2;
+			double curAngle = angle;
+			double angleStep = -Angle2D.PI / subdivisions * 2;
 
 			for(int i = 0; i < subdivisions; i++) 
 			{
-				float px, py;
+				double px, py;
 				if(doBevel) 
 				{
 					px = (center.x - (float)Math.Sin(curAngle) * (hw + currentbevelwidth));
@@ -144,10 +144,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			shape[subdivisions] = shape[0];
 
 			// Now fit it inside the bounding box
-			float minx = float.MaxValue;
-			float miny = float.MaxValue;
-			float maxx = float.MinValue;
-			float maxy = float.MinValue;
+			double minx = float.MaxValue;
+			double miny = float.MaxValue;
+			double maxx = float.MinValue;
+			double maxy = float.MinValue;
 
 			// Calculate shape extents
 			foreach(Vector2D v in shape)
@@ -159,8 +159,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// Calculate scalers
-			float scalerx = 1.0f;
-			float scalery = 1.0f;
+			double scalerx = 1.0f;
+			double scalery = 1.0f;
 			
 			if(minx != pStart.x || maxx != pEnd.x)
 				scalerx = (pEnd.x - pStart.x) / (maxx - minx);

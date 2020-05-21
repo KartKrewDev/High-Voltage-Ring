@@ -36,7 +36,7 @@ namespace CodeImp.DoomBuilder.Types
 
 		#region ================== Variables
 
-		private new float value;
+		private new double value;
 
 		#endregion
 

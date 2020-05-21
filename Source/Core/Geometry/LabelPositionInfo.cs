@@ -24,10 +24,10 @@ namespace CodeImp.DoomBuilder.Geometry
 	{
 		// Members
 		public Vector2D position;
-		public float radius;
+		public double radius;
 		
 		// Constructor
-		public LabelPositionInfo(Vector2D position, float radius)
+		public LabelPositionInfo(Vector2D position, double radius)
 		{
 			this.position = position;
 			this.radius = radius;

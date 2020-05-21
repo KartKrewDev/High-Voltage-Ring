@@ -51,8 +51,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
         private long lastsetuponloadedtexture;
 
         // UV dragging
-        private float dragstartanglexy;
-		private float dragstartanglez;
+        private double dragstartanglexy;
+		private double dragstartanglez;
 		private Vector3D dragorigin;
 		private Vector3D deltaxy;
 		private Vector3D deltaz;
@@ -164,7 +164,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		
 		
 		// This performs an accurate test for object picking
-		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray)
+		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray)
 		{
 			// The fast reject pass is already as accurate as it gets,
 			// so we just return the intersection distance here
@@ -298,13 +298,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Apply ceiling glow?
 			if(data.CeilingGlow != null)
 			{
-				float cgz = data.CeilingGlowPlane.GetZ(v.x, v.y);
+				double cgz = data.CeilingGlowPlane.GetZ(v.x, v.y);
 
 				// Vertex is above ceiling glow plane?
 				if(v.z > cgz)
 				{
-					float cz = data.Ceiling.plane.GetZ(v.x, v.y);
-					float delta = 1.0f - (((v.z - cgz) / (cz - cgz)) * 0.9f);
+					double cz = data.Ceiling.plane.GetZ(v.x, v.y);
+					double delta = 1.0f - (((v.z - cgz) / (cz - cgz)) * 0.9f);
 					PixelColor vertexcolor = PixelColor.FromInt(v.c);
 					PixelColor glowcolor = PixelColor.Add(vertexcolor, data.CeilingGlow.Color);
 					v.c = InterpolationTools.InterpolateColor(glowcolor, vertexcolor, delta).WithAlpha(255).ToInt();
@@ -314,13 +314,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Apply floor glow?
 			if(data.FloorGlow != null)
 			{
-				float fgz = data.FloorGlowPlane.GetZ(v.x, v.y);
+				double fgz = data.FloorGlowPlane.GetZ(v.x, v.y);
 
 				// Vertex is below floor glow plane?
 				if(v.z < fgz)
 				{
-					float fz = data.Floor.plane.GetZ(v.x, v.y);
-					float delta = 1.0f - (((v.z - fz) / (fgz - fz)) * 0.9f);
+					double fz = data.Floor.plane.GetZ(v.x, v.y);
+					double delta = 1.0f - (((v.z - fz) / (fgz - fz)) * 0.9f);
 					PixelColor vertexcolor = PixelColor.FromInt(v.c);
 					PixelColor glowcolor = PixelColor.Add(vertexcolor, data.FloorGlow.Color);
 					v.c = InterpolationTools.InterpolateColor(vertexcolor, glowcolor, delta).WithAlpha(255).ToInt();
@@ -330,9 +330,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
             // [ZZ] process sector top and bottom colors.
             // block
             {
-                float cz = data.Ceiling.plane.GetZ(v.x, v.y);
-                float cgz = data.Floor.plane.GetZ(v.x, v.y);
-                float delta = 1.0f - (((v.z - cgz) / (cz - cgz)) * 0.9f);
+				double cz = data.Ceiling.plane.GetZ(v.x, v.y);
+				double cgz = data.Floor.plane.GetZ(v.x, v.y);
+				double delta = 1.0f - (((v.z - cgz) / (cz - cgz)) * 0.9f);
                 PixelColor vertexcolor = PixelColor.FromInt(v.c);
                 PixelColor topcolor = PixelColor.Modulate(vertexcolor, data.ColorWallTop);
                 PixelColor bottomcolor = PixelColor.Modulate(vertexcolor, data.ColorWallBottom);
@@ -346,7 +346,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// The polygon is expected to be convex and clockwise
 		protected static WallPolygon SplitPoly(ref WallPolygon poly, Plane p, bool keepfront)
 		{
-			const float NEAR_ZERO = 0.01f;
+			const double NEAR_ZERO = 0.01f;
 			WallPolygon front = new WallPolygon(poly.Count);
 			WallPolygon back = new WallPolygon(poly.Count);
 			poly.CopyProperties(front);
@@ -356,12 +356,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				// Go for all vertices to see which side they have to be on
 				Vector3D v1 = poly[poly.Count - 1];
-				float side1 = p.Distance(v1);
+				double side1 = p.Distance(v1);
 				for(int i = 0; i < poly.Count; i++)
 				{
 					// Fetch vertex and determine side
 					Vector3D v2 = poly[i];
-					float side2 = p.Distance(v2);
+					double side2 = p.Distance(v2);
 					
 					// Front?
 					if(side2 > NEAR_ZERO)
@@ -369,7 +369,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(side1 < -NEAR_ZERO)
 						{
 							// Split line with plane and insert the vertex
-							float u = 0.0f;
+							double u = 0.0f;
 							p.GetIntersection(v1, v2, ref u);
 							Vector3D v3 = v1 + (v2 - v1) * u;
 							front.Add(v3);
@@ -384,7 +384,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(side1 > NEAR_ZERO)
 						{
 							// Split line with plane and insert the vertex
-							float u = 0.0f;
+							double u = 0.0f;
 							p.GetIntersection(v1, v2, ref u);
 							Vector3D v3 = v1 + (v2 - v1) * u;
 							front.Add(v3);
@@ -422,8 +422,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This crops a polygon with a plane and keeps only a certain part of the polygon
 		protected static void CropPoly(ref WallPolygon poly, Plane p, bool keepfront)
 		{
-			const float NEAR_ZERO = 0.01f;
-			float sideswitch = keepfront ? 1 : -1;
+			const double NEAR_ZERO = 0.01f;
+			double sideswitch = keepfront ? 1 : -1;
 			WallPolygon newp = new WallPolygon(poly.Count);
 			poly.CopyProperties(newp);
 			
@@ -431,12 +431,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				// First split lines that cross the plane so that we have vertices on the plane where the lines cross
 				Vector3D v1 = poly[poly.Count - 1];
-				float side1 = p.Distance(v1) * sideswitch;
+				double side1 = p.Distance(v1) * sideswitch;
 				for(int i = 0; i < poly.Count; i++)
 				{
 					// Fetch vertex and determine side
 					Vector3D v2 = poly[i];
-					float side2 = p.Distance(v2) * sideswitch;
+					double side2 = p.Distance(v2) * sideswitch;
 					
 					// Front?
 					if(side2 > NEAR_ZERO)
@@ -444,7 +444,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(side1 < -NEAR_ZERO)
 						{
 							// Split line with plane and insert the vertex
-							float u = 0.0f;
+							double u = 0.0f;
 							p.GetIntersection(v1, v2, ref u);
 							Vector3D v3 = v1 + (v2 - v1) * u;
 							newp.Add(v3);
@@ -458,7 +458,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(side1 > NEAR_ZERO)
 						{
 							// Split line with plane and insert the vertex
-							float u = 0.0f;
+							double u = 0.0f;
 							p.GetIntersection(v1, v2, ref u);
 							Vector3D v3 = v1 + (v2 - v1) * u;
 							newp.Add(v3);
@@ -683,16 +683,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Fit width
 			if(options.FitWidth) 
 			{
-				float scalex, offsetx;
-				float linelength = (float)Math.Round(Sidedef.Line.Length); // Let's use ZDoom-compatible line length here
-				float patternwidth = (options.AutoWidth && options.PatternWidth > 0) ? options.PatternWidth : Texture.Width;
-				float horizontalrepeat = options.HorizontalRepeat;
+				double scalex, offsetx;
+				double linelength = Math.Round(Sidedef.Line.Length); // Let's use ZDoom-compatible line length here
+				double patternwidth = (options.AutoWidth && options.PatternWidth > 0) ? options.PatternWidth : Texture.Width;
+				double horizontalrepeat = options.HorizontalRepeat;
 
 				if (options.FitAcrossSurfaces)
 				{
 					if (options.AutoWidth)
 					{
-						horizontalrepeat = (float)Math.Round((float)options.GlobalBounds.Width / patternwidth);
+						horizontalrepeat = Math.Round((double)options.GlobalBounds.Width / patternwidth);
 
 						if (horizontalrepeat == 0)
 							horizontalrepeat = 1.0f;
@@ -702,7 +702,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					scalex = Texture.ScaledWidth / (linelength * (options.GlobalBounds.Width / linelength)) * horizontalrepeat;
-					offsetx = (float)Math.Round((options.Bounds.X * scalex - Sidedef.OffsetX - options.ControlSideOffsetX), General.Map.FormatInterface.VertexDecimals);
+					offsetx = Math.Round((options.Bounds.X * scalex - Sidedef.OffsetX - options.ControlSideOffsetX), General.Map.FormatInterface.VertexDecimals);
 					if(Texture.IsImageLoaded) offsetx %= Texture.Width;
 				} 
 				else 
@@ -738,9 +738,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				if(Sidedef.Sector != null) 
 				{
-					float scaley, offsety;
-					float patternheight = (options.AutoHeight && options.PatternHeight > 0) ? options.PatternHeight : Texture.Height;
-					float verticalrepeat = options.VerticalRepeat;
+					double scaley, offsety;
+					double patternheight = (options.AutoHeight && options.PatternHeight > 0) ? options.PatternHeight : Texture.Height;
+					double verticalrepeat = options.VerticalRepeat;
 
 					if (options.FitAcrossSurfaces) 
 					{
@@ -814,9 +814,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd. Oh so special cases...
-		private float GetLowerOffsetY(float scaley) 
+		private double GetLowerOffsetY(double scaley) 
 		{
-			float offsety;
+			double offsety;
 			if(Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
 				offsety = (-Sidedef.OffsetY - Sidedef.GetMiddleHeight() - Sidedef.GetHighHeight()) * scaley;
 			else
@@ -1461,8 +1461,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(General.Actions.CheckActionActive(General.ThisAssembly, "visualselect"))
 				{
 					// Check if tolerance is exceeded to start UV dragging
-					float deltaxy = General.Map.VisualCamera.AngleXY - dragstartanglexy;
-					float deltaz = General.Map.VisualCamera.AngleZ - dragstartanglez;
+					double deltaxy = General.Map.VisualCamera.AngleXY - dragstartanglexy;
+					double deltaz = General.Map.VisualCamera.AngleZ - dragstartanglez;
 					if((Math.Abs(deltaxy) + Math.Abs(deltaz)) > DRAG_ANGLE_TOLERANCE)
 					{
 						mode.PreAction(UndoGroup.TextureOffsetChange);
@@ -1481,7 +1481,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This is called to update UV dragging
 		protected virtual void UpdateDragUV()
 		{
-			float u_ray;
+			double u_ray;
 			
 			// Calculate intersection position
 			Line2D ray = new Line2D(General.Map.VisualCamera.Position, General.Map.VisualCamera.Target);
@@ -1492,8 +1492,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Vector3D dragdelta = intersect - dragorigin;
 			Vector3D dragdeltaxy = dragdelta * deltaxy;
 			Vector3D dragdeltaz = dragdelta * deltaz;
-			float offsetx = dragdeltaxy.GetLength();
-			float offsety = dragdeltaz.GetLength();
+			double offsetx = dragdeltaxy.GetLength();
+			double offsety = dragdeltaz.GetLength();
 			if((Math.Sign(dragdeltaxy.x) < 0) || (Math.Sign(dragdeltaxy.y) < 0) || (Math.Sign(dragdeltaxy.z) < 0)) offsetx = -offsetx;
 			if((Math.Sign(dragdeltaz.x) < 0) || (Math.Sign(dragdeltaz.y) < 0) || (Math.Sign(dragdeltaz.z) < 0)) offsety = -offsety;
 			

@@ -189,9 +189,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					if (BuilderPlug.Me.SlopeVertexLabelDisplayOption == LabelDisplayOption.Always || General.Interface.AltState == true)
 					{
 						SlopeVertex sv = svg.Vertices[i];
-						float scale = 1 / renderer.Scale;
-						float x = sv.Pos.x;
-						float y = sv.Pos.y - 14 * scale;
+						double scale = 1 / renderer.Scale;
+						double x = sv.Pos.x;
+						double y = sv.Pos.y - 14 * scale;
 						string value = String.Format("Z: {0}", sv.Z);
 						bool showlabel = true;
 
@@ -275,8 +275,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					PixelColor c = General.Colors.Indication;
 					Vector3D v = sv.Pos;
 
-					renderer.RenderRectangleFilled(new RectangleF(v.x - size / 2, v.y - size / 2, size, size), General.Colors.Background, true);
-					renderer.RenderRectangle(new RectangleF(v.x - size / 2, v.y - size / 2, size, size), 2, c, true);
+					renderer.RenderRectangleFilled(new RectangleF((float)(v.x - size / 2), (float)(v.y - size / 2), size, size), General.Colors.Background, true);
+					renderer.RenderRectangle(new RectangleF((float)(v.x - size / 2), (float)(v.y - size / 2), size, size), 2, c, true);
 				}
 
 
@@ -312,8 +312,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 						// Render vertex
 						//renderer.RenderRectangleFilled(new RectangleF(points[i].pos.x - vsize, points[i].pos.y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
-						renderer.RenderRectangleFilled(new RectangleF(points[i].pos.x - size / 2, points[i].pos.y - size / 2, size, size), General.Colors.Background, true);
-						renderer.RenderRectangle(new RectangleF(points[i].pos.x - size / 2, points[i].pos.y - size / 2, size, size), 2, General.Colors.Indication, true);
+						renderer.RenderRectangleFilled(new RectangleF((float)(points[i].pos.x - size / 2), (float)(points[i].pos.y - size / 2), size, size), General.Colors.Background, true);
+						renderer.RenderRectangle(new RectangleF((float)(points[i].pos.x - size / 2), (float)(points[i].pos.y - size / 2), size, size), 2, General.Colors.Indication, true);
 					}
 				}
 
@@ -327,8 +327,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				// Render vertex at cursor
 				//renderer.RenderRectangleFilled(new RectangleF(curp.pos.x - vsize, curp.pos.y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
 
-				renderer.RenderRectangleFilled(new RectangleF(curp.pos.x - size / 2, curp.pos.y - size / 2, size, size), General.Colors.Background, true);
-				renderer.RenderRectangle(new RectangleF(curp.pos.x - size / 2, curp.pos.y - size / 2, size, size), 2, General.Colors.Indication, true);
+				renderer.RenderRectangleFilled(new RectangleF((float)(curp.pos.x - size / 2), (float)(curp.pos.y - size / 2), size, size), General.Colors.Background, true);
+				renderer.RenderRectangle(new RectangleF((float)(curp.pos.x - size / 2), (float)(curp.pos.y - size / 2), size, size), 2, General.Colors.Indication, true);
 
 				// Done
 				renderer.Finish();
@@ -392,7 +392,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 						// Find nearest grid intersection
 						bool found = false;
-						float found_distance = float.MaxValue;
+						double found_distance = float.MaxValue;
 						Vector2D found_coord = new Vector2D();
 						foreach (Vector2D v in coords)
 						{
@@ -447,7 +447,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			{
 				Line2D dline = new Line2D(mousemappos, points[points.Count - 1].pos);
 				bool foundintersection = false;
-				float u = 0.0f;
+				double u = 0.0f;
 				List<Line2D> blines = new List<Line2D>();
 
 				// lines for left, top, right and bottom bondaries

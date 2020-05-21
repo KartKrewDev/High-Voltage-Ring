@@ -162,12 +162,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Make the right-top coordinates
 			tp.trt = new Vector2D(tp.trb.x, tp.tlt.y);
 			tp.vrt = new Vector3D(tp.vrb.x, tp.vrb.y, tp.vlt.z);
-			
+
 			// Get ceiling and floor heights
-			float fl = sd.Floor.plane.GetZ(vl);
-			float fr = sd.Floor.plane.GetZ(vr);
-			float cl = sd.Ceiling.plane.GetZ(vl);
-			float cr = sd.Ceiling.plane.GetZ(vr);
+			double fl = sd.Floor.plane.GetZ(vl);
+			double fr = sd.Floor.plane.GetZ(vr);
+			double cl = sd.Ceiling.plane.GetZ(vl);
+			double cr = sd.Ceiling.plane.GetZ(vr);
 			
 			// Anything to see?
 			if(((cl - fl) > 0.01f) || ((cr - fr) > 0.01f))

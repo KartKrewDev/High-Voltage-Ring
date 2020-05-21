@@ -192,7 +192,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 									// Things are complicated in GZDoom...
 									Matrix moffset = Matrix.Translation(mds.Offset.Y, -mds.Offset.X, mds.Offset.Z);
                                     //Matrix mrotation = Matrix.RotationZ(Angle2D.DegToRad(mds.AngleOffset)) * Matrix.RotationY(-Angle2D.DegToRad(mds.RollOffset)) * Matrix.RotationX(-Angle2D.DegToRad(mds.PitchOffset));
-                                    Matrix mrotation = Matrix.RotationY(-Angle2D.DegToRad(mds.RollOffset)) * Matrix.RotationX(-Angle2D.DegToRad(mds.PitchOffset)) * Matrix.RotationZ(Angle2D.DegToRad(mds.AngleOffset));
+                                    Matrix mrotation = Matrix.RotationY((float)-Angle2D.DegToRad(mds.RollOffset)) * Matrix.RotationX((float)- Angle2D.DegToRad(mds.PitchOffset)) * Matrix.RotationZ((float)Angle2D.DegToRad(mds.AngleOffset));
                                     md.SetTransform(mrotation, moffset, mds.Scale);
 
 									// Add models

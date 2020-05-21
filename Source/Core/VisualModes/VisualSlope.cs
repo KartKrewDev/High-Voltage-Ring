@@ -24,7 +24,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// Was changed?
 		private bool changed;
 
-		protected float length;
+		protected double length;
 
 		private Matrix position;
 
@@ -51,7 +51,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public bool Changed { get { return changed; } set { changed = value; } }
 
-		public float Length { get { return length; } }
+		public double Length { get { return length; } }
 
 		public Matrix Position { get { return position; } }
 
@@ -93,7 +93,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// This is called when the thing must be tested for line intersection. This should perform
 		/// accurate hit detection and set u_ray to the position on the ray where this hits the geometry.
 		/// </summary>
-		public virtual bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray)
+		public virtual bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray)
 		{
 			return true;
 		}
@@ -113,17 +113,17 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			Matrix m = Matrix.Null;
 
-			m.M11 = linevector.x;
-			m.M12 = linevector.y;
-			m.M13 = linevector.z;
+			m.M11 = (float)linevector.x;
+			m.M12 = (float)linevector.y;
+			m.M13 = (float)linevector.z;
 
-			m.M21 = perpendicularvector.x;
-			m.M22 = perpendicularvector.y;
-			m.M23 = perpendicularvector.z;
+			m.M21 = (float)perpendicularvector.x;
+			m.M22 = (float)perpendicularvector.y;
+			m.M23 = (float)perpendicularvector.z;
 
-			m.M31 = plane.Normal.x;
-			m.M32 = plane.Normal.y;
-			m.M33 = plane.Normal.z;
+			m.M31 = (float)plane.Normal.x;
+			m.M32 = (float)plane.Normal.y;
+			m.M33 = (float)plane.Normal.z;
 
 			m.M44 = 1.0f;
 

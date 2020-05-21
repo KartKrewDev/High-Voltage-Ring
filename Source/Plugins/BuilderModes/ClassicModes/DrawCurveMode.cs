@@ -117,7 +117,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						PixelColor c = !snaptonearest ? stitchcolor : losecolor;
 
 						// Render vertex
-						renderer.RenderRectangleFilled(new RectangleF(curve.Shape[i].x - vsize, curve.Shape[i].y - vsize, vsize * 2.0f, vsize * 2.0f), c, true);
+						renderer.RenderRectangleFilled(new RectangleF((float)(curve.Shape[i].x - vsize), (float)(curve.Shape[i].y - vsize), vsize * 2.0f, vsize * 2.0f), c, true);
 					}
 				}
 
@@ -130,7 +130,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						PixelColor c = points[i].stitch ? stitchcolor : losecolor;
 
 						// Render vertex
-						renderer.RenderRectangleFilled(new RectangleF(points[i].pos.x - vsize, points[i].pos.y - vsize, vsize * 2.0f, vsize * 2.0f), c, true);
+						renderer.RenderRectangleFilled(new RectangleF((float)(points[i].pos.x - vsize), (float)(points[i].pos.y - vsize), vsize * 2.0f, vsize * 2.0f), c, true);
 					}
 				}
 
@@ -138,7 +138,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				PixelColor color = snaptonearest ? stitchcolor : losecolor;
 
 				// Render vertex at cursor
-				renderer.RenderRectangleFilled(new RectangleF(curp.pos.x - vsize, curp.pos.y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
+				renderer.RenderRectangleFilled(new RectangleF((float)(curp.pos.x - vsize), (float)(curp.pos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 
 				// Render labels
 				renderer.RenderText(labels.ToArray());

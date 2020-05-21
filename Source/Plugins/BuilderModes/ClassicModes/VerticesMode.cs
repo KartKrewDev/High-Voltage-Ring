@@ -305,10 +305,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Find all points where the grid intersects the line
 						List<Vector2D> points = l.GetGridIntersections();
 						insertpos = mousemappos;
-						float distance = float.MaxValue;
+						double distance = double.MaxValue;
 						foreach(Vector2D p in points)
 						{
-							float pdist = Vector2D.DistanceSq(p, mousemappos);
+							double pdist = Vector2D.DistanceSq(p, mousemappos);
 							if(pdist < distance)
 							{
 								insertpos = p;
@@ -484,10 +484,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						else 
 						{
 							insertpreview = mousemappos;
-							float distance = float.MaxValue;
+							double distance = double.MaxValue;
 							foreach(Vector2D p in points) 
 							{
-								float pdist = Vector2D.DistanceSq(p, mousemappos);
+								double pdist = Vector2D.DistanceSq(p, mousemappos);
 								if(pdist < distance) 
 								{
 									insertpreview = p;
@@ -505,10 +505,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					//render preview
 					if(renderer.StartOverlay(true)) 
 					{
-						float dist = Math.Min(Vector2D.Distance(mousemappos, insertpreview), BuilderPlug.Me.SplitLinedefsRange);
+						double dist = Math.Min(Vector2D.Distance(mousemappos, insertpreview), BuilderPlug.Me.SplitLinedefsRange);
 						byte alpha = (byte)(255 - (dist / BuilderPlug.Me.SplitLinedefsRange) * 128);
 						float vsize = (renderer.VertexSize + 1.0f) / renderer.Scale;
-						renderer.RenderRectangleFilled(new RectangleF(insertpreview.x - vsize, insertpreview.y - vsize, vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine.WithAlpha(alpha), true);
+						renderer.RenderRectangleFilled(new RectangleF((float)(insertpreview.x - vsize), (float)(insertpreview.y - vsize), vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine.WithAlpha(alpha), true);
 						renderer.Finish();
 						renderer.Present();
 					}
@@ -636,22 +636,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					case MarqueSelectionMode.SELECT:
 						foreach(Vertex v in General.Map.Map.Vertices)
-							v.Selected = selectionrect.Contains(v.Position.x, v.Position.y);
+							v.Selected = selectionrect.Contains((float)v.Position.x, (float)v.Position.y);
 						break;
 
 					case MarqueSelectionMode.ADD:
 						foreach(Vertex v in General.Map.Map.Vertices)
-							v.Selected |= selectionrect.Contains(v.Position.x, v.Position.y);
+							v.Selected |= selectionrect.Contains((float)v.Position.x, (float)v.Position.y);
 						break;
 
 					case MarqueSelectionMode.SUBTRACT:
 						foreach(Vertex v in General.Map.Map.Vertices)
-							if(selectionrect.Contains(v.Position.x, v.Position.y)) v.Selected = false;
+							if(selectionrect.Contains((float)v.Position.x, (float)v.Position.y)) v.Selected = false;
 						break;
 
 					default: //should be Intersect
 						foreach(Vertex v in General.Map.Map.Vertices)
-							if(!selectionrect.Contains(v.Position.x, v.Position.y)) v.Selected = false;
+							if(!selectionrect.Contains((float)v.Position.x, (float)v.Position.y)) v.Selected = false;
 						break;
 				}
 
@@ -848,10 +848,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						else 
 						{
 							insertpos = mousemappos;
-							float distance = float.MaxValue;
+							double distance = double.MaxValue;
 							foreach(Vector2D p in points) 
 							{
-								float pdist = Vector2D.DistanceSq(p, mousemappos);
+								double pdist = Vector2D.DistanceSq(p, mousemappos);
 								if(pdist < distance) 
 								{
 									insertpos = p;

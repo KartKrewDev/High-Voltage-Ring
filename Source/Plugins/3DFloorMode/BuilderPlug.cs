@@ -648,7 +648,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 					foreach (Sidedef sd in s.Sidedefs)
 					{
-						float u = 0.0f;
+						double u = 0.0f;
 						Plane ldplane = new Plane(sd.Line.Start.Position, sd.Line.End.Position, new Vector3D(sd.Line.Start.Position.x, sd.Line.Start.Position.y, 128), true);
 
 						foreach(Line3D l in splinelines)
@@ -724,7 +724,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 					if (svg.Vertices.Count == 2)
 					{
-						float z = sp[0].z;
+						double z = sp[0].z;
 						Line2D line = new Line2D(sp[0], sp[1]);
 						Vector3D perpendicular = line.GetPerpendicular();
 

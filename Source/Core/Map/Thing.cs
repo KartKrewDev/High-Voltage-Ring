@@ -65,8 +65,8 @@ namespace CodeImp.DoomBuilder.Map
 		private int tag;
 		private int action;
 		private int[] args;
-		private float scaleX; //mxd
-		private float scaleY; //mxd
+		private double scaleX; //mxd
+		private double scaleY; //mxd
 		private SizeF spritescale; //mxd
 		private int pitch; //mxd. Used in model rendering
 		private int roll; //mxd. Used in model rendering
@@ -97,8 +97,8 @@ namespace CodeImp.DoomBuilder.Map
 		public int Type { get { return type; } set { BeforePropsChange(); type = value; } } //mxd
         public GZGeneral.LightData DynamicLightType { get { return dynamiclighttype; } internal set { BeforePropsChange(); dynamiclighttype = value; } }
 		public Vector3D Position { get { return pos; } }
-		public float ScaleX { get { return scaleX; } } //mxd. This is UDMF property, not actual scale!
-		public float ScaleY { get { return scaleY; } } //mxd. This is UDMF property, not actual scale!
+		public double ScaleX { get { return scaleX; } } //mxd. This is UDMF property, not actual scale!
+		public double ScaleY { get { return scaleY; } } //mxd. This is UDMF property, not actual scale!
 		public int Pitch { get { return pitch; } } //mxd
 		public double PitchRad { get { return pitchrad; } }
 		public int Roll { get { return roll; } } //mxd
@@ -212,8 +212,8 @@ namespace CodeImp.DoomBuilder.Map
 			s.rwInt(ref angledoom);
 			s.rwInt(ref pitch); //mxd
 			s.rwInt(ref roll); //mxd
-			s.rwFloat(ref scaleX); //mxd
-			s.rwFloat(ref scaleY); //mxd
+			s.rwDouble(ref scaleX); //mxd
+			s.rwDouble(ref scaleY); //mxd
 			s.rwInt(ref tag);
 			s.rwInt(ref action);
 			for(int i = 0; i < NUM_ARGS; i++) s.rwInt(ref args[i]);
@@ -481,7 +481,7 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		//mxd
-		public void SetScale(float scalex, float scaley)
+		public void SetScale(double scalex, double scaley)
 		{
 			BeforePropsChange();
 

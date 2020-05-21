@@ -160,7 +160,7 @@ namespace CodeImp.DoomBuilder.VisualModes
                 D = -(line.v1.x * A + line.v1.y * B);
             }
 
-            public float A, B, D;
+            public double A, B, D;
         }
 
         class Frustum
@@ -231,8 +231,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 
             Visibility TestFrustumLineVisibility(Plane plane)
             {
-                float e = extents.x * Math.Abs(plane.A) + extents.y * Math.Abs(plane.B);
-                float s = center.x * plane.A + center.y * plane.B + plane.D;
+				double e = extents.x * Math.Abs(plane.A) + extents.y * Math.Abs(plane.B);
+				double s = center.x * plane.A + center.y * plane.B + plane.D;
                 if (s - e > 0.0)
                     return Visibility.Inside;
                 else if (s + e < 0)

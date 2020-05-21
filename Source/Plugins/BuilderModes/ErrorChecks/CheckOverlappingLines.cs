@@ -71,7 +71,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							// Not the same line and not already checked
 							if(!object.ReferenceEquals(l, d) && !doneblocklines.ContainsKey(d))
 							{
-								float lu, du;
+								double lu, du;
 								
 								//mxd. This can also happen. I suppose. Some people manage to do this. I dunno how, but they do...
 								if((l.Start.Position == d.Start.Position && l.End.Position == d.End.Position)

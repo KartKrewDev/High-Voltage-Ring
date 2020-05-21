@@ -298,8 +298,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 						{
 							SlopeVertex sv = svg.Vertices[i];
 							float scale = 1 / renderer.Scale;
-							float x = sv.Pos.x;
-							float y = sv.Pos.y - 14 * scale;
+							double x = sv.Pos.x;
+							double y = sv.Pos.y - 14 * scale;
 							string value = String.Format("Z: {0}", sv.Z);
 							bool showlabel = true;
 
@@ -427,15 +427,15 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					if (sv.Selected)
 						c = General.Colors.Selection;
 
-					renderer.RenderRectangleFilled(new RectangleF(v.x - size / 2, v.y - size / 2, size, size), General.Colors.Background, true);
-					renderer.RenderRectangle(new RectangleF(v.x - size / 2, v.y - size / 2, size, size), 2, c, true);
+					renderer.RenderRectangleFilled(new RectangleF((float)(v.x - size / 2), (float)(v.y - size / 2), size, size), General.Colors.Background, true);
+					renderer.RenderRectangle(new RectangleF((float)(v.x - size / 2), (float)(v.y - size / 2), size, size), 2, c, true);
 				}
 
 				// Draw highlighted slope vertex
 				if (highlightedslope != null)
 				{
-					renderer.RenderRectangleFilled(new RectangleF(highlightedslope.Pos.x - size / 2, highlightedslope.Pos.y - size / 2, size, size), General.Colors.Background, true);
-					renderer.RenderRectangle(new RectangleF(highlightedslope.Pos.x - size / 2, highlightedslope.Pos.y - size / 2, size, size), 2, General.Colors.Highlight, true);
+					renderer.RenderRectangleFilled(new RectangleF((float)(highlightedslope.Pos.x - size / 2), (float)(highlightedslope.Pos.y - size / 2), size, size), General.Colors.Background, true);
+					renderer.RenderRectangle(new RectangleF((float)(highlightedslope.Pos.x - size / 2), (float)(highlightedslope.Pos.y - size / 2), size, size), 2, General.Colors.Highlight, true);
 				}
 
 				foreach (TextLabel l in labels)
@@ -690,7 +690,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		private List<SlopeVertex> GetVertexStack()
 		{
 			List<SlopeVertex> stack = new List<SlopeVertex>();
-			float d, last = float.MaxValue;
+			double d, last = double.MaxValue;
 
 			foreach(SlopeVertexGroup svg in BuilderPlug.Me.SlopeVertexGroups) {
 				foreach(SlopeVertex sv in svg.Vertices)
@@ -755,7 +755,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					if (l != null)
 					{
 						// Check on which side of the linedef the mouse is
-						float side = l.SideOfLine(mousemappos);
+						double side = l.SideOfLine(mousemappos);
 						if (side > 0)
 						{
 							// Is there a sidedef here?
@@ -874,7 +874,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		//retrieves the current mouse position on the grid, snapped as necessary
 		private Vector2D SnapToNearest(Vector2D vm)
 		{
-			float vrange = 20f / renderer.Scale;
+			double vrange = 20f / renderer.Scale;
 			bool snaptogrid = General.Interface.ShiftState ^ General.Interface.SnapToGrid; //allow temporary disable of snap by holding shift
 
 			if (General.Interface.AutoMerge) //only snap to geometry if the option is enabled
@@ -901,7 +901,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 						// Find nearest grid intersection
 						bool found = false;
-						float found_distance = float.MaxValue;
+						double found_distance = float.MaxValue;
 						Vector2D found_coord = new Vector2D();
 						foreach (Vector2D v in coords)
 						{
@@ -931,7 +931,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		}
 
 		/// <summary>This finds the thing closest to the specified position.</summary>
-		public SlopeVertex NearestSlopeVertexSquareRange(Vector2D pos, float maxrange)
+		public SlopeVertex NearestSlopeVertexSquareRange(Vector2D pos, double maxrange)
 		{
 			List<SlopeVertex> verts = GetUnSelectedSlopeVertices();
 			if (highlightedslope != null)
@@ -941,17 +941,17 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		}
 
 		/// <summary>This finds the slope vertex closest to the specified position.</summary>
-		public SlopeVertex NearestSlopeVertexSquareRange(ICollection<SlopeVertex> selection, Vector2D pos, float maxrange)
+		public SlopeVertex NearestSlopeVertexSquareRange(ICollection<SlopeVertex> selection, Vector2D pos, double maxrange)
 		{
-			RectangleF range = RectangleF.FromLTRB(pos.x - maxrange, pos.y - maxrange, pos.x + maxrange, pos.y + maxrange);
+			RectangleF range = RectangleF.FromLTRB((float)(pos.x - maxrange), (float)(pos.y - maxrange), (float)(pos.x + maxrange), (float)(pos.y + maxrange));
 			SlopeVertex closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 
 			// Go for all vertices in selection
 			foreach (SlopeVertex v in selection)
 			{
-				float px = v.Pos.x;
-				float py = v.Pos.y;
+				double px = v.Pos.x;
+				double py = v.Pos.y;
 
 				//mxd. Within range?
 				if ((v.Pos.x < range.Left) || (v.Pos.x > range.Right)
@@ -959,7 +959,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					continue;
 
 				// Close than previous find?
-				float d = Math.Abs(px - pos.x) + Math.Abs(py - pos.y);
+				double d = Math.Abs(px - pos.x) + Math.Abs(py - pos.y);
 				if (d < distance)
 				{
 					// This one is closer
@@ -1081,10 +1081,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			foreach (SlopeVertexGroup svg in BuilderPlug.Me.SlopeVertexGroups)
 				svg.SelectVertices(false);
 
-			float l = copyslopevertexgroups[0].Vertices[0].Pos.x;
-			float r = copyslopevertexgroups[0].Vertices[0].Pos.x;
-			float t = copyslopevertexgroups[0].Vertices[0].Pos.y;
-			float b = copyslopevertexgroups[0].Vertices[0].Pos.y;
+			double l = copyslopevertexgroups[0].Vertices[0].Pos.x;
+			double r = copyslopevertexgroups[0].Vertices[0].Pos.x;
+			double t = copyslopevertexgroups[0].Vertices[0].Pos.y;
+			double b = copyslopevertexgroups[0].Vertices[0].Pos.y;
 
 			// Find the outer dimensions of all SVGs to paste
 			foreach (SlopeVertexGroup svg in copyslopevertexgroups)

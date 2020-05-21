@@ -217,7 +217,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//mxd. If snap to cardinal directions is enabled, modify the offset
 			if(snapcardinal)
 			{
-				float angle = Angle2D.DegToRad((General.ClampAngle((int)Angle2D.RadToDeg(offset.GetAngle()) + 44)) / 90 * 90);
+				double angle = Angle2D.DegToRad((General.ClampAngle((int)Angle2D.RadToDeg(offset.GetAngle()) + 44)) / 90 * 90);
 				offset = new Vector2D(0, -offset.GetLength()).GetRotated(angle);
 				snapgridincrement = true; // We don't want to move the geometry away from the cardinal directions
 			}
@@ -273,7 +273,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							if(coords.Count > 0) 
 							{
 								// Find nearest grid intersection
-								float found_distance = float.MaxValue;
+								double found_distance = double.MaxValue;
 								Vector2D found_coord = new Vector2D();
 
 								foreach(Vector2D v in coords) 
@@ -522,7 +522,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 
 						// Update floor slope?
-						if (s.FloorSlope.GetLengthSq() > 0 && !float.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z))
+						if (s.FloorSlope.GetLengthSq() > 0 && !double.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z))
 						{
 							Plane floor = new Plane(s.FloorSlope, s.FloorSlopeOffset);
 							Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
@@ -530,7 +530,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 
 						// Update ceiling slope?
-						if (s.CeilSlope.GetLengthSq() > 0 && !float.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z))
+						if (s.CeilSlope.GetLengthSq() > 0 && !double.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z))
 						{
 							Plane ceiling = new Plane(s.CeilSlope, s.CeilSlopeOffset);
 							Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);

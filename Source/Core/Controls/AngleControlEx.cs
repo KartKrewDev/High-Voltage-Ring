@@ -82,7 +82,7 @@ namespace CodeImp.DoomBuilder.Controls
 		private static PointF DegreesToXY(float degrees, float radius, Point origin) 
 		{
 			PointF xy = new PointF();
-			float radians = degrees * Angle2D.PI / 180.0f;
+			float radians = degrees * (float)Angle2D.PI / 180.0f;
 
 			xy.X = (float)Math.Cos(radians) * radius + origin.X;
 			xy.Y = (float)Math.Sin(-radians) * radius + origin.Y;

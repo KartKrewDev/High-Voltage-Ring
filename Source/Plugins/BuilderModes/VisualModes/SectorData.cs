@@ -277,7 +277,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private void BasicSetup()
 		{
 			//mxd
-			if(sector.FloorSlope.GetLengthSq() > 0 && !float.IsNaN(sector.FloorSlopeOffset / sector.FloorSlope.z)) 
+			if(sector.FloorSlope.GetLengthSq() > 0 && !double.IsNaN(sector.FloorSlopeOffset / sector.FloorSlope.z)) 
 			{
 				// Sloped plane
 				floor.plane = new Plane(sector.FloorSlope, sector.FloorSlopeOffset);
@@ -288,7 +288,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				floor.plane = new Plane(new Vector3D(0, 0, 1), -sector.FloorHeight);
 			}
 
-			if(sector.CeilSlope.GetLengthSq() > 0 && !float.IsNaN(sector.CeilSlopeOffset / sector.CeilSlope.z)) 
+			if(sector.CeilSlope.GetLengthSq() > 0 && !double.IsNaN(sector.CeilSlopeOffset / sector.CeilSlope.z)) 
 			{
 				// Sloped plane
 				ceiling.plane = new Plane(sector.CeilSlope, sector.CeilSlopeOffset);
@@ -516,11 +516,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorLevel GetLevelAbove(Vector3D pos)
 		{
 			SectorLevel found = null;
-			float dist = float.MaxValue;
+			double dist = double.MaxValue;
 			
 			foreach(SectorLevel l in lightlevels)
 			{
-				float d = l.plane.GetZ(pos) - pos.z;
+				double d = l.plane.GetZ(pos) - pos.z;
 				if((d > 0.0f) && (d < dist))
 				{
 					dist = d;
@@ -535,11 +535,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorLevel GetLevelAboveOrAt(Vector3D pos)
 		{
 			SectorLevel found = null;
-			float dist = float.MaxValue;
+			double dist = double.MaxValue;
 
 			foreach(SectorLevel l in lightlevels) 
 			{
-				float d = l.plane.GetZ(pos) - pos.z;
+				double d = l.plane.GetZ(pos) - pos.z;
 				if((d >= 0.0f) && (d < dist)) 
 				{
 					dist = d;
@@ -554,13 +554,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorLevel GetCeilingAbove(Vector3D pos)
 		{
 			SectorLevel found = null;
-			float dist = float.MaxValue;
+			double dist = double.MaxValue;
 
 			foreach(SectorLevel l in lightlevels)
 			{
 				if(l.type == SectorLevelType.Ceiling)
 				{
-					float d = l.plane.GetZ(pos) - pos.z;
+					double d = l.plane.GetZ(pos) - pos.z;
 					if((d > 0.0f) && (d < dist))
 					{
 						dist = d;
@@ -576,11 +576,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorLevel GetLevelBelow(Vector3D pos)
 		{
 			SectorLevel found = null;
-			float dist = float.MaxValue;
+			double dist = double.MaxValue;
 
 			foreach(SectorLevel l in lightlevels)
 			{
-				float d = pos.z - l.plane.GetZ(pos);
+				double d = pos.z - l.plane.GetZ(pos);
 				if((d > 0.0f) && (d < dist))
 				{
 					dist = d;
@@ -595,13 +595,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorLevel GetFloorBelow(Vector3D pos)
 		{
 			SectorLevel found = null;
-			float dist = float.MaxValue;
+			double dist = double.MaxValue;
 
 			foreach(SectorLevel l in lightlevels)
 			{
 				if(l.type == SectorLevelType.Floor)
 				{
-					float d = pos.z - l.plane.GetZ(pos);
+					double d = pos.z - l.plane.GetZ(pos);
 					if((d > 0.0f) && (d < dist))
 					{
 						dist = d;

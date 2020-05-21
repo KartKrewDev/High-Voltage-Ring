@@ -31,12 +31,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private static int index;
 
 		//Initial texture coordinates
-		private readonly float OffsetX;
-		private readonly float OffsetY;
-		private readonly float ControlSideOffsetX;
-		private readonly float ControlSideOffsetY;
-		private readonly float ScaleX;
-		private readonly float ScaleY;
+		private readonly double OffsetX;
+		private readonly double OffsetY;
+		private readonly double ControlSideOffsetX;
+		private readonly double ControlSideOffsetY;
+		private readonly double ScaleX;
+		private readonly double ScaleY;
 
 		internal SortedVisualSide(BaseVisualGeometrySidedef side)
 		{
@@ -350,10 +350,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		#region ================== Things
 
-		internal static float GetHigherThingZ(BaseVisualMode mode, SectorData sd, VisualThing thing)
+		internal static double GetHigherThingZ(BaseVisualMode mode, SectorData sd, VisualThing thing)
 		{
 			Vector3D pos = thing.Thing.Position;
-			float thingheight = thing.Thing.Height;
+			double thingheight = thing.Thing.Height;
 			bool absolute = thing.Info.AbsoluteZ;
 			bool hangs = thing.Info.Hangs;
 			
@@ -365,16 +365,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Get things, which bounding boxes intersect with target thing
 			IEnumerable<Thing> intersectingthings = GetIntersectingThings(mode, thing.Thing);
-			
-			float fz = (absolute ? 0 : sd.Floor.plane.GetZ(pos));
-			float cz = sd.Ceiling.plane.GetZ(pos);
+
+			double fz = (absolute ? 0 : sd.Floor.plane.GetZ(pos));
+			double cz = sd.Ceiling.plane.GetZ(pos);
 			
 			if(hangs)
 			{
 				// Transform to floor-aligned position
 				Vector3D floorpos = new Vector3D(pos, (cz - fz) - pos.z - thingheight);
-				float highertingz = GetNextHigherThingZ(mode, intersectingthings, floorpos.z, thingheight);
-				float higherfloorz = float.MinValue;
+				double highertingz = GetNextHigherThingZ(mode, intersectingthings, floorpos.z, thingheight);
+				double higherfloorz = double.MinValue;
 
 				// Do it only when there are extrafloors
 				if(sd.LightLevels.Count > 2)
@@ -383,7 +383,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					foreach(SectorLevel level in sd.LightLevels)
 					{
 						if(level.type == SectorLevelType.Light || level.type == SectorLevelType.Glow) continue; // Skip lights and glows
-						float z = level.plane.GetZ(floorpos) - fz;
+						double z = level.plane.GetZ(floorpos) - fz;
 						if(level.type == SectorLevelType.Ceiling) z -= thingheight;
 						if(z > floorpos.z)
 						{
@@ -415,8 +415,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			else
 			{
-				float highertingz = GetNextHigherThingZ(mode, intersectingthings, (absolute ? pos.z - fz : pos.z), thingheight);
-				float higherfloorz = float.MinValue;
+				double highertingz = GetNextHigherThingZ(mode, intersectingthings, (absolute ? pos.z - fz : pos.z), thingheight);
+				double higherfloorz = double.MinValue;
 				
 				// Do it only when there are extrafloors
 				if(sd.LightLevels.Count > 2)
@@ -425,7 +425,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					foreach(SectorLevel level in sd.LightLevels)
 					{
 						if(level.type == SectorLevelType.Light || level.type == SectorLevelType.Glow) continue; // Skip lights and glows
-						float z = level.plane.GetZ(pos) - fz;
+						double z = level.plane.GetZ(pos) - fz;
 						if(level.type == SectorLevelType.Ceiling) z -= thingheight;
 						if(z > pos.z)
 						{
@@ -435,21 +435,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 				}
 
-				float floorz = sd.Floor.plane.GetZ(pos);
-				float ceilpos = cz - floorz - thingheight; // Ceiling-aligned relative target thing z
+				double floorz = sd.Floor.plane.GetZ(pos);
+				double ceilpos = cz - floorz - thingheight; // Ceiling-aligned relative target thing z
 				
-				if(higherfloorz != float.MinValue && highertingz != float.MaxValue) ceilpos = Math.Min(ceilpos, Math.Min(higherfloorz, highertingz));
-				if(higherfloorz != float.MinValue) ceilpos = Math.Min(ceilpos, higherfloorz);
-				if(highertingz != float.MaxValue) ceilpos = Math.Min(ceilpos, highertingz);
+				if(higherfloorz != double.MinValue && highertingz != double.MaxValue) ceilpos = Math.Min(ceilpos, Math.Min(higherfloorz, highertingz));
+				if(higherfloorz != double.MinValue) ceilpos = Math.Min(ceilpos, higherfloorz);
+				if(highertingz != double.MaxValue) ceilpos = Math.Min(ceilpos, highertingz);
 				
 				return (absolute ? ceilpos + floorz : ceilpos); // Convert to absolute position if necessary
 			}
 		}
 
-		internal static float GetLowerThingZ(BaseVisualMode mode, SectorData sd, VisualThing thing) 
+		internal static double GetLowerThingZ(BaseVisualMode mode, SectorData sd, VisualThing thing) 
 		{
 			Vector3D pos = thing.Thing.Position;
-			float thingheight = thing.Thing.Height;
+			double thingheight = thing.Thing.Height;
 			bool absolute = thing.Info.AbsoluteZ;
 			bool hangs = thing.Info.Hangs;
 			
@@ -462,15 +462,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Get things, which bounding boxes intersect with target thing
 			IEnumerable<Thing> intersectingthings = GetIntersectingThings(mode, thing.Thing);
 
-			float fz = (absolute ? 0 : sd.Floor.plane.GetZ(pos));
-			float cz = sd.Ceiling.plane.GetZ(pos);
+			double fz = (absolute ? 0 : sd.Floor.plane.GetZ(pos));
+			double cz = sd.Ceiling.plane.GetZ(pos);
 
 			if(hangs) 
 			{
 				// Transform to floor-aligned position
 				Vector3D floorpos = new Vector3D(pos, (cz - fz) - pos.z - thingheight);
-				float lowertingz = GetNextLowerThingZ(mode, intersectingthings, floorpos.z, thingheight);
-				float lowerfloorz = float.MaxValue;
+				double lowertingz = GetNextLowerThingZ(mode, intersectingthings, floorpos.z, thingheight);
+				double lowerfloorz = double.MaxValue;
 
 				// Do it only when there are extrafloors
 				if(sd.LightLevels.Count > 2)
@@ -480,7 +480,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						SectorLevel level = sd.LightLevels[i];
 						if(level.type == SectorLevelType.Light || level.type == SectorLevelType.Glow) continue; // Skip lights and glows
-						float z = level.plane.GetZ(floorpos) - fz;
+						double z = level.plane.GetZ(floorpos) - fz;
 						if(level.type == SectorLevelType.Ceiling) z -= thingheight;
 						if(z < floorpos.z)
 						{
@@ -490,9 +490,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 				}
 
-				float floorz = cz - fz; // Floor height when counted from ceiling
+				double floorz = cz - fz; // Floor height when counted from ceiling
 
-				if(lowerfloorz != float.MaxValue && lowertingz != float.MinValue)
+				if(lowerfloorz != double.MaxValue && lowertingz != double.MinValue)
 				{
 					// Transform back to ceiling-aligned position
 					return cz - fz - Math.Min(Math.Max(lowerfloorz, lowertingz), floorz) - thingheight;
@@ -514,8 +514,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			} 
 			else 
 			{
-				float lowertingz = GetNextLowerThingZ(mode, intersectingthings, (absolute ? pos.z - fz : pos.z), thingheight);
-				float lowerfloorz = float.MaxValue;
+				double lowertingz = GetNextLowerThingZ(mode, intersectingthings, (absolute ? pos.z - fz : pos.z), thingheight);
+				double lowerfloorz = double.MaxValue;
 				
 				// Do it only when there are extrafloors
 				if(sd.LightLevels.Count > 2)
@@ -525,7 +525,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						SectorLevel level = sd.LightLevels[i];
 						if(level.type == SectorLevelType.Light || level.type == SectorLevelType.Glow) continue; // Skip lights and glows
-						float z = level.plane.GetZ(pos) - fz;
+						double z = level.plane.GetZ(pos) - fz;
 						if(level.type == SectorLevelType.Ceiling) z -= thingheight;
 						if(z < pos.z)
 						{
@@ -535,43 +535,43 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 				}
 
-				float floorz = sd.Floor.plane.GetZ(pos); // Floor-aligned relative target thing z
-				float floorpos = 0;
+				double floorz = sd.Floor.plane.GetZ(pos); // Floor-aligned relative target thing z
+				double floorpos = 0;
 
-				if(lowerfloorz != float.MaxValue && lowertingz != float.MinValue) floorpos = Math.Max(Math.Max(lowerfloorz, lowertingz), floorz);
-				if(lowerfloorz != float.MaxValue) floorpos = Math.Max(lowerfloorz, floorz);
-				if(lowertingz != float.MinValue) floorpos = Math.Max(lowertingz, floorz);
+				if(lowerfloorz != double.MaxValue && lowertingz != double.MinValue) floorpos = Math.Max(Math.Max(lowerfloorz, lowertingz), floorz);
+				if(lowerfloorz != double.MaxValue) floorpos = Math.Max(lowerfloorz, floorz);
+				if(lowertingz != double.MinValue) floorpos = Math.Max(lowertingz, floorz);
 
 				return (absolute ? floorpos + floorz : floorpos); // Convert to absolute position if necessary
 			}
 		}
 
 		//mxd. Gets thing z next higher to target thing z
-		private static float GetNextHigherThingZ(BaseVisualMode mode, IEnumerable<Thing> things, float thingz, float thingheight)
+		private static double GetNextHigherThingZ(BaseVisualMode mode, IEnumerable<Thing> things, double thingz, double thingheight)
 		{
-			float higherthingz = float.MaxValue;
+			double higherthingz = double.MaxValue;
 			foreach(Thing t in things)
 			{
-				float neighbourz = GetAlignedThingZ(mode, t, thingheight);
+				double neighbourz = GetAlignedThingZ(mode, t, thingheight);
 				if(neighbourz > thingz && neighbourz < higherthingz) higherthingz = neighbourz;
 			}
 			return higherthingz;
 		}
 
 		//mxd. Gets thing z next lower to target thing z
-		private static float GetNextLowerThingZ(BaseVisualMode mode, IEnumerable<Thing> things, float thingz, float thingheight)
+		private static double GetNextLowerThingZ(BaseVisualMode mode, IEnumerable<Thing> things, double thingz, double thingheight)
 		{
-			float lowerthingz = float.MinValue;
+			double lowerthingz = double.MinValue;
 			foreach(Thing t in things)
 			{
-				float neighbourz = GetAlignedThingZ(mode, t, thingheight);
+				double neighbourz = GetAlignedThingZ(mode, t, thingheight);
 				if(neighbourz < thingz && neighbourz > lowerthingz) lowerthingz = neighbourz;
 			}
 
 			return lowerthingz;
 		}
 
-		private static float GetAlignedThingZ(BaseVisualMode mode, Thing t, float targtthingheight)
+		private static double GetAlignedThingZ(BaseVisualMode mode, Thing t, double targtthingheight)
 		{
 			ThingTypeInfo info = General.Map.Data.GetThingInfoEx(t.Type);
 			if(info != null)
@@ -599,7 +599,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			// Get nearby things
 			List<Thing> neighbours = new List<Thing>();
-			RectangleF bbox = new RectangleF(thing.Position.x - thing.Size, thing.Position.y - thing.Size, thing.Size * 2, thing.Size * 2);
+			RectangleF bbox = new RectangleF((float)(thing.Position.x - thing.Size), (float)(thing.Position.y - thing.Size), (float)(thing.Size * 2), (float)(thing.Size * 2));
             foreach (var block in mode.BlockMap.GetBlocks(bbox))
             {
                 neighbours.AddRange(block.Things);
@@ -610,7 +610,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			foreach(Thing t in neighbours)
 			{
-				if(t != thing && t.Sector != null && bbox.IntersectsWith(new RectangleF(t.Position.x - t.Size, t.Position.y - t.Size, t.Size * 2, t.Size * 2)))
+				if(t != thing && t.Sector != null && bbox.IntersectsWith(new RectangleF((float)(t.Position.x - t.Size), (float)(t.Position.y - t.Size), (float)(t.Size * 2), (float)(t.Size * 2))))
 					intersectingthings.Add(t);
 			}
 

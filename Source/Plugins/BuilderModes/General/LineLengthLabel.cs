@@ -125,7 +125,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Vector2D delta = end - start;
 
 			// Update label text
-			float length = delta.GetLength();
+			double length = delta.GetLength();
 			if(showangle)
 			{
 				int displayangle = (int)Math.Round(Angle2D.RadToDeg(delta.GetAngle()));
@@ -150,9 +150,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Check if start/end point is on screen...
 			Vector2D lt = General.Map.Renderer2D.DisplayToMap(new Vector2D(0.0f, General.Interface.Display.Size.Height));
 			Vector2D rb = General.Map.Renderer2D.DisplayToMap(new Vector2D(General.Interface.Display.Size.Width, 0.0f));
-			RectangleF viewport = new RectangleF(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
-			bool startvisible = viewport.Contains(start.x, start.y);
-			bool endvisible = viewport.Contains(end.x, end.y);
+			RectangleF viewport = new RectangleF((float)lt.x, (float)lt.y, (float)(rb.x - lt.x), (float)(rb.y - lt.y));
+			bool startvisible = viewport.Contains((float)start.x, (float)start.y);
+			bool endvisible = viewport.Contains((float)end.x, (float)end.y);
 
 			// Do this only when one point is visible, an the other isn't 
 			if((!startvisible && endvisible) || (startvisible && !endvisible))
@@ -168,7 +168,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				foreach(Line2D side in viewportsides)
 				{
 					// Modify the start point so it stays on screen
-					float u;
+					double u;
 					if(!startvisible && side.GetIntersection(drawnline, out u))
 					{
 						start = drawnline.GetCoordinatesAt(u);
@@ -188,9 +188,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(offsetposition)
 			{
 				Vector2D perpendicular = (end - start).GetPerpendicular();
-				float angle = perpendicular.GetAngle();
+				double angle = perpendicular.GetAngle();
 				SizeF textsize = General.Interface.MeasureString(label.Text, label.Font);
-				float offset = textsize.Width * Math.Abs((float)Math.Sin(angle)) + textsize.Height * Math.Abs((float)Math.Cos(angle));
+				double offset = textsize.Width * Math.Abs(Math.Sin(angle)) + textsize.Height * Math.Abs(Math.Cos(angle));
 				perpendicular = perpendicular.GetNormal().GetScaled(offset / 2.0f / General.Map.Renderer2D.Scale);
 				start += perpendicular;
 				end += perpendicular;

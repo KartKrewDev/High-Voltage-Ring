@@ -116,11 +116,11 @@ namespace CodeImp.DoomBuilder.Map
 				case UniversalType.AngleDegreesFloat:
 				case UniversalType.Float:
 				{
-					float v = 0.0f;
+					double v = 0.0f;
 					//mxd. Seems to work faster this way
 					//try { v = (float)value; } catch(NullReferenceException e) { }
-					if(value != null) v = (float)value;
-					s.rwFloat(ref v);
+					if(value != null) v = (double)value;
+					s.rwDouble(ref v);
 					value = v;
 					break;
 				}

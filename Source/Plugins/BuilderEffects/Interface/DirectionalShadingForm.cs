@@ -105,21 +105,21 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 			foreach(KeyValuePair<Sector, Vector3D> group in sectors)
 			{
 				// Calculate light amount
-				float anglediff = Vector3D.DotProduct(group.Value, sunvector);
+				double anglediff = Vector3D.DotProduct(group.Value, sunvector);
 				int targetlight;
 				PixelColor targetcolor;
 
 				// Calculate light and light color when surface normal is rotated towards the sun vector
 				if(anglediff >= 0.5f)
 				{
-					float lightmul = (anglediff - 0.5f) * 2.0f;
+					double lightmul = (anglediff - 0.5f) * 2.0f;
 					targetlight = (int)Math.Round(lightamount.Value * lightmul);
 					targetcolor = InterpolationTools.InterpolateColor(shadecolor.Color, lightcolor.Color, anglediff);
 				}
 				// Otherwise calculate shade and shade color
 				else
 				{
-					float lightmul = (0.5f - anglediff) * -2.0f;
+					double lightmul = (0.5f - anglediff) * -2.0f;
 					targetlight = (int)Math.Round(shadeamount.Value * lightmul);
 					targetcolor = InterpolationTools.InterpolateColor(shadecolor.Color, lightcolor.Color, anglediff);
 				}
@@ -147,19 +147,19 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 			foreach(KeyValuePair<Sidedef, Vector3D> group in sides)
 			{
 				// Calculate light amount
-				float anglediff = Vector3D.DotProduct(group.Value, sunvector);
+				double anglediff = Vector3D.DotProduct(group.Value, sunvector);
 				int targetlight;
 
 				// Calculate light and light color when surface normal is rotated towards the sun vector
 				if(anglediff >= 0.5f)
 				{
-					float lightmul = (anglediff - 0.5f) * 2.0f;
+					double lightmul = (anglediff - 0.5f) * 2.0f;
 					targetlight = (int)Math.Round(lightamount.Value * lightmul);
 				}
 				// Otherwise calculate shade and shade color
 				else
 				{
-					float lightmul = (0.5f - anglediff) * -2.0f;
+					double lightmul = (0.5f - anglediff) * -2.0f;
 					targetlight = (int)Math.Round(shadeamount.Value * lightmul);
 				}
 

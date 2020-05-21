@@ -67,7 +67,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public void SetPosition(Vector3D pos) 
 		{
-			position = Matrix.Translation(pos.x, pos.y, pos.z);
+			position = Matrix.Translation((float)pos.x, (float)pos.y, (float)pos.z);
 		}
 
 		public virtual void Update() { }
@@ -85,7 +85,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// This is called when the thing must be tested for line intersection. This should perform
 		/// accurate hit detection and set u_ray to the position on the ray where this hits the geometry.
 		/// </summary>
-		public virtual bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray) 
+		public virtual bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray) 
 		{
 			return false;
 		}

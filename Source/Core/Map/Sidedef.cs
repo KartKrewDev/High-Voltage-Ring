@@ -71,7 +71,7 @@ namespace CodeImp.DoomBuilder.Map
 		public Sidedef Other { get { return (this == linedef.Front ? linedef.Back : linedef.Front); } }
 		public Sector Sector { get { return sector; } }
 		internal Dictionary<string, bool> Flags { get { return flags; } } //mxd
-		public float Angle { get { return (IsFront ? linedef.Angle : Angle2D.Normalized(linedef.Angle + Angle2D.PI)); } }
+		public double Angle { get { return (IsFront ? linedef.Angle : Angle2D.Normalized(linedef.Angle + Angle2D.PI)); } }
 		public int OffsetX { get { return offsetx; } set { BeforePropsChange(); offsetx = value; } }
 		public int OffsetY { get { return offsety; } set { BeforePropsChange(); offsety = value; } }
 		public string HighTexture { get { return texnamehigh; } }
@@ -407,10 +407,10 @@ namespace CodeImp.DoomBuilder.Map
 				//mxd. Check sloped ceilings...
 				if(General.Map.UDMF && this.sector != Other.Sector) 
 				{
-					float thisstartz = this.sector.CeilHeight;
-					float thisendz = this.sector.CeilHeight;
-					float otherstartz = Other.sector.CeilHeight;
-					float otherendz = Other.sector.CeilHeight;
+					double thisstartz = this.sector.CeilHeight;
+					double thisendz = this.sector.CeilHeight;
+					double otherstartz = Other.sector.CeilHeight;
+					double otherendz = Other.sector.CeilHeight;
 
 					// Check if this side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
 					if(this.sector.CeilSlope.GetLengthSq() > 0) 
@@ -421,8 +421,8 @@ namespace CodeImp.DoomBuilder.Map
 					} 
 					else if(this.sector.Sidedefs.Count == 3) // Check vertex heights on this side
 					{
-						if(!float.IsNaN(this.Line.Start.ZCeiling)) thisstartz = this.Line.Start.ZCeiling;
-						if(!float.IsNaN(this.Line.End.ZCeiling)) thisendz = this.Line.End.ZCeiling;
+						if(!double.IsNaN(this.Line.Start.ZCeiling)) thisstartz = this.Line.Start.ZCeiling;
+						if(!double.IsNaN(this.Line.End.ZCeiling)) thisendz = this.Line.End.ZCeiling;
 					}
 
 					// Check if other side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
@@ -434,8 +434,8 @@ namespace CodeImp.DoomBuilder.Map
 					} 
 					else if(Other.sector.Sidedefs.Count == 3) // Check other line's vertex heights
 					{
-						if(!float.IsNaN(this.Line.Start.ZCeiling)) otherstartz = this.Line.Start.ZCeiling;
-						if(!float.IsNaN(this.Line.End.ZCeiling)) otherendz = this.Line.End.ZCeiling;
+						if(!double.IsNaN(this.Line.Start.ZCeiling)) otherstartz = this.Line.Start.ZCeiling;
+						if(!double.IsNaN(this.Line.End.ZCeiling)) otherendz = this.Line.End.ZCeiling;
 					}
 
 					// Texture is required when our start or end vertex is higher than on the other side.
@@ -469,10 +469,10 @@ namespace CodeImp.DoomBuilder.Map
 				//mxd. Check sloped floors...
 				if(General.Map.UDMF && this.sector != Other.Sector)
 				{
-					float thisstartz = this.sector.FloorHeight;
-					float thisendz = this.sector.FloorHeight;
-					float otherstartz = Other.sector.FloorHeight;
-					float otherendz = Other.sector.FloorHeight;
+					double thisstartz = this.sector.FloorHeight;
+					double thisendz = this.sector.FloorHeight;
+					double otherstartz = Other.sector.FloorHeight;
+					double otherendz = Other.sector.FloorHeight;
 
 					// Check if this side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
 					if(this.sector.FloorSlope.GetLengthSq() > 0) 
@@ -483,8 +483,8 @@ namespace CodeImp.DoomBuilder.Map
 					} 
 					else if(this.sector.Sidedefs.Count == 3) // Check vertex heights on this side
 					{
-						if(!float.IsNaN(this.Line.Start.ZFloor)) thisstartz = this.Line.Start.ZFloor;
-						if(!float.IsNaN(this.Line.End.ZFloor)) thisendz = this.Line.End.ZFloor;
+						if(!double.IsNaN(this.Line.Start.ZFloor)) thisstartz = this.Line.Start.ZFloor;
+						if(!double.IsNaN(this.Line.End.ZFloor)) thisendz = this.Line.End.ZFloor;
 					}
 					
 					// Check if other side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
@@ -496,8 +496,8 @@ namespace CodeImp.DoomBuilder.Map
 					}
 					else if(Other.sector.Sidedefs.Count == 3) // Check other line's vertex heights
 					{
-						if(!float.IsNaN(this.Line.Start.ZFloor)) otherstartz = this.Line.Start.ZFloor;
-						if(!float.IsNaN(this.Line.End.ZFloor)) otherendz = this.Line.End.ZFloor;
+						if(!double.IsNaN(this.Line.Start.ZFloor)) otherstartz = this.Line.Start.ZFloor;
+						if(!double.IsNaN(this.Line.End.ZFloor)) otherendz = this.Line.End.ZFloor;
 					}
 
 					// Texture is required when our start or end vertex is lower than on the other side.

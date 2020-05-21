@@ -333,7 +333,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(BuilderPlug.Me.MarqueSelectTouching) 
 			{
-				bool selected = selectionrect.Contains(l.Start.Position.x, l.Start.Position.y) || selectionrect.Contains(l.End.Position.x, l.End.Position.y);
+				bool selected = selectionrect.Contains((float)l.Start.Position.x, (float)l.Start.Position.y) || selectionrect.Contains((float)l.End.Position.x, (float)l.End.Position.y);
 
 				//check intersections with outline
 				if(!selected) 
@@ -346,7 +346,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				return selected;
 			}
 
-			return selectionrect.Contains(l.Start.Position.x, l.Start.Position.y) && selectionrect.Contains(l.End.Position.x, l.End.Position.y);
+			return selectionrect.Contains((float)l.Start.Position.x, (float)l.Start.Position.y) && selectionrect.Contains((float)l.End.Position.x, (float)l.End.Position.y);
 		}
 
 		//mxd. Gets map elements inside of selectionoutline and sorts them by distance to targetpoint
@@ -367,10 +367,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(l1 == l2) return 0;
 
 				// Get closest distance from l1 to selectstart
-				float closest1 = float.MaxValue;
+				double closest1 = double.MaxValue;
 				
 				Vector2D pos = l1.Start.Position;
-				float curdistance = Vector2D.DistanceSq(pos, targetpoint);
+				double curdistance = Vector2D.DistanceSq(pos, targetpoint);
 				if(curdistance < closest1) closest1 = curdistance;
 
 				pos = l1.End.Position;
@@ -378,7 +378,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(curdistance < closest1) closest1 = curdistance;
 
 				// Get closest distance from l2 to selectstart
-				float closest2 = float.MaxValue;
+				double closest2 = double.MaxValue;
 
 				pos = l2.Start.Position;
 				curdistance = Vector2D.DistanceSq(pos, targetpoint);
@@ -634,10 +634,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//mxd. Render vertex insert preview
 				if(insertpreview.IsFinite())
 				{
-					float dist = Math.Min(Vector2D.Distance(mousemappos, insertpreview), BuilderPlug.Me.HighlightRange);
+					double dist = Math.Min(Vector2D.Distance(mousemappos, insertpreview), BuilderPlug.Me.HighlightRange);
 					byte alpha = (byte)(255 - (dist / BuilderPlug.Me.HighlightRange) * 128);
 					float vsize = (renderer.VertexSize + 1.0f) / renderer.Scale;
-					renderer.RenderRectangleFilled(new RectangleF(insertpreview.x - vsize, insertpreview.y - vsize, vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine.WithAlpha(alpha), true);
+					renderer.RenderRectangleFilled(new RectangleF((float)(insertpreview.x - vsize), (float)(insertpreview.y - vsize), vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine.WithAlpha(alpha), true);
 				}
 
 				renderer.RenderArrows(eventlines); //mxd
@@ -1092,7 +1092,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(selectthings)
 						{
 							foreach(Thing t in General.Map.ThingsFilter.VisibleThings)
-								t.Selected = selectionrect.Contains(t.Position.x, t.Position.y);
+								t.Selected = selectionrect.Contains((float)t.Position.x, (float)t.Position.y);
 						}
 						break;
 
@@ -1109,7 +1109,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(selectthings)
 						{
 							foreach(Thing t in General.Map.ThingsFilter.VisibleThings)
-								t.Selected |= selectionrect.Contains(t.Position.x, t.Position.y);
+								t.Selected |= selectionrect.Contains((float)t.Position.x, (float)t.Position.y);
 						}
 						break;
 
@@ -1120,7 +1120,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(selectthings)
 						{
 							foreach(Thing t in General.Map.ThingsFilter.VisibleThings)
-								if(selectionrect.Contains(t.Position.x, t.Position.y)) t.Selected = false;
+								if(selectionrect.Contains((float)t.Position.x, (float)t.Position.y)) t.Selected = false;
 						}
 						break;
 
@@ -1132,7 +1132,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(selectthings)
 						{
 							foreach(Thing t in General.Map.ThingsFilter.VisibleThings)
-								if(!selectionrect.Contains(t.Position.x, t.Position.y)) t.Selected = false;
+								if(!selectionrect.Contains((float)t.Position.x, (float)t.Position.y)) t.Selected = false;
 						}
 						break;
 				}
@@ -1197,7 +1197,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				Vector2D center = l.GetCenterPoint();
-				RectangleF rect = new RectangleF(center.x - 8 / renderer.Scale, center.y + 18 / renderer.Scale, 16 / renderer.Scale, -16 / renderer.Scale);
+				RectangleF rect = new RectangleF((float)(center.x - 8 / renderer.Scale), (float)(center.y + 18 / renderer.Scale), 16 / renderer.Scale, -16 / renderer.Scale);
 				PixelColor c = (l == highlighted ? General.Colors.Highlight : (l.Selected ? General.Colors.Selection : PixelColor.FromColor(Color.White)));
 				renderer.RenderRectangleFilled(rect, c, true, General.Map.Data.CommentTextures[iconindex]);
 			}

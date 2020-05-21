@@ -1965,23 +1965,23 @@ namespace CodeImp.DoomBuilder.Map
 		/// <summary>This creates an area from linedefs.</summary>
 		public static RectangleF CreateArea(ICollection<Linedef> lines)
 		{
-			double l = double.MaxValue;
-			double t = double.MaxValue;
-			double r = double.MinValue;
-			double b = double.MinValue;
+			float l = float.MaxValue;
+			float t = float.MaxValue;
+			float r = float.MinValue;
+			float b = float.MinValue;
 
 			// Go for all linedefs
 			foreach(Linedef ld in lines)
 			{
 				// Adjust boundaries by vertices
-				if(ld.Start.Position.x < l) l = ld.Start.Position.x;
-				if(ld.Start.Position.x > r) r = ld.Start.Position.x;
-				if(ld.Start.Position.y < t) t = ld.Start.Position.y;
-				if(ld.Start.Position.y > b) b = ld.Start.Position.y;
-				if(ld.End.Position.x < l) l = ld.End.Position.x;
-				if(ld.End.Position.x > r) r = ld.End.Position.x;
-				if(ld.End.Position.y < t) t = ld.End.Position.y;
-				if(ld.End.Position.y > b) b = ld.End.Position.y;
+				if(ld.Start.Position.x < l) l = (float)ld.Start.Position.x;
+				if(ld.Start.Position.x > r) r = (float)ld.Start.Position.x;
+				if(ld.Start.Position.y < t) t = (float)ld.Start.Position.y;
+				if(ld.Start.Position.y > b) b = (float)ld.Start.Position.y;
+				if(ld.End.Position.x < l) l = (float)ld.End.Position.x;
+				if(ld.End.Position.x > r) r = (float)ld.End.Position.x;
+				if(ld.End.Position.y < t) t = (float)ld.End.Position.y;
+				if(ld.End.Position.y > b) b = (float)ld.End.Position.y;
 			}
 
 			// Return a rect
@@ -3259,17 +3259,17 @@ namespace CodeImp.DoomBuilder.Map
 		public static Sidedef NearestSidedef(ICollection<Sidedef> selection, Vector2D pos)
 		{
 			Sidedef closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 			
 			// Go for all sidedefs in selection
 			foreach(Sidedef sd in selection)
 			{
 				// Calculate distance and check if closer than previous find
-				float d = sd.Line.SafeDistanceToSq(pos, true);
+				double d = sd.Line.SafeDistanceToSq(pos, true);
 				if(d == distance)
 				{
 					// Same distance, so only pick the one that is on the right side of the line
-					float side = sd.Line.SideOfLine(pos);
+					double side = sd.Line.SideOfLine(pos);
 					if(((side <= 0.0f) && sd.IsFront) || ((side > 0.0f) && !sd.IsFront))
 					{
 						closest = sd;
@@ -3292,7 +3292,7 @@ namespace CodeImp.DoomBuilder.Map
 		public static Linedef NearestLinedef(BlockMap<BlockEntry> selectionmap, Vector2D pos) //mxd
 		{
 			Linedef closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 
 			Point p = selectionmap.GetBlockCoordinates(pos);
 			int minx = p.X;
@@ -3318,7 +3318,7 @@ namespace CodeImp.DoomBuilder.Map
 						foreach(Linedef l in be.Lines)
 						{
 							// Calculate distance and check if closer than previous find
-							float d = l.SafeDistanceToSq(pos, true);
+							double d = l.SafeDistanceToSq(pos, true);
 							if(d < distance)
 							{
 								// This one is closer
@@ -3348,13 +3348,13 @@ namespace CodeImp.DoomBuilder.Map
 		public static Linedef NearestLinedef(ICollection<Linedef> selection, Vector2D pos)
 		{
 			Linedef closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 
 			// Go for all linedefs in selection
 			foreach(Linedef l in selection)
 			{
 				// Calculate distance and check if closer than previous find
-				float d = l.SafeDistanceToSq(pos, true);
+				double d = l.SafeDistanceToSq(pos, true);
 				if(d < distance)
 				{
 					// This one is closer
@@ -3368,17 +3368,17 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		/// <summary>This finds the line closest to the specified position.</summary>
-		public static Linedef NearestLinedefRange(ICollection<Linedef> selection, Vector2D pos, float maxrange)
+		public static Linedef NearestLinedefRange(ICollection<Linedef> selection, Vector2D pos, double maxrange)
 		{
 			Linedef closest = null;
-			float distance = float.MaxValue;
-			float maxrangesq = maxrange * maxrange;
+			double distance = float.MaxValue;
+			double maxrangesq = maxrange * maxrange;
 
 			// Go for all linedefs in selection
 			foreach(Linedef l in selection)
 			{
 				// Calculate distance and check if closer than previous find
-				float d = l.SafeDistanceToSq(pos, true);
+				double d = l.SafeDistanceToSq(pos, true);
 				if(d < distance && d <= maxrangesq)
 				{
 					// This one is closer
@@ -3392,11 +3392,11 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		/// <summary>This finds the line closest to the specified position.</summary>
-		public static Linedef NearestLinedefRange(BlockMap<BlockEntry> selectionmap, Vector2D pos, float maxrange) //mxd
+		public static Linedef NearestLinedefRange(BlockMap<BlockEntry> selectionmap, Vector2D pos, double maxrange) //mxd
 		{
 			Linedef closest = null;
-			float distance = float.MaxValue;
-			float maxrangesq = maxrange * maxrange;
+			double distance = double.MaxValue;
+			double maxrangesq = maxrange * maxrange;
 			HashSet<Linedef> processed = new HashSet<Linedef>();
 			
 			HashSet<BlockEntry> blocks = new HashSet<BlockEntry>
@@ -3415,9 +3415,9 @@ namespace CodeImp.DoomBuilder.Map
 				foreach(Linedef l in be.Lines)
 				{
 					if(processed.Contains(l)) continue;
-					
+
 					// Calculate distance and check if closer than previous find
-					float d = l.SafeDistanceToSq(pos, true);
+					double d = l.SafeDistanceToSq(pos, true);
 					if(d < distance && d <= maxrangesq)
 					{
 						// This one is closer
@@ -3437,14 +3437,14 @@ namespace CodeImp.DoomBuilder.Map
 		public Linedef NearestLinedef(Vector2D pos, HashSet<Linedef> linesToExclude) 
 		{
 			Linedef closest = null;
-			float distance = float.MaxValue;
+			double distance = double.MaxValue;
 
 			// Go for all linedefs in selection
 			foreach(Linedef l in linedefs) 
 			{
 				if(linesToExclude.Contains(l)) continue;
 				// Calculate distance and check if closer than previous find
-				float d = l.SafeDistanceToSq(pos, true);
+				double d = l.SafeDistanceToSq(pos, true);
 				if(d < distance) 
 				{
 					// This one is closer
@@ -3561,7 +3561,7 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		/// <summary>This finds the thing closest to the specified position.</summary>
-		public static Thing NearestThingSquareRange(ICollection<Thing> selection, Vector2D pos, float maxrange)
+		public static Thing NearestThingSquareRange(ICollection<Thing> selection, Vector2D pos, double maxrange)
 		{
 			RectangleF range = RectangleF.FromLTRB((float)(pos.x - maxrange), (float)(pos.y - maxrange), (float)(pos.x + maxrange), (float)(pos.y + maxrange));
 			Thing closest = null;
@@ -4022,29 +4022,29 @@ namespace CodeImp.DoomBuilder.Map
 		public Linedef NearestLinedef(Vector2D pos) { return MapSet.NearestLinedef(linedefs, pos); }
 
 		/// <summary>This finds the line closest to the specified position.</summary>
-		public Linedef NearestLinedefRange(Vector2D pos, float maxrange) { return MapSet.NearestLinedefRange(linedefs, pos, maxrange); }
+		public Linedef NearestLinedefRange(Vector2D pos, double maxrange) { return MapSet.NearestLinedefRange(linedefs, pos, maxrange); }
 
 		/// <summary>This finds the vertex closest to the specified position.</summary>
 		public Vertex NearestVertex(Vector2D pos) { return MapSet.NearestVertex(vertices, pos); }
 
 		/// <summary>This finds the vertex closest to the specified position.</summary>
-		public Vertex NearestVertexSquareRange(Vector2D pos, float maxrange) { return MapSet.NearestVertexSquareRange(vertices, pos, maxrange); }
+		public Vertex NearestVertexSquareRange(Vector2D pos, double maxrange) { return MapSet.NearestVertexSquareRange(vertices, pos, maxrange); }
 
 		/// <summary>This finds the thing closest to the specified position.</summary>
-		public Thing NearestThingSquareRange(Vector2D pos, float maxrange) { return MapSet.NearestThingSquareRange(things, pos, maxrange); }
+		public Thing NearestThingSquareRange(Vector2D pos, double maxrange) { return MapSet.NearestThingSquareRange(things, pos, maxrange); }
 
 		/// <summary>This finds the closest unselected linedef that is not connected to the given vertex.</summary>
-		public Linedef NearestUnselectedUnreferencedLinedef(Vector2D pos, float maxrange, Vertex v, out float distance)
+		public Linedef NearestUnselectedUnreferencedLinedef(Vector2D pos, double maxrange, Vertex v, out double distance)
 		{
 			Linedef closest = null;
-			distance = float.MaxValue;
-			float maxrangesq = maxrange * maxrange;
+			distance = double.MaxValue;
+			double maxrangesq = maxrange * maxrange;
 
 			// Go for all linedefs in selection
 			foreach(Linedef l in linedefs)
 			{
 				// Calculate distance and check if closer than previous find
-				float d = l.SafeDistanceToSq(pos, true);
+				double d = l.SafeDistanceToSq(pos, true);
 				if((d <= maxrangesq) && (d < distance))
 				{
 					// Check if not selected

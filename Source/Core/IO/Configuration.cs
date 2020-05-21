@@ -1284,6 +1284,8 @@ namespace CodeImp.DoomBuilder.IO
 		public int ReadSetting(string setting, int defaultsetting, string pathseperator) { return Convert.ToInt32(ReadAnySetting(setting, defaultsetting, pathseperator), CultureInfo.InvariantCulture); }
 		public float ReadSetting(string setting, float defaultsetting) { return Convert.ToSingle(ReadAnySetting(setting, defaultsetting, DEFAULT_SEPERATOR), CultureInfo.InvariantCulture); }
 		public float ReadSetting(string setting, float defaultsetting, string pathseperator) { return Convert.ToSingle(ReadAnySetting(setting, defaultsetting, pathseperator), CultureInfo.InvariantCulture); }
+		public double ReadSetting(string setting, double defaultsetting) { return Convert.ToDouble(ReadAnySetting(setting, defaultsetting, DEFAULT_SEPERATOR), CultureInfo.InvariantCulture); }
+		public double ReadSetting(string setting, double defaultsetting, string pathseperator) { return Convert.ToDouble(ReadAnySetting(setting, defaultsetting, pathseperator), CultureInfo.InvariantCulture); }
 		public short ReadSetting(string setting, short defaultsetting) { return Convert.ToInt16(ReadAnySetting(setting, defaultsetting, DEFAULT_SEPERATOR), CultureInfo.InvariantCulture); }
 		public short ReadSetting(string setting, short defaultsetting, string pathseperator) { return Convert.ToInt16(ReadAnySetting(setting, defaultsetting, pathseperator), CultureInfo.InvariantCulture); }
 		public long ReadSetting(string setting, long defaultsetting) { return Convert.ToInt64(ReadAnySetting(setting, defaultsetting, DEFAULT_SEPERATOR), CultureInfo.InvariantCulture); }

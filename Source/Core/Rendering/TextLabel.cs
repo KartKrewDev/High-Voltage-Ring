@@ -135,7 +135,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		}
 
 		[Obsolete("Rectangle property is deprecated, please use Location property instead.")]
-		public RectangleF Rectangle { get { return new RectangleF(location.x, location.y, 0f, 0f); } set { location = new Vector2D(value.X, value.Y); updateneeded = true; } }
+		public RectangleF Rectangle { get { return new RectangleF((float)location.x, (float)location.y, 0f, 0f); } set { location = new Vector2D(value.X, value.Y); updateneeded = true; } }
 
 		// Disposing
 		public bool IsDisposed { get { return isdisposed; } }
@@ -307,7 +307,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 
 					// Align the text horizontally
-					float beginx = 0;
+					double beginx = 0;
 					switch(alignx)
 					{
 						case TextAlignmentX.Left: beginx = abspos.x; break;
@@ -316,7 +316,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 
 					// Align the text vertically
-					float beginy = 0;
+					double beginy = 0;
 					switch(aligny)
 					{
 						case TextAlignmentY.Top: beginy = abspos.y; break;
@@ -325,7 +325,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					}
 
 					//mxd. Skip when not on screen...
-					RectangleF abssize = new RectangleF(beginx, beginy, texturesize.Width, texturesize.Height);
+					RectangleF abssize = new RectangleF((float)beginx, (float)beginy, texturesize.Width, texturesize.Height);
 					Size windowsize = General.Map.Graphics.RenderTarget.ClientSize;
 					skiprendering = (abssize.Right < 0.1f) || (abssize.Left > windowsize.Width) || (abssize.Bottom < 0.1f) || (abssize.Top > windowsize.Height);
 					if(skiprendering) return;
@@ -353,7 +353,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						textbuffer = new VertexBuffer();
 					}
 
-					FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, beginx, beginy, beginx + texturesize.Width, beginy + texturesize.Height);
+					FlatQuad quad = new FlatQuad(PrimitiveType.TriangleStrip, (float)beginx, (float)beginy, (float)(beginx + texturesize.Width), (float)(beginy + texturesize.Height));
                     graphics.SetBufferData(textbuffer, quad.Vertices);
 				}
 				else

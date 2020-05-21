@@ -114,7 +114,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			int vertices = Math.Min(panel.Vertices, (int)Math.Ceiling(line.Length / 4));
 			int distance = panel.Distance;
 			int angle = (!fixedcurve && distance == 0 ? Math.Max(5, panel.Angle) : panel.Angle);
-			float theta = Angle2D.DegToRad(angle);
+			double theta = Angle2D.DegToRad(angle);
 			if(distance < 0) theta = -theta; //mxd
 
 			// Make list
@@ -128,7 +128,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				for(int v = 1; v <= vertices; v++)
 				{
-					float x = (line.Length * segDelta) * (vertices - v + 1) - line.Length * 0.5f; // Line segment coord
+					double x = (line.Length * segDelta) * (vertices - v + 1) - line.Length * 0.5f; // Line segment coord
 					
 					// Rotate and transform to fit original line
 					Vector2D vertex = new Vector2D(x, 0).GetRotated(line.Angle + Angle2D.PIHALF) + linecenter;
@@ -148,14 +148,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//and lastly they are rotated and moved to fit with the original line
 
 				//calculate some identities of a circle segment (refer to the graph in the url above)
-				float c = line.Length;
+				double c = line.Length;
 
-				float d = (c / (float)Math.Tan(theta / 2)) / 2;
-				float R = d / (float)Math.Cos(theta / 2);
-				float h = R - d;
+				double d = (c / (float)Math.Tan(theta / 2)) / 2;
+				double R = d / (float)Math.Cos(theta / 2);
+				double h = R - d;
 
-				float yDeform = (fixedcurve ? 1 : distance / h);
-				float xDelta = Math.Min(1, yDeform); //mxd
+				double yDeform = (fixedcurve ? 1 : distance / h);
+				double xDelta = Math.Min(1, yDeform); //mxd
 				
 				for(int v = 1; v <= vertices; v++)
 				{
@@ -163,14 +163,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					//the curve starts at PI/2 - theta/2 and is segmented into vertices+1 segments
 					//this assumes the line is horisontal and on y = 0, the point is rotated and moved later
 
-					float a = (Angle2D.PI - theta) / 2 + v * (theta / (vertices + 1));
+					double a = (Angle2D.PI - theta) / 2 + v * (theta / (vertices + 1));
 
 					//calculate the coordinates of the point, and distort the y coordinate
 					//using the deform factor calculated above
-					float xr = (float)Math.Cos(a) * R; //mxd. Circle segment coord
-					float xl = (line.Length * segDelta) * (vertices - v + 1) - line.Length * 0.5f; // mxd. Line segment coord
-					float x = InterpolationTools.Linear(xl, xr, xDelta); //mxd
-					float y = ((float)Math.Sin(a) * R - d) * yDeform;
+					double xr = Math.Cos(a) * R; //mxd. Circle segment coord
+					double xl = (line.Length * segDelta) * (vertices - v + 1) - line.Length * 0.5f; // mxd. Line segment coord
+					double x = InterpolationTools.Linear(xl, xr, xDelta); //mxd
+					double y = (Math.Sin(a) * R - d) * yDeform;
 
 					//rotate and transform to fit original line
 					Vector2D vertex = new Vector2D(x, y).GetRotated(line.Angle + Angle2D.PIHALF) + linecenter;
@@ -371,7 +371,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 						//mxd. Draw verts
 						foreach(Vector2D p in points)
-							renderer.RenderRectangleFilled(new RectangleF(p.x - vsize, p.y - vsize, vsize * 2.0f, vsize * 2.0f), General.Colors.Selection, true);
+							renderer.RenderRectangleFilled(new RectangleF((float)(p.x - vsize), (float)(p.y - vsize), vsize * 2.0f, vsize * 2.0f), General.Colors.Selection, true);
 					}
 				}
 
@@ -397,9 +397,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(panel.Angle > 0)
 				{
 					// Calculate diameter for current angle...
-					float ma = Angle2D.DegToRad(panel.Angle);
-					float d = (closestline.Length / (float)Math.Tan(ma / 2f)) / 2;
-					float D = d / (float)Math.Cos(ma / 2f);
+					double ma = Angle2D.DegToRad(panel.Angle);
+					double d = (closestline.Length / Math.Tan(ma / 2f)) / 2;
+					double D = d / Math.Cos(ma / 2f);
 					distance = (int)Math.Round(D - d) * Math.Sign(panel.Distance);
 				}
 				else
@@ -444,7 +444,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(panel.Distance != 0) perpendicular *= panel.Distance; // Special cases...
 			Vector2D center = closestline.GetCenterPoint();
 			Line2D radius = new Line2D(center, center - perpendicular);
-			float u = radius.GetNearestOnLine(mousemappos - mousedownoffset);
+			double u = radius.GetNearestOnLine(mousemappos - mousedownoffset);
 			int dist = (panel.Distance == 0 ? 1 : panel.Distance); // Special cases...
 			int offset = (int)Math.Round(dist * u - dist);
 			bool updaterequired = false;
@@ -468,7 +468,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Change distance
 			else if(selectpressed && !panel.FixedCurve)
 			{
-				if(float.IsNaN(u))
+				if(double.IsNaN(u))
 				{
 					// Set new distance without triggering the update...
 					panel.SetValues(panel.Vertices, 0, panel.Angle, panel.FixedCurve); // Special cases...
@@ -508,18 +508,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					//TODO: there surely is a way to get new angle without iteration...
-					float targetoffset = radius.GetLength() * u;
-					float prevdiff = float.MaxValue;
+					double targetoffset = radius.GetLength() * u;
+					double prevdiff = double.MaxValue;
 					int increment = (clampvalue ? panel.AngleIncrement : 1);
 					for(int i = 1; i < panel.MaximumAngle; i += increment)
 					{
 						// Calculate diameter for current angle...
-						float ma = Angle2D.DegToRad(i);
-						float d = (closestline.Length / (float)Math.Tan(ma / 2f)) / 2;
-						float D = d / (float)Math.Cos(ma / 2f);
-						float h = D - d;
+						double ma = Angle2D.DegToRad(i);
+						double d = (closestline.Length / Math.Tan(ma / 2f)) / 2;
+						double D = d / Math.Cos(ma / 2f);
+						double h = D - d;
 
-						float curdiff = Math.Abs(h - targetoffset);
+						double curdiff = Math.Abs(h - targetoffset);
 
 						// This one matches better...
 						if(curdiff < prevdiff) newangle = i;
@@ -551,7 +551,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(updaterequired)
 			{
 				// Update label position
-				float labeldistance;
+				double labeldistance;
 
 				if(panel.Angle == 0)
 				{
@@ -559,9 +559,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 				else if(panel.FixedCurve)
 				{
-					float ma = Angle2D.DegToRad(panel.Angle);
-					float d = (closestline.Length / (float)Math.Tan(ma / 2f)) / 2;
-					float D = d / (float)Math.Cos(ma / 2f);
+					double ma = Angle2D.DegToRad(panel.Angle);
+					double d = (closestline.Length / Math.Tan(ma / 2f)) / 2;
+					double D = d / Math.Cos(ma / 2f);
 					labeldistance = D - d;
 				}
 				else

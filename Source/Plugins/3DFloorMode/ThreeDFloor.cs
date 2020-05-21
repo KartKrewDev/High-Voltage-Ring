@@ -43,9 +43,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		private string topflat;
 		private string bottomflat;
 		private Vector3D floorslope;
-		private float floorslopeoffset;
+		private double floorslopeoffset;
 		private Vector3D ceilingslope;
-		private float ceilingslopeoffset;
+		private double ceilingslopeoffset;
 		private int type;
 		private int flags;
 		private int alpha;
@@ -77,9 +77,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		public int UDMFTag { get { return udmftag; } set { udmftag = value; } }
 		public List<int> Tags { get { return tags; } set { tags = value; } }
 		public Vector3D FloorSlope {  get { return floorslope; } set { floorslope = value; } }
-		public float FloorSlopeOffset { get { return floorslopeoffset; } set { floorslopeoffset = value; } }
+		public double FloorSlopeOffset { get { return floorslopeoffset; } set { floorslopeoffset = value; } }
 		public Vector3D CeilingSlope { get { return ceilingslope; } set { ceilingslope = value; } }
-		public float CeilingSlopeOffset { get { return ceilingslopeoffset; } set { ceilingslopeoffset = value; } }
+		public double CeilingSlopeOffset { get { return ceilingslopeoffset; } set { ceilingslopeoffset = value; } }
 
 		public ThreeDFloor()
 		{

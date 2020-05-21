@@ -44,14 +44,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						foreach(Sidedef side in t.Sector.Sidedefs) 
 						{
-							if(!float.IsNaN(side.Line.Start.ZFloor) || !float.IsNaN(side.Line.End.ZFloor)) 
+							if(!double.IsNaN(side.Line.Start.ZFloor) || !double.IsNaN(side.Line.End.ZFloor)) 
 								return;
 						}
 					}
 
-					float angle = Angle2D.DoomToReal((int)Angle2D.RadToDeg(t.Angle));
-					float vangle = Angle2D.DegToRad(General.Clamp(t.Args[0], 0, 180)); //mxd. Don't underestimate user stupidity (or curiosity)!
-					Vector2D point = new Vector2D(t.Position.x + (float)Math.Cos(angle) * (float)Math.Sin(vangle), t.Position.y + (float)Math.Sin(angle) * (float)Math.Sin(vangle));
+					double angle = Angle2D.DoomToReal((int)Angle2D.RadToDeg(t.Angle));
+					double vangle = Angle2D.DegToRad(General.Clamp(t.Args[0], 0, 180)); //mxd. Don't underestimate user stupidity (or curiosity)!
+					Vector2D point = new Vector2D(t.Position.x + Math.Cos(angle) * Math.Sin(vangle), t.Position.y + Math.Sin(angle) * Math.Sin(vangle));
 					Vector2D perpendicular = new Line2D(t.Position, point).GetPerpendicular();
 
 					Vector3D v1 = new Vector3D(t.Position.x, t.Position.y, t.Position.z + t.Sector.FloorHeight);
@@ -59,13 +59,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					Vector3D v2 = new Vector3D(
 						point.x + perpendicular.x,
 						point.y + perpendicular.y,
-						t.Position.z + t.Sector.FloorHeight + (float)Math.Cos(vangle)
+						t.Position.z + t.Sector.FloorHeight + Math.Cos(vangle)
 					);
 
 					Vector3D v3 = new Vector3D(
 						point.x - perpendicular.x,
 						point.y - perpendicular.y,
-						t.Position.z + t.Sector.FloorHeight + (float)Math.Cos(vangle)
+						t.Position.z + t.Sector.FloorHeight + Math.Cos(vangle)
 					);
 
 					SectorData sd = data.Mode.GetSectorData(t.Sector);
@@ -86,13 +86,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						foreach(Sidedef side in t.Sector.Sidedefs) 
 						{
-							if(!float.IsNaN(side.Line.Start.ZCeiling) || !float.IsNaN(side.Line.End.ZCeiling))
+							if(!double.IsNaN(side.Line.Start.ZCeiling) || !double.IsNaN(side.Line.End.ZCeiling))
 								return;
 						}
 					}
-					
-					float angle = Angle2D.DoomToReal((int)Angle2D.RadToDeg(t.Angle));
-					float vangle = Angle2D.DegToRad(General.Clamp(t.Args[0], 0, 180)); //mxd. Don't underestimate user stupidity (or curiosity)!
+
+					double angle = Angle2D.DoomToReal((int)Angle2D.RadToDeg(t.Angle));
+					double vangle = Angle2D.DegToRad(General.Clamp(t.Args[0], 0, 180)); //mxd. Don't underestimate user stupidity (or curiosity)!
 					Vector2D point = new Vector2D(t.Position.x + (float)Math.Cos(angle) * (float)Math.Sin(vangle), t.Position.y + (float)Math.Sin(angle) * (float)Math.Sin(vangle));
 					Vector2D perpendicular = new Line2D(t.Position, point).GetPerpendicular();
 

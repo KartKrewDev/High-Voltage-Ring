@@ -8,7 +8,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 	{
 		public int startvertex;
 		public int endvertex;
-		public float angle;
+		public double angle;
 		public int lineindex;
 		public bool leftside;
 		public float offset;

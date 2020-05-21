@@ -518,14 +518,14 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 				int pi = 0;
 				for(int t = 0; t < (poly.Count - 2); t++)
 				{
-					fverts[pi].x = poly[0].x;
-					fverts[pi].y = poly[0].y;
+					fverts[pi].x = (float)poly[0].x;
+					fverts[pi].y = (float)poly[0].y;
 					fverts[pi].c = intcolor;
-					fverts[pi + 1].x = poly[t + 1].x;
-					fverts[pi + 1].y = poly[t + 1].y;
+					fverts[pi + 1].x = (float)poly[t + 1].x;
+					fverts[pi + 1].y = (float)poly[t + 1].y;
 					fverts[pi + 1].c = intcolor;
-					fverts[pi + 2].x = poly[t + 2].x;
-					fverts[pi + 2].y = poly[t + 2].y;
+					fverts[pi + 2].x = (float)poly[t + 2].x;
+					fverts[pi + 2].y = (float)poly[t + 2].y;
 					fverts[pi + 2].c = intcolor;
 					pi += 3;
 				}
@@ -541,13 +541,13 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 			if(poly.Count == 0) return;
 			Vector2D prev = poly[poly.Count - 1];
 
-			float side1 = (prev.y - split.pos.y) * split.delta.x - (prev.x - split.pos.x) * split.delta.y;
+			double side1 = (prev.y - split.pos.y) * split.delta.x - (prev.x - split.pos.x) * split.delta.y;
 			List<Vector2D> newp = new List<Vector2D>(poly.Count);
 			for(int i = 0; i < poly.Count; i++)
 			{
 				// Fetch vertex and determine side
 				Vector2D cur = poly[i];
-				float side2 = (cur.y - split.pos.y) * split.delta.x - (cur.x - split.pos.x) * split.delta.y;
+				double side2 = (cur.y - split.pos.y) * split.delta.x - (cur.x - split.pos.x) * split.delta.y;
 
 				// Front?
 				if(side2 < -EPSILON)
@@ -555,7 +555,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 					if(side1 > EPSILON)
 					{
 						// Split line with plane and insert the vertex
-						float u;
+						double u;
 						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out u, false);
 						Vector2D newv = prev + (cur - prev) * u;
 						newp.Add(newv);
@@ -569,7 +569,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 					if(side1 < -EPSILON)
 					{
 						// Split line with plane and insert the vertex
-						float u;
+						double u;
 						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out u, false);
 						Vector2D newv = prev + (cur - prev) * u;
 						newp.Add(newv);
@@ -705,7 +705,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 			Vector2D prevpoint = points[points.Length - 1];
 			for(int i = 0; i < points.Length; i++)
 			{
-				float side = Line2D.GetSideOfLine(prevpoint, points[i], p);
+				double side = Line2D.GetSideOfLine(prevpoint, points[i], p);
 				if(side > 0f) return false;
 				prevpoint = points[i];
 			}
@@ -787,14 +787,14 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 				int pi = 0;
 				for(int t = 0; t < (poly.Count - 2); t++)
 				{
-					fverts[pi].x = poly[0].x;
-					fverts[pi].y = poly[0].y;
+					fverts[pi].x = (float)poly[0].x;
+					fverts[pi].y = (float)poly[0].y;
 					fverts[pi].c = intcolor;
-					fverts[pi + 1].x = poly[t + 1].x;
-					fverts[pi + 1].y = poly[t + 1].y;
+					fverts[pi + 1].x = (float)poly[t + 1].x;
+					fverts[pi + 1].y = (float)poly[t + 1].y;
 					fverts[pi + 1].c = intcolor;
-					fverts[pi + 2].x = poly[t + 2].x;
-					fverts[pi + 2].y = poly[t + 2].y;
+					fverts[pi + 2].x = (float)poly[t + 2].x;
+					fverts[pi + 2].y = (float)poly[t + 2].y;
 					fverts[pi + 2].c = intcolor;
 					pi += 3;
 				}
@@ -941,7 +941,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 				Node n = nodes[nodes.Length - 1];
 				do
 				{
-					float side = (mousemappos.y - n.linestart.y) * n.linedelta.x - (mousemappos.x - n.linestart.x) * n.linedelta.y;
+					double side = (mousemappos.y - n.linestart.y) * n.linedelta.x - (mousemappos.x - n.linestart.x) * n.linedelta.y;
 					if(side > 0f)
 					{
 						// Mouse is on the left side of this split

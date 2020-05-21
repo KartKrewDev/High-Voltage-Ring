@@ -35,9 +35,9 @@ namespace CodeImp.DoomBuilder.Controls
 		private bool preventchanges;
 		
 		// Slope values
-		private float anglexy;
-		private float anglez;
-		private float offset;
+		private double anglexy;
+		private double anglez;
+		private double offset;
 
 		#endregion
 
@@ -104,9 +104,9 @@ namespace CodeImp.DoomBuilder.Controls
 			else 
 			{
 				// Or update values
-				if(!float.IsNaN(this.anglexy) && this.anglexy != anglexy) this.anglexy = float.NaN;
-				if(!float.IsNaN(this.anglez) && this.anglez != anglez) this.anglez = float.NaN;
-				if(!float.IsNaN(this.offset) && this.offset != offset) this.offset = float.NaN;
+				if(!double.IsNaN(this.anglexy) && this.anglexy != anglexy) this.anglexy = float.NaN;
+				if(!double.IsNaN(this.anglez) && this.anglez != anglez) this.anglez = float.NaN;
+				if(!double.IsNaN(this.offset) && this.offset != offset) this.offset = float.NaN;
 			}
 		}
 
@@ -116,7 +116,7 @@ namespace CodeImp.DoomBuilder.Controls
 			{
 				this.offset = offset;
 			} 
-			else if(!float.IsNaN(this.offset) && this.offset != offset)
+			else if(!double.IsNaN(this.offset) && this.offset != offset)
 			{
 				this.offset = float.NaN;
 			}
@@ -126,7 +126,7 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			preventchanges = true;
 
-			if(float.IsNaN(anglexy)) 
+			if(double.IsNaN(anglexy)) 
 			{
 				sloperotation.Text = "";
 				rotationcontrol.Angle = AngleControlEx.NO_ANGLE;
@@ -137,7 +137,7 @@ namespace CodeImp.DoomBuilder.Controls
 				rotationcontrol.Angle = (int)Math.Round(anglexy + 90);
 			}
 
-			if(float.IsNaN(anglez)) 
+			if(double.IsNaN(anglez)) 
 			{
 				slopeangle.Text = "";
 				angletrackbar.Value = 0;
@@ -151,7 +151,7 @@ namespace CodeImp.DoomBuilder.Controls
 				angletrackbar.Value = (int)General.Clamp(anglez, angletrackbar.Minimum, angletrackbar.Maximum);
 			}
 
-			slopeoffset.Text = (float.IsNaN(offset) ? "" : offset.ToString());
+			slopeoffset.Text = (double.IsNaN(offset) ? "" : offset.ToString());
 
 			preventchanges = false;
 		}
@@ -159,7 +159,7 @@ namespace CodeImp.DoomBuilder.Controls
 		public void UpdateOffset() 
 		{
 			preventchanges = true;
-			slopeoffset.Text = (float.IsNaN(offset) ? "" : offset.ToString());
+			slopeoffset.Text = (double.IsNaN(offset) ? "" : offset.ToString());
 			preventchanges = false;
 		}
 
@@ -172,8 +172,8 @@ namespace CodeImp.DoomBuilder.Controls
 			if(preventchanges) return;
 			preventchanges = true;
 
-			anglexy = General.ClampAngle(sloperotation.GetResultFloat(float.NaN));
-			rotationcontrol.Angle = (float.IsNaN(anglexy) ? AngleControlEx.NO_ANGLE : (int)Math.Round(anglexy + 90));
+			anglexy = General.ClampAngle(sloperotation.GetResultFloat(double.NaN));
+			rotationcontrol.Angle = (double.IsNaN(anglexy) ? AngleControlEx.NO_ANGLE : (int)Math.Round(anglexy + 90));
 
 			if(OnAnglesChanged != null) OnAnglesChanged(this, EventArgs.Empty);
 			preventchanges = false;

@@ -208,7 +208,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						color = points[i].stitch ? stitchcolor : losecolor;
 
 						// Render vertex
-						renderer.RenderRectangleFilled(new RectangleF(points[i].pos.x - vsize, points[i].pos.y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
+						renderer.RenderRectangleFilled(new RectangleF((float)(points[i].pos.x - vsize), (float)(points[i].pos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 					}
 
 					//mxd. Render guide labels?
@@ -222,7 +222,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				color = snaptonearest ? stitchcolor : losecolor;
 
 				// Render vertex at cursor
-				renderer.RenderRectangleFilled(new RectangleF(curp.pos.x - vsize, curp.pos.y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
+				renderer.RenderRectangleFilled(new RectangleF((float)(curp.pos.x - vsize), (float)(curp.pos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 
 				// Done
 				renderer.Finish();
@@ -337,8 +337,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(snaptocardinal)
 			{
 				Vector2D offset = mousemappos - points[points.Count - 1].pos;
-				
-				float angle;
+
+				double angle;
 				if(usefourcardinaldirections)
 					angle = Angle2D.DegToRad((General.ClampAngle((int)Angle2D.RadToDeg(offset.GetAngle()))) / 90 * 90 + 45);
 				else
@@ -403,16 +403,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						Line2D ourline = new Line2D(points[points.Count - 1].pos, vm);
 						Line2D nearestline = new Line2D(nl.Start.Position, nl.End.Position);
 						Vector2D intersection = Line2D.GetIntersectionPoint(nearestline, ourline, false);
-						if(!float.IsNaN(intersection.x))
+						if(!double.IsNaN(intersection.x))
 						{
 							// Intersection is on nearestline?
-							float u = Line2D.GetNearestOnLine(nearestline.v1, nearestline.v2, intersection);
+							double u = Line2D.GetNearestOnLine(nearestline.v1, nearestline.v2, intersection);
 
 							if(u < 0f || u > 1f) { }
 							else
 							{
-								p.pos = new Vector2D((float)Math.Round(intersection.x, General.Map.FormatInterface.VertexDecimals),
-													 (float)Math.Round(intersection.y, General.Map.FormatInterface.VertexDecimals));
+								p.pos = new Vector2D(Math.Round(intersection.x, General.Map.FormatInterface.VertexDecimals),
+													 Math.Round(intersection.y, General.Map.FormatInterface.VertexDecimals));
 								return p;
 							}
 						}
@@ -426,7 +426,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 						// Find nearest grid intersection
 						bool found = false;
-						float found_distance = float.MaxValue;
+						double found_distance = double.MaxValue;
 						Vector2D found_coord = new Vector2D();
 						foreach(Vector2D v in coords)
 						{
@@ -475,7 +475,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				Line2D dline = new Line2D(mousemappos, points[points.Count - 1].pos);
 				bool foundintersection = false;
-				float u = 0.0f;
+				double u = 0.0f;
 				List<Line2D> blines = new List<Line2D>();
 
 				// lines for left, top, right and bottom boundaries
@@ -589,10 +589,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(autoclosedrawing)
 				{
 					// Determive center point
-					float minx = float.MaxValue;
-					float maxx = float.MinValue;
-					float miny = float.MaxValue;
-					float maxy = float.MinValue;
+					double minx = float.MaxValue;
+					double maxx = float.MinValue;
+					double miny = float.MaxValue;
+					double maxy = float.MinValue;
 
 					foreach(DrawnVertex v in points)
 					{
@@ -653,7 +653,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Linedef result = null;
 			if(v.Position == target)
 			{
-				float mindistance = float.MaxValue;
+				double mindistance = double.MaxValue;
 				foreach(Linedef l in v.Linedefs)
 				{
 					if(result == null)
@@ -663,7 +663,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 					else
 					{
-						float curdistance = Vector2D.DistanceSq(l.GetCenterPoint(), center);
+						double curdistance = Vector2D.DistanceSq(l.GetCenterPoint(), center);
 						if(curdistance < mindistance)
 						{
 							mindistance = curdistance;

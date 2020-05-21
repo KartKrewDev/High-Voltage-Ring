@@ -107,9 +107,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			public Sidedef sidedef;
 
-			public float offsetx;
-			public float scaleX; //mxd
-			public float scaleY; //mxd
+			public double offsetx;
+			public double scaleX; //mxd
+			public double scaleY; //mxd
 
 			private Sidedef controlside; //mxd
 			public Sidedef controlSide
@@ -644,10 +644,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			//we need some reference
-			float minX = coordinates[0].x;
-			float maxX = minX;
-			float minY = coordinates[0].y;
-			float maxY = minY;
+			double minX = coordinates[0].x;
+			double maxX = minX;
+			double minY = coordinates[0].y;
+			double maxY = minY;
 
 			//get bounding coordinates for selected things
 			for(int i = 1; i < coordinates.Length; i++) 
@@ -1329,7 +1329,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Camera below floor level?
 				Vector3D feetposition = General.Map.VisualCamera.Position;
 				SectorLevel floorlevel = sd.GetFloorBelow(feetposition) ?? sd.Floor;
-				float floorheight = floorlevel.plane.GetZ(General.Map.VisualCamera.Position);
+				double floorheight = floorlevel.plane.GetZ(General.Map.VisualCamera.Position);
 				if(General.Map.VisualCamera.Position.z < (floorheight + cameraflooroffset + 0.1f))
 				{
 					// Stay above floor
@@ -1363,7 +1363,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Camera above ceiling?
 				feetposition = General.Map.VisualCamera.Position - new Vector3D(0, 0, cameraflooroffset - 7.0f);
 				SectorLevel ceillevel = sd.GetCeilingAbove(feetposition) ?? sd.Ceiling;
-				float ceilheight = ceillevel.plane.GetZ(General.Map.VisualCamera.Position);
+				double ceilheight = ceillevel.plane.GetZ(General.Map.VisualCamera.Position);
 				if(General.Map.VisualCamera.Position.z > (ceilheight - cameraceilingoffset - 0.01f))
 				{
 					// Stay below ceiling
@@ -4223,8 +4223,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private void AutoAlignTextures(BaseVisualGeometrySidedef start, ImageData texture, bool alignx, bool aligny, bool resetsidemarks) 
 		{
 			Stack<SidedefAlignJob> todo = new Stack<SidedefAlignJob>(50);
-			float scalex = (General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.x : 1.0f;
-			float scaley = (General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.y : 1.0f;
+			double scalex = (General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.x : 1.0f;
+			double scaley = (General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.y : 1.0f;
 
 			// Mark all sidedefs false (they will be marked true when the texture is aligned).
 			if(resetsidemarks) General.Map.Map.ClearMarkedSidedefs(false);
@@ -4334,8 +4334,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			bool worldpanning = texture.WorldPanning || General.Map.Data.MapInfo.ForceWorldPanning;
 
 			Stack<SidedefAlignJob> todo = new Stack<SidedefAlignJob>(50);
-			float scalex = (General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.x : 1.0f;
-			float scaley = (General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.y : 1.0f;
+			double scalex = (General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.x : 1.0f;
+			double scaley = (General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.y : 1.0f;
 
 			SidedefAlignJob first = new SidedefAlignJob { sidedef = start.Sidedef, offsetx = start.Sidedef.OffsetX };
 			first.controlSide = (start.GeometryType == VisualGeometryType.WALL_MIDDLE_3D ? start.GetControlLinedef().Front : start.Sidedef);
@@ -4388,11 +4388,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// biwa
-			float vwidth = worldpanning ? texture.ScaledWidth / first.scaleX : texture.Width;
-			float vheight = worldpanning ? texture.ScaledHeight / first.scaleY : texture.Height;
+			double vwidth = worldpanning ? texture.ScaledWidth / first.scaleX : texture.Width;
+			double vheight = worldpanning ? texture.ScaledHeight / first.scaleY : texture.Height;
 
 			// Determine the Y alignment
-			float ystartalign = start.Sidedef.OffsetY;
+			double ystartalign = start.Sidedef.OffsetY;
 			switch(start.GeometryType) 
 			{
 				case VisualGeometryType.WALL_UPPER:
@@ -4436,7 +4436,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			while(todo.Count > 0) 
 			{
 				Vertex v;
-				float forwardoffset, backwardoffset;
+				double forwardoffset, backwardoffset;
 				bool matchtop = false;
 				bool matchmid = false;
 				bool matchbottom = false;
@@ -4506,7 +4506,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// Apply alignment
 					if(alignx) 
 					{
-						float offset = j.offsetx;
+						double offset = j.offsetx;
 						offset -= j.sidedef.OffsetX;
 
 						if(matchtop)
@@ -4537,7 +4537,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					if(aligny) 
 					{
-						float offset;
+						double offset;
 
 						if (!texture.WorldPanning && !General.Map.Data.MapInfo.ForceWorldPanning)
 							offset = ((start.Sidedef.Sector.CeilHeight - j.ceilingHeight) / scaley) * Math.Abs(j.scaleY)  + ystartalign - j.sidedef.OffsetY; //mxd
@@ -4548,7 +4548,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongHighTexture);
 							int texheight = (tex != null && tex.IsImageLoaded) ? tex.Height : 1;
-							float scale = !worldpanning ? j.scaleY / scaley : 1.0f;
+							double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
 
 							j.sidedef.Fields["offsety_top"] = new UniValue(UniversalType.Float,
 								(float)Math.Round(Tools.GetSidedefTopOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
@@ -4558,7 +4558,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongLowTexture);
 							int texheight = (tex != null && tex.IsImageLoaded) ? tex.Height : 1;
-							float scale = !worldpanning ? j.scaleY / scaley : 1.0f;
+							double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
 
 							j.sidedef.Fields["offsety_bottom"] = new UniValue(UniversalType.Float,
 								(float)Math.Round(Tools.GetSidedefBottomOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
@@ -4579,7 +4579,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							else
 							{
 								ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongMiddleTexture);
-								float scale = !worldpanning ? j.scaleY / scaley : 1.0f;
+								double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
 								offset = Tools.GetSidedefMiddleOffsetY(j.sidedef, offset, scale, true);
 
 								if (tex != null && tex.IsImageLoaded)
@@ -4593,7 +4593,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 									if(!startisnonwrappedmidtex && cursideisnonwrappedmidtex)
 									{
 										//mxd. This should be doublesided non-wrapped line. Find the nearset aligned position
-										float curoffset = UniFields.GetFloat(j.sidedef.Fields, "offsety_mid") + j.sidedef.OffsetY;
+										double curoffset = UniFields.GetFloat(j.sidedef.Fields, "offsety_mid") + j.sidedef.OffsetY;
 										offset += vheight * (float)Math.Round(curoffset / vheight - 0.5f * Math.Sign(j.scaleY));
 
 										// Make sure the surface stays between floor and ceiling
@@ -4694,26 +4694,26 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					if(aligny) 
 					{
-						float offset = ((start.Sidedef.Sector.CeilHeight - j.ceilingHeight) / scaley) * Math.Abs(j.scaleY) + ystartalign; //mxd
+						double offset = ((start.Sidedef.Sector.CeilHeight - j.ceilingHeight) / scaley) * Math.Abs(j.scaleY) + ystartalign; //mxd
 						offset -= j.sidedef.OffsetY; //mxd
 
 						if(matchtop)
 						{
 							ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongHighTexture);
 							int texheight = (tex != null && tex.IsImageLoaded) ? tex.Height : 1;
-							float scale = !worldpanning ? j.scaleY / scaley : 1.0f;
+							double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
 
 							j.sidedef.Fields["offsety_top"] = new UniValue(UniversalType.Float, 
-								(float)Math.Round(Tools.GetSidedefTopOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
+								Math.Round(Tools.GetSidedefTopOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
 						}
 						if(matchbottom)
 						{
 							ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongLowTexture);
 							int texheight = (tex != null && tex.IsImageLoaded) ? tex.Height : 1;
-							float scale = !worldpanning ? j.scaleY / scaley : 1.0f;
+							double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
 
 							j.sidedef.Fields["offsety_bottom"] = new UniValue(UniversalType.Float,
-								(float)Math.Round(Tools.GetSidedefBottomOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
+								Math.Round(Tools.GetSidedefBottomOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
 						}
 						if(matchmid) 
 						{
@@ -4726,12 +4726,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								ImageData tex = General.Map.Data.GetTextureImage(j.controlSide.LongMiddleTexture);
 								int texheight = (tex != null && tex.IsImageLoaded) ? tex.Height : 1;
 								j.sidedef.Fields["offsety_mid"] = new UniValue(UniversalType.Float,
-									(float)Math.Round(offset % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
+									Math.Round(offset % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
 							} 
 							else 
 							{
 								ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongMiddleTexture);
-								float scale = !worldpanning ? j.scaleY / scaley : 1.0f;
+								double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
 								offset = Tools.GetSidedefMiddleOffsetY(j.sidedef, offset, scale, true);
 
 								if(tex != null && tex.IsImageLoaded)
@@ -4745,8 +4745,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 									if(!startisnonwrappedmidtex && cursideisnonwrappedmidtex)
 									{
 										//mxd. This should be doublesided non-wrapped line. Find the nearset aligned position
-										float curoffset = UniFields.GetFloat(j.sidedef.Fields, "offsety_mid") + j.sidedef.OffsetY;
-										offset += tex.Height * (float)Math.Round(curoffset / vheight - 0.5f * Math.Sign(j.scaleY));
+										double curoffset = UniFields.GetFloat(j.sidedef.Fields, "offsety_mid") + j.sidedef.OffsetY;
+										offset += tex.Height * Math.Round(curoffset / vheight - 0.5f * Math.Sign(j.scaleY));
 
 										// Make sure the surface stays between floor and ceiling
 										if(j.sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag) || Math.Sign(j.scaleY) == -1)
@@ -4767,7 +4767,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								}
 
 								j.sidedef.Fields["offsety_mid"] = new UniValue(UniversalType.Float, 
-									(float)Math.Round(offset, General.Map.FormatInterface.VertexDecimals)); //mxd
+									Math.Round(offset, General.Map.FormatInterface.VertexDecimals)); //mxd
 							}
 						}
 					}
@@ -4801,7 +4801,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		// This adds the matching, unmarked sidedefs from a vertex for texture alignment
-		private void AddSidedefsForAlignment(Stack<SidedefAlignJob> stack, Vertex v, bool forward, float offsetx, float scaleY, HashSet<long> texturelongnames, bool udmf) 
+		private void AddSidedefsForAlignment(Stack<SidedefAlignJob> stack, Vertex v, bool forward, double offsetx, double scaleY, HashSet<long> texturelongnames, bool udmf) 
 		{
 			foreach(Linedef ld in v.Linedefs)
 			{

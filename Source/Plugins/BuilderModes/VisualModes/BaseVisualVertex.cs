@@ -16,7 +16,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#region ================== Variables
 
 		private readonly BaseVisualMode mode;
-		private readonly float cageradius2;
+		private readonly double cageradius2;
 		private Vector3D boxp1;
 		private Vector3D boxp2;
 
@@ -55,9 +55,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public override void Update() 
 		{
 			if(!changed) return;
-			float z = ceilingVertex ? vertex.ZCeiling : vertex.ZFloor;
+			double z = ceilingVertex ? vertex.ZCeiling : vertex.ZFloor;
 
-			if(!float.IsNaN(z)) 
+			if(!double.IsNaN(z)) 
 			{
 				haveOffset = true;
 			} 
@@ -70,7 +70,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Vector3D pos = new Vector3D(vertex.Position.x, vertex.Position.y, z);
 			SetPosition(pos);
 
-			float radius = DEFAULT_SIZE * General.Settings.GZVertexScale3D;
+			double radius = DEFAULT_SIZE * General.Settings.GZVertexScale3D;
 			boxp1 = new Vector3D(pos.x - radius, pos.y - radius, (ceilingVertex ? pos.z - radius : pos.z));
 			boxp2 = new Vector3D(pos.x + radius, pos.y + radius, (ceilingVertex ? pos.z : pos.z + radius));
 
@@ -132,16 +132,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This performs a fast test in object picking
 		public override bool PickFastReject(Vector3D from, Vector3D to, Vector3D dir) 
 		{
-			float distance2 = Line2D.GetDistanceToLineSq(from, to, vertex.Position, false);
+			double distance2 = Line2D.GetDistanceToLineSq(from, to, vertex.Position, false);
 			return (distance2 <= cageradius2);
 		}
 
 		// This performs an accurate test for object picking
-		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray) 
+		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray) 
 		{
 			Vector3D delta = to - from;
-			float tfar = float.MaxValue;
-			float tnear = float.MinValue;
+			double tfar = float.MaxValue;
+			double tnear = float.MinValue;
 
 			// Ray-Box intersection code
 			// See http://www.masm32.com/board/index.php?topic=9941.0
@@ -157,9 +157,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			else 
 			{
-				float tmp = 1.0f / delta.x;
-				float t1 = (boxp1.x - from.x) * tmp;
-				float t2 = (boxp2.x - from.x) * tmp;
+				double tmp = 1.0f / delta.x;
+				double t1 = (boxp1.x - from.x) * tmp;
+				double t2 = (boxp2.x - from.x) * tmp;
 				if(t1 > t2)
 					General.Swap(ref t1, ref t2);
 				if(t1 > tnear)
@@ -184,9 +184,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			} 
 			else 
 			{
-				float tmp = 1.0f / delta.y;
-				float t1 = (boxp1.y - from.y) * tmp;
-				float t2 = (boxp2.y - from.y) * tmp;
+				double tmp = 1.0f / delta.y;
+				double t1 = (boxp1.y - from.y) * tmp;
+				double t2 = (boxp2.y - from.y) * tmp;
 				if(t1 > t2)
 					General.Swap(ref t1, ref t2);
 				if(t1 > tnear)
@@ -211,9 +211,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			} 
 			else 
 			{
-				float tmp = 1.0f / delta.z;
-				float t1 = (boxp1.z - from.z) * tmp;
-				float t2 = (boxp2.z - from.z) * tmp;
+				double tmp = 1.0f / delta.z;
+				double t1 = (boxp1.z - from.z) * tmp;
+				double t2 = (boxp2.z - from.z) * tmp;
 				if(t1 > t2)
 					General.Swap(ref t1, ref t2);
 				if(t1 > tnear)
@@ -315,8 +315,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			if(ceilingVertex) 
 			{
-				if(float.IsNaN(vertex.ZCeiling)) return;
-				vertex.ZCeiling = float.NaN;
+				if(double.IsNaN(vertex.ZCeiling)) return;
+				vertex.ZCeiling = double.NaN;
 
 				//update affected sectors
 				UpdateGeometry(vertex);
@@ -325,8 +325,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			} 
 			else 
 			{
-				if(float.IsNaN(vertex.ZFloor)) return;
-				vertex.ZFloor = float.NaN;
+				if(double.IsNaN(vertex.ZFloor)) return;
+				vertex.ZFloor = double.NaN;
 
 				//update affected sectors
 				UpdateGeometry(vertex);
@@ -385,12 +385,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			if(ceilingVertex) 
 			{
-				vertex.ZCeiling = (float.IsNaN(vertex.ZCeiling) ? GetSectorHeight() + amount : vertex.ZCeiling + amount);
+				vertex.ZCeiling = (double.IsNaN(vertex.ZCeiling) ? GetSectorHeight() + amount : vertex.ZCeiling + amount);
 				mode.SetActionResult("Changed vertex height to " + vertex.ZCeiling + ".");
 			} 
 			else 
 			{
-				vertex.ZFloor = (float.IsNaN(vertex.ZFloor) ? GetSectorHeight() + amount : vertex.ZFloor + amount);
+				vertex.ZFloor = (double.IsNaN(vertex.ZFloor) ? GetSectorHeight() + amount : vertex.ZFloor + amount);
 				mode.SetActionResult("Changed vertex height to " + vertex.ZFloor + ".");
 			}
 

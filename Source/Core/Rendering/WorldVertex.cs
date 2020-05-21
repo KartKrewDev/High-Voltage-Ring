@@ -94,12 +94,12 @@ namespace CodeImp.DoomBuilder.Rendering
 		// Constructor
 		public WorldVertex(Vector3D p, int c, Vector2D t)
 		{
-			this.x = p.x;
-			this.y = p.y;
-			this.z = p.z;
+			this.x = (float)p.x;
+			this.y = (float)p.y;
+			this.z = (float)p.z;
 			this.c = c;
-			this.u = t.x;
-			this.v = t.y;
+			this.u = (float)t.x;
+			this.v = (float)t.y;
 
 			//mxd
 			this.nx = 0.0f;
@@ -222,9 +222,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		// Constructor
 		public WorldVertex(Vector3D p)
 		{
-			this.x = p.x;
-			this.y = p.y;
-			this.z = p.z;
+			this.x = (float)p.x;
+			this.y = (float)p.y;
+			this.z = (float)p.z;
 			this.c = -1;
 			this.u = 0.0f;
 			this.v = 0.0f;

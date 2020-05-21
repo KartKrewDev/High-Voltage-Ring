@@ -88,7 +88,7 @@ namespace CodeImp.DoomBuilder.Geometry
 			// Make the corners for a downward frustum
 			// The corners are in the same order as above
 			//float farradius = far * (float)Math.Tan(fovhalf) * Angle2D.SQRT2;
-			float farradius = far * 0.5f * Angle2D.SQRT2;
+			float farradius = (float)(far * 0.5f * Angle2D.SQRT2);
 			downwards[0] = pos + Vector2D.FromAngle(xyangle - Angle2D.PI * 0.25f, farradius);
 			downwards[1] = pos + Vector2D.FromAngle(xyangle + Angle2D.PI * 0.25f, farradius);
 			downwards[2] = pos + Vector2D.FromAngle(xyangle - Angle2D.PI * 0.75f, farradius);
@@ -116,7 +116,7 @@ namespace CodeImp.DoomBuilder.Geometry
 			float radius2 = 0.0f;
 			for(int i = 0; i < corners.Length; i++)
 			{
-				float distance2 = Vector2D.DistanceSq(center, corners[i]);
+				float distance2 = (float)Vector2D.DistanceSq(center, corners[i]);
 				if(distance2 > radius2) radius2 = distance2;
 			}
 			radius = (float)Math.Sqrt(radius2);

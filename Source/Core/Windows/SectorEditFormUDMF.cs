@@ -62,28 +62,28 @@ namespace CodeImp.DoomBuilder.Windows
 			//public float Desaturation;
 
 			//UDMF Ceiling
-			public readonly float CeilOffsetX;
-			public readonly float CeilOffsetY;
-			public readonly float CeilScaleX;
-			public readonly float CeilScaleY;
+			public readonly double CeilOffsetX;
+			public readonly double CeilOffsetY;
+			public readonly double CeilScaleX;
+			public readonly double CeilScaleY;
 			//public float CeilAlpha;
-			public readonly float CeilRotation;
+			public readonly double CeilRotation;
 			public readonly int CeilBrightness;
 			public readonly bool CeilLightAbsoulte;
 			public readonly int CeilGlowColor;
-			public readonly float CeilGlowHeight;
+			public readonly double CeilGlowHeight;
 
 			//UDMF Floor
-			public readonly float FloorOffsetX;
-			public readonly float FloorOffsetY;
-			public readonly float FloorScaleX;
-			public readonly float FloorScaleY;
+			public readonly double FloorOffsetX;
+			public readonly double FloorOffsetY;
+			public readonly double FloorScaleX;
+			public readonly double FloorScaleY;
 			//public float FloorAlpha;
-			public readonly float FloorRotation;
+			public readonly double FloorRotation;
 			public readonly int FloorBrightness;
 			public readonly bool FloorLightAbsoulte;
 			public readonly int FloorGlowColor;
-			public readonly float FloorGlowHeight;
+			public readonly double FloorGlowHeight;
 
 			//UDMF slopes. Angles are in degrees
 			public readonly Vector3D FloorSlope;
@@ -664,7 +664,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if(!string.IsNullOrEmpty(control.Text))
 			{
-				float ceilAlphaVal = General.Clamp(control.GetResultFloat(s.Fields.GetValue(control.Name, defaultvalue)), 0f, 1f);
+				double ceilAlphaVal = General.Clamp(control.GetResultFloat(s.Fields.GetValue(control.Name, defaultvalue)), 0f, 1f);
 				UniFields.SetFloat(s.Fields, control.Name, ceilAlphaVal, defaultvalue);
 			}
 		}
@@ -901,7 +901,7 @@ namespace CodeImp.DoomBuilder.Windows
 					UniFields.SetFloat(s.Fields, "gravity", gravity.GetResultFloat(s.Fields.GetValue("gravity", 1.0f)), 1.0f);
 				if(!string.IsNullOrEmpty(desaturation.Text)) 
 				{
-					float val = General.Clamp(desaturation.GetResultFloat(s.Fields.GetValue("desaturation", 0f)), 0f, 1f);
+					double val = General.Clamp(desaturation.GetResultFloat(s.Fields.GetValue("desaturation", 0f)), 0f, 1f);
 					UniFields.SetFloat(s.Fields, "desaturation", val, 0f);
 				}
 
@@ -1700,10 +1700,10 @@ namespace CodeImp.DoomBuilder.Windows
 		}
 
 		// Gets the offset to be displayed in a SectorSlopeControl
-		private float GetVirtualSlopeOffset(Sector s, SlopePivotMode mode, bool floor) 
+		private double GetVirtualSlopeOffset(Sector s, SlopePivotMode mode, bool floor) 
 		{
-			float offset = (floor ? s.FloorSlopeOffset : s.CeilSlopeOffset);
-			if(float.IsNaN(offset))
+			double offset = (floor ? s.FloorSlopeOffset : s.CeilSlopeOffset);
+			if(double.IsNaN(offset))
 			{
 				offset = (floor ? s.FloorHeight : s.CeilHeight);
 			}
@@ -1721,9 +1721,9 @@ namespace CodeImp.DoomBuilder.Windows
 		}
 
 		// Gets the offset to be displayed in a SectorSlopeControl
-		private float GetInitialVirtualSlopeOffset(Sector s, SlopePivotMode mode, bool floor) 
+		private double GetInitialVirtualSlopeOffset(Sector s, SlopePivotMode mode, bool floor) 
 		{
-			float offset = (floor ? sectorprops[s].FloorSlopeOffset : sectorprops[s].CeilSlopeOffset);
+			double offset = (floor ? sectorprops[s].FloorSlopeOffset : sectorprops[s].CeilSlopeOffset);
 			Vector3D normal = (floor ? sectorprops[s].FloorSlope : sectorprops[s].CeilSlope);
 
 			if(normal.GetLengthSq() > 0) 
@@ -1736,7 +1736,7 @@ namespace CodeImp.DoomBuilder.Windows
 			return offset;
 		}
 
-		private Vector3D GetSectorCenter(Sector s, float offset, SlopePivotMode mode)
+		private Vector3D GetSectorCenter(Sector s, double offset, SlopePivotMode mode)
 		{
 			switch(mode) 
 			{
@@ -1769,7 +1769,7 @@ namespace CodeImp.DoomBuilder.Windows
 				double anglexy = General.ClampAngle(ceilingslopecontrol.GetAngleXY(sectorprops[s].CeilSlopeAngleXY) + 270);
 				double anglez = -(ceilingslopecontrol.GetAngleZ(sectorprops[s].CeilSlopeAngleZ) + 90);
 
-				float virtualoffset = GetInitialVirtualSlopeOffset(s, ceilingslopecontrol.PivotMode, false);
+				double virtualoffset = GetInitialVirtualSlopeOffset(s, ceilingslopecontrol.PivotMode, false);
 				Vector3D center = GetSectorCenter(s, ceilingslopecontrol.GetOffset(virtualoffset), ceilingslopecontrol.PivotMode);
 				Plane p = new Plane(center, Angle2D.DegToRad(anglexy), Angle2D.DegToRad(anglez), false);
 				s.CeilSlope = p.Normal;
@@ -1790,10 +1790,10 @@ namespace CodeImp.DoomBuilder.Windows
 			//Set or restore values
 			foreach(Sector s in sectors)
 			{
-				float anglexy = General.ClampAngle(floorslopecontrol.GetAngleXY(sectorprops[s].FloorSlopeAngleXY) + 90);
-				float anglez = -(floorslopecontrol.GetAngleZ(sectorprops[s].FloorSlopeAngleZ) + 90);
+				double anglexy = General.ClampAngle(floorslopecontrol.GetAngleXY(sectorprops[s].FloorSlopeAngleXY) + 90);
+				double anglez = -(floorslopecontrol.GetAngleZ(sectorprops[s].FloorSlopeAngleZ) + 90);
 
-				float virtualoffset = GetInitialVirtualSlopeOffset(s, floorslopecontrol.PivotMode, true);
+				double virtualoffset = GetInitialVirtualSlopeOffset(s, floorslopecontrol.PivotMode, true);
 				Vector3D center = GetSectorCenter(s, floorslopecontrol.GetOffset(virtualoffset), floorslopecontrol.PivotMode);
 				Plane p = new Plane(center, Angle2D.DegToRad(anglexy), Angle2D.DegToRad(anglez), true);
 				s.FloorSlope = p.Normal;
@@ -1950,7 +1950,7 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				foreach(Sector s in sectors)
 				{
-					float value = General.Clamp(ceilingglowheight.GetResultFloat(sectorprops[s].CeilGlowHeight), 0f, float.MaxValue);
+					double value = General.Clamp(ceilingglowheight.GetResultFloat(sectorprops[s].CeilGlowHeight), 0f, float.MaxValue);
 					UniFields.SetFloat(s.Fields, "ceilingglowheight", value, 0f);
 					s.UpdateNeeded = true;
 				}
@@ -1984,7 +1984,7 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				foreach(Sector s in sectors)
 				{
-					float value = General.Clamp(floorglowheight.GetResultFloat(sectorprops[s].FloorGlowHeight), 0f, float.MaxValue);
+					double value = General.Clamp(floorglowheight.GetResultFloat(sectorprops[s].FloorGlowHeight), 0f, double.MaxValue);
 					UniFields.SetFloat(s.Fields, "floorglowheight", value, 0f);
 					s.UpdateNeeded = true;
 				}

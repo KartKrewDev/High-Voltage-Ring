@@ -620,11 +620,11 @@ namespace CodeImp.DoomBuilder.Controls
 		//mxd
 		private static bool SetPairedUDMFFieldsLabel(UniFields fields, string paramX, string paramY, float defaultvalue, Label namelabel, Label valuelabel, bool highlight)
 		{
-			float x = UniFields.GetFloat(fields, paramX, defaultvalue);
-			float y = UniFields.GetFloat(fields, paramY, defaultvalue);
+			double x = UniFields.GetFloat(fields, paramX, defaultvalue);
+			double y = UniFields.GetFloat(fields, paramY, defaultvalue);
 
-			if(fields.ContainsKey(paramX)) x = (float)fields[paramX].Value;
-			if(fields.ContainsKey(paramY)) y = (float)fields[paramY].Value;
+			if(fields.ContainsKey(paramX)) x = (double)fields[paramX].Value;
+			if(fields.ContainsKey(paramY)) y = (double)fields[paramY].Value;
 
 			if(x != defaultvalue || y != defaultvalue)
 			{

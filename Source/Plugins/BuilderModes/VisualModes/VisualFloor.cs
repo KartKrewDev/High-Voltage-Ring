@@ -76,9 +76,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.innerside = innerside;
 			
 			base.Setup(level, extrafloor);
-			
+
 			// Fetch ZDoom fields
-			float rotate = Angle2D.DegToRad(s.Fields.GetValue("rotationfloor", 0.0f));
+			double rotate = Angle2D.DegToRad(s.Fields.GetValue("rotationfloor", 0.0f));
 			Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningfloor", 0.0f),
 										   s.Fields.GetValue("ypanningfloor", 0.0f));
 			Vector2D scale = new Vector2D(s.Fields.GetValue("xscalefloor", 1.0f),
@@ -151,17 +151,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				verts[i].c = color; //mxd
 				
 				// Vertex coordinates
-				verts[i].x = triverts[i].x;
-				verts[i].y = triverts[i].y;
-				verts[i].z = level.plane.GetZ(triverts[i]);
+				verts[i].x = (float)triverts[i].x;
+				verts[i].y = (float)triverts[i].y;
+				verts[i].z = (float)level.plane.GetZ(triverts[i]);
 
 				// Texture coordinates
 				Vector2D pos = triverts[i];
 				pos = pos.GetRotated(rotate);
 				pos.y = -pos.y;
 				pos = (pos + offset) * scale * texscale;
-				verts[i].u = pos.x;
-				verts[i].v = pos.y;
+				verts[i].u = (float)pos.x;
+				verts[i].v = (float)pos.y;
 			}
 
 			// The sector triangulation created clockwise triangles that
@@ -371,7 +371,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Do this only if all 3 verts have offsets
 			foreach(Sidedef side in level.sector.Sidedefs) 
 			{
-				if(float.IsNaN(side.Line.Start.ZFloor) || float.IsNaN(side.Line.End.ZFloor)) return;
+				if(double.IsNaN(side.Line.Start.ZFloor) || double.IsNaN(side.Line.End.ZFloor)) return;
 				verts.Add(side.Line.Start);
 				verts.Add(side.Line.End);
 			}
@@ -433,13 +433,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 		
 		// This performs an accurate test for object picking
-		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray)
+		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray)
 		{
 			u_ray = pickrayu;
 			
 			// Check on which side of the nearest sidedef we are
 			Sidedef sd = MapSet.NearestSidedef(Sector.Sector.Sidedefs, pickintersect);
-			float side = sd.Line.SideOfLine(pickintersect);
+			double side = sd.Line.SideOfLine(pickintersect);
 
 			//mxd. Alpha based picking. Used only on extrafloors with transparent or masked textures
 			if((side <= 0.0f && sd.IsFront) || (side > 0.0f && !sd.IsFront))
@@ -451,8 +451,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
                 int imageWidth = Texture.GetAlphaTestWidth();
                 int imageHeight = Texture.GetAlphaTestHeight();
 
-                // Fetch ZDoom fields
-                float rotate = Angle2D.DegToRad(level.sector.Fields.GetValue("rotationfloor", 0.0f));
+				// Fetch ZDoom fields
+				double rotate = Angle2D.DegToRad(level.sector.Fields.GetValue("rotationfloor", 0.0f));
                 Vector2D offset = new Vector2D(level.sector.Fields.GetValue("xpanningfloor", 0.0f), level.sector.Fields.GetValue("ypanningfloor", 0.0f));
                 Vector2D scale = new Vector2D(level.sector.Fields.GetValue("xscalefloor", 1.0f), level.sector.Fields.GetValue("yscalefloor", 1.0f));
                 Vector2D texscale = new Vector2D(1.0f / Texture.ScaledWidth, 1.0f / Texture.ScaledHeight);

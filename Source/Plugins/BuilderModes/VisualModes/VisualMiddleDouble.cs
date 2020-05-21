@@ -217,7 +217,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(!repeatmidtex) 
 			{
 				// First determine the visible portion of the texture
-				float textop;
+				double textop;
 
 				// Determine top portion height
 				if(Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
@@ -226,7 +226,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					textop = geotop + tof.y;
 
 				// Calculate bottom portion height
-				float texbottom = textop - Math.Abs(tsz.y);
+				double texbottom = textop - Math.Abs(tsz.y);
 
 				// Create crop planes (we also need these for intersection testing)
 				topclipplane = new Plane(new Vector3D(0, 0, -1), textop);
@@ -292,11 +292,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd. Alpha based picking
-		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray) 
+		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray) 
 		{
 			if(!BuilderPlug.Me.AlphaBasedTextureHighlighting || !Texture.IsImageLoaded || (!Texture.IsTranslucent && !Texture.IsMasked)) return base.PickAccurate(from, to, dir, ref u_ray);
 
-			float u;
+			double u;
 			new Line2D(from, to).GetIntersection(Sidedef.Line.Line, out u);
 			if(Sidedef != Sidedef.Line.Front) u = 1.0f - u;
 
@@ -305,7 +305,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
             int imageHeight = Texture.GetAlphaTestHeight();
 
             // Determine texture scale...
-            Vector2D imgscale = new Vector2D((float)Texture.Width / imageWidth, (float)Texture.Height / imageHeight);
+            Vector2D imgscale = new Vector2D((double)Texture.Width / imageWidth, (double)Texture.Height / imageHeight);
             Vector2D texscale = (Texture is HiResImage) ? imgscale * Texture.Scale : Texture.Scale;
 
             // Get correct offset to texture space...
@@ -317,14 +317,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
             if (repeatmidtex)
             {
                 bool pegbottom = Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag);
-                float zoffset = (pegbottom ? Sidedef.Sector.FloorHeight : Sidedef.Sector.CeilHeight);
+				double zoffset = (pegbottom ? Sidedef.Sector.FloorHeight : Sidedef.Sector.CeilHeight);
                 oy = (int)Math.Floor(((pickintersect.z - zoffset) * UniFields.GetFloat(Sidedef.Fields, "scaley_mid", 1.0f) / texscale.y
                     - ((Sidedef.OffsetY - UniFields.GetFloat(Sidedef.Fields, "offsety_mid")) / imgscale.y))
                     % imageHeight);
             }
             else
             {
-                float zoffset = bottomclipplane.GetZ(pickintersect);
+				double zoffset = bottomclipplane.GetZ(pickintersect);
                 oy = (int)Math.Ceiling(((pickintersect.z - zoffset) * UniFields.GetFloat(Sidedef.Fields, "scaley_mid", 1.0f) / texscale.y) % imageHeight);
             }
 

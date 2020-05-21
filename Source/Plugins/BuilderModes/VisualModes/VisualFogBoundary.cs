@@ -146,7 +146,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public override bool PickFastReject(Vector3D from, Vector3D to, Vector3D dir) { return false; }
 
 		// This performs an accurate test for object picking
-		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray) { return false; }
+		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray) { return false; }
 
 		// Unused
 		protected override void SetTextureOffsetX(int x) { }

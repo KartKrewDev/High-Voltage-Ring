@@ -258,17 +258,17 @@ namespace CodeImp.DoomBuilder.Map
 				if(pos != end)
 				{
 					// Calculate current block edges
-					float cl = pos.X * blocksize;
-					float cr = (pos.X + 1) * blocksize;
-					float ct = pos.Y * blocksize;
-					float cb = (pos.Y + 1) * blocksize;
+					double cl = pos.X * blocksize;
+					double cr = (pos.X + 1) * blocksize;
+					double ct = pos.Y * blocksize;
+					double cb = (pos.Y + 1) * blocksize;
 
 					// Line directions
 					dirx = Math.Sign(v2.x - v1.x);
 					diry = Math.Sign(v2.y - v1.y);
 
 					// Calculate offset and delta movement over x
-					float posx, deltax;
+					double posx, deltax;
 					if(dirx >= 0)
 					{
 						posx = (cr - v1.x) / (v2.x - v1.x);
@@ -282,7 +282,7 @@ namespace CodeImp.DoomBuilder.Map
 					}
 
 					// Calculate offset and delta movement over y
-					float posy, deltay;
+					double posy, deltay;
 					if(diry >= 0)
 					{
 						posy = (cb - v1.y) / (v2.y - v1.y);
@@ -440,17 +440,17 @@ namespace CodeImp.DoomBuilder.Map
 				if(pos != end)
 				{
 					// Calculate current block edges
-					float cl = pos.X * blocksize;
-					float cr = (pos.X + 1) * blocksize;
-					float ct = pos.Y * blocksize;
-					float cb = (pos.Y + 1) * blocksize;
+					double cl = pos.X * blocksize;
+					double cr = (pos.X + 1) * blocksize;
+					double ct = pos.Y * blocksize;
+					double cb = (pos.Y + 1) * blocksize;
 					
 					// Line directions
 					dirx = Math.Sign(v2.x - v1.x);
 					diry = Math.Sign(v2.y - v1.y);
-					
+
 					// Calculate offset and delta movement over x
-					float posx, deltax;
+					double posx, deltax;
 					if(dirx == 0)
 					{
 						posx = float.MaxValue;
@@ -467,9 +467,9 @@ namespace CodeImp.DoomBuilder.Map
 						posx = (v1.x - cl) / (v1.x - v2.x);
 						deltax = blocksize / (v1.x - v2.x);
 					}
-					
+
 					// Calculate offset and delta movement over y
-					float posy, deltay;
+					double posy, deltay;
 					if(diry == 0)
 					{
 						posy = float.MaxValue;

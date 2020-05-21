@@ -451,7 +451,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				}
 
 				// Compute the angle of the inner and outer line
-				float innerangle, outerangle;
+				double innerangle, outerangle;
 				if(sourceld[l1].Angle == sourceld[l2].Angle && stairsectorbuilderform.Flipping != 1 && stairsectorbuilderform.Flipping != 2)
 				{
 					innerangle = 1;
@@ -564,7 +564,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 		}*/
 
 		// This generates the vertices to split the line with, from start to end
-		private static List<Vector2D> GenerateCurve(Line2D line, int vertices, float angle, bool backwards, float distance, bool fixedcurve)
+		private static List<Vector2D> GenerateCurve(Line2D line, int vertices, double angle, bool backwards, double distance, bool fixedcurve)
 		{
 
 			// Make list
@@ -960,15 +960,15 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			List<Vector2D> vertices = new List<Vector2D>();
 			//int sections = crsd.controlpoints.Count - 1;
 			//double hop = (double)sections / numverts;
-			float distance = 0.0f;
-			List<float> cpdistance = new List<float>();
+			double distance = 0.0f;
+			List<double> cpdistance = new List<double>();
 
 			// Compute the length of the whole spline and the length of the parts on the
 			// spline between the control points
 			for(int i = 0; i < crsd.controlpoints.Count-1; i++)
 			{
 				int h = (int)Vector2D.Distance(crsd.controlpoints[i], crsd.controlpoints[i + 1]);
-				float dist = 0;
+				double dist = 0;
 				List<Vector2D> dc = new List<Vector2D>();
 
 				Vector2D p0 = crsd.controlpoints[i];
@@ -993,14 +993,14 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				exactsplines.Add(dc);
 			}
 
-			float unithop = distance / numverts;
+			double unithop = distance / numverts;
 
 			for(int i = 0; i <= numverts; i++)
 			{
 				int s = 0;
-				float u;
-				float distancefromstart = i * unithop;
-				float max = 0.0f;
+				double u;
+				double distancefromstart = i * unithop;
+				double max = 0.0f;
 
 				// Find out what section the vertex is in
 				while(max < distancefromstart)
@@ -1029,7 +1029,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				Vector2D p1 = crsd.controlpoints[s + 1];
 				Vector2D t0 = crsd.tangents[s];
 				Vector2D t1 = crsd.tangents[s + 1];
-				vertices.Add(Tools.HermiteSpline(p0, t0, p1, t1, u));
+				vertices.Add(Tools.HermiteSpline(p0, t0, p1, t1, (float)u));
 			}
 
 			// OLD CODE
@@ -1064,7 +1064,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 		}
 
 		// Turns a position into a DrawnVertex and returns it
-		private DrawnVertex SectorVertex(float x, float y)
+		private DrawnVertex SectorVertex(double x, double y)
 		{
 			DrawnVertex v = new DrawnVertex();
 
@@ -1464,7 +1464,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 						{
 							for(int i = 0; i < c.controlpoints.Count; i++)
 							{
-								RectangleF rect = new RectangleF(c.controlpoints[i].x - CONTROLPOINT_SIZE / 2, c.controlpoints[i].y - CONTROLPOINT_SIZE / 2, 10.0f, 10.0f);
+								RectangleF rect = new RectangleF((float)(c.controlpoints[i].x - CONTROLPOINT_SIZE / 2), (float)(c.controlpoints[i].y - CONTROLPOINT_SIZE / 2), 10.0f, 10.0f);
 
 								if(i == 0) renderer.RenderRectangle(rect, 2, new PixelColor(128, 255, 0, 0), true);
 								else if(i == c.controlpoints.Count -1) renderer.RenderRectangle(rect, 2, new PixelColor(128, 0, 255, 0), true);
@@ -1484,7 +1484,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 						{
 							renderer.RenderLine(lv[i], lv[i + 1], LINE_THICKNESS, General.Colors.Highlight, true);
 
-							RectangleF rect = new RectangleF(lv[i].x - CONTROLPOINT_SIZE / 2, lv[i].y - CONTROLPOINT_SIZE / 2, 10.0f, 10.0f);
+							RectangleF rect = new RectangleF((float)(lv[i].x - CONTROLPOINT_SIZE / 2), (float)(lv[i].y - CONTROLPOINT_SIZE / 2), 10.0f, 10.0f);
 							renderer.RenderRectangle(rect, 2, new PixelColor(128, 255, 0, 0), true);
 						}
 					}

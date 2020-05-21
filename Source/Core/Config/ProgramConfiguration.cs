@@ -146,7 +146,7 @@ namespace CodeImp.DoomBuilder.Config
 		private int defaultfloorheight;
 		private int defaultceilheight;
 		private int defaultthingtype = 1;
-		private float defaultthingangle;
+		private double defaultthingangle;
 		private List<string> defaultthingflags;
 		
 		#endregion
@@ -272,7 +272,7 @@ namespace CodeImp.DoomBuilder.Config
 		public int DefaultCeilingHeight { get { return defaultceilheight; } set { defaultceilheight = value; } }
 
 		public int DefaultThingType { get { return defaultthingtype; } set { defaultthingtype = value; } }
-		public float DefaultThingAngle { get { return defaultthingangle; } set { defaultthingangle = value; } }
+		public double DefaultThingAngle { get { return defaultthingangle; } set { defaultthingangle = value; } }
 
 		#endregion
 

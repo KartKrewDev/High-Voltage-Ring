@@ -15,7 +15,7 @@ namespace CodeImp.DoomBuilder.Controls
 
         #region ================== Variables
 
-        private float defaultValue;
+        private double defaultValue;
         private bool blockUpdate;
         private bool linkValues;
 		private bool changed;
@@ -25,7 +25,7 @@ namespace CodeImp.DoomBuilder.Controls
         #region ================== Properties
 
 		public bool NonDefaultValue { get { return changed; } }
-        public float DefaultValue { get { return defaultValue; } set { defaultValue = value; } }
+        public double DefaultValue { get { return defaultValue; } set { defaultValue = value; } }
         public float ButtonStep { get { return value1.ButtonStepFloat; } set { value1.ButtonStepFloat = value; value2.ButtonStepFloat = value; } }
 		public float ButtonStepBig { get { return value1.ButtonStepBig; } set { value1.ButtonStepBig = value; value2.ButtonStepBig = value; } }
 		public float ButtonStepSmall { get { return value1.ButtonStepSmall; } set { value1.ButtonStepSmall = value; value2.ButtonStepSmall = value; } }
@@ -39,7 +39,7 @@ namespace CodeImp.DoomBuilder.Controls
             InitializeComponent();
         }
 
-        public void SetValues(float val1, float val2, bool first)
+        public void SetValues(double val1, double val2, bool first)
         {
             blockUpdate = true;
 
@@ -62,12 +62,12 @@ namespace CodeImp.DoomBuilder.Controls
             blockUpdate = false;
         }
 
-        public float GetValue1(float original)
+        public double GetValue1(double original)
         {
             return value1.GetResultFloat(original);
         }
 
-        public float GetValue2(float original)
+        public double GetValue2(double original)
         {
             return value2.GetResultFloat(original);
         }

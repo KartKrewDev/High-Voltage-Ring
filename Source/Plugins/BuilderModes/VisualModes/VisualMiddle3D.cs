@@ -197,22 +197,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			tp.vrt = new Vector3D(tp.vrb.x, tp.vrb.y, tp.vlt.z);
 			
 			//mxd. Get ceiling and floor heights. Use our and neighbour sector's data
-			SectorData sdo = mode.GetSectorData(Sidedef.Other.Sector); 
+			SectorData sdo = mode.GetSectorData(Sidedef.Other.Sector);
 
-			float flo = sdo.Floor.plane.GetZ(vl);
-			float fro = sdo.Floor.plane.GetZ(vr);
-			float clo = sdo.Ceiling.plane.GetZ(vl);
-			float cro = sdo.Ceiling.plane.GetZ(vr);
+			double flo = sdo.Floor.plane.GetZ(vl);
+			double fro = sdo.Floor.plane.GetZ(vr);
+			double clo = sdo.Ceiling.plane.GetZ(vl);
+			double cro = sdo.Ceiling.plane.GetZ(vr);
 
-			float fle = sd.Floor.plane.GetZ(vl);
-			float fre = sd.Floor.plane.GetZ(vr);
-			float cle = sd.Ceiling.plane.GetZ(vl);
-			float cre = sd.Ceiling.plane.GetZ(vr);
+			double fle = sd.Floor.plane.GetZ(vl);
+			double fre = sd.Floor.plane.GetZ(vr);
+			double cle = sd.Ceiling.plane.GetZ(vl);
+			double cre = sd.Ceiling.plane.GetZ(vr);
 
-			float fl = flo > fle ? flo : fle;
-			float fr = fro > fre ? fro : fre;
-			float cl = clo < cle ? clo : cle;
-			float cr = cro < cre ? cro : cre;
+			double fl = flo > fle ? flo : fle;
+			double fr = fro > fre ? fro : fre;
+			double cl = clo < cle ? clo : cle;
+			double cr = cro < cre ? cro : cre;
 			
 			// Anything to see?
 			if(((cl - fl) > 0.01f) || ((cr - fr) > 0.01f))
@@ -338,11 +338,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd. Alpha based picking
-		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray)
+		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray)
 		{
 			if(!BuilderPlug.Me.AlphaBasedTextureHighlighting || !Texture.IsImageLoaded || (!Texture.IsTranslucent && !Texture.IsMasked)) return base.PickAccurate(from, to, dir, ref u_ray);
 
-			float u;
+			double u;
 			Sidedef sourceside = extrafloor.Linedef.Front;
 			new Line2D(from, to).GetIntersection(Sidedef.Line.Line, out u);
 			if(Sidedef != Sidedef.Line.Front) u = 1.0f - u;
@@ -355,11 +355,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
             Vector2D imgscale = new Vector2D((float)Texture.Width / imageWidth, (float)Texture.Height / imageHeight);
             Vector2D texscale = (Texture is HiResImage) ? imgscale * Texture.Scale : Texture.Scale;
 
-            // Get correct offset to texture space...
-            float texoffsetx = Sidedef.OffsetX + sourceside.OffsetX + UniFields.GetFloat(Sidedef.Fields, "offsetx_mid") + UniFields.GetFloat(sourceside.Fields, "offsetx_mid");
+			// Get correct offset to texture space...
+			double texoffsetx = Sidedef.OffsetX + sourceside.OffsetX + UniFields.GetFloat(Sidedef.Fields, "offsetx_mid") + UniFields.GetFloat(sourceside.Fields, "offsetx_mid");
             int ox = (int)Math.Floor((u * Sidedef.Line.Length * UniFields.GetFloat(sourceside.Fields, "scalex_mid", 1.0f) / texscale.x + (texoffsetx / imgscale.x)) % imageWidth);
 
-            float texoffsety = Sidedef.OffsetY + sourceside.OffsetY + UniFields.GetFloat(Sidedef.Fields, "offsety_mid") + UniFields.GetFloat(sourceside.Fields, "offsety_mid");
+			double texoffsety = Sidedef.OffsetY + sourceside.OffsetY + UniFields.GetFloat(Sidedef.Fields, "offsety_mid") + UniFields.GetFloat(sourceside.Fields, "offsety_mid");
             int oy = (int)Math.Ceiling(((pickintersect.z - sourceside.Sector.CeilHeight) * UniFields.GetFloat(sourceside.Fields, "scaley_mid", 1.0f) / texscale.y - (texoffsety / imgscale.y)) % imageHeight);
 
             // Make sure offsets are inside of texture dimensions...

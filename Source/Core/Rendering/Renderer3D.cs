@@ -152,7 +152,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			// Dummy frustum
 			frustum = new ProjectedFrustum2D(new Vector2D(), 0.0f, 0.0f, PROJ_NEAR_PLANE,
-				General.Settings.ViewDistance, Angle2D.DegToRad(General.Settings.VisualFOV));
+				General.Settings.ViewDistance, (float)Angle2D.DegToRad(General.Settings.VisualFOV));
 
             fpsLabel = new TextLabel();
             fpsLabel.AlignX = TextAlignmentX.Left;
@@ -264,7 +264,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			// xscale = yscale / aspect
 			// The fov specified in the method is the FOV over Y, but we want the user to specify the FOV
 			// over X, so calculate what it would be over Y first;
-			float fov = Angle2D.DegToRad(General.Settings.VisualFOV);
+			float fov = (float)Angle2D.DegToRad(General.Settings.VisualFOV);
 			float reversefov = 1.0f / (float)Math.Tan(fov / 2.0f);
 			float reversefovy = reversefov * aspect;
 			float fovy = (float)Math.Atan(1.0f / reversefovy);
@@ -665,7 +665,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				world = handle.Position;
 				graphics.SetUniform(UniformName.world, ref world);
-				graphics.SetUniform(UniformName.slopeHandleLength, handle.Length);
+				graphics.SetUniform(UniformName.slopeHandleLength, (float)handle.Length);
 				graphics.SetUniform(UniformName.vertexColor, color.ToColorValue());
 
 				graphics.SetVertexBuffer(visualslopehandle.Geometry);
@@ -696,36 +696,36 @@ namespace CodeImp.DoomBuilder.Rendering
 				int color = line.Color.ToInt();
 
 				// Add regular points
-				verts[pointscount].x = line.Start.x;
-				verts[pointscount].y = line.Start.y;
-				verts[pointscount].z = line.Start.z;
+				verts[pointscount].x = (float)line.Start.x;
+				verts[pointscount].y = (float)line.Start.y;
+				verts[pointscount].z = (float)line.Start.z;
 				verts[pointscount].c = color;
 				pointscount++;
 
-				verts[pointscount].x = line.End.x;
-				verts[pointscount].y = line.End.y;
-				verts[pointscount].z = line.End.z;
+				verts[pointscount].x = (float)line.End.x;
+				verts[pointscount].y = (float)line.End.y;
+				verts[pointscount].z = (float)line.End.z;
 				verts[pointscount].c = color;
 				pointscount++;
 
 				// Add arrowhead
 				if(line.RenderArrowhead)
 				{
-					float nz = line.GetDelta().GetNormal().z * scaler;
-					float angle = line.GetAngle();
-					Vector3D a1 = new Vector3D(line.End.x - scaler * (float)Math.Sin(angle - 0.46f), line.End.y + scaler * (float)Math.Cos(angle - 0.46f), line.End.z - nz);
-					Vector3D a2 = new Vector3D(line.End.x - scaler * (float)Math.Sin(angle + 0.46f), line.End.y + scaler * (float)Math.Cos(angle + 0.46f), line.End.z - nz);
+					double nz = line.GetDelta().GetNormal().z * scaler;
+					double angle = line.GetAngle();
+					Vector3D a1 = new Vector3D(line.End.x - scaler * Math.Sin(angle - 0.46f), line.End.y + scaler * Math.Cos(angle - 0.46f), line.End.z - nz);
+					Vector3D a2 = new Vector3D(line.End.x - scaler * Math.Sin(angle + 0.46f), line.End.y + scaler * Math.Cos(angle + 0.46f), line.End.z - nz);
 
 					verts[pointscount] = verts[pointscount - 1];
-					verts[pointscount + 1].x = a1.x;
-					verts[pointscount + 1].y = a1.y;
-					verts[pointscount + 1].z = a1.z;
+					verts[pointscount + 1].x = (float)a1.x;
+					verts[pointscount + 1].y = (float)a1.y;
+					verts[pointscount + 1].z = (float)a1.z;
 					verts[pointscount + 1].c = color;
 
 					verts[pointscount + 2] = verts[pointscount - 1];
-					verts[pointscount + 3].x = a2.x;
-					verts[pointscount + 3].y = a2.y;
-					verts[pointscount + 3].z = a2.z;
+					verts[pointscount + 3].x = (float)a2.x;
+					verts[pointscount + 3].y = (float)a2.y;
+					verts[pointscount + 3].z = (float)a2.z;
 					verts[pointscount + 3].c = color;
 
 					pointscount += 4;
@@ -1495,10 +1495,10 @@ namespace CodeImp.DoomBuilder.Rendering
                 graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
 
 				// Create the matrix for positioning / rotation
-				float sx = t.Thing.ScaleX * t.Thing.ActorScale.Width;
-				float sy = t.Thing.ScaleY * t.Thing.ActorScale.Height;
+				double sx = t.Thing.ScaleX * t.Thing.ActorScale.Width;
+				double sy = t.Thing.ScaleY * t.Thing.ActorScale.Height;
                 
-				Matrix modelscale = Matrix.Scaling(sx, sx, sy);
+				Matrix modelscale = Matrix.Scaling((float)sx, (float)sx, (float)sy);
 				Matrix modelrotation = Matrix.RotationY((float)-t.Thing.RollRad) * Matrix.RotationX((float)-t.Thing.PitchRad) * Matrix.RotationZ((float)t.Thing.Angle);
 
 				world = General.Map.Data.ModeldefEntries[t.Thing.Type].Transform * modelscale * modelrotation * t.Position;

@@ -43,7 +43,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private bool isloaded;
 		private bool nointeraction; //mxd
 		private ImageData[] sprites;
-		private float cageradius2;
+		private double cageradius2;
 		private Vector2D pos2d;
 		private Vector3D boxp1;
 		private Vector3D boxp2;
@@ -234,7 +234,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							// Extrafloor glow doesn't affect thing brightness
 							if(level.sector == Thing.Sector)
 							{
-								float planez = level.plane.GetZ(thingpos);
+								double planez = level.plane.GetZ(thingpos);
 
 								// Get glow brightness
 								int glowbrightness = sd.FloorGlow.Brightness / 2;
@@ -243,8 +243,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								// Interpolate thing brightness between glow and regular ones
 								if(nexthigher != null)
 								{
-									float higherz = nexthigher.plane.GetZ(thingpos);
-									float delta = General.Clamp(1.0f - (thingpos.z - planez) / (higherz - planez), 0f, 1f);
+									double higherz = nexthigher.plane.GetZ(thingpos);
+									double delta = General.Clamp(1.0f - (thingpos.z - planez) / (higherz - planez), 0f, 1f);
 									brightness = (int)((glowbrightness + level.sector.Brightness / 2) * delta + nexthigher.sector.Brightness * (1.0f - delta));
 								}
 							}
@@ -256,9 +256,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							if(sd.Floor != null && sd.FloorGlow != null)
 							{
 								// Get glow brightness
-								float glowz = level.plane.GetZ(thingpos);
-								float floorz = floor.GetZ(thingpos);
-								float delta = General.Clamp((thingpos.z - floorz) / (glowz - floorz), 0f, 1f);
+								double glowz = level.plane.GetZ(thingpos);
+								double floorz = floor.GetZ(thingpos);
+								double delta = General.Clamp((thingpos.z - floorz) / (glowz - floorz), 0f, 1f);
 
 								brightness = (int)((sd.FloorGlow.Brightness / 2 + sd.Floor.sector.Brightness / 2) * (1.0f - delta) + sd.Floor.sector.Brightness * delta);
 							}
@@ -333,21 +333,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(sizeless) //mxd
 					{ 
 						float hh = height / 2;
-						verts[0] = new WorldVertex(-radius + offsets.x, 0.0f, offsets.y - hh, sectorcolor, ul, 1.0f);
-						verts[1] = new WorldVertex(-radius + offsets.x, 0.0f, hh + offsets.y, sectorcolor, ul, 0.0f);
-						verts[2] = new WorldVertex(+radius + offsets.x, 0.0f, hh + offsets.y, sectorcolor, ur, 0.0f);
+						verts[0] = new WorldVertex((float)(-radius + offsets.x), 0.0f, (float)(offsets.y - hh), sectorcolor, ul, 1.0f);
+						verts[1] = new WorldVertex((float)(-radius + offsets.x), 0.0f, (float)(hh + offsets.y), sectorcolor, ul, 0.0f);
+						verts[2] = new WorldVertex((float)(+radius + offsets.x), 0.0f, (float)(hh + offsets.y), sectorcolor, ur, 0.0f);
 						verts[3] = verts[0];
 						verts[4] = verts[2];
-						verts[5] = new WorldVertex(+radius + offsets.x, 0.0f, offsets.y - hh, sectorcolor, ur, 1.0f);
+						verts[5] = new WorldVertex((float)(+radius + offsets.x), 0.0f, (float)(offsets.y - hh), sectorcolor, ur, 1.0f);
 					} 
 					else 
 					{
-						verts[0] = new WorldVertex(-radius + offsets.x, 0.0f, offsets.y, sectorcolor, ul, 1.0f);
-						verts[1] = new WorldVertex(-radius + offsets.x, 0.0f, height + offsets.y, sectorcolor, ul, 0.0f);
-						verts[2] = new WorldVertex(+radius + offsets.x, 0.0f, height + offsets.y, sectorcolor, ur, 0.0f);
+						verts[0] = new WorldVertex((float)(-radius + offsets.x), 0.0f, (float)offsets.y, sectorcolor, ul, 1.0f);
+						verts[1] = new WorldVertex((float)(-radius + offsets.x), 0.0f, (float)(height + offsets.y), sectorcolor, ul, 0.0f);
+						verts[2] = new WorldVertex((float)(+radius + offsets.x), 0.0f, (float)(height + offsets.y), sectorcolor, ur, 0.0f);
 						verts[3] = verts[0];
 						verts[4] = verts[2];
-						verts[5] = new WorldVertex(+radius + offsets.x, 0.0f, offsets.y, sectorcolor, ur, 1.0f);
+						verts[5] = new WorldVertex((float)(+radius + offsets.x), 0.0f, (float)offsets.y, sectorcolor, ur, 1.0f);
 					}
 					allverts[i] = verts;
 				}
@@ -413,7 +413,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(Thing.Sector != null)
 				{
 					SectorData sd = mode.GetSectorData(Thing.Sector);
-					float maxz = sd.Ceiling.plane.GetZ(Thing.Position) - info.Height;
+					double maxz = sd.Ceiling.plane.GetZ(Thing.Position) - info.Height;
 					pos.z = maxz;
 
 					if(Thing.Position.z > 0 || nointeraction) pos.z -= Thing.Position.z;
@@ -421,7 +421,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// Check if below floor
 					if(!nointeraction)
 					{
-						float minz = sd.Floor.plane.GetZ(Thing.Position);
+						double minz = sd.Floor.plane.GetZ(Thing.Position);
 						if(pos.z < minz) pos.z = Math.Min(minz, maxz);
 					}
 				}
@@ -432,7 +432,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(Thing.Sector != null)
 				{
 					SectorData sd = mode.GetSectorData(Thing.Sector);
-					float minz = sd.Floor.plane.GetZ(Thing.Position);
+					double minz = sd.Floor.plane.GetZ(Thing.Position);
 					pos.z = minz;
 
 					if(Thing.Position.z > 0 || nointeraction) pos.z += Thing.Position.z;
@@ -440,7 +440,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// Check if above ceiling
 					if(!nointeraction)
 					{
-						float maxz = sd.Ceiling.plane.GetZ(Thing.Position) - info.Height;
+						double maxz = sd.Ceiling.plane.GetZ(Thing.Position) - info.Height;
 						if(pos.z > maxz) pos.z = Math.Max(minz, maxz);
 					}
 				}
@@ -536,17 +536,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(!General.Map.Renderer3D.DrawThingCages && info.DistanceCheckSq < int.MaxValue
 				&& (Thing.Position - General.Map.VisualCamera.Position).GetLengthSq() > info.DistanceCheckSq)
 				return false;
-			
-			float distance2 = Line2D.GetDistanceToLineSq(from, to, pos2d, false);
+
+			double distance2 = Line2D.GetDistanceToLineSq(from, to, pos2d, false);
 			return (distance2 <= cageradius2);
 		}
 
 		// This performs an accurate test for object picking
-		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray)
+		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray)
 		{
 			Vector3D delta = to - from;
-			float tfar = float.MaxValue;
-			float tnear = float.MinValue;
+			double tfar = double.MaxValue;
+			double tnear = double.MinValue;
 			
 			// Ray-Box intersection code
 			// See http://www.masm32.com/board/index.php?topic=9941.0
@@ -562,9 +562,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			else
 			{
-				float tmp = 1.0f / delta.x;
-				float t1 = (boxp1.x - from.x) * tmp;
-				float t2 = (boxp2.x - from.x) * tmp;
+				double tmp = 1.0f / delta.x;
+				double t1 = (boxp1.x - from.x) * tmp;
+				double t2 = (boxp2.x - from.x) * tmp;
 				if(t1 > t2) General.Swap(ref t1, ref t2);
 				if(t1 > tnear) tnear = t1;
 				if(t2 < tfar) tfar = t2;
@@ -586,9 +586,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			else
 			{
-				float tmp = 1.0f / delta.y;
-				float t1 = (boxp1.y - from.y) * tmp;
-				float t2 = (boxp2.y - from.y) * tmp;
+				double tmp = 1.0f / delta.y;
+				double t1 = (boxp1.y - from.y) * tmp;
+				double t2 = (boxp2.y - from.y) * tmp;
 				if(t1 > t2) General.Swap(ref t1, ref t2);
 				if(t1 > tnear) tnear = t1;
 				if(t2 < tfar) tfar = t2;
@@ -610,9 +610,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			else
 			{
-				float tmp = 1.0f / delta.z;
-				float t1 = (boxp1.z - from.z) * tmp;
-				float t2 = (boxp2.z - from.z) * tmp;
+				double tmp = 1.0f / delta.z;
+				double t1 = (boxp1.z - from.z) * tmp;
+				double t2 = (boxp2.z - from.z) * tmp;
 				if(t1 > t2) General.Swap(ref t1, ref t2);
 				if(t1 > tnear) tnear = t1;
 				if(t2 < tfar) tfar = t2;
@@ -807,8 +807,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if((General.Map.UndoRedo.NextUndo == null) || (General.Map.UndoRedo.NextUndo.TicketID != undoticket))
 				undoticket = mode.CreateUndo("Change thing scale");
 
-			float scaleX = Thing.ScaleX;
-			float scaleY = Thing.ScaleY;
+			double scaleX = Thing.ScaleX;
+			double scaleY = Thing.ScaleY;
 			ImageData sprite = sprites[0];
 
 			if(incrementX != 0) 

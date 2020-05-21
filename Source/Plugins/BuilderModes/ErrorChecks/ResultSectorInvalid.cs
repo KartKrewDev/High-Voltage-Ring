@@ -120,8 +120,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							Sidedef targetside = (otherline.Front ?? otherline.Back);
 
 							if(targetside != null &&
-								((otherline.Front != null && otherline.Front.Sector != null && otherline.Front.Sector.BBox.Contains(center.x, center.y)) ||
-								otherline.Back != null && otherline.Back.Sector != null && otherline.Back.Sector.BBox.Contains(center.x, center.y)))
+								((otherline.Front != null && otherline.Front.Sector != null && otherline.Front.Sector.BBox.Contains((float)center.x, (float)center.y)) ||
+								otherline.Back != null && otherline.Back.Sector != null && otherline.Back.Sector.BBox.Contains((float)center.x, (float)center.y)))
 							{
 								Tools.JoinSector(newlines, targetside);
 								merged = true;

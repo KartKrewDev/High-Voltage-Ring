@@ -213,7 +213,7 @@ namespace CodeImp.DoomBuilder.Editing
 			Vector2D offset = ClampViewOffset(renderer2d.OffsetX + deltax, renderer2d.OffsetY + deltay);
 
 			// Scroll now
-			renderer2d.PositionView(offset.x, offset.y);
+			renderer2d.PositionView((float)offset.x, (float)offset.y);
 			this.OnViewChanged();
 			
 			// Redraw
@@ -272,7 +272,7 @@ namespace CodeImp.DoomBuilder.Editing
 			Vector2D offset = ClampViewOffset(renderer2d.OffsetX - diff.x, renderer2d.OffsetY + diff.y); //mxd
 
 			// Zoom now
-			renderer2d.PositionView(offset.x, offset.y);
+			renderer2d.PositionView((float)offset.x, (float)offset.y);
 			renderer2d.ScaleView(newscale);
 			this.OnViewChanged();
 
@@ -344,10 +344,10 @@ namespace CodeImp.DoomBuilder.Editing
 		[BeginAction("centerinscreen", BaseAction = true)]
 		public void CenterInScreen()
 		{
-			float left = float.MaxValue;
-			float top = float.MaxValue;
-			float right = float.MinValue;
-			float bottom = float.MinValue;
+			double left = double.MaxValue;
+			double top = double.MaxValue;
+			double right = double.MinValue;
+			double bottom = double.MinValue;
 			bool anything = false;
 			
 			// Go for all vertices
@@ -383,7 +383,7 @@ namespace CodeImp.DoomBuilder.Editing
 			// Anything found to center in view?
 			if(anything)
 			{
-				RectangleF area = new RectangleF(left, top, (right - left), (bottom - top));
+				RectangleF area = new RectangleF((float)left, (float)top, (float)(right - left), (float)(bottom - top));
 				CenterOnArea(area, CENTER_VIEW_PADDING);
 			}
 			else
@@ -413,7 +413,7 @@ namespace CodeImp.DoomBuilder.Editing
 		{
 			// Change the view
 			renderer2d.ScaleView(scale);
-			renderer2d.PositionView(offset.x, offset.y);
+			renderer2d.PositionView((float)offset.x, (float)offset.y);
 			this.OnViewChanged();
 
 			//mxd. Change grid size?
@@ -676,7 +676,7 @@ namespace CodeImp.DoomBuilder.Editing
 					&& General.Editing.PreviousMode != null && General.Editing.PreviousMode.IsSubclassOf(typeof(VisualMode)))
 				{
 					Vector2D campos = ClampViewOffset(General.Map.VisualCamera.Position.x, General.Map.VisualCamera.Position.y);
-					renderer2d.PositionView(campos.x, campos.y);
+					renderer2d.PositionView((float)campos.x, (float)campos.y);
 				}
 
 				renderer.Finish();
@@ -1021,7 +1021,7 @@ namespace CodeImp.DoomBuilder.Editing
 			if(form.ShowDialog() == DialogResult.OK) 
 			{
 				//center view
-				renderer2d.PositionView(form.Coordinates.x, form.Coordinates.y);
+				renderer2d.PositionView((float)form.Coordinates.x, (float)form.Coordinates.y);
 				General.Interface.RedrawDisplay();
 			}
 		}

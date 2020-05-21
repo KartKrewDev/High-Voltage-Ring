@@ -242,7 +242,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					foreach(Vector2D[] shape in shapes) 
 					{
 						for(int i = 0; i < shape.Length; i++)
-							renderer.RenderRectangleFilled(new RectangleF(shape[i].x - vsize, shape[i].y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
+							renderer.RenderRectangleFilled(new RectangleF((float)(shape[i].x - vsize), (float)(shape[i].y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 					}
 
 					//and labels
@@ -278,7 +278,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				else 
 				{
 					// Render vertex at cursor
-					renderer.RenderRectangleFilled(new RectangleF(curp.pos.x - vsize, curp.pos.y - vsize, vsize * 2.0f, vsize * 2.0f), color, true);
+					renderer.RenderRectangleFilled(new RectangleF((float)(curp.pos.x - vsize), (float)(curp.pos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 				}
 
 				// Done
@@ -415,11 +415,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				for(int h = 0; h < slicesV; h++)
 				{
-					float left = (InterpolationTools.Interpolate(s.x, e.x, (float)w / slicesH, horizontalinterpolation));
-					float top = (InterpolationTools.Interpolate(s.y, e.y, (float)h / slicesV, verticalinterpolation));
-					float right = (InterpolationTools.Interpolate(s.x, e.x, (w + 1.0f) / slicesH, horizontalinterpolation));
-					float bottom = (InterpolationTools.Interpolate(s.y, e.y, (h + 1.0f) / slicesV, verticalinterpolation));
-					blocks[w, h] = RectangleF.FromLTRB(left, top, right, bottom);
+					double left = (InterpolationTools.Interpolate(s.x, e.x, (double)w / slicesH, horizontalinterpolation));
+					double top = (InterpolationTools.Interpolate(s.y, e.y, (double)h / slicesV, verticalinterpolation));
+					double right = (InterpolationTools.Interpolate(s.x, e.x, (w + 1.0f) / slicesH, horizontalinterpolation));
+					double bottom = (InterpolationTools.Interpolate(s.y, e.y, (h + 1.0f) / slicesV, verticalinterpolation));
+					blocks[w, h] = RectangleF.FromLTRB((float)left, (float)top, (float)right, (float)bottom);
 				}
 			}
 

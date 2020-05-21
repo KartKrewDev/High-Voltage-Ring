@@ -1199,7 +1199,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Offset verts
 						foreach(Vertex v in verts)
 						{
-							if(!float.IsNaN(v.ZFloor)) v.ZFloor += flooroffset;
+							if(!double.IsNaN(v.ZFloor)) v.ZFloor += flooroffset;
 						}
 					}
 				}
@@ -1232,7 +1232,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Offset verts
 						foreach(Vertex v in verts)
 						{
-							if(!float.IsNaN(v.ZCeiling)) v.ZCeiling += ceiloffset;
+							if(!double.IsNaN(v.ZCeiling)) v.ZCeiling += ceiloffset;
 						}
 					}
 				}

@@ -62,7 +62,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// <summary>
 		/// Distance unit along the object picking ray is set during object picking. (0.0 is at camera, 1.0f is at far plane) This is not set if the geometry is not bound to a sidedef.
 		/// </summary>
-		protected float pickrayu;
+		protected double pickrayu;
 		
 		// Rendering
 		private RenderPass renderpass = RenderPass.Solid;
@@ -251,7 +251,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		}
 
 		// This keeps the results for a sidedef intersection
-		internal void SetPickResults(Vector3D intersect, float u)
+		internal void SetPickResults(Vector3D intersect, double u)
 		{
 			this.pickintersect = intersect;
 			this.pickrayu = u;
@@ -270,7 +270,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// This is called when the geometry must be tested for line intersection. This should perform
 		/// accurate hit detection and set u_ray to the position on the ray where this hits the geometry.
 		/// </summary>
-		public virtual bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray)
+		public virtual bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray)
 		{
 			return false;
 		}

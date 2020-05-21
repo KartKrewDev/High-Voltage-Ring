@@ -98,15 +98,15 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 
 		#region ================== Shape creation methods
 
-		private static IEnumerable<Line3D> MakeCircleLines(Vector3D pos, PixelColor color, float radius, int numsides)
+		private static IEnumerable<Line3D> MakeCircleLines(Vector3D pos, PixelColor color, double radius, int numsides)
 		{
 			List<Line3D> result = new List<Line3D>(numsides);
 			Vector3D start = new Vector3D(pos.x, pos.y + radius, pos.z);
-			float anglestep = Angle2D.PI2 / numsides;
+			double anglestep = Angle2D.PI2 / numsides;
 
 			for(int i = 1; i < numsides + 1; i++)
 			{
-				Vector3D end = pos + new Vector3D((float)Math.Sin(anglestep * i) * radius, (float)Math.Cos(anglestep * i) * radius, 0f);
+				Vector3D end = pos + new Vector3D(Math.Sin(anglestep * i) * radius, Math.Cos(anglestep * i) * radius, 0f);
 				result.Add(new Line3D(start, end, color, false));
 				start = end;
 			}
@@ -448,7 +448,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 								List<Vector3D> points = new List<Vector3D>(11);
 								for(int i = 0; i < 11; i++)
 								{
-									float u = i * 0.1f;
+									double u = i * 0.1f;
 									points.Add(new Vector3D(
 										SplineLerp(u, prev.Position.x, node.Position.x, next.Position.x, nextnext.Position.x),
 										SplineLerp(u, prev.Position.y, node.Position.y, next.Position.y, nextnext.Position.y),
@@ -592,14 +592,14 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
             return circles;
         }
 
-        private static Vector3D GetRotatedVertex(Vector3D bp, float angle, float pitch)
+        private static Vector3D GetRotatedVertex(Vector3D bp, double angle, double pitch)
         {
             Vector3D bp_rotated = bp;
-            bp_rotated.x = bp.x * (float)Math.Cos(pitch) - bp.z * (float)Math.Sin(pitch);
-            bp_rotated.z = bp.z * (float)Math.Cos(pitch) + bp.x * (float)Math.Sin(pitch);
+            bp_rotated.x = bp.x * Math.Cos(pitch) - bp.z * Math.Sin(pitch);
+            bp_rotated.z = bp.z * Math.Cos(pitch) + bp.x * Math.Sin(pitch);
             bp = bp_rotated;
-            bp_rotated.x = bp.x * (float)Math.Cos(angle) - bp.y * (float)Math.Sin(angle);
-            bp_rotated.y = bp.y * (float)Math.Cos(angle) + bp.x * (float)Math.Sin(angle);
+            bp_rotated.x = bp.x * Math.Cos(angle) - bp.y * Math.Sin(angle);
+            bp_rotated.y = bp.y * Math.Cos(angle) + bp.x * Math.Sin(angle);
             return bp_rotated;
         }
 
@@ -622,18 +622,18 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
             color_secondary.a /= 2;
 
             List<Line3D> shapes = new List<Line3D>();
-            float _lAngle1 = Angle2D.DegToRad(t.Args[1]);
-            float _lAngle2 = Angle2D.DegToRad(t.Args[2]);
-            float lAngle1 = _lAngle1;
-            float lAngle2 = _lAngle2;
+            double _lAngle1 = Angle2D.DegToRad(t.Args[1]);
+            double _lAngle2 = Angle2D.DegToRad(t.Args[2]);
+            double lAngle1 = _lAngle1;
+            double lAngle2 = _lAngle2;
             
-            float lRadius = t.Args[3]*2;
-            float lDirY1 = (float)Math.Sin(-lAngle1) * lRadius;
-            float lDirX1 = (float)Math.Cos(-lAngle1) * lRadius;
-            float lDirY2 = (float)Math.Sin(-lAngle2) * lRadius;
-            float lDirX2 = (float)Math.Cos(-lAngle2) * lRadius;
+            double lRadius = t.Args[3]*2;
+            double lDirY1 = Math.Sin(-lAngle1) * lRadius;
+            double lDirX1 = Math.Cos(-lAngle1) * lRadius;
+            double lDirY2 = Math.Sin(-lAngle2) * lRadius;
+            double lDirX2 = Math.Cos(-lAngle2) * lRadius;
             
-            IEnumerable<Line3D> circleLines = MakeCircleLines(new Vector3D(0, 0, 0), color, (float)Math.Abs(lDirY1), CIRCLE_SIDES);
+            IEnumerable<Line3D> circleLines = MakeCircleLines(new Vector3D(0, 0, 0), color, Math.Abs(lDirY1), CIRCLE_SIDES);
             foreach (Line3D l3d in circleLines)
             {
                 shapes.Add(new Line3D(new Vector3D(lDirX1, l3d.Start.x, l3d.Start.y),
@@ -643,7 +643,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 
             if (lAngle2 != lAngle1)
             {
-                circleLines = MakeCircleLines(new Vector3D(0, 0, 0), color_secondary, (float)Math.Abs(lDirY2), CIRCLE_SIDES);
+                circleLines = MakeCircleLines(new Vector3D(0, 0, 0), color_secondary, Math.Abs(lDirY2), CIRCLE_SIDES);
                 foreach (Line3D l3d in circleLines)
                 {
                     shapes.Add(new Line3D(new Vector3D(lDirX2, l3d.Start.x, l3d.Start.y),
@@ -654,7 +654,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 
             // draw another circle to show the front cone shape
             int numsides = CIRCLE_SIDES * 2;
-            float anglestep = Angle2D.PI2 / numsides;
+            double anglestep = Angle2D.PI2 / numsides;
             for (int j = -1; j <= 1; j++)
             {
                 if (j == 0) continue;
@@ -662,12 +662,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                 PixelColor ccol = color;
                 for (int i = 1; i < numsides + 1; i++)
                 {
-                    float angc = j * i * anglestep;
-                    float angp = j * (i - 1) * anglestep;
+					double angc = j * i * anglestep;
+					double angp = j * (i - 1) * anglestep;
                     if (i * anglestep > lAngle1 && ccol.a == color.a)
                     {
-                        shapes.Add(new Line3D(new Vector3D((float)Math.Cos(angp) * lRadius, (float)Math.Sin(angp) * lRadius, 0),
-                                                new Vector3D((float)Math.Cos(j * lAngle1) * lRadius, (float)Math.Sin(j * lAngle1) * lRadius, 0),
+                        shapes.Add(new Line3D(new Vector3D(Math.Cos(angp) * lRadius, Math.Sin(angp) * lRadius, 0),
+                                                new Vector3D(Math.Cos(j * lAngle1) * lRadius, Math.Sin(j * lAngle1) * lRadius, 0),
                                                 ccol, false));
                         bool dobreak = false;
                         if (i * anglestep > lAngle2)
@@ -675,8 +675,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                             angc = j * lAngle2;
                             dobreak = true;
                         }
-                        shapes.Add(new Line3D(new Vector3D((float)Math.Cos(j * lAngle1) * lRadius, (float)Math.Sin(j * lAngle1) * lRadius, 0),
-                                                new Vector3D((float)Math.Cos(angc) * lRadius, (float)Math.Sin(angc) * lRadius, 0),
+                        shapes.Add(new Line3D(new Vector3D(Math.Cos(j * lAngle1) * lRadius, Math.Sin(j * lAngle1) * lRadius, 0),
+                                                new Vector3D(Math.Cos(angc) * lRadius, Math.Sin(angc) * lRadius, 0),
                                                 color_secondary, false));
                         ccol = color_secondary;
                         if (dobreak) break;
@@ -684,15 +684,15 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                     else if (i * anglestep > lAngle2)
                     {
                         angc = j * lAngle2;
-                        shapes.Add(new Line3D(new Vector3D((float)Math.Cos(angp) * lRadius, (float)Math.Sin(angp) * lRadius, 0),
-                                                new Vector3D((float)Math.Cos(angc) * lRadius, (float)Math.Sin(angc) * lRadius, 0),
+                        shapes.Add(new Line3D(new Vector3D(Math.Cos(angp) * lRadius, Math.Sin(angp) * lRadius, 0),
+                                                new Vector3D(Math.Cos(angc) * lRadius, Math.Sin(angc) * lRadius, 0),
                                                 ccol, false));
                         break;
                     }
                     else
                     {
-                        shapes.Add(new Line3D(new Vector3D((float)Math.Cos(angp) * lRadius, (float)Math.Sin(angp) * lRadius, 0),
-                                                new Vector3D((float)Math.Cos(angc) * lRadius, (float)Math.Sin(angc) * lRadius, 0),
+                        shapes.Add(new Line3D(new Vector3D(Math.Cos(angp) * lRadius, Math.Sin(angp) * lRadius, 0),
+                                                new Vector3D(Math.Cos(angc) * lRadius, Math.Sin(angc) * lRadius, 0),
                                                 ccol, false));
                     }
                 }
@@ -811,10 +811,10 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		#region ================== Utility
 
 		// Taken from Xabis' "curved interpolation points paths" patch.
-		private static float SplineLerp(float u, float p1, float p2, float p3, float p4)
+		private static double SplineLerp(double u, double p1, double p2, double p3, double p4)
 		{
-			float t2 = u;
-			float res = 2 * p2;
+			double t2 = u;
+			double res = 2 * p2;
 			res += (p3 - p1) * u;
 			t2 *= u;
 			res += (2 * p1 - 5 * p2 + 4 * p3 - p4) * t2;
@@ -824,10 +824,10 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		}
 
 		// Required only when called from VisualMode
-		private static float GetCorrectHeight(Thing thing, VisualBlockMap blockmap, bool usethingcenter)
+		private static double GetCorrectHeight(Thing thing, VisualBlockMap blockmap, bool usethingcenter)
 		{
 			if(blockmap == null) return 0f;
-			float height = (usethingcenter ? thing.Height / 2f : 0f);
+			double height = (usethingcenter ? thing.Height / 2f : 0f);
 			if(thing.Sector == null) thing.DetermineSector(blockmap);
 			if(thing.Sector != null) height += thing.Sector.FloorHeight;
 			return height;

@@ -38,8 +38,8 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 			public int Angle;
 			public int Pitch;
 			public int Roll;
-			public float ScaleX;
-			public float ScaleY;
+			public double ScaleX;
+			public double ScaleY;
 			public int SectorHeight;
 			public int ZOffset;
 			public int SafeDistance;
@@ -290,9 +290,9 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 
 			for(int i = 0; i < selection.Count; i++) 
 			{
-				float jitterX = thingData[i].JitterScaleX;
-				float jitterY = (cbUniformScale.Checked ? jitterX : thingData[i].JitterScaleY);
-				float sx, sy;
+				double jitterX = thingData[i].JitterScaleX;
+				double jitterY = (cbUniformScale.Checked ? jitterX : thingData[i].JitterScaleY);
+				double sx, sy;
 
 				if(cbRelativeScale.Checked) 
 				{

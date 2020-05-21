@@ -20,7 +20,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private readonly SectorLevel level;
 		private readonly bool up;
 		private Vector3D pickintersect;
-		private float pickrayu;
+		private double pickrayu;
 		private Plane plane;
 
 		#endregion
@@ -107,13 +107,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// This is called when the thing must be tested for line intersection. This should perform
 		/// accurate hit detection and set u_ray to the position on the ray where this hits the geometry.
 		/// </summary>
-		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray)
+		public override bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray)
 		{
 			u_ray = pickrayu;
 
 			Sidedef sd = MapSet.NearestSidedef(sidedef.Sector.Sidedefs, pickintersect);
 			if (sd == sidedef) {
-				float side = sd.Line.SideOfLine(pickintersect);
+				double side = sd.Line.SideOfLine(pickintersect);
 
 				if ((side <= 0.0f && sd.IsFront) || (side > 0.0f && !sd.IsFront))
 					return true;

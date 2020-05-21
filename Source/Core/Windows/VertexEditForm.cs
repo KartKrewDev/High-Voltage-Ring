@@ -50,10 +50,10 @@ namespace CodeImp.DoomBuilder.Windows
 
 		private struct VertexProperties //mxd
 		{
-			public readonly float X;
-			public readonly float Y;
-			public readonly float ZCeiling;
-			public readonly float ZFloor;
+			public readonly double X;
+			public readonly double Y;
+			public readonly double ZCeiling;
+			public readonly double ZFloor;
 
 			public VertexProperties(Vertex v) 
 			{
@@ -167,13 +167,13 @@ namespace CodeImp.DoomBuilder.Windows
 			//mxd. Height offsets
 			if(General.Map.UDMF) 
 			{
-				zceiling.Text = (float.IsNaN(vc.ZCeiling) ? CLEAR_VALUE : vc.ZCeiling.ToString());
-				zfloor.Text = (float.IsNaN(vc.ZFloor) ? CLEAR_VALUE : vc.ZFloor.ToString());
+				zceiling.Text = (double.IsNaN(vc.ZCeiling) ? CLEAR_VALUE : vc.ZCeiling.ToString());
+				zfloor.Text = (double.IsNaN(vc.ZFloor) ? CLEAR_VALUE : vc.ZFloor.ToString());
 
 				foreach(Vertex v in vertices) 
 				{
-					string zc = (float.IsNaN(v.ZCeiling) ? CLEAR_VALUE : v.ZCeiling.ToString());
-					string zf = (float.IsNaN(v.ZFloor) ? CLEAR_VALUE : v.ZFloor.ToString());
+					string zc = (double.IsNaN(v.ZCeiling) ? CLEAR_VALUE : v.ZCeiling.ToString());
+					string zf = (double.IsNaN(v.ZFloor) ? CLEAR_VALUE : v.ZFloor.ToString());
 
 					if(zceiling.Text != zc)	zceiling.Text = "";
 					if(zfloor.Text != zf) zfloor.Text = "";
@@ -221,7 +221,7 @@ namespace CodeImp.DoomBuilder.Windows
 				foreach(Vertex v in vertices)
 				{
 					// Verify the coordinates
-					float px = positionx.GetResultFloat(vertexprops[i++].X);
+					double px = positionx.GetResultFloat(vertexprops[i++].X);
 
 					// Apply new position
 					v.Move(new Vector2D(Math.Max(General.Map.FormatInterface.MinCoordinate, Math.Min(General.Map.FormatInterface.MaxCoordinate, px)), v.Position.y));
@@ -251,7 +251,7 @@ namespace CodeImp.DoomBuilder.Windows
 				foreach(Vertex v in vertices)
 				{
 					// Verify the coordinates
-					float py = positiony.GetResultFloat(vertexprops[i++].Y);
+					double py = positiony.GetResultFloat(vertexprops[i++].Y);
 
 					// Apply new position
 					v.Move(new Vector2D(v.Position.x, Math.Max(General.Map.FormatInterface.MinCoordinate, Math.Min(General.Map.FormatInterface.MaxCoordinate, py))));

@@ -80,8 +80,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(!osd.Updated) osd.Update();
 
 			//mxd
-			float vlzc = sd.Ceiling.plane.GetZ(vl);
-			float vrzc = sd.Ceiling.plane.GetZ(vr);
+			double vlzc = sd.Ceiling.plane.GetZ(vl);
+			double vrzc = sd.Ceiling.plane.GetZ(vr);
 
 			//mxd. Side is visible when our sector's ceiling is higher than the other's at any vertex
 			if(!(vlzc > osd.Ceiling.plane.GetZ(vl) || vrzc > osd.Ceiling.plane.GetZ(vr)))

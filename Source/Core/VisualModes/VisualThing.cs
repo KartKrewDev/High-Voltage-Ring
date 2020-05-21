@@ -307,7 +307,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				if(triangles[c] < 2) continue;
 
 				Matrix transform, rotation;
-				float centerx, centerz;
+				double centerx, centerz;
 
 				// ROLLCENTER flag support
 				if(info.RollSprite && info.RollCenter && thing.Roll != 0)
@@ -331,28 +331,28 @@ namespace CodeImp.DoomBuilder.VisualModes
 					
 					// Actor becomes a flat sprite which can be tilted with the use of the Pitch actor property.
 					case ThingRenderMode.FLATSPRITE:
-						transform = Matrix.Scaling(thing.ScaleX, thing.ScaleX, thing.ScaleY);
+						transform = Matrix.Scaling((float)thing.ScaleX, (float)thing.ScaleX, (float)thing.ScaleY);
 
 						// Apply roll?
 						if(thing.Roll != 0)
 						{
 							if(info.RollCenter)
 							{
-								rotation = Matrix.RotationY(-thing.RollRad);
-								transform *= Matrix.Translation(-centerx, -centerx, -centerz) * rotation * Matrix.Translation(centerx, centerx, centerz);
+								rotation = Matrix.RotationY((float)-thing.RollRad);
+								transform *= Matrix.Translation((float)-centerx, (float)-centerx, (float)-centerz) * rotation * Matrix.Translation((float)centerx, (float)centerx, (float)centerz);
 							}
 							else
 							{
 								// Sprite center is already where it needs to be
-								transform *= Matrix.RotationY(-thing.RollRad);
+								transform *= Matrix.RotationY((float)-thing.RollRad);
 							}
 						}
 
 						// Apply pitch
-						transform *= Matrix.RotationX(thing.PitchRad + Angle2D.PIHALF);
+						transform *= Matrix.RotationX((float)(thing.PitchRad + Angle2D.PIHALF));
 
 						// Apply angle
-						transform *= Matrix.RotationZ(thing.Angle);
+						transform *= Matrix.RotationZ((float)thing.Angle);
 
 						// Apply transform
 						float zoffset = ((thing.Pitch == 0f && thing.Position.z == 0f) ? 0.1f : 0f); // Slight offset to avoid z-fighting...
@@ -367,20 +367,20 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 					// Similar to FLATSPRITE but is not affected by pitch.
 					case ThingRenderMode.WALLSPRITE:
-						transform = Matrix.Scaling(thing.ScaleX, thing.ScaleX, thing.ScaleY);
+						transform = Matrix.Scaling((float)thing.ScaleX, (float)thing.ScaleX, (float)thing.ScaleY);
 						
 						// Apply roll?
 						if(thing.Roll != 0)
 						{
-							rotation = Matrix.RotationY(-thing.RollRad) * Matrix.RotationZ(thing.Angle);
+							rotation = Matrix.RotationY((float)-thing.RollRad) * Matrix.RotationZ((float)thing.Angle);
 							if(info.RollCenter)
-								transform *= Matrix.Translation(-centerx, -centerx, -centerz) * rotation * Matrix.Translation(centerx, centerx, centerz);
+								transform *= Matrix.Translation((float)-centerx, (float)-centerx, (float)-centerz) * rotation * Matrix.Translation((float)centerx, (float)centerx, (float)centerz);
 							else
 								transform *= rotation; // Sprite center is already where it needs to be
 						}
 						else
 						{
-							transform *= Matrix.RotationZ(thing.Angle);
+							transform *= Matrix.RotationZ((float)thing.Angle);
 						}
 
 						// Apply transform
@@ -482,14 +482,14 @@ namespace CodeImp.DoomBuilder.VisualModes
 					#endregion
 
 					case ThingRenderMode.NORMAL:
-						transform = Matrix.Scaling(thing.ScaleX, thing.ScaleX, thing.ScaleY);
+						transform = Matrix.Scaling((float)thing.ScaleX, (float)thing.ScaleX, (float)thing.ScaleY);
 
 						// Apply roll?
 						if(info.RollSprite && thing.Roll != 0)
 						{
-							rotation = Matrix.RotationY(-thing.RollRad);
+							rotation = Matrix.RotationY((float)-thing.RollRad);
 							if(info.RollCenter)
-								transform *= Matrix.Translation(-centerx, -centerx, -centerz) * rotation * Matrix.Translation(centerx, centerx, centerz);
+								transform *= Matrix.Translation((float)-centerx, (float)-centerx, (float)-centerz) * rotation * Matrix.Translation((float)centerx, (float)centerx, (float)centerz);
 							else
 								transform *= rotation; // Sprite center is already where it needs to be
 						}
@@ -595,7 +595,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				if(Thing.IsDirectional)
 				{
 					Matrix transform = Matrix.Scaling(thing.Size, thing.Size, thing.Size)
-						* (Matrix.RotationY(-Thing.RollRad) * Matrix.RotationX(-Thing.PitchRad) * Matrix.RotationZ(Thing.Angle))
+						* (Matrix.RotationY((float)-Thing.RollRad) * Matrix.RotationX((float)-Thing.PitchRad) * Matrix.RotationZ((float)Thing.Angle))
 						* (sizeless ? position : position * Matrix.Translation(0.0f, 0.0f, thingheight / 2f));
 
 					WorldVertex a0 = new WorldVertex(Vector3D.Transform(0.0f, 0.0f, 0.0f, transform)); //start
@@ -770,7 +770,7 @@ namespace CodeImp.DoomBuilder.VisualModes
             //apply settings
 			lightColor = new Color4(light.Color.Red, light.Color.Green, light.Color.Blue, (float)ld.LightRenderStyle / 100.0f);
 			Vector2D o = new Vector2D(light.Offset.X, light.Offset.Y).GetRotated(thing.Angle - Angle2D.PIHALF);
-			lightOffset = new Vector3f(o.x, o.y, light.Offset.Z);
+			lightOffset = new Vector3f((float)o.x, (float)o.y, light.Offset.Z);
 			lightType = light.Type;
 
 			if(ld.LightModifier == GZGeneral.LightModifier.SECTOR)
@@ -920,7 +920,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// This is called when the thing must be tested for line intersection. This should perform
 		/// accurate hit detection and set u_ray to the position on the ray where this hits the geometry.
 		/// </summary>
-		public virtual bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref float u_ray)
+		public virtual bool PickAccurate(Vector3D from, Vector3D to, Vector3D dir, ref double u_ray)
 		{
 			return false;
 		}

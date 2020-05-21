@@ -25,18 +25,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Check if start/end point is on screen...
 			Vector2D lt = General.Map.Renderer2D.DisplayToMap(new Vector2D(0.0f, General.Interface.Display.Size.Height));
 			Vector2D rb = General.Map.Renderer2D.DisplayToMap(new Vector2D(General.Interface.Display.Size.Width, 0.0f));
-			RectangleF viewport = new RectangleF(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
-			bool startvisible = viewport.Contains(start.x, start.y);
-			bool endvisible = viewport.Contains(end.x, end.y);
+			RectangleF viewport = new RectangleF((float)lt.x, (float)lt.y, (float)(rb.x - lt.x), (float)(rb.y - lt.y));
+			bool startvisible = viewport.Contains((float)start.x, (float)start.y);
+			bool endvisible = viewport.Contains((float)end.x, (float)end.y);
 
 			// Get visile area
 			if(!startvisible || !endvisible)
 			{
-				float minx = Math.Min(start.x, end.x);
-				float maxx = Math.Max(start.x, end.x);
-				float miny = Math.Min(start.y, end.y);
-				float maxy = Math.Max(start.y, end.y);
-				RectangleF labelarea = new RectangleF(minx, miny, maxx - minx, maxy - miny);
+				double minx = Math.Min(start.x, end.x);
+				double maxx = Math.Max(start.x, end.x);
+				double miny = Math.Min(start.y, end.y);
+				double maxy = Math.Max(start.y, end.y);
+				RectangleF labelarea = new RectangleF((float)minx, (float)miny, (float)(maxx - minx), (float)(maxy - miny));
 				labelarea.Intersect(viewport);
 
 				if(!labelarea.IsEmpty)

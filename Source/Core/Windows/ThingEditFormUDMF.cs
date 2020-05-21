@@ -61,12 +61,12 @@ namespace CodeImp.DoomBuilder.Windows
 			public readonly int AngleDoom;
 			public readonly int Pitch;
 			public readonly int Roll;
-			public readonly float ScaleX;
-			public readonly float ScaleY;
-			public readonly float Alpha;
-			public readonly float X;
-			public readonly float Y;
-			public readonly float Z;
+			public readonly double ScaleX;
+			public readonly double ScaleY;
+			public readonly double Alpha;
+			public readonly double X;
+			public readonly double Y;
+			public readonly double Z;
 			public readonly Dictionary<string, bool> Flags;
 
 			public ThingProperties(Thing t) 
@@ -195,7 +195,7 @@ namespace CodeImp.DoomBuilder.Windows
 
 			//mxd
 			ft.DetermineSector();
-			float floorheight = (ft.Sector != null ? Sector.GetFloorPlane(ft.Sector).GetZ(ft.Position) : 0);
+			double floorheight = (ft.Sector != null ? Sector.GetFloorPlane(ft.Sector).GetZ(ft.Position) : 0);
 			posX.Text = (ft.Position.x).ToString();
 			posY.Text = (ft.Position.y).ToString();
 			posZ.Text = (useabsoluteheight ? ((float)Math.Round(ft.Position.z + floorheight, General.Map.FormatInterface.VertexDecimals)).ToString() : (ft.Position.z).ToString());
@@ -528,8 +528,8 @@ namespace CodeImp.DoomBuilder.Windows
 				if(cbrandomroll.Checked) t.SetRoll(General.Random(0, 359));
 
 				//mxd. Check position
-				float px = General.Clamp(t.Position.x, General.Map.Config.LeftBoundary, General.Map.Config.RightBoundary);
-				float py = General.Clamp(t.Position.y, General.Map.Config.BottomBoundary, General.Map.Config.TopBoundary);
+				double px = General.Clamp(t.Position.x, General.Map.Config.LeftBoundary, General.Map.Config.RightBoundary);
+				double py = General.Clamp(t.Position.y, General.Map.Config.BottomBoundary, General.Map.Config.TopBoundary);
 				if(t.Position.x != px || t.Position.y != py) t.Move(new Vector2D(px, py));
 
 				// Action/tags
@@ -608,7 +608,7 @@ namespace CodeImp.DoomBuilder.Windows
 
 			//update label text
 			Thing ft = General.GetByIndex(things, 0);
-			float z = ft.Position.z;
+			double z = ft.Position.z;
 			if(useabsoluteheight && ft.Sector != null) z += Sector.GetFloorPlane(ft.Sector).GetZ(ft.Position);
 			posZ.Text = ((float)Math.Round(z, General.Map.FormatInterface.VertexDecimals)).ToString();
 
@@ -718,7 +718,7 @@ namespace CodeImp.DoomBuilder.Windows
 				// Update values
 				foreach(Thing t in things) 
 				{
-					float z = posZ.GetResultFloat(thingprops[i++].Z);
+					double z = posZ.GetResultFloat(thingprops[i++].Z);
 					if(useabsoluteheight && !posZ.CheckIsRelative() && t.Sector != null)
 						z -= (float)Math.Round(Sector.GetFloorPlane(t.Sector).GetZ(t.Position.x, t.Position.y), General.Map.FormatInterface.VertexDecimals);
 					t.Move(new Vector3D(t.Position.x, t.Position.y, z));
@@ -737,8 +737,8 @@ namespace CodeImp.DoomBuilder.Windows
 
 			foreach (Thing t in things)
 			{
-				float sx = scale.GetValue1(thingprops[i].ScaleX);
-				float sy = scale.GetValue2(thingprops[i].ScaleY);
+				double sx = scale.GetValue1(thingprops[i].ScaleX);
+				double sy = scale.GetValue2(thingprops[i].ScaleY);
 				t.SetScale((sx == 0 ? 1.0f : sx), (sy == 0 ? 1.0f : sy));
 				i++;
 			}
@@ -954,7 +954,7 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				foreach(Thing t in things)
 				{
-					float value = General.Clamp(alpha.GetResultFloat(t.Fields.GetValue("alpha", 1.0f)), 0f, 1.0f);
+					double value = General.Clamp(alpha.GetResultFloat(t.Fields.GetValue("alpha", 1.0f)), 0f, 1.0f);
 					UniFields.SetFloat(t.Fields, "alpha", value, 1.0f);
 				}
 			}

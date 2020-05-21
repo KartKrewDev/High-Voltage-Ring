@@ -16,9 +16,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		#region ================== Variables
 
 		// private Vector2D pos;
-		private float x;
-		private float y;
-		private float z;
+		private double x;
+		private double y;
+		private double z;
 		private bool selected;
 
 		#endregion
@@ -46,7 +46,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			}
 		}
 
-		public SlopeVertex(Vector2D p, float z)
+		public SlopeVertex(Vector2D p, double z)
 		{
 			// this.pos = new Vector2D(p);
 			this.x = p.x;
@@ -60,7 +60,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		#region ================== Properties
 
 		public Vector2D Pos { get { return new Vector2D(x, y); } set { x = value.x; y = value.y; } }
-		public float Z { get { return z; } set { z = value; } }
+		public double Z { get { return z; } set { z = value; } }
 		public bool Selected { get { return selected; } set { selected = value; } }
 
 		#endregion
@@ -71,7 +71,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		{
 			string identifier;
 
-			Dictionary<String, float> dict = new Dictionary<string, float>
+			Dictionary<String, double> dict = new Dictionary<string, double>
 			{
 				{ "x", x },
 				{ "y", y },
@@ -82,7 +82,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			sector.Fields.BeforeFieldsChange();
 
 			// Process the x, y and z fields
-			foreach (KeyValuePair<string, float> kvp in dict)
+			foreach (KeyValuePair<string, double> kvp in dict)
 			{
 				identifier = String.Format("user_svg{0}_v{1}_{2}", svgid, vertexid, kvp.Key);
 

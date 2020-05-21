@@ -50,21 +50,21 @@ namespace CodeImp.DoomBuilder.Geometry
 					// The previous, current, and next points
 					Vector2D p0 = (i - 1 < 0) ? points[points.Count - 2] : points[i - 1];	// If the first point (of a closed line), use the second-to-last point as the previous point
 					Vector2D p1 = points[i];
-					Vector2D p2 = (i + 1 == points.Count) ? points[1] : points[i + 1];		// If the last point (of a closed line), use the second point as the next point
+					Vector2D p2 = (i + 1 == points.Count) ? points[1] : points[i + 1];      // If the last point (of a closed line), use the second point as the next point
 
-					float a = Vector2D.Distance(p0, p1);	// Distance from previous point to current point
-					if(a < 0.001) a = 0.001f;		        // Correct for near-zero distances, a cheap way to prevent division by zero
-					float b = Vector2D.Distance(p1, p2);	// Distance from current point to next point
+					double a = Vector2D.Distance(p0, p1);	// Distance from previous point to current point
+					if(a < 0.001) a = 0.001f;               // Correct for near-zero distances, a cheap way to prevent division by zero
+					double b = Vector2D.Distance(p1, p2);	// Distance from current point to next point
 					if(b < 0.001) b = 0.001f;
-					float c = Vector2D.Distance(p0, p2);	// Distance from previous point to next point
+					double c = Vector2D.Distance(p0, p2);	// Distance from previous point to next point
 					if(c < 0.001) c = 0.001f;
 
-					float cos = (b * b + a * a - c * c) / (2 * b * a);
+					double cos = (b * b + a * a - c * c) / (2 * b * a);
 					// Make sure above value is between -1 and 1 so that Math.acos will work
 					if(cos < -1) cos = -1;
 					else if(cos > 1) cos = 1;
 
-					float C = (float)Math.Acos(cos); // Angle formed by the two sides of the triangle (described by the three points above) adjacent to the current point
+					double C = Math.Acos(cos); // Angle formed by the two sides of the triangle (described by the three points above) adjacent to the current point
 
 					// Duplicate set of points. Start by giving previous and next points values RELATIVE to the current point.
 					Vector2D aPt = new Vector2D(p0.x - p1.x, p0.y - p1.y);
@@ -87,12 +87,12 @@ namespace CodeImp.DoomBuilder.Geometry
 					cPt += p1;
 
 					// Get the sum of the two vectors, which is perpendicular to the line along which our curve control points will lie.
-					float ax = bPt.x - aPt.x;	// x component of the segment from previous to current point
-					float ay = bPt.y - aPt.y;
-					float bx = bPt.x - cPt.x;	// x component of the segment from next to current point
-					float by = bPt.y - cPt.y;
-					float rx = ax + bx;	// sum of x components
-					float ry = ay + by;
+					double ax = bPt.x - aPt.x;	// x component of the segment from previous to current point
+					double ay = bPt.y - aPt.y;
+					double bx = bPt.x - cPt.x;	// x component of the segment from next to current point
+					double by = bPt.y - cPt.y;
+					double rx = ax + bx;    // sum of x components
+					double ry = ay + by;
 
 					// Correct for three points in a line by finding the angle between just two of them
 					if(rx == 0 && ry == 0) 
@@ -114,12 +114,12 @@ namespace CodeImp.DoomBuilder.Geometry
 					}
 
 					//float r = (float)Math.Sqrt(rx * rx + ry * ry);	// length of the summed vector - not being used, but there it is anyway
-					float theta = (float)Math.Atan2(ry, rx);	// angle of the new vector
+					double theta = Math.Atan2(ry, rx);  // angle of the new vector
 
-					float controlDist = Math.Min(a, b) * z;	// Distance of curve control points from current point: a fraction the length of the shorter adjacent triangle side
-					float controlScaleFactor = C / Angle2D.PI;	// Scale the distance based on the acuteness of the angle. Prevents big loops around long, sharp-angled triangles.
-					controlDist *= ((1 - angleFactor) + angleFactor * controlScaleFactor);	// Mess with this for some fine-tuning
-					float controlAngle = theta + Angle2D.PIHALF;	// The angle from the current point to control points: the new vector angle plus 90 degrees (tangent to the curve).
+					double controlDist = Math.Min(a, b) * z;    // Distance of curve control points from current point: a fraction the length of the shorter adjacent triangle side
+					double controlScaleFactor = C / Angle2D.PI;	// Scale the distance based on the acuteness of the angle. Prevents big loops around long, sharp-angled triangles.
+					controlDist *= ((1 - angleFactor) + angleFactor * controlScaleFactor);  // Mess with this for some fine-tuning
+					double controlAngle = theta + Angle2D.PIHALF;	// The angle from the current point to control points: the new vector angle plus 90 degrees (tangent to the curve).
 
 					Vector2D controlPoint2 = new Vector2D(controlDist, 0);
 					Vector2D controlPoint1 = new Vector2D(controlDist, 0);
@@ -144,7 +144,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				// If this isn't a closed line, draw a regular quadratic Bézier curve from the first to second points, using the first control point of the second point
 				if(firstPt == 1) 
 				{
-					float length = (points[1] - points[0]).GetLength();
+					double length = (points[1] - points[0]).GetLength();
 					int numSteps = Math.Max(1, (int)Math.Round(length / targetSegmentLength));
 					CurveSegment segment = new CurveSegment();
 					segment.Start = points[0];
@@ -158,7 +158,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				// Loop through points to draw cubic Bézier curves through the penultimate point, or through the last point if the line is closed.
 				for(int i = firstPt; i < lastPt - 1; i++) 
 				{
-					float length = (points[i + 1] - points[i]).GetLength();
+					double length = (points[i + 1] - points[i]).GetLength();
 					int numSteps = Math.Max(1, (int)Math.Round(length / targetSegmentLength));
 
 					CurveSegment segment = new CurveSegment();
@@ -174,7 +174,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				// If this isn't a closed line, curve to the last point using the second control point of the penultimate point.
 				if(lastPt == points.Count - 1) 
 				{
-					float length = (points[lastPt] - points[lastPt - 1]).GetLength();
+					double length = (points[lastPt] - points[lastPt - 1]).GetLength();
 					int numSteps = Math.Max(1, (int)Math.Round(length / targetSegmentLength));
 
 					CurveSegment segment = new CurveSegment();
@@ -217,8 +217,8 @@ namespace CodeImp.DoomBuilder.Geometry
 
 			int totalSteps = steps + 1;
 			Vector2D[] points = new Vector2D[totalSteps];
-			float step = 1f / steps;
-			float curStep = 0f;
+			double step = 1f / steps;
+			double curStep = 0f;
 
 			for(int i = 0; i < totalSteps; i++) 
 			{
@@ -242,8 +242,8 @@ namespace CodeImp.DoomBuilder.Geometry
 
 			int totalSteps = steps + 1;
 			Vector2D[] points = new Vector2D[totalSteps];
-			float step = 1f / steps;
-			float curStep = 0f;
+			double step = 1f / steps;
+			double curStep = 0f;
 
 			for(int i = 0; i < totalSteps; i++) 
 			{
@@ -253,7 +253,7 @@ namespace CodeImp.DoomBuilder.Geometry
 			return points;
 		}
 
-		public static Vector2D GetPointOnCurve(CurveSegment segment, float delta) 
+		public static Vector2D GetPointOnCurve(CurveSegment segment, double delta) 
 		{
 			if(segment.CurveType == CurveSegmentType.QUADRATIC)
 				return GetPointOnQuadraticCurve(segment.Start, segment.CPMid, segment.End, delta);
@@ -267,37 +267,37 @@ namespace CodeImp.DoomBuilder.Geometry
 			throw new Exception("GetPointOnCurve: got unknown curve type: " + segment.CurveType);
 		}
 
-		public static Vector2D GetPointOnQuadraticCurve(Vector2D p1, Vector2D p2, Vector2D p3, float delta) 
+		public static Vector2D GetPointOnQuadraticCurve(Vector2D p1, Vector2D p2, Vector2D p3, double delta) 
 		{
-			float invDelta = 1f - delta;
+			double invDelta = 1f - delta;
 
-			float m1 = invDelta * invDelta;
-			float m2 = 2 * invDelta * delta;
-			float m3 = delta * delta;
+			double m1 = invDelta * invDelta;
+			double m2 = 2 * invDelta * delta;
+			double m3 = delta * delta;
 
-			float px = (m1 * p1.x + m2 * p2.x + m3 * p3.x);
-			float py = (m1 * p1.y + m2 * p2.y + m3 * p3.y);
+			double px = (m1 * p1.x + m2 * p2.x + m3 * p3.x);
+			double py = (m1 * p1.y + m2 * p2.y + m3 * p3.y);
 
 			return new Vector2D(px, py);
 		}
 
-		public static Vector2D GetPointOnCubicCurve(Vector2D p1, Vector2D p2, Vector2D cp1, Vector2D cp2, float delta) 
+		public static Vector2D GetPointOnCubicCurve(Vector2D p1, Vector2D p2, Vector2D cp1, Vector2D cp2, double delta) 
 		{
-			float invDelta = 1f - delta;
+			double invDelta = 1f - delta;
 
-			float m1 = invDelta * invDelta * invDelta;
-			float m2 = 3 * delta * invDelta * invDelta;
-			float m3 = 3 * delta * delta * invDelta;
-			float m4 = delta * delta * delta;
+			double m1 = invDelta * invDelta * invDelta;
+			double m2 = 3 * delta * invDelta * invDelta;
+			double m3 = 3 * delta * delta * invDelta;
+			double m4 = delta * delta * delta;
 
-			float px = (m1 * p1.x + m2 * cp1.x + m3 * cp2.x + m4 * p2.x);
-			float py = (m1 * p1.y + m2 * cp1.y + m3 * cp2.y + m4 * p2.y);
+			double px = (m1 * p1.x + m2 * cp1.x + m3 * cp2.x + m4 * p2.x);
+			double py = (m1 * p1.y + m2 * cp1.y + m3 * cp2.y + m4 * p2.y);
 
 			return new Vector2D(px, py);
 		}
 
 		//it's basically 2-point bezier curve
-		public static Vector2D GetPointOnLine(Vector2D p1, Vector2D p2, float delta) 
+		public static Vector2D GetPointOnLine(Vector2D p1, Vector2D p2, double delta) 
 		{
 			return new Vector2D((int)((1f - delta) * p1.x + delta * p2.x), (int)((1f - delta) * p1.y + delta * p2.y));
 		}

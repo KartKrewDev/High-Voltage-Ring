@@ -13,7 +13,7 @@ namespace CodeImp.DoomBuilder.Geometry
 			EASE_OUT_SINE,
 		}
 
-		public static float Interpolate(float val1, float val2, float delta, Mode mode)
+		public static double Interpolate(double val1, double val2, double delta, Mode mode)
 		{
 			switch(mode)
 			{
@@ -30,37 +30,43 @@ namespace CodeImp.DoomBuilder.Geometry
 		{
 			return delta * val2 + (1.0f - delta) * val1;
 		}
-		
+
+		//Based on Robert Penner's original easing equations (http://www.robertpenner.com/easing/)
+		public static double Linear(double val1, double val2, double delta)
+		{
+			return delta * val2 + (1.0f - delta) * val1;
+		}
+
 		/**
 		 * Easing equation function for a sinusoidal (sin(t)) easing in: accelerating from zero velocity.
 		 */
-		public static float EaseInSine(float val1, float val2, float delta) 
+		public static double EaseInSine(double val1, double val2, double delta) 
 		{
-			float f_val1 = val1;
-			float f_val2 = val2 - f_val1;
-			return -f_val2 * (float)Math.Cos(delta * Angle2D.PIHALF) + f_val2 + f_val1;
+			double f_val1 = val1;
+			double f_val2 = val2 - f_val1;
+			return -f_val2 * Math.Cos(delta * Angle2D.PIHALF) + f_val2 + f_val1;
 		}
 
 		/**
 		 * Easing equation function for a sinusoidal (sin(t)) easing out: decelerating from zero velocity.
 		 */
-		public static float EaseOutSine(float val1, float val2, float delta) 
+		public static double EaseOutSine(double val1, double val2, double delta) 
 		{
-			return (val2 - val1) * (float)Math.Sin(delta * Angle2D.PIHALF) + val1;
+			return (val2 - val1) * Math.Sin(delta * Angle2D.PIHALF) + val1;
 		}
 
 		/**
 		 * Easing equation function for a sinusoidal (sin(t)) easing in/out: acceleration until halfway, then deceleration.
 		 */
-		public static float EaseInOutSine(float val1, float val2, float delta)
+		public static double EaseInOutSine(double val1, double val2, double delta)
 		{
-			return -(val2 - val1) / 2 * (float)(Math.Cos(Angle2D.PI * delta) - 1) + val1;
+			return -(val2 - val1) / 2 * (Math.Cos(Angle2D.PI * delta) - 1) + val1;
 		}
 
 		//mxd
-		public static PixelColor InterpolateColor(PixelColor c1, PixelColor c2, float delta)
+		public static PixelColor InterpolateColor(PixelColor c1, PixelColor c2, double delta)
 		{
-			float invdelta = 1.0f - delta;
+			double invdelta = 1.0f - delta;
 			byte a = (byte)(c1.a * invdelta + c2.a * delta);
 			byte r = (byte)(c1.r * invdelta + c2.r * delta);
 			byte g = (byte)(c1.g * invdelta + c2.g * delta);
@@ -69,7 +75,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		//mxd
-		public static PixelColor InterpolateColor(PixelColor c1, PixelColor c2, float delta, Mode mode)
+		public static PixelColor InterpolateColor(PixelColor c1, PixelColor c2, double delta, Mode mode)
 		{
 			byte a = (byte)Math.Round(Interpolate(c1.a, c2.a, delta, mode));
 			byte r = (byte)Math.Round(Interpolate(c1.r, c2.r, delta, mode));

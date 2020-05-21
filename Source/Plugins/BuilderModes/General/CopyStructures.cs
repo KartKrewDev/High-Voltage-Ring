@@ -173,8 +173,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private static VertexPropertiesCopySettings defaultsettings = new VertexPropertiesCopySettings();
 		public static VertexPropertiesCopySettings CopySettings = new VertexPropertiesCopySettings();
 		
-		private readonly float zceiling; //mxd
-		private readonly float zfloor; //mxd
+		private readonly double zceiling; //mxd
+		private readonly double zfloor; //mxd
 
 		public VertexProperties(Vertex v) : base(v.Fields, MapElementType.VERTEX)
 		{
@@ -342,8 +342,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private readonly string ceilingtexture;
 		private readonly int effect;
 		private readonly int brightness;
-		private readonly float ceilslopeoffset;
-		private readonly float floorslopeoffset;
+		private readonly double ceilslopeoffset;
+		private readonly double floorslopeoffset;
 		private readonly Vector3D ceilslope;
 		private readonly Vector3D floorslope;
 		private readonly List<int> tags;
@@ -743,12 +743,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public static readonly ThingPropertiesCopySettings CopySettings = new ThingPropertiesCopySettings();
 		
 		private readonly int type;
-		private readonly float angle;
-		private readonly float zheight; //mxd
+		private readonly double angle;
+		private readonly double zheight; //mxd
 		private readonly int pitch; //mxd
 		private readonly int roll; //mxd
-		private readonly float scalex; //mxd
-		private readonly float scaley; //mxd
+		private readonly double scalex; //mxd
+		private readonly double scaley; //mxd
 		private readonly Dictionary<string, bool> flags;
 		private readonly int tag;
 		private readonly int action;

@@ -56,7 +56,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		protected struct SectorInfo
 		{
-			public float rotation;
+			public double rotation;
 			public Vector2D scale;
 			public Vector2D offset;
 		}
@@ -87,7 +87,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// NOTE: This offset is in world space. ZDoom's offset is done before
 		// rotation (not my idea) so we will transform this when applying
 		// changes to sectors.
-		private float rotation;
+		private double rotation;
 		private Vector2D scale = new Vector2D(1.0f, 1.0f);
 		private Vector2D offset;
 
@@ -107,7 +107,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private Vector2D resizevector;
 		private Vector2D resizefilter;
 		private Line2D resizeaxis;
-		private float rotationoffset;
+		private double rotationoffset;
 		private Vector2D rotationcenter;
 
 		//mxd. View mode
@@ -220,7 +220,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(mode == ModifyMode.None)
 			{
 				Vector2D prevdragoffset = alignoffset;
-				alignoffset = new Vector2D(float.MinValue, float.MinValue);
+				alignoffset = new Vector2D(double.MinValue, double.MinValue);
 				showalignoffset = false;
 				
 				// Check what grip the mouse is over
@@ -230,11 +230,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					case Grip.Main:
 						int closestcorner = -1;
-						float cornerdist = float.MaxValue;
+						double cornerdist = double.MaxValue;
 						for(int i = 0; i < 4; i++)
 						{
 							Vector2D delta = corners[i] - mousemappos;
-							float d = delta.GetLengthSq();
+							double d = delta.GetLengthSq();
 							if(d < cornerdist)
 							{
 								closestcorner = i;
@@ -265,7 +265,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						alignoffset = new Vector2D(0f, 0f);
 						showalignoffset = true;
 						// Pick the best matching cursor depending on rotation and side
-						float resizeangle = -(rotation + sectorinfo[0].rotation);
+						double resizeangle = -(rotation + sectorinfo[0].rotation);
 						if(mousegrip == Grip.SizeH) resizeangle += Angle2D.PIHALF;
 						resizeangle = Angle2D.Normalized(resizeangle);
 						if(resizeangle > Angle2D.PI) resizeangle -= Angle2D.PI;
@@ -328,7 +328,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 										List<Vector2D> coords = nl.GetGridIntersections();
 
 										// Find nearest grid intersection
-										float found_distance = float.MaxValue;
+										double found_distance = double.MaxValue;
 										Vector2D found_pos = new Vector2D(float.NaN, float.NaN);
 										foreach(Vector2D v in coords)
 										{
@@ -345,7 +345,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 										}
 
 										// Found something?
-										if(!float.IsNaN(found_pos.x))
+										if(!double.IsNaN(found_pos.x))
 										{
 											// Change offset to snap to target
 											offset -= found_pos - transformedpos;
@@ -392,11 +392,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							snappedmappos = General.Map.Grid.SnappedToGrid(snappedmappos);
 						}
 
-						float newscale = 1f / resizeaxis.GetNearestOnLine(snappedmappos);
-						if(float.IsInfinity(newscale) || float.IsNaN(newscale)) newscale = 99999f;
+						double newscale = 1f / resizeaxis.GetNearestOnLine(snappedmappos);
+						if(double.IsInfinity(newscale) || double.IsNaN(newscale)) newscale = 99999f;
 						scale = (newscale * resizefilter) + scale * (1.0f - resizefilter);
-						if(float.IsInfinity(scale.x) || float.IsNaN(scale.x)) scale.x = 99999f;
-						if(float.IsInfinity(scale.y) || float.IsNaN(scale.y)) scale.y = 99999f;
+						if(double.IsInfinity(scale.x) || double.IsNaN(scale.x)) scale.x = 99999f;
+						if(double.IsInfinity(scale.y) || double.IsNaN(scale.y)) scale.y = 99999f;
 
 						// Show the extension line so that the user knows what it is aligning to
 						UpdateRectangleComponents();
@@ -405,7 +405,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							edgeline = new Line2D(corners[1], corners[2]);
 						else
 							edgeline = new Line2D(corners[3], corners[2]);
-						float nearestonedge = edgeline.GetNearestOnLine(snappedmappos);
+						double nearestonedge = edgeline.GetNearestOnLine(snappedmappos);
 						if(nearestonedge > 0.5f)
 							extensionline = new Line2D(edgeline.v1, snappedmappos);
 						else
@@ -434,24 +434,24 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 
 						Vector2D delta = snappedmappos - rotationcenter;
-						float deltaangle = -delta.GetAngle();
+						double deltaangle = -delta.GetAngle();
 						
 						// Snap to grid?
 						if(dosnaptogrid)
 						{
 							// We make 24 vectors that the rotation can snap to
-							float founddistance = float.MaxValue;
-							float foundrotation = rotation;
+							double founddistance = double.MaxValue;
+							double foundrotation = rotation;
 							Vector3D rotvec = Vector2D.FromAngle(deltaangle + rotationoffset);
 
 							for(int i = 0; i < 24; i++)
 							{
 								// Make the vectors
-								float angle = i * Angle2D.PI * 0.08333333333f; //mxd. 15-degree increments
+								double angle = i * Angle2D.PI * 0.08333333333f; //mxd. 15-degree increments
 								Vector2D gridvec = Vector2D.FromAngle(angle);
 
 								// Check distance
-								float dist = 2.0f - Vector2D.DotProduct(gridvec, rotvec);
+								double dist = 2.0f - Vector2D.DotProduct(gridvec, rotvec);
 								if(dist < founddistance)
 								{
 									foundrotation = angle;
@@ -494,18 +494,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				cornerverts[i].z = 1.0f;
 				cornerverts[i].c = rectcolor.ToInt();
 			}
-			cornerverts[0].x = corners[0].x;
-			cornerverts[0].y = corners[0].y;
-			cornerverts[1].x = corners[1].x;
-			cornerverts[1].y = corners[1].y;
-			cornerverts[2].x = corners[2].x;
-			cornerverts[2].y = corners[2].y;
-			cornerverts[3].x = corners[0].x;
-			cornerverts[3].y = corners[0].y;
-			cornerverts[4].x = corners[2].x;
-			cornerverts[4].y = corners[2].y;
-			cornerverts[5].x = corners[3].x;
-			cornerverts[5].y = corners[3].y;
+			cornerverts[0].x = (float)corners[0].x;
+			cornerverts[0].y = (float)corners[0].y;
+			cornerverts[1].x = (float)corners[1].x;
+			cornerverts[1].y = (float)corners[1].y;
+			cornerverts[2].x = (float)corners[2].x;
+			cornerverts[2].y = (float)corners[2].y;
+			cornerverts[3].x = (float)corners[0].x;
+			cornerverts[3].y = (float)corners[0].y;
+			cornerverts[4].x = (float)corners[2].x;
+			cornerverts[4].y = (float)corners[2].y;
+			cornerverts[5].x = (float)corners[3].x;
+			cornerverts[5].y = (float)corners[3].y;
 
 			// Extended points for rotation corners
 			extends[0] = TexToWorld(new Vector2D(texture.ScaledWidth + (20f * Math.Sign(scale.x * sectorinfo[0].scale.x)) / renderer.Scale * (scale.x * sectorinfo[0].scale.x), 0f));
@@ -516,26 +516,26 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Vector2D middle23 = corners[2] + (corners[3] - corners[2]) * 0.5f;
 			
 			// Resize grips
-			resizegrips[0] = new RectangleF(middle12.x - gripsize * 0.5f,
-											middle12.y - gripsize * 0.5f,
+			resizegrips[0] = new RectangleF((float)(middle12.x - gripsize * 0.5f),
+											(float)(middle12.y - gripsize * 0.5f),
 											gripsize, gripsize);
-			resizegrips[1] = new RectangleF(middle23.x - gripsize * 0.5f,
-											middle23.y - gripsize * 0.5f,
+			resizegrips[1] = new RectangleF((float)(middle23.x - gripsize * 0.5f),
+											(float)(middle23.y - gripsize * 0.5f),
 											gripsize, gripsize);
 
 			// Rotate grips
-			rotategrips[0] = new RectangleF(extends[0].x - gripsize * 0.5f,
-											extends[0].y - gripsize * 0.5f,
+			rotategrips[0] = new RectangleF((float)(extends[0].x - gripsize * 0.5f),
+											(float)(extends[0].y - gripsize * 0.5f),
 											gripsize, gripsize);
-			rotategrips[1] = new RectangleF(extends[1].x - gripsize * 0.5f,
-											extends[1].y - gripsize * 0.5f,
+			rotategrips[1] = new RectangleF((float)(extends[1].x - gripsize * 0.5f),
+											(float)(extends[1].y - gripsize * 0.5f),
 											gripsize, gripsize);
 
 			if(showalignoffset)
 			{
 				Vector2D worldalignoffset = TexToWorld(alignoffset);
-				alignrect = new RectangleF(worldalignoffset.x - gripsize * 0.5f,
-										   worldalignoffset.y - gripsize * 0.5f,
+				alignrect = new RectangleF((float)(worldalignoffset.x - gripsize * 0.5f),
+										   (float)(worldalignoffset.y - gripsize * 0.5f),
 										   gripsize, gripsize);
 			}
 		}
@@ -580,7 +580,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					Sector selectsector = null;
 					
 					// Check on which side of the linedef the mouse is and which sector there is
-					float side = l.SideOfLine(mousemappos);
+					double side = l.SideOfLine(mousemappos);
 					if((side > 0) && (l.Back != null))
 						selectsector = l.Back.Sector;
 					else if((side <= 0) && (l.Front != null))

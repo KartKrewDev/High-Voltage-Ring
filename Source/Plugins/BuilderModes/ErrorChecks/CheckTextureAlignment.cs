@@ -149,14 +149,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		#region ================== Methods
 
-		private void CheckAlignment(Sidedef sidedef, int offsetx, int offsety, float linescalex, float linescaley, VisualGeometryType parttype, string texturename) 
+		private void CheckAlignment(Sidedef sidedef, int offsetx, int offsety, double linescalex, double linescaley, VisualGeometryType parttype, string texturename) 
 		{
 			ImageData texture = General.Map.Data.GetTextureImage(texturename);
 			if(!texture.IsImageLoaded) return;
 			Rectangle partsize = BuilderModesTools.GetSidedefPartSize(sidedef, parttype);
 
-			float scalex = ((General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.x : 1.0f);
-			float scaley = ((General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.y : 1.0f);
+			double scalex = ((General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.x : 1.0f);
+			double scaley = ((General.Map.Config.ScaledTextureOffsets && !texture.WorldPanning) ? texture.Scale.y : 1.0f);
 
 			// Move offsets to proper range
 			offsetx %= texture.Width;
@@ -300,7 +300,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			donesides[type2][s2.Index][type1].Add(s1.Index, false);
 		}
 
-		private static int GetExpectedOffsetY(Sidedef source, Sidedef target, string texturename, int textureheight, float texturescaley, float linescaley, Rectangle partsize, out VisualGeometryType matchingparttype) 
+		private static int GetExpectedOffsetY(Sidedef source, Sidedef target, string texturename, int textureheight, double texturescaley, double linescaley, Rectangle partsize, out VisualGeometryType matchingparttype) 
 		{
 			if(target.MiddleTexture == texturename
 					&& partsize.IntersectsWith(BuilderModesTools.GetSidedefPartSize(target, VisualGeometryType.WALL_MIDDLE)))

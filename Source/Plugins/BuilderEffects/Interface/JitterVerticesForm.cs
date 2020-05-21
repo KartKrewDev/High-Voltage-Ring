@@ -130,7 +130,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 
 				//get nearest linedef
 				Linedef closestLine = null;
-				float distance = float.MaxValue;
+				double distance = double.MaxValue;
 
 				// Go for all linedefs in selection
 				foreach(Linedef l in General.Map.Map.Linedefs) 
@@ -138,7 +138,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 					if(v.Linedefs.Contains(l)) continue;
 
 					// Calculate distance and check if closer than previous find
-					float d = l.SafeDistanceToSq(v.Position, true);
+					double d = l.SafeDistanceToSq(v.Position, true);
 					if(d < distance) 
 					{
 						// This one is closer
@@ -149,7 +149,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 
 				if(closestLine == null) continue;
 
-				float closestLineDistance = Vector2D.Distance(v.Position, closestLine.NearestOnLine(v.Position));
+				double closestLineDistance = Vector2D.Distance(v.Position, closestLine.NearestOnLine(v.Position));
 
 				//check SafeDistance of closest line
 				if(data.ContainsKey(closestLine.Start) 

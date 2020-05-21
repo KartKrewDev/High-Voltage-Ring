@@ -43,12 +43,12 @@ namespace CodeImp.DoomBuilder.Controls
 			//mxd. Height offsets
 			if(General.Map.UDMF)
 			{
-				bool haveoffset = !float.IsNaN(v.ZCeiling);
+				bool haveoffset = !double.IsNaN(v.ZCeiling);
 				zceiling.Text = (haveoffset ? v.ZCeiling.ToString(CultureInfo.InvariantCulture) : "--");
 				zceiling.Enabled = haveoffset;
 				labelzceiling.Enabled = haveoffset;
 
-				haveoffset = !float.IsNaN(v.ZFloor);
+				haveoffset = !double.IsNaN(v.ZFloor);
 				zfloor.Text = (haveoffset ? v.ZFloor.ToString(CultureInfo.InvariantCulture) : "--");
 				zfloor.Enabled = haveoffset;
 				labelzfloor.Enabled = haveoffset;

@@ -71,8 +71,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			public readonly int InitialAngle;
 			public int CurrentAngle;
-			public readonly float InitialHeight;
-			public float CurrentHeight;
+			public readonly double InitialHeight;
+			public double CurrentHeight;
 			public PointF Position = PointF.Empty;
 			public bool Active;
 
@@ -92,9 +92,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private readonly ICollection<Thing> unselectedthings;
 		
 		// Keep track of view changes
-		private float lastoffsetx;
-		private float lastoffsety;
-		private float lastscale;
+		private double lastoffsetx;
+		private double lastoffsety;
+		private double lastscale;
 		
 		// Options
 		private bool snaptogrid;		// SHIFT to toggle
@@ -181,7 +181,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//mxd. If snap to cardinal directions is enabled, modify the offset
 			if(snapcardinal)
 			{
-				float angle = Angle2D.DegToRad((General.ClampAngle((int)Angle2D.RadToDeg(offset.GetAngle()) + 44)) / 90 * 90);
+				double angle = Angle2D.DegToRad((General.ClampAngle((int)Angle2D.RadToDeg(offset.GetAngle()) + 44)) / 90 * 90);
 				offset = new Vector2D(0, -offset.GetLength()).GetRotated(angle);
 				snapgridincrement = true; // We don't want to move Things away from the cardinal directions
 			}
@@ -442,7 +442,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					if(Tools.TryAlignThingToLine(dragitem, l)) 
 					{
-						aligndata.Position = new PointF(dragitem.Position.x, dragitem.Position.y);
+						aligndata.Position = new PointF((float)dragitem.Position.x, (float)dragitem.Position.y);
 						aligndata.Active = true;
 					} 
 					else if(dragitem.AngleDoom != aligndata.InitialAngle) //restore initial angle?

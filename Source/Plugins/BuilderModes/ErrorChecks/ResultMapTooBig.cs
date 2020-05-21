@@ -43,7 +43,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.ErrorChecks
 		public override RectangleF GetZoomArea()
 		{
 			const float scaler = 0.5f;
-			return new RectangleF(min.x * scaler, min.y * scaler, (max.x - min.x) * scaler, (max.y - min.y) * scaler);
+			return new RectangleF((float)min.x * scaler, (float)min.y * scaler, (float)(max.x - min.x) * scaler, (float)(max.y - min.y) * scaler);
 		}
 
 		// This sets if this result is displayed in ErrorCheckForm (mxd)

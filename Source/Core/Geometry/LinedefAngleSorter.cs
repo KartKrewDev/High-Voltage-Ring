@@ -46,21 +46,21 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		// This calculates the relative angle between two lines
-		private float CalculateRelativeAngle(Linedef a, Linedef b)
+		private double CalculateRelativeAngle(Linedef a, Linedef b)
 		{
 			// Determine angles
-			float ana = a.Angle; if(a.End == basevertex) ana += Angle2D.PI;
-			float anb = b.Angle; if(b.End == basevertex) anb += Angle2D.PI;
-			
+			double ana = a.Angle; if(a.End == basevertex) ana += Angle2D.PI;
+			double anb = b.Angle; if(b.End == basevertex) anb += Angle2D.PI;
+
 			// Take the difference from angles
-			float n = Angle2D.Difference(ana, anb);
+			double n = Angle2D.Difference(ana, anb);
 			
 			// Get line end vertices a and b that are not connected to basevertex
 			Vector2D va = (a.Start == basevertex ? a.End.Position : a.Start.Position);
 			Vector2D vb = (b.Start == basevertex ? b.End.Position : b.Start.Position);
-			
+
 			// Check to which side the angle goes and adjust angle as needed
-			float s = Line2D.GetSideOfLine(va, vb, basevertex.Position);
+			double s = Line2D.GetSideOfLine(va, vb, basevertex.Position);
 			if(((s < 0) && front) || ((s > 0) && !front)) n = Angle2D.PI2 - n;
 			
 			// Return result
@@ -71,8 +71,8 @@ namespace CodeImp.DoomBuilder.Geometry
 		public int Compare(Linedef x, Linedef y)
 		{
 			// Calculate angles
-			float ax = CalculateRelativeAngle(baseline, x);
-			float ay = CalculateRelativeAngle(baseline, y);
+			double ax = CalculateRelativeAngle(baseline, x);
+			double ay = CalculateRelativeAngle(baseline, y);
 			
 			// Compare results
 			/*

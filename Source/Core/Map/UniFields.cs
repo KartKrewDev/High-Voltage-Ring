@@ -100,8 +100,8 @@ namespace CodeImp.DoomBuilder.Map
 		#region ================== mxd. Static methods
 
 		// float
-		public static void SetFloat(UniFields fields, string key, float value) { SetFloat(fields, key, value, 0f); }
-		public static void SetFloat(UniFields fields, string key, float value, float defaultvalue)
+		public static void SetFloat(UniFields fields, string key, double value) { SetFloat(fields, key, value, 0f); }
+		public static void SetFloat(UniFields fields, string key, double value, double defaultvalue)
 		{
 			if(fields == null) return;
 			if(value != defaultvalue)
@@ -116,8 +116,8 @@ namespace CodeImp.DoomBuilder.Map
 			}
 		}
 
-		public static float GetFloat(UniFields fields, string key) { return GetFloat(fields, key, 0f); }
-		public static float GetFloat(UniFields fields, string key, float defaultvalue)
+		public static double GetFloat(UniFields fields, string key) { return GetFloat(fields, key, 0f); }
+		public static double GetFloat(UniFields fields, string key, double defaultvalue)
 		{
 			if(fields == null) return defaultvalue;
 			return fields.GetValue(key, defaultvalue);

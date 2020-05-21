@@ -506,9 +506,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                     nsum.z += polys[j].Normal.z;
                     total++;
                 }
-                vertices[i].nx = -nsum.x / total;
-                vertices[i].ny = -nsum.y / total;
-                vertices[i].nz = -nsum.z / total;
+                vertices[i].nx = (float)-nsum.x / total;
+                vertices[i].ny = (float)-nsum.y / total;
+                vertices[i].nz = (float)-nsum.z / total;
             }
 
             List<int> exGroups = new List<int>();
@@ -544,9 +544,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                         vx.v = polys[i].T[j];
                         if ( (polys[i].Type&0x20) != 0 )
                         {
-                            vx.nx = polys[i].Normal.x;
-                            vx.ny = polys[i].Normal.y;
-                            vx.nz = polys[i].Normal.z;
+                            vx.nx = (float)polys[i].Normal.x;
+                            vx.ny = (float)polys[i].Normal.y;
+                            vx.nz = (float)polys[i].Normal.z;
                         }
                         out_polys.Add(out_verts.Count);
                         out_verts.Add(vx);
@@ -578,9 +578,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
                             vx.v = polys[i].T[j];
                             if ( (polys[i].Type&0x20) != 0 )
                             {
-                                vx.nx = polys[i].Normal.x;
-                                vx.ny = polys[i].Normal.y;
-                                vx.nz = polys[i].Normal.z;
+                                vx.nx = (float)polys[i].Normal.x;
+                                vx.ny = (float)polys[i].Normal.y;
+                                vx.nz = (float)polys[i].Normal.z;
                             }
                             out_polys.Add(out_verts.Count);
                             out_verts.Add(vx);
@@ -1159,9 +1159,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 			WorldVertex wv1 = new WorldVertex
 			{
-				x = v1.x - pivot.x,
-				y = -v1.y + pivot.y,
-				z = -v1.z + pivot.z,
+				x = (float)(v1.x - pivot.x),
+				y = (float)(-v1.y + pivot.y),
+				z = (float)(-v1.z + pivot.z),
 				c = -1,
 				u = pu0,
 				v = pv0
@@ -1170,9 +1170,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 			WorldVertex wv2 = new WorldVertex
 			{
-				x = v2.x - pivot.x,
-				y = -v2.y + pivot.y,
-				z = -v2.z + pivot.z,
+				x = (float)(v2.x - pivot.x),
+				y = (float)(-v2.y + pivot.y),
+				z = (float)(-v2.z + pivot.z),
 				c = -1,
 				u = pu1,
 				v = pv1
@@ -1181,9 +1181,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 			WorldVertex wv4 = new WorldVertex
 			{
-				x = v4.x - pivot.x,
-				y = -v4.y + pivot.y,
-				z = -v4.z + pivot.z,
+				x = (float)(v4.x - pivot.x),
+				y = (float)(-v4.y + pivot.y),
+				z = (float)(-v4.z + pivot.z),
 				c = -1,
 				u = pu0,
 				v = pv0
@@ -1192,9 +1192,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 			WorldVertex wv3 = new WorldVertex
 			{
-				x = v3.x - pivot.x,
-				y = -v3.y + pivot.y,
-				z = -v3.z + pivot.z,
+				x = (float)(v3.x - pivot.x),
+				y = (float)(-v3.y + pivot.y),
+				z = (float)(-v3.z + pivot.z),
 				c = -1,
 				u = pu1,
 				v = pv1
@@ -1381,15 +1381,15 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 									if(vt[seq[i]] != -1)
 									{
-										wc.u = texcoords[vt[seq[i]]].x;
-										wc.v = texcoords[vt[seq[i]]].y;
+										wc.u = (float)texcoords[vt[seq[i]]].x;
+										wc.v = (float)texcoords[vt[seq[i]]].y;
 									}
 
 									if (vn[seq[i]] != -1)
 									{
-										wc.nx = normals[vn[seq[i]]].x;
-										wc.ny = normals[vn[seq[i]]].y;
-										wc.nz = normals[vn[seq[i]]].z;
+										wc.nx = (float)normals[vn[seq[i]]].x;
+										wc.ny = (float)normals[vn[seq[i]]].y;
+										wc.nz = (float)normals[vn[seq[i]]].z;
 									}
 
 									BoundingBoxTools.UpdateBoundingBoxSizes(ref bbs, wc);
@@ -1474,12 +1474,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 
 
 				// Prepare to fix rotation angle
-				float angleOfsetCos = (float)Math.Cos(-Angle2D.PIHALF);
-				float angleOfsetSin = (float)Math.Sin(-Angle2D.PIHALF);
-				
+				double angleOfsetCos = Math.Cos(-Angle2D.PIHALF);
+				double angleOfsetSin = Math.Sin(-Angle2D.PIHALF);
+
 				// Fix rotation angle
-				float rx = angleOfsetCos * v.x - angleOfsetSin * v.y;
-				float ry = angleOfsetSin * v.x + angleOfsetCos * v.y;
+				double rx = angleOfsetCos * v.x - angleOfsetSin * v.y;
+				double ry = angleOfsetSin * v.x + angleOfsetCos * v.y;
 				v.x = rx;
 				v.y = ry;
 			}

@@ -886,10 +886,10 @@ namespace CodeImp.DoomBuilder.Windows
 			if(snaptogrid) coords = General.Map.Grid.SnappedToGrid(coords);
 			
 			// X position
-			xposlabel.Text = (float.IsNaN(coords.x) ? "--" : coords.x.ToString("####0"));
+			xposlabel.Text = (double.IsNaN(coords.x) ? "--" : coords.x.ToString("####0"));
 
 			// Y position
-			yposlabel.Text = (float.IsNaN(coords.y) ? "--" : coords.y.ToString("####0"));
+			yposlabel.Text = (double.IsNaN(coords.y) ? "--" : coords.y.ToString("####0"));
 		}
 
 		// This changes zoom display
@@ -927,7 +927,7 @@ namespace CodeImp.DoomBuilder.Windows
 		}
 
 		// This changes grid display
-		internal void UpdateGrid(float gridsize)
+		internal void UpdateGrid(double gridsize)
 		{
 			// Update grid label
 			gridlabel.Text = (gridsize == 0 ? "--" : gridsize + " mp");

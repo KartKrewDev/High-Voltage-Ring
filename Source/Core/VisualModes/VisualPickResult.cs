@@ -26,7 +26,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 	{
 		// Members
 		public IVisualPickable picked;
-		public float u_ray;
+		public double u_ray;
 		public Vector3D hitpos;
 	}
 }
