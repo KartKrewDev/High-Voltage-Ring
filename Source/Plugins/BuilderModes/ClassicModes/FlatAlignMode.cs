@@ -623,11 +623,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			foreach(Sector s in selection)
 			{
 				SectorInfo si;
-				si.rotation = Angle2D.DegToRad(s.Fields.GetValue(RotationName, 0.0f));
-				si.scale.x = s.Fields.GetValue(XScaleName, 1.0f);
-				si.scale.y = s.Fields.GetValue(YScaleName, 1.0f);
-				si.offset.x = s.Fields.GetValue(XOffsetName, 0.0f);
-				si.offset.y = -s.Fields.GetValue(YOffsetName, 0.0f);
+				si.rotation = Angle2D.DegToRad(s.Fields.GetValue(RotationName, 0.0));
+				si.scale.x = s.Fields.GetValue(XScaleName, 1.0);
+				si.scale.y = s.Fields.GetValue(YScaleName, 1.0);
+				si.offset.x = s.Fields.GetValue(XOffsetName, 0.0);
+				si.offset.y = -s.Fields.GetValue(YOffsetName, 0.0);
 				sectorinfo.Add(si);
 			}
 

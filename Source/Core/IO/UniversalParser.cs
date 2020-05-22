@@ -427,10 +427,10 @@ namespace CodeImp.DoomBuilder.IO
 						//mxd. Can be in scientific notation (like "1E-06")
 						else if(s.IndexOf('.') > -1 || s.ToLowerInvariant().Contains("e-"))
 						{
-							float fval = 0;
+							double fval = 0;
 							
 							// Convert to float (remove the f first)
-							try { fval = Convert.ToSingle(s.Trim(), CultureInfo.InvariantCulture); }
+							try { fval = Convert.ToDouble(s.Trim(), CultureInfo.InvariantCulture); }
 							catch(FormatException)
 							{ 
 								// ERROR: Invalid value in assignment
@@ -724,7 +724,7 @@ namespace CodeImp.DoomBuilder.IO
 						// Output the value as double (7 decimals)
 						double d = (double)cs[i].Value;
 						db.Append(leveltabs); db.Append(cs[i].Key); db.Append(spacing); db.Append("=");
-						db.Append(spacing); db.Append(d.ToString("0.0000000", CultureInfo.InvariantCulture)); db.Append(";"); db.Append(newline);
+						db.Append(spacing); db.Append(d.ToString("0.0##############", CultureInfo.InvariantCulture)); /* db.Append(d.ToString("0.0000000", CultureInfo.InvariantCulture)); */ db.Append(";"); db.Append(newline);
 					}
 					// Check if value is of other numeric type
 					else if(cs[i].Value.GetType().IsPrimitive)

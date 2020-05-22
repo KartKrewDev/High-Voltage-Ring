@@ -52,8 +52,8 @@ namespace CodeImp.DoomBuilder.Map
 			set
 			{
 				// Value may only be a primitive type
-				if((!(value is int) && !(value is float) && !(value is string) && !(value is bool)) || (value == null))
-					throw new ArgumentException("Universal field values can only be of type int, float, string or bool.");
+				if((!(value is int) && !(value is double) && !(value is string) && !(value is bool)) || (value == null))
+					throw new ArgumentException("Universal field values can only be of type int, double, string or bool.");
 				
 				this.value = value;
 			}

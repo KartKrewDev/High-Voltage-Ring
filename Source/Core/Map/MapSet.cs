@@ -3155,8 +3155,8 @@ namespace CodeImp.DoomBuilder.Map
 							if(!double.IsNaN(intersection.x))
 							{
 								//mxd. Round to map format precision
-								intersection.x = (float)Math.Round(intersection.x, General.Map.FormatInterface.VertexDecimals);
-								intersection.y = (float)Math.Round(intersection.y, General.Map.FormatInterface.VertexDecimals);
+								intersection.x = Math.Round(intersection.x, General.Map.FormatInterface.VertexDecimals);
+								intersection.y = Math.Round(intersection.y, General.Map.FormatInterface.VertexDecimals);
 
 								//mxd. Skip when intersection matches start/end position.
 								// Otherwise infinite ammount of 0-length lines will be created...

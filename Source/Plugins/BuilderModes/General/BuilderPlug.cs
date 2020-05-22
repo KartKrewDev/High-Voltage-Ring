@@ -349,11 +349,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(General.Map.UDMF) 
 				{
 					// Fetch ZDoom fields
-					Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningfloor", 0.0f),
-												   s.Fields.GetValue("ypanningfloor", 0.0f));
-					Vector2D scale = new Vector2D(s.Fields.GetValue("xscalefloor", 1.0f),
-												  s.Fields.GetValue("yscalefloor", 1.0f));
-					float rotate = s.Fields.GetValue("rotationfloor", 0.0f);
+					Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningfloor", 0.0),
+												   s.Fields.GetValue("ypanningfloor", 0.0));
+					Vector2D scale = new Vector2D(s.Fields.GetValue("xscalefloor", 1.0),
+												  s.Fields.GetValue("yscalefloor", 1.0));
+					double rotate = s.Fields.GetValue("rotationfloor", 0.0);
 					int color, light;
 					bool absolute;
 
@@ -409,11 +409,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(General.Map.UDMF) 
 				{
 					// Fetch ZDoom fields
-					Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningceiling", 0.0f),
-												   s.Fields.GetValue("ypanningceiling", 0.0f));
-					Vector2D scale = new Vector2D(s.Fields.GetValue("xscaleceiling", 1.0f),
-												  s.Fields.GetValue("yscaleceiling", 1.0f));
-					float rotate = s.Fields.GetValue("rotationceiling", 0.0f);
+					Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningceiling", 0.0),
+												   s.Fields.GetValue("ypanningceiling", 0.0));
+					Vector2D scale = new Vector2D(s.Fields.GetValue("xscaleceiling", 1.0),
+												  s.Fields.GetValue("yscaleceiling", 1.0));
+					double rotate = s.Fields.GetValue("rotationceiling", 0.0);
 					int color, light;
 					bool absolute;
 

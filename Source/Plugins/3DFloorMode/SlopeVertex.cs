@@ -42,7 +42,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				identifier = String.Format("user_svg{0}_v{1}_{2}", svgid, vertexid, str);
 
 				// Use reflection to set the variable to the value
-				type.GetField(str, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, sector.Fields.GetValue(identifier, 0.0f));
+				type.GetField(str, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, sector.Fields.GetValue(identifier, 0.0));
 			}
 		}
 

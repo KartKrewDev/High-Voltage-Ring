@@ -827,7 +827,7 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		//mxd. This updates all properties (UDMF version)
-		public void Update(int hfloor, int hceil, string tfloor, string tceil, int effect, Dictionary<string, bool> flags, List<int> tags, int brightness, float flooroffset, Vector3D floorslope, float ceiloffset, Vector3D ceilslope)
+		public void Update(int hfloor, int hceil, string tfloor, string tceil, int effect, Dictionary<string, bool> flags, List<int> tags, int brightness, double flooroffset, Vector3D floorslope, double ceiloffset, Vector3D ceilslope)
 		{
 			BeforePropsChange();
 			

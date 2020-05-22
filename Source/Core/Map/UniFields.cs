@@ -116,7 +116,7 @@ namespace CodeImp.DoomBuilder.Map
 			}
 		}
 
-		public static double GetFloat(UniFields fields, string key) { return GetFloat(fields, key, 0f); }
+		public static double GetFloat(UniFields fields, string key) { return GetFloat(fields, key, 0.0); }
 		public static double GetFloat(UniFields fields, string key, double defaultvalue)
 		{
 			if(fields == null) return defaultvalue;

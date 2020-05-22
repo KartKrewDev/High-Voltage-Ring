@@ -3669,12 +3669,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				else if(obj is VisualFloor) 
 				{
 					VisualFloor vf = (VisualFloor)obj;
-					vf.OnChangeTextureRotation(General.ClampAngle(vf.GetControlSector().Fields.GetValue("rotationfloor", 0.0f) + textureangleincrement));
+					vf.OnChangeTextureRotation(General.ClampAngle(vf.GetControlSector().Fields.GetValue("rotationfloor", 0.0) + textureangleincrement));
 				} 
 				else if(obj is VisualCeiling) 
 				{
 					VisualCeiling vc = (VisualCeiling)obj;
-					vc.OnChangeTextureRotation(General.ClampAngle(vc.GetControlSector().Fields.GetValue("rotationceiling", 0.0f) + textureangleincrement));
+					vc.OnChangeTextureRotation(General.ClampAngle(vc.GetControlSector().Fields.GetValue("rotationceiling", 0.0) + textureangleincrement));
 				}
 			}
 
@@ -4373,17 +4373,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			switch(start.GeometryType) 
 			{
 				case VisualGeometryType.WALL_UPPER:
-					first.scaleX = start.Sidedef.Fields.GetValue("scalex_top", 1.0f);
-					first.scaleY = start.Sidedef.Fields.GetValue("scaley_top", 1.0f);
+					first.scaleX = start.Sidedef.Fields.GetValue("scalex_top", 1.0);
+					first.scaleY = start.Sidedef.Fields.GetValue("scaley_top", 1.0);
 					break;
 				case VisualGeometryType.WALL_MIDDLE:
 				case VisualGeometryType.WALL_MIDDLE_3D:
-					first.scaleX = first.controlSide.Fields.GetValue("scalex_mid", 1.0f);
-					first.scaleY = first.controlSide.Fields.GetValue("scaley_mid", 1.0f);
+					first.scaleX = first.controlSide.Fields.GetValue("scalex_mid", 1.0);
+					first.scaleY = first.controlSide.Fields.GetValue("scaley_mid", 1.0);
 					break;
 				case VisualGeometryType.WALL_LOWER:
-					first.scaleX = start.Sidedef.Fields.GetValue("scalex_bottom", 1.0f);
-					first.scaleY = start.Sidedef.Fields.GetValue("scaley_bottom", 1.0f);
+					first.scaleX = start.Sidedef.Fields.GetValue("scalex_bottom", 1.0);
+					first.scaleY = start.Sidedef.Fields.GetValue("scaley_bottom", 1.0);
 					break;
 			}
 
@@ -4396,18 +4396,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			switch(start.GeometryType) 
 			{
 				case VisualGeometryType.WALL_UPPER:
-					ystartalign += Tools.GetSidedefTopOffsetY(start.Sidedef, start.Sidedef.Fields.GetValue("offsety_top", 0.0f), worldpanning ? 1.0f : first.scaleY / scaley, false);//mxd
+					ystartalign += Tools.GetSidedefTopOffsetY(start.Sidedef, start.Sidedef.Fields.GetValue("offsety_top", 0.0), worldpanning ? 1.0 : first.scaleY / scaley, false);//mxd
 					break;
 				case VisualGeometryType.WALL_MIDDLE:
-					ystartalign += Tools.GetSidedefMiddleOffsetY(start.Sidedef, start.Sidedef.Fields.GetValue("offsety_mid", 0.0f), worldpanning ? 1.0f : first.scaleY / scaley, false);//mxd
+					ystartalign += Tools.GetSidedefMiddleOffsetY(start.Sidedef, start.Sidedef.Fields.GetValue("offsety_mid", 0.0), worldpanning ? 1.0 : first.scaleY / scaley, false);//mxd
 					break;
 				case VisualGeometryType.WALL_MIDDLE_3D: //mxd. 3d-floors are not affected by Lower/Upper unpegged flags
 					ystartalign += first.controlSide.OffsetY - (start.Sidedef.Sector.CeilHeight - first.ceilingHeight);
-					ystartalign += start.Sidedef.Fields.GetValue("offsety_mid", 0.0f);
-					ystartalign += first.controlSide.Fields.GetValue("offsety_mid", 0.0f);
+					ystartalign += start.Sidedef.Fields.GetValue("offsety_mid", 0.0);
+					ystartalign += first.controlSide.Fields.GetValue("offsety_mid", 0.0);
 					break;
 				case VisualGeometryType.WALL_LOWER:
-					ystartalign += Tools.GetSidedefBottomOffsetY(start.Sidedef, start.Sidedef.Fields.GetValue("offsety_bottom", 0.0f), worldpanning ? 1.0f : first.scaleY / scaley, false);//mxd
+					ystartalign += Tools.GetSidedefBottomOffsetY(start.Sidedef, start.Sidedef.Fields.GetValue("offsety_bottom", 0.0), worldpanning ? 1.0 : first.scaleY / scaley, false);//mxd
 					break;
 			}
 
@@ -4415,18 +4415,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			switch(start.GeometryType) 
 			{
 				case VisualGeometryType.WALL_UPPER:
-					first.offsetx += start.Sidedef.Fields.GetValue("offsetx_top", 0.0f);
+					first.offsetx += start.Sidedef.Fields.GetValue("offsetx_top", 0.0);
 					break;
 				case VisualGeometryType.WALL_MIDDLE:
-					first.offsetx += start.Sidedef.Fields.GetValue("offsetx_mid", 0.0f);
+					first.offsetx += start.Sidedef.Fields.GetValue("offsetx_mid", 0.0);
 					break;
 				case VisualGeometryType.WALL_MIDDLE_3D: //mxd. Yup, 4 sets of texture offsets are used
-					first.offsetx += start.Sidedef.Fields.GetValue("offsetx_mid", 0.0f);
+					first.offsetx += start.Sidedef.Fields.GetValue("offsetx_mid", 0.0);
 					first.offsetx += first.controlSide.OffsetX;
-					first.offsetx += first.controlSide.Fields.GetValue("offsetx_mid", 0.0f);
+					first.offsetx += first.controlSide.Fields.GetValue("offsetx_mid", 0.0);
 					break;
 				case VisualGeometryType.WALL_LOWER:
-					first.offsetx += start.Sidedef.Fields.GetValue("offsetx_bottom", 0.0f);
+					first.offsetx += start.Sidedef.Fields.GetValue("offsetx_bottom", 0.0);
 					break;
 			}
 			first.forward = true;
@@ -4513,25 +4513,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongHighTexture);
 							int texwidth = (tex != null && tex.IsImageLoaded) ? tex.Width : 1;
-							j.sidedef.Fields["offsetx_top"] = new UniValue(UniversalType.Float, (float)Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
+							j.sidedef.Fields["offsetx_top"] = new UniValue(UniversalType.Float, Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
 						}
 						if(matchbottom)
 						{
 							ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongLowTexture);
 							int texwidth = (tex != null && tex.IsImageLoaded) ? tex.Width : 1;
-							j.sidedef.Fields["offsetx_bottom"] = new UniValue(UniversalType.Float, (float)Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
+							j.sidedef.Fields["offsetx_bottom"] = new UniValue(UniversalType.Float, Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
 						}
 						if(matchmid) 
 						{
 							if(j.sidedef.Index != j.controlSide.Index) //mxd. if it's a part of 3d-floor 
 							{ 
 								offset -= j.controlSide.OffsetX;
-								offset -= j.controlSide.Fields.GetValue("offsetx_mid", 0.0f);
+								offset -= j.controlSide.Fields.GetValue("offsetx_mid", 0.0);
 							}
 
 							ImageData tex = General.Map.Data.GetTextureImage(j.controlSide.LongMiddleTexture);
 							int texwidth = (tex != null && tex.IsImageLoaded) ? tex.Width : 1;
-							j.sidedef.Fields["offsetx_mid"] = new UniValue(UniversalType.Float, (float)Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
+							j.sidedef.Fields["offsetx_mid"] = new UniValue(UniversalType.Float, Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
 						}
 					}
 
@@ -4551,7 +4551,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
 
 							j.sidedef.Fields["offsety_top"] = new UniValue(UniversalType.Float,
-								(float)Math.Round(Tools.GetSidedefTopOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
+								Math.Round(Tools.GetSidedefTopOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
 
 						}
 						if (matchbottom)
@@ -4561,7 +4561,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
 
 							j.sidedef.Fields["offsety_bottom"] = new UniValue(UniversalType.Float,
-								(float)Math.Round(Tools.GetSidedefBottomOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
+								Math.Round(Tools.GetSidedefBottomOffsetY(j.sidedef, offset, scale, true) % vheight, General.Map.FormatInterface.VertexDecimals)); //mxd
 						}
 						if(matchmid) 
 						{
@@ -4569,12 +4569,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							if(j.sidedef.Index != j.controlSide.Index) 
 							{
 								offset -= j.controlSide.OffsetY;
-								offset -= j.controlSide.Fields.GetValue("offsety_mid", 0.0f);
+								offset -= j.controlSide.Fields.GetValue("offsety_mid", 0.0);
 
 								ImageData tex = General.Map.Data.GetTextureImage(j.controlSide.LongMiddleTexture);
 								int texheight = (tex != null && tex.IsImageLoaded) ? tex.Height : 1;
 								j.sidedef.Fields["offsety_mid"] = new UniValue(UniversalType.Float,
-									(float)Math.Round(offset % vheight, General.Map.FormatInterface.VertexDecimals));
+									Math.Round(offset % vheight, General.Map.FormatInterface.VertexDecimals));
 							} 
 							else
 							{
@@ -4594,7 +4594,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 									{
 										//mxd. This should be doublesided non-wrapped line. Find the nearset aligned position
 										double curoffset = UniFields.GetFloat(j.sidedef.Fields, "offsety_mid") + j.sidedef.OffsetY;
-										offset += vheight * (float)Math.Round(curoffset / vheight - 0.5f * Math.Sign(j.scaleY));
+										offset += vheight * Math.Round(curoffset / vheight - 0.5f * Math.Sign(j.scaleY));
 
 										// Make sure the surface stays between floor and ceiling
 										if(j.sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag) || Math.Sign(j.scaleY) == -1)
@@ -4650,7 +4650,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// Apply alignment
 					if(alignx) 
 					{
-						float offset;
+						double offset;
 						
 						if(!worldpanning)
 						{
@@ -4668,27 +4668,27 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongHighTexture);
 							int texwidth = (tex != null && tex.IsImageLoaded) ? tex.Width : 1;
 							j.sidedef.Fields["offsetx_top"] = new UniValue(UniversalType.Float,
-								(float)Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
+								Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
 						}
 						if(matchbottom)
 						{
 							ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongLowTexture);
 							int texwidth = (tex != null && tex.IsImageLoaded) ? tex.Width : 1;
 							j.sidedef.Fields["offsetx_bottom"] = new UniValue(UniversalType.Float,
-								(float)Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
+								Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
 						}
 						if(matchmid) 
 						{
 							if(j.sidedef.Index != j.controlSide.Index) //mxd
 							{ 
 								offset -= j.controlSide.OffsetX;
-								offset -= j.controlSide.Fields.GetValue("offsetx_mid", 0.0f);
+								offset -= j.controlSide.Fields.GetValue("offsetx_mid", 0.0);
 							}
 
 							ImageData tex = General.Map.Data.GetTextureImage(j.controlSide.LongMiddleTexture);
 							int texwidth = (tex != null && tex.IsImageLoaded) ? tex.Width : 1;
 							j.sidedef.Fields["offsetx_mid"] = new UniValue(UniversalType.Float, 
-								(float)Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
+								Math.Round(offset % vwidth, General.Map.FormatInterface.VertexDecimals));
 						}
 					}
 
@@ -4721,7 +4721,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							if(j.sidedef.Index != j.controlSide.Index) 
 							{
 								offset -= j.controlSide.OffsetY;
-								offset -= j.controlSide.Fields.GetValue("offsety_mid", 0.0f);
+								offset -= j.controlSide.Fields.GetValue("offsety_mid", 0.0);
 
 								ImageData tex = General.Map.Data.GetTextureImage(j.controlSide.LongMiddleTexture);
 								int texheight = (tex != null && tex.IsImageLoaded) ? tex.Height : 1;

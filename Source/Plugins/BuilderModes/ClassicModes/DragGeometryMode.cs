@@ -472,23 +472,23 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 								if (texture != null)
 								{
-									float scalex = s.Fields.GetValue("xscaleceiling", 1.0f);
-									float scaley = s.Fields.GetValue("yscaleceiling", 1.0f);
+									double scalex = s.Fields.GetValue("xscaleceiling", 1.0);
+									double scaley = s.Fields.GetValue("yscaleceiling", 1.0);
 
 									if (scalex != 0 && scaley != 0)
 									{
-										Vector2D ceiloffset = new Vector2D(-offset.x, offset.y).GetRotated(-Angle2D.DegToRad((int)s.Fields.GetValue("rotationceiling", 0f)));
-										ceiloffset.x += s.Fields.GetValue("xpanningceiling", 0f);
-										ceiloffset.y += s.Fields.GetValue("ypanningceiling", 0f);
+										Vector2D ceiloffset = new Vector2D(-offset.x, offset.y).GetRotated(-Angle2D.DegToRad((int)s.Fields.GetValue("rotationceiling", 0.0)));
+										ceiloffset.x += s.Fields.GetValue("xpanningceiling", 0.0);
+										ceiloffset.y += s.Fields.GetValue("ypanningceiling", 0.0);
 
 										int texturewidth = (int)Math.Round(texture.Width / scalex);
 										int textureheight = (int)Math.Round(texture.Height / scaley);
 
-										if (!s.Fields.ContainsKey("xpanningceiling")) s.Fields.Add("xpanningceiling", new UniValue(UniversalType.Float, (float)Math.Round(ceiloffset.x % texturewidth)));
-										else s.Fields["xpanningceiling"].Value = (float)Math.Round(ceiloffset.x % texturewidth);
+										if (!s.Fields.ContainsKey("xpanningceiling")) s.Fields.Add("xpanningceiling", new UniValue(UniversalType.Float, Math.Round(ceiloffset.x % texturewidth)));
+										else s.Fields["xpanningceiling"].Value = Math.Round(ceiloffset.x % texturewidth);
 
-										if (!s.Fields.ContainsKey("ypanningceiling")) s.Fields.Add("ypanningceiling", new UniValue(UniversalType.Float, (float)Math.Round(ceiloffset.y % textureheight)));
-										else s.Fields["ypanningceiling"].Value = (float)Math.Round(ceiloffset.y % textureheight);
+										if (!s.Fields.ContainsKey("ypanningceiling")) s.Fields.Add("ypanningceiling", new UniValue(UniversalType.Float, Math.Round(ceiloffset.y % textureheight)));
+										else s.Fields["ypanningceiling"].Value = Math.Round(ceiloffset.y % textureheight);
 									}
 								}
 							}
@@ -499,23 +499,23 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								ImageData texture = General.Map.Data.GetFlatImage(s.FloorTexture);
 								if (texture != null)
 								{
-									float scalex = s.Fields.GetValue("xscalefloor", 1.0f);
-									float scaley = s.Fields.GetValue("yscalefloor", 1.0f);
+									double scalex = s.Fields.GetValue("xscalefloor", 1.0);
+									double scaley = s.Fields.GetValue("yscalefloor", 1.0);
 
 									if (scalex != 0 && scaley != 0)
 									{
-										Vector2D flooroffset = new Vector2D(-offset.x, offset.y).GetRotated(-Angle2D.DegToRad((int)s.Fields.GetValue("rotationfloor", 0f)));
-										flooroffset.x += s.Fields.GetValue("xpanningfloor", 0f);
-										flooroffset.y += s.Fields.GetValue("ypanningfloor", 0f);
+										Vector2D flooroffset = new Vector2D(-offset.x, offset.y).GetRotated(-Angle2D.DegToRad((int)s.Fields.GetValue("rotationfloor", 0.0)));
+										flooroffset.x += s.Fields.GetValue("xpanningfloor", 0.0);
+										flooroffset.y += s.Fields.GetValue("ypanningfloor", 0.0);
 
 										int texturewidth = (int)Math.Round(texture.Width / scalex);
 										int textureheight = (int)Math.Round(texture.Height / scaley);
 
-										if (!s.Fields.ContainsKey("xpanningfloor")) s.Fields.Add("xpanningfloor", new UniValue(UniversalType.Float, (float)Math.Round(flooroffset.x % texturewidth)));
-										else s.Fields["xpanningfloor"].Value = (float)Math.Round(flooroffset.x % texturewidth);
+										if (!s.Fields.ContainsKey("xpanningfloor")) s.Fields.Add("xpanningfloor", new UniValue(UniversalType.Float, Math.Round(flooroffset.x % texturewidth)));
+										else s.Fields["xpanningfloor"].Value = Math.Round(flooroffset.x % texturewidth);
 
-										if (!s.Fields.ContainsKey("ypanningfloor")) s.Fields.Add("ypanningfloor", new UniValue(UniversalType.Float, (float)Math.Round(flooroffset.y % textureheight)));
-										else s.Fields["ypanningfloor"].Value = (float)Math.Round(flooroffset.y % textureheight);
+										if (!s.Fields.ContainsKey("ypanningfloor")) s.Fields.Add("ypanningfloor", new UniValue(UniversalType.Float, Math.Round(flooroffset.y % textureheight)));
+										else s.Fields["ypanningfloor"].Value = Math.Round(flooroffset.y % textureheight);
 									}
 								}
 							}

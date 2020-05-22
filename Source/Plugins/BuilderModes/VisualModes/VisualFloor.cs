@@ -78,11 +78,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			base.Setup(level, extrafloor);
 
 			// Fetch ZDoom fields
-			double rotate = Angle2D.DegToRad(s.Fields.GetValue("rotationfloor", 0.0f));
-			Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningfloor", 0.0f),
-										   s.Fields.GetValue("ypanningfloor", 0.0f));
-			Vector2D scale = new Vector2D(s.Fields.GetValue("xscalefloor", 1.0f),
-										  s.Fields.GetValue("yscalefloor", 1.0f));
+			double rotate = Angle2D.DegToRad(s.Fields.GetValue("rotationfloor", 0.0));
+			Vector2D offset = new Vector2D(s.Fields.GetValue("xpanningfloor", 0.0),
+										   s.Fields.GetValue("ypanningfloor", 0.0));
+			Vector2D scale = new Vector2D(s.Fields.GetValue("xscalefloor", 1.0),
+										  s.Fields.GetValue("yscalefloor", 1.0));
 			
 			//Load floor texture
 			if(s.LongFloorTexture != MapSet.EmptyLongName)
@@ -213,7 +213,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd
-		public override void OnChangeTextureRotation(float angle)
+		public override void OnChangeTextureRotation(double angle)
 		{
 			// Only do this when not done yet in this call
 			// Because we may be able to select the same 3D floor multiple times through multiple sectors
@@ -228,8 +228,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Return texture coordinates
 		protected override Point GetTextureOffset()
 		{
-			return new Point { X = (int)Sector.Sector.Fields.GetValue("xpanningfloor", 0.0f), 
-							   Y = (int)Sector.Sector.Fields.GetValue("ypanningfloor", 0.0f) };
+			return new Point { X = (int)Sector.Sector.Fields.GetValue("xpanningfloor", 0.0), 
+							   Y = (int)Sector.Sector.Fields.GetValue("ypanningfloor", 0.0) };
 		}
 
 		//mxd
@@ -251,8 +251,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//mxd
 			Sector s = GetControlSector();
 			s.Fields.BeforeFieldsChange();
-			float nx = (s.Fields.GetValue("xpanningfloor", 0.0f) + offsetx) % (Texture.ScaledWidth / s.Fields.GetValue("xscalefloor", 1.0f));
-			float ny = (s.Fields.GetValue("ypanningfloor", 0.0f) + offsety) % (Texture.ScaledHeight / s.Fields.GetValue("yscalefloor", 1.0f));
+			double nx = (s.Fields.GetValue("xpanningfloor", 0.0) + offsetx) % (Texture.ScaledWidth / s.Fields.GetValue("xscalefloor", 1.0));
+			double ny = (s.Fields.GetValue("ypanningfloor", 0.0) + offsety) % (Texture.ScaledHeight / s.Fields.GetValue("yscalefloor", 1.0));
 			s.Fields["xpanningfloor"] = new UniValue(UniversalType.Float, nx);
 			s.Fields["ypanningfloor"] = new UniValue(UniversalType.Float, ny);
 			s.UpdateNeeded = true;
@@ -265,25 +265,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(Texture == null || !Texture.IsImageLoaded) return;
 			Sector s = GetControlSector();
-			float scaleX = s.Fields.GetValue("xscalefloor", 1.0f);
-			float scaleY = s.Fields.GetValue("yscalefloor", 1.0f);
+			double scaleX = s.Fields.GetValue("xscalefloor", 1.0);
+			double scaleY = s.Fields.GetValue("yscalefloor", 1.0);
 
 			s.Fields.BeforeFieldsChange();
 
 			if(incrementX != 0) 
 			{
-				float pix = (int)Math.Round(Texture.Width * scaleX) - incrementX;
-				float newscaleX = (float)Math.Round(pix / Texture.Width, 3);
+				double pix = (int)Math.Round(Texture.Width * scaleX) - incrementX;
+				double newscaleX = (float)Math.Round(pix / Texture.Width, 3);
 				scaleX = (newscaleX == 0 ? scaleX * -1 : newscaleX);
-				UniFields.SetFloat(s.Fields, "xscalefloor", scaleX, 1.0f);
+				UniFields.SetFloat(s.Fields, "xscalefloor", scaleX, 1.0);
 			}
 
 			if(incrementY != 0)
 			{
-				float pix = (int)Math.Round(Texture.Height * scaleY) - incrementY;
-				float newscaleY = (float)Math.Round(pix / Texture.Height, 3);
+				double pix = (int)Math.Round(Texture.Height * scaleY) - incrementY;
+				double newscaleY = (float)Math.Round(pix / Texture.Height, 3);
 				scaleY = (newscaleY == 0 ? scaleY * -1 : newscaleY);
-				UniFields.SetFloat(s.Fields, "yscalefloor", scaleY, 1.0f);
+				UniFields.SetFloat(s.Fields, "yscalefloor", scaleY, 1.0);
 			}
 
 			mode.SetActionResult("Floor scale changed to " + scaleX.ToString("F03", CultureInfo.InvariantCulture) + ", " + scaleY.ToString("F03", CultureInfo.InvariantCulture) + " (" + (int)Math.Round(Texture.Width / scaleX) + " x " + (int)Math.Round(Texture.Height / scaleY) + ").");
@@ -452,10 +452,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
                 int imageHeight = Texture.GetAlphaTestHeight();
 
 				// Fetch ZDoom fields
-				double rotate = Angle2D.DegToRad(level.sector.Fields.GetValue("rotationfloor", 0.0f));
-                Vector2D offset = new Vector2D(level.sector.Fields.GetValue("xpanningfloor", 0.0f), level.sector.Fields.GetValue("ypanningfloor", 0.0f));
-                Vector2D scale = new Vector2D(level.sector.Fields.GetValue("xscalefloor", 1.0f), level.sector.Fields.GetValue("yscalefloor", 1.0f));
-                Vector2D texscale = new Vector2D(1.0f / Texture.ScaledWidth, 1.0f / Texture.ScaledHeight);
+				double rotate = Angle2D.DegToRad(level.sector.Fields.GetValue("rotationfloor", 0.0));
+                Vector2D offset = new Vector2D(level.sector.Fields.GetValue("xpanningfloor", 0.0), level.sector.Fields.GetValue("ypanningfloor", 0.0));
+                Vector2D scale = new Vector2D(level.sector.Fields.GetValue("xscalefloor", 1.0), level.sector.Fields.GetValue("yscalefloor", 1.0));
+                Vector2D texscale = new Vector2D(1.0 / Texture.ScaledWidth, 1.0 / Texture.ScaledHeight);
 
                 // Texture coordinates
                 Vector2D o = pickintersect;

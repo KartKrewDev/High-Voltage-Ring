@@ -69,13 +69,13 @@ namespace CodeImp.DoomBuilder.Controls
 
 			if(AllowDecimal) 
 			{
-				newValue1 = ((float)Math.Round(UniFields.GetFloat(fields, field1, defaultValue), 2)).ToString();
-				newValue2 = ((float)Math.Round(UniFields.GetFloat(fields, field2, defaultValue), 2)).ToString();
+				newValue1 = Math.Round(UniFields.GetFloat(fields, field1, defaultValue), 2).ToString();
+				newValue2 = Math.Round(UniFields.GetFloat(fields, field2, defaultValue), 2).ToString();
 			} 
 			else 
 			{
-				newValue1 = ((float)Math.Round(UniFields.GetFloat(fields, field1, defaultValue))).ToString();
-				newValue2 = ((float)Math.Round(UniFields.GetFloat(fields, field2, defaultValue))).ToString();
+				newValue1 = Math.Round(UniFields.GetFloat(fields, field1, defaultValue)).ToString();
+				newValue2 = Math.Round(UniFields.GetFloat(fields, field2, defaultValue)).ToString();
 			}
 
 			if(first) 

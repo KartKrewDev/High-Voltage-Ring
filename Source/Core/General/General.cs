@@ -1774,7 +1774,12 @@ namespace CodeImp.DoomBuilder
 		{
 			return (float)Math.Round(min + (max - min) * random.NextDouble(), 2);
 		}
-		
+
+		public static double Random(double min, double max)
+		{
+			return Math.Round(min + (max - min) * random.NextDouble(), 2);
+		}
+
 		// This returns an element from a collection by index
 		public static T GetByIndex<T>(ICollection<T> collection, int index)
 		{

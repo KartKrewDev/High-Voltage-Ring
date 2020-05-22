@@ -97,11 +97,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			bool lightabsolute;
 			GetLightValue(out lightvalue, out lightabsolute);
 
-			Vector2D tscale = new Vector2D(Sidedef.Fields.GetValue("scalex_bottom", 1.0f),
-										   Sidedef.Fields.GetValue("scaley_bottom", 1.0f));
+			Vector2D tscale = new Vector2D(Sidedef.Fields.GetValue("scalex_bottom", 1.0),
+										   Sidedef.Fields.GetValue("scaley_bottom", 1.0));
             Vector2D tscaleAbs = new Vector2D(Math.Abs(tscale.x), Math.Abs(tscale.y));
-            Vector2D toffset = new Vector2D(Sidedef.Fields.GetValue("offsetx_bottom", 0.0f),
-											Sidedef.Fields.GetValue("offsety_bottom", 0.0f));
+            Vector2D toffset = new Vector2D(Sidedef.Fields.GetValue("offsetx_bottom", 0.0),
+											Sidedef.Fields.GetValue("offsety_bottom", 0.0));
 			
 			// Texture given?
 			if(Sidedef.LongLowTexture != MapSet.EmptyLongName)
@@ -271,13 +271,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			Sidedef.Fields.BeforeFieldsChange();
 			bool worldpanning = this.Texture.WorldPanning || General.Map.Data.MapInfo.ForceWorldPanning;
-			float oldx = Sidedef.Fields.GetValue("offsetx_bottom", 0.0f);
-			float oldy = Sidedef.Fields.GetValue("offsety_bottom", 0.0f);
-			float scalex = Sidedef.Fields.GetValue("scalex_bottom", 1.0f);
-			float scaley = Sidedef.Fields.GetValue("scaley_bottom", 1.0f);
+			double oldx = Sidedef.Fields.GetValue("offsetx_bottom", 0.0);
+			double oldy = Sidedef.Fields.GetValue("offsety_bottom", 0.0);
+			double scalex = Sidedef.Fields.GetValue("scalex_bottom", 1.0);
+			double scaley = Sidedef.Fields.GetValue("scaley_bottom", 1.0);
 			bool textureloaded = (Texture != null && Texture.IsImageLoaded); //mxd
-			float width = textureloaded ? (worldpanning ? this.Texture.ScaledWidth / scalex : this.Texture.Width) : -1; // biwa
-			float height = textureloaded ? (worldpanning ? this.Texture.ScaledHeight / scaley : this.Texture.Height) : -1; // biwa
+			double width = textureloaded ? (worldpanning ? this.Texture.ScaledWidth / scalex : this.Texture.Width) : -1; // biwa
+			double height = textureloaded ? (worldpanning ? this.Texture.ScaledHeight / scaley : this.Texture.Height) : -1; // biwa
 
 			Sidedef.Fields["offsetx_bottom"] = new UniValue(UniversalType.Float, GetNewTexutreOffset(oldx, offsetx, width)); //mxd // biwa
 			Sidedef.Fields["offsety_bottom"] = new UniValue(UniversalType.Float, GetNewTexutreOffset(oldy, offsety, height)); //mxd // biwa
@@ -285,8 +285,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		protected override Point GetTextureOffset()
 		{
-			float oldx = Sidedef.Fields.GetValue("offsetx_bottom", 0.0f);
-			float oldy = Sidedef.Fields.GetValue("offsety_bottom", 0.0f);
+			double oldx = Sidedef.Fields.GetValue("offsetx_bottom", 0.0);
+			double oldy = Sidedef.Fields.GetValue("offsety_bottom", 0.0);
 			return new Point((int)oldx, (int)oldy);
 		}
 

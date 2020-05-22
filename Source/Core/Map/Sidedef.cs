@@ -605,10 +605,10 @@ namespace CodeImp.DoomBuilder.Map
 				//mxd. Also copy UDMF offsets and scale
 				if(General.Map.UDMF)
 				{
-					UniFields.SetFloat(s.Fields, "offsetx_top", Fields.GetValue("offsetx_top", 0f), 0f);
-					UniFields.SetFloat(s.Fields, "offsety_top", Fields.GetValue("offsety_top", 0f), 0f);
-					UniFields.SetFloat(s.Fields, "scalex_top",  Fields.GetValue("scalex_top", 1.0f), 1.0f);
-					UniFields.SetFloat(s.Fields, "scaley_top",  Fields.GetValue("scaley_top", 1.0f), 1.0f);
+					UniFields.SetFloat(s.Fields, "offsetx_top", Fields.GetValue("offsetx_top", 0.0), 0.0);
+					UniFields.SetFloat(s.Fields, "offsety_top", Fields.GetValue("offsety_top", 0.0), 0.0);
+					UniFields.SetFloat(s.Fields, "scalex_top",  Fields.GetValue("scalex_top", 1.0), 1.0);
+					UniFields.SetFloat(s.Fields, "scaley_top",  Fields.GetValue("scaley_top", 1.0), 1.0);
 				}
 			}
 
@@ -625,10 +625,10 @@ namespace CodeImp.DoomBuilder.Map
 				//mxd. Also copy UDMF offsets and scale
 				if(General.Map.UDMF)
 				{
-					UniFields.SetFloat(s.Fields, "offsetx_mid", Fields.GetValue("offsetx_mid", 0f), 0f);
-					UniFields.SetFloat(s.Fields, "offsety_mid", Fields.GetValue("offsety_mid", 0f), 0f);
-					UniFields.SetFloat(s.Fields, "scalex_mid",  Fields.GetValue("scalex_mid", 1.0f), 1.0f);
-					UniFields.SetFloat(s.Fields, "scaley_mid",  Fields.GetValue("scaley_mid", 1.0f), 1.0f);
+					UniFields.SetFloat(s.Fields, "offsetx_mid", Fields.GetValue("offsetx_mid", 0.0), 0.0);
+					UniFields.SetFloat(s.Fields, "offsety_mid", Fields.GetValue("offsety_mid", 0.0), 0.0);
+					UniFields.SetFloat(s.Fields, "scalex_mid",  Fields.GetValue("scalex_mid", 1.0), 1.0);
+					UniFields.SetFloat(s.Fields, "scaley_mid",  Fields.GetValue("scaley_mid", 1.0), 1.0);
 				}
 			}
 
@@ -645,10 +645,10 @@ namespace CodeImp.DoomBuilder.Map
 				//mxd. Also copy UDMF offsets and scale
 				if(General.Map.UDMF)
 				{
-					UniFields.SetFloat(s.Fields, "offsetx_bottom", Fields.GetValue("offsetx_bottom", 0f), 0f);
-					UniFields.SetFloat(s.Fields, "offsety_bottom", Fields.GetValue("offsety_bottom", 0f), 0f);
-					UniFields.SetFloat(s.Fields, "scalex_bottom",  Fields.GetValue("scalex_bottom", 1.0f), 1.0f);
-					UniFields.SetFloat(s.Fields, "scaley_bottom",  Fields.GetValue("scaley_bottom", 1.0f), 1.0f);
+					UniFields.SetFloat(s.Fields, "offsetx_bottom", Fields.GetValue("offsetx_bottom", 0.0), 0.0);
+					UniFields.SetFloat(s.Fields, "offsety_bottom", Fields.GetValue("offsety_bottom", 0.0), 0.0);
+					UniFields.SetFloat(s.Fields, "scalex_bottom",  Fields.GetValue("scalex_bottom", 1.0), 1.0);
+					UniFields.SetFloat(s.Fields, "scaley_bottom",  Fields.GetValue("scaley_bottom", 1.0), 1.0);
 				}
 			}
 
@@ -752,10 +752,10 @@ namespace CodeImp.DoomBuilder.Map
 			if(longtexnamehigh != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(texnamehigh)) 
 			{
 				ImageData texture = General.Map.Data.GetTextureImage(texnamehigh);
-				float scaleTop = Fields.GetValue("scalex_top", 1.0f);
+				double scaleTop = Fields.GetValue("scalex_top", 1.0);
 
-				float value = Fields.GetValue("offsetx_top", 0f);
-				float result = (float)(Math.Round(value + offset * scaleTop));
+				double value = Fields.GetValue("offsetx_top", 0.0);
+				double result = Math.Round(value + offset * scaleTop);
 				if(texture.IsImageLoaded) result %= texture.Width;
 				UniFields.SetFloat(Fields, "offsetx_top", result);
 			}
@@ -764,10 +764,10 @@ namespace CodeImp.DoomBuilder.Map
 			if(longtexnamemid != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(texnamemid)) 
 			{
 				ImageData texture = General.Map.Data.GetTextureImage(texnamemid);
-				float scaleMid = Fields.GetValue("scalex_mid", 1.0f);
+				double scaleMid = Fields.GetValue("scalex_mid", 1.0);
 
-				float value = Fields.GetValue("offsetx_mid", 0f);
-				float result = (float)(Math.Round(value + offset * scaleMid));
+				double value = Fields.GetValue("offsetx_mid", 0.0);
+				double result = Math.Round(value + offset * scaleMid);
 				if(texture.IsImageLoaded) result %= texture.Width;
 				UniFields.SetFloat(Fields, "offsetx_mid", result);
 			}
@@ -776,10 +776,10 @@ namespace CodeImp.DoomBuilder.Map
 			if(longtexnamelow != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(texnamelow)) 
 			{
 				ImageData texture = General.Map.Data.GetTextureImage(texnamelow);
-				float scaleLow = Fields.GetValue("scalex_bottom", 1.0f);
+				double scaleLow = Fields.GetValue("scalex_bottom", 1.0);
 
-				float value = Fields.GetValue("offsetx_bottom", 0f);
-				float result = (float)(Math.Round(value + offset * scaleLow));
+				double value = Fields.GetValue("offsetx_bottom", 0.0);
+				double result = Math.Round(value + offset * scaleLow);
 				if(texture.IsImageLoaded) result %= texture.Width;
 				UniFields.SetFloat(Fields, "offsetx_bottom", result);
 			}

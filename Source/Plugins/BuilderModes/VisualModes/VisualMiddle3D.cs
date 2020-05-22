@@ -81,13 +81,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			bool lightabsolute;
 			GetLightValue(out lightvalue, out lightabsolute);
 
-			Vector2D tscale = new Vector2D(sourceside.Fields.GetValue("scalex_mid", 1.0f),
-										   sourceside.Fields.GetValue("scaley_mid", 1.0f));
+			Vector2D tscale = new Vector2D(sourceside.Fields.GetValue("scalex_mid", 1.0),
+										   sourceside.Fields.GetValue("scaley_mid", 1.0));
             Vector2D tscaleAbs = new Vector2D(Math.Abs(tscale.x), Math.Abs(tscale.y));
-            Vector2D toffset1 = new Vector2D(Sidedef.Fields.GetValue("offsetx_mid", 0.0f),
-											 Sidedef.Fields.GetValue("offsety_mid", 0.0f));
-			Vector2D toffset2 = new Vector2D(sourceside.Fields.GetValue("offsetx_mid", 0.0f),
-											 sourceside.Fields.GetValue("offsety_mid", 0.0f));
+            Vector2D toffset1 = new Vector2D(Sidedef.Fields.GetValue("offsetx_mid", 0.0),
+											 Sidedef.Fields.GetValue("offsety_mid", 0.0));
+			Vector2D toffset2 = new Vector2D(sourceside.Fields.GetValue("offsetx_mid", 0.0),
+											 sourceside.Fields.GetValue("offsety_mid", 0.0));
 			
 			// Left and right vertices for this sidedef
 			if(Sidedef.IsFront)
@@ -415,13 +415,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			Sidedef.Fields.BeforeFieldsChange();
 			bool worldpanning = this.Texture.WorldPanning || General.Map.Data.MapInfo.ForceWorldPanning;
-			float oldx = Sidedef.Fields.GetValue("offsetx_mid", 0.0f);
-			float oldy = Sidedef.Fields.GetValue("offsety_mid", 0.0f);
-			float scalex = extrafloor.Linedef.Front.Fields.GetValue("scalex_mid", 1.0f);
-			float scaley = extrafloor.Linedef.Front.Fields.GetValue("scaley_mid", 1.0f);
+			double oldx = Sidedef.Fields.GetValue("offsetx_mid", 0.0);
+			double oldy = Sidedef.Fields.GetValue("offsety_mid", 0.0);
+			double scalex = extrafloor.Linedef.Front.Fields.GetValue("scalex_mid", 1.0);
+			double scaley = extrafloor.Linedef.Front.Fields.GetValue("scaley_mid", 1.0);
 			bool textureloaded = (Texture != null && Texture.IsImageLoaded); //mxd
-			float width = textureloaded ? (worldpanning ? this.Texture.ScaledWidth / scalex : this.Texture.Width) : -1; // biwa
-			float height = textureloaded ? (worldpanning ? this.Texture.ScaledHeight / scaley : this.Texture.Height) : -1; // biwa
+			double width = textureloaded ? (worldpanning ? this.Texture.ScaledWidth / scalex : this.Texture.Width) : -1; // biwa
+			double height = textureloaded ? (worldpanning ? this.Texture.ScaledHeight / scaley : this.Texture.Height) : -1; // biwa
 
 			Sidedef.Fields["offsetx_mid"] = new UniValue(UniversalType.Float, GetNewTexutreOffset(oldx, offsetx, width)); //mxd // biwa
 			Sidedef.Fields["offsety_mid"] = new UniValue(UniversalType.Float, GetNewTexutreOffset(oldy, offsety, height)); //mxd // biwa
@@ -429,8 +429,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		protected override Point GetTextureOffset()
 		{
-			float oldx = Sidedef.Fields.GetValue("offsetx_mid", 0.0f);
-			float oldy = Sidedef.Fields.GetValue("offsety_mid", 0.0f);
+			double oldx = Sidedef.Fields.GetValue("offsetx_mid", 0.0);
+			double oldy = Sidedef.Fields.GetValue("offsety_mid", 0.0);
 			return new Point((int)oldx, (int)oldy);
 		}
 
@@ -462,25 +462,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Sidedef target = extrafloor.Linedef.Front;
 			if(target == null) return;
 
-			float scaleX = target.Fields.GetValue("scalex_mid", 1.0f);
-			float scaleY = target.Fields.GetValue("scaley_mid", 1.0f);
+			double scaleX = target.Fields.GetValue("scalex_mid", 1.0);
+			double scaleY = target.Fields.GetValue("scaley_mid", 1.0);
 
 			target.Fields.BeforeFieldsChange();
 
 			if(incrementX != 0)
 			{
-				float pix = (int)Math.Round(Texture.Width * scaleX) - incrementX;
-				float newscaleX = (float)Math.Round(pix / Texture.Width, 3);
+				double pix = (int)Math.Round(Texture.Width * scaleX) - incrementX;
+				double newscaleX = Math.Round(pix / Texture.Width, 3);
 				scaleX = (newscaleX == 0 ? scaleX * -1 : newscaleX);
-				UniFields.SetFloat(target.Fields, "scalex_mid", scaleX, 1.0f);
+				UniFields.SetFloat(target.Fields, "scalex_mid", scaleX, 1.0);
 			}
 
 			if(incrementY != 0)
 			{
-				float pix = (int)Math.Round(Texture.Height * scaleY) - incrementY;
-				float newscaleY = (float)Math.Round(pix / Texture.Height, 3);
+				double pix = (int)Math.Round(Texture.Height * scaleY) - incrementY;
+				double newscaleY = Math.Round(pix / Texture.Height, 3);
 				scaleY = (newscaleY == 0 ? scaleY * -1 : newscaleY);
-				UniFields.SetFloat(target.Fields, "scaley_mid", scaleY, 1.0f);
+				UniFields.SetFloat(target.Fields, "scaley_mid", scaleY, 1.0);
 			}
 			
 			// Update the model sector to update all 3d floors

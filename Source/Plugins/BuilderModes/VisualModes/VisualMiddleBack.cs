@@ -37,13 +37,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			bool lightabsolute;
 			GetLightValue(out lightvalue, out lightabsolute);
 
-			Vector2D tscale = new Vector2D(sourceside.Fields.GetValue("scalex_mid", 1.0f),
-										   sourceside.Fields.GetValue("scaley_mid", 1.0f));
+			Vector2D tscale = new Vector2D(sourceside.Fields.GetValue("scalex_mid", 1.0),
+										   sourceside.Fields.GetValue("scaley_mid", 1.0));
             Vector2D tscaleAbs = new Vector2D(Math.Abs(tscale.x), Math.Abs(tscale.y));
-            Vector2D toffset1 = new Vector2D(Sidedef.Fields.GetValue("offsetx_mid", 0.0f),
-											 Sidedef.Fields.GetValue("offsety_mid", 0.0f));
-			Vector2D toffset2 = new Vector2D(sourceside.Fields.GetValue("offsetx_mid", 0.0f),
-											 sourceside.Fields.GetValue("offsety_mid", 0.0f));
+            Vector2D toffset1 = new Vector2D(Sidedef.Fields.GetValue("offsetx_mid", 0.0),
+											 Sidedef.Fields.GetValue("offsety_mid", 0.0));
+			Vector2D toffset2 = new Vector2D(sourceside.Fields.GetValue("offsetx_mid", 0.0),
+											 sourceside.Fields.GetValue("offsety_mid", 0.0));
 			
 			// Left and right vertices for this sidedef
 			if(Sidedef.IsFront)

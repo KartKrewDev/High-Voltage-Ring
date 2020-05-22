@@ -284,7 +284,12 @@ namespace CodeImp.DoomBuilder.IO
 				{
 					writer.Write((int)UniversalType.Float);
 					writer.Write((float)f.Value.Value);
-				} 
+				}
+				else if(f.Value.Value is double)
+				{
+					writer.Write((int)UniversalType.Float);
+					writer.Write((double)f.Value.Value);
+				}
 				else if(f.Value.Value.GetType().IsPrimitive) 
 				{
 					writer.Write((int)UniversalType.Integer);

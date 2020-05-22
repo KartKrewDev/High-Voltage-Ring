@@ -139,7 +139,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// From UDMF field
 			else
 			{
-				alpha = (byte)(Sidedef.Line.Fields.GetValue("alpha", 1.0f) * 255.0f);
+				alpha = (byte)(Sidedef.Line.Fields.GetValue("alpha", 1.0) * 255.0);
 				if(alpha == 255 && Sidedef.Line.IsFlagSet("transparent")) alpha = 64; //mxd
 
 				if(canhavealpha && Sidedef.Line.Fields.GetValue("renderstyle", "translucent") == "add")
@@ -530,17 +530,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		// biwa
-		protected static float GetNewTexutreOffset(float oldValue, float offset, float textureSize)
+		protected static double GetNewTexutreOffset(double oldValue, double offset, double textureSize)
 		{
 			return GetRoundedTextureOffset(oldValue, offset, 1.0f, textureSize);
 		}
 
 		//mxd
-		protected static float GetRoundedTextureOffset(float oldValue, float offset, float scale, float textureSize) 
+		protected static double GetRoundedTextureOffset(double oldValue, double offset, double scale, double textureSize) 
 		{
 			if(offset == 0f) return oldValue;
-			float scaledOffset = offset * Math.Abs(scale);
-			float result = (float)Math.Round(oldValue + scaledOffset);
+			double scaledOffset = offset * Math.Abs(scale);
+			double result = Math.Round(oldValue + scaledOffset);
 			if(textureSize > 0) result %= textureSize;
 			if(result == oldValue) result += (scaledOffset < 0 ? -1 : 1);
 			return result;
@@ -1677,25 +1677,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					throw new Exception("OnChangeTextureScale(): Got unknown GeometryType: " + GeometryType);
 			}
 
-			float scaleX = Sidedef.Fields.GetValue(keyX, 1.0f);
-			float scaleY = Sidedef.Fields.GetValue(keyY, 1.0f);
+			double scaleX = Sidedef.Fields.GetValue(keyX, 1.0);
+			double scaleY = Sidedef.Fields.GetValue(keyY, 1.0);
 
 			Sidedef.Fields.BeforeFieldsChange();
 
 			if(incrementX != 0)
 			{
-				float pix = (int)Math.Round(Texture.Width * scaleX) - incrementX;
-				float newscaleX = (float)Math.Round(pix / Texture.Width, 3);
+				double pix = (int)Math.Round(Texture.Width * scaleX) - incrementX;
+				double newscaleX = Math.Round(pix / Texture.Width, 3);
 				scaleX = (newscaleX == 0 ? scaleX * -1 : newscaleX);
-				UniFields.SetFloat(Sidedef.Fields, keyX, scaleX, 1.0f);
+				UniFields.SetFloat(Sidedef.Fields, keyX, scaleX, 1.0);
 			}
 
 			if(incrementY != 0) 
 			{
-				float pix = (int)Math.Round(Texture.Height * scaleY) - incrementY;
-				float newscaleY = (float)Math.Round(pix / Texture.Height, 3);
+				double pix = (int)Math.Round(Texture.Height * scaleY) - incrementY;
+				double newscaleY = Math.Round(pix / Texture.Height, 3);
 				scaleY = (newscaleY == 0 ? scaleY * -1 : newscaleY);
-				UniFields.SetFloat(Sidedef.Fields, keyY, scaleY, 1.0f);
+				UniFields.SetFloat(Sidedef.Fields, keyY, scaleY, 1.0);
 			}
 
 			// Update geometry

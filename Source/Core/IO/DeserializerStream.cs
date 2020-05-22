@@ -130,15 +130,15 @@ namespace CodeImp.DoomBuilder.IO
 
 		public void rwVector2D(ref Vector2D v)
 		{
-			v.x = reader.ReadSingle();
-			v.y = reader.ReadSingle();
+			v.x = reader.ReadDouble();
+			v.y = reader.ReadDouble();
 		}
 
 		public void rwVector3D(ref Vector3D v)
 		{
-			v.x = reader.ReadSingle();
-			v.y = reader.ReadSingle();
-			v.z = reader.ReadSingle();
+			v.x = reader.ReadDouble();
+			v.y = reader.ReadDouble();
+			v.z = reader.ReadDouble();
 		}
 
 		// Write-only is not supported
@@ -204,16 +204,16 @@ namespace CodeImp.DoomBuilder.IO
 		public void rVector2D(out Vector2D v)
 		{
 			v = new Vector2D();
-			v.x = reader.ReadSingle();
-			v.y = reader.ReadSingle();
+			v.x = reader.ReadDouble();
+			v.y = reader.ReadDouble();
 		}
 
 		public void rVector3D(out Vector3D v)
 		{
 			v = new Vector3D();
-			v.x = reader.ReadSingle();
-			v.y = reader.ReadSingle();
-			v.z = reader.ReadSingle();
+			v.x = reader.ReadDouble();
+			v.y = reader.ReadDouble();
+			v.z = reader.ReadDouble();
 		}
 		
 		#endregion

@@ -289,7 +289,7 @@ namespace CodeImp.DoomBuilder.Windows
 			fieldslist.SetValues(fl.Fields, true); // Custom fields
 			commenteditor.SetValues(fl.Fields, true); //mxd. Comments
 			renderStyle.SelectedIndex = Array.IndexOf(renderstyles, fl.Fields.GetValue("renderstyle", "translucent"));
-			alpha.Text = General.Clamp(fl.Fields.GetValue("alpha", 1.0f), 0f, 1f).ToString();
+			alpha.Text = General.Clamp(fl.Fields.GetValue("alpha", 1.0), 0.0, 1.0).ToString();
 
 			// Locknumber
 			int locknumber = fl.Fields.GetValue("locknumber", 0);
@@ -394,7 +394,7 @@ namespace CodeImp.DoomBuilder.Windows
 					renderStyle.SelectedIndex = -1;
 
 				// Alpha
-				if(!string.IsNullOrEmpty(alpha.Text) && General.Clamp(alpha.GetResultFloat(1.0f), 0f, 1f) != l.Fields.GetValue("alpha", 1.0f))
+				if(!string.IsNullOrEmpty(alpha.Text) && General.Clamp(alpha.GetResultFloat(1.0), 0.0, 1.0) != l.Fields.GetValue("alpha", 1.0))
 					alpha.Text = string.Empty;
 
 				// Locknumber
@@ -861,18 +861,18 @@ namespace CodeImp.DoomBuilder.Windows
 			if(string.IsNullOrEmpty(alpha.Text)) 
 			{
 				foreach(Linedef l in lines) 
-					UniFields.SetFloat(l.Fields, "alpha", linedefprops[i++].Alpha, 1.0f);
+					UniFields.SetFloat(l.Fields, "alpha", linedefprops[i++].Alpha, 1.0);
 			} 
 			else //update values
 			{
 				foreach(Linedef l in lines) 
 				{
-					double value = General.Clamp(alpha.GetResultFloat(l.Fields.GetValue("alpha", 1.0f)), 0f, 1.0f);
-					UniFields.SetFloat(l.Fields, "alpha", value, 1.0f);
+					double value = General.Clamp(alpha.GetResultFloat(l.Fields.GetValue("alpha", 1.0)), 0.0, 1.0);
+					UniFields.SetFloat(l.Fields, "alpha", value, 1.0);
 				}
 			}
 
-			resetalpha.Visible = (alpha.GetResultFloat(1.0f) != 1.0f);
+			resetalpha.Visible = (alpha.GetResultFloat(1.0) != 1.0);
 
 			General.Map.IsChanged = true;
 			if(OnValuesChanged != null)	OnValuesChanged(this, EventArgs.Empty);

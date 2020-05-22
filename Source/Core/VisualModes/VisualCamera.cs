@@ -29,7 +29,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private Vector3D movemultiplier;
 		private double anglexy, anglez;
 		private Sector sector;
-		private float gravity = 1.0f; //mxd
+		private double gravity = 1.0; //mxd
 		
 		#endregion
 
@@ -41,7 +41,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public double AngleZ { get { return anglez; } set { anglez = value; } }
 		public Sector Sector { get { return sector; } internal set { sector = value; UpdateGravity(); } } //mxd
 		public Vector3D MoveMultiplier { get { return movemultiplier; } set { movemultiplier = value; } }
-		public float Gravity { get { return gravity; } } //mxd
+		public double Gravity { get { return gravity; } } //mxd
 		
 		#endregion
 
@@ -173,7 +173,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private void UpdateGravity() 
 		{
 			if(!General.Map.UDMF || sector == null) return;
-			gravity = sector.Fields.GetValue("gravity", 1.0f);
+			gravity = sector.Fields.GetValue("gravity", 1.0);
 		}
 		
 		#endregion

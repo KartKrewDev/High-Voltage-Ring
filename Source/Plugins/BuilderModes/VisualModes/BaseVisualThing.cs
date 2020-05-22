@@ -127,7 +127,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if((renderstyle == "add" || renderstyle == "translucent" || renderstyle == "subtract" || renderstyle.EndsWith("stencil")) 
 						&& Thing.Fields.ContainsKey("alpha"))
 					{
-						alpha = (byte)(General.Clamp(Thing.Fields.GetValue("alpha", info.Alpha), 0f, 1f) * 255);
+						alpha = (byte)(General.Clamp(Thing.Fields.GetValue("alpha", info.Alpha), 0.0, 1.0) * 255.0);
 					}
 
                     if (renderstyle.EndsWith("stencil"))

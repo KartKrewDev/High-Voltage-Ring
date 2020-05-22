@@ -899,7 +899,7 @@ namespace CodeImp.DoomBuilder.Geometry
 						}
 						
 						// No cceptable line found, just use the first!
-						positions.Add(new LabelPositionInfo(foundposition, (float)Math.Sqrt(founddistance)));
+						positions.Add(new LabelPositionInfo(foundposition, Math.Sqrt(founddistance)));
 					}
 					else
 					{
@@ -914,7 +914,7 @@ namespace CodeImp.DoomBuilder.Geometry
 							double d = Line2D.GetDistanceToLineSq(triangles.Vertices[islandoffset], triangles.Vertices[islandoffset + 1], v, false);
 							d = Math.Min(d, Line2D.GetDistanceToLineSq(triangles.Vertices[islandoffset + 1], triangles.Vertices[islandoffset + 2], v, false));
 							d = Math.Min(d, Line2D.GetDistanceToLineSq(triangles.Vertices[islandoffset + 2], triangles.Vertices[islandoffset], v, false));
-							positions.Add(new LabelPositionInfo(v, (float)Math.Sqrt(d)));
+							positions.Add(new LabelPositionInfo(v, Math.Sqrt(d)));
 						}
 						else
 						{
@@ -2196,9 +2196,9 @@ namespace CodeImp.DoomBuilder.Geometry
 
 			//add a small offset so we don't end up moving thing into void
 			if(front)
-				t.Move(new Vector2D(pos.x - (float)Math.Cos(l.Angle), pos.y - (float)Math.Sin(l.Angle)));
+				t.Move(new Vector2D(pos.x - Math.Cos(l.Angle), pos.y - Math.Sin(l.Angle)));
 			else
-				t.Move(new Vector2D(pos.x + (float)Math.Cos(l.Angle), pos.y + (float)Math.Sin(l.Angle)));
+				t.Move(new Vector2D(pos.x + Math.Cos(l.Angle), pos.y + Math.Sin(l.Angle)));
 
 			//apply new settings
 			t.SnapToAccuracy();

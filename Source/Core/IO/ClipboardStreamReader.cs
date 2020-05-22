@@ -93,10 +93,10 @@ namespace CodeImp.DoomBuilder.IO
 			map.SetCapacity(map.Vertices.Count + count, 0, 0, 0, 0);
 			for(int i = 0; i < count; i++) 
 			{
-				float x = reader.ReadSingle();
-				float y = reader.ReadSingle();
-				float zc = reader.ReadSingle();
-				float zf = reader.ReadSingle();
+				double x = reader.ReadDouble();
+				double y = reader.ReadDouble();
+				double zc = reader.ReadDouble();
+				double zf = reader.ReadDouble();
 
 				// Create new item
 				Dictionary<string, UniValue> fields = ReadCustomFields(reader);
@@ -149,10 +149,10 @@ namespace CodeImp.DoomBuilder.IO
 				string tceil = ReadString(reader);
 
 				//mxd. Slopes
-				float foffset = reader.ReadSingle();
-				Vector3D fslope = new Vector3D(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-				float coffset = reader.ReadSingle();
-				Vector3D cslope = new Vector3D(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+				double foffset = reader.ReadDouble();
+				Vector3D fslope = new Vector3D(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+				double coffset = reader.ReadDouble();
+				Vector3D cslope = new Vector3D(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
 
 				//flags
 				Dictionary<string, bool> stringflags = new Dictionary<string, bool>(StringComparer.Ordinal);
@@ -352,14 +352,14 @@ namespace CodeImp.DoomBuilder.IO
 			{
 				int[] args = new int[Linedef.NUM_ARGS];
 				int tag = reader.ReadInt32();
-				float x = reader.ReadSingle();
-				float y = reader.ReadSingle();
-				float height = reader.ReadSingle();
+				double x = reader.ReadDouble();
+				double y = reader.ReadDouble();
+				double height = reader.ReadDouble();
 				int angledeg = reader.ReadInt32();
 				int pitch = reader.ReadInt32(); //mxd
 				int roll = reader.ReadInt32(); //mxd
-				float scaleX = reader.ReadSingle(); //mxd
-				float scaleY = reader.ReadSingle(); //mxd
+				double scaleX = reader.ReadDouble(); //mxd
+				double scaleY = reader.ReadDouble(); //mxd
 				int type = reader.ReadInt32();
 				int special = reader.ReadInt32();
 				for(int a = 0; a < Linedef.NUM_ARGS; a++) args[a] = reader.ReadInt32();
@@ -407,7 +407,7 @@ namespace CodeImp.DoomBuilder.IO
 				switch(valueType) 
 				{
 					case UniversalType.Float:
-						fields.Add(name, new UniValue(type, reader.ReadSingle()));
+						fields.Add(name, new UniValue(type, reader.ReadDouble()));
 						break;
 
 					case UniversalType.Boolean:

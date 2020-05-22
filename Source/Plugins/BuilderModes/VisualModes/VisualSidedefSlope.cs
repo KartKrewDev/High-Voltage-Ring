@@ -313,9 +313,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 			Plane pivotplane = ((VisualSidedefSlope)pivothandle).Level.plane;
 
 			// Build a new plane. p1 and p2 are the points of the slope handle that is modified, p3 is on the line of the pivot handle
-			Vector3D p1 = new Vector3D(sidedef.Line.Start.Position, (float)Math.Round(originalplane.GetZ(sidedef.Line.Start.Position)));
-			Vector3D p2 = new Vector3D(sidedef.Line.End.Position, (float)Math.Round(originalplane.GetZ(sidedef.Line.End.Position)));
-			Vector3D p3 = new Vector3D(((VisualSidedefSlope)pivothandle).Sidedef.Line.Line.GetCoordinatesAt(0.5f), (float)Math.Round(pivotplane.GetZ(((VisualSidedefSlope)pivothandle).Sidedef.Line.Line.GetCoordinatesAt(0.5f))));
+			Vector3D p1 = new Vector3D(sidedef.Line.Start.Position, Math.Round(originalplane.GetZ(sidedef.Line.Start.Position)));
+			Vector3D p2 = new Vector3D(sidedef.Line.End.Position, Math.Round(originalplane.GetZ(sidedef.Line.End.Position)));
+			Vector3D p3 = new Vector3D(((VisualSidedefSlope)pivothandle).Sidedef.Line.Line.GetCoordinatesAt(0.5f), Math.Round(pivotplane.GetZ(((VisualSidedefSlope)pivothandle).Sidedef.Line.Line.GetCoordinatesAt(0.5f))));
 
 			// Move the points of the handle up/down
 			p1 += new Vector3D(0f, 0f, amount);

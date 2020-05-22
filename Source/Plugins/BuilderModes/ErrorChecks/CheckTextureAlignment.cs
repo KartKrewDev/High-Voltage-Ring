@@ -110,11 +110,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(!sidedef.HighRequired() || sidedef.LongHighTexture == MapSet.EmptyLongName) return;
 			
-			float scaleX = sidedef.Fields.GetValue("scalex_top", 1.0f);
-			float scaleY = sidedef.Fields.GetValue("scaley_top", 1.0f);
-			int localY = (int)Math.Round(sidedef.Fields.GetValue("offsety_top", 0.0f));
+			double scaleX = sidedef.Fields.GetValue("scalex_top", 1.0);
+			double scaleY = sidedef.Fields.GetValue("scaley_top", 1.0);
+			int localY = (int)Math.Round(sidedef.Fields.GetValue("offsety_top", 0.0));
 
-			int x = sidedef.OffsetX + (int)Math.Round(sidedef.Fields.GetValue("offsetx_top", 0.0f));
+			int x = sidedef.OffsetX + (int)Math.Round(sidedef.Fields.GetValue("offsetx_top", 0.0));
 			int y = (int)Tools.GetSidedefTopOffsetY(sidedef, sidedef.OffsetY + localY, scaleY, false);
 			CheckAlignment(sidedef, x, y, scaleX, scaleY, VisualGeometryType.WALL_UPPER, sidedef.HighTexture);
 		}
@@ -123,11 +123,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(!sidedef.MiddleRequired() || sidedef.LongMiddleTexture == MapSet.EmptyLongName) return;
 			
-			float scaleX = sidedef.Fields.GetValue("scalex_mid", 1.0f);
-			float scaleY = sidedef.Fields.GetValue("scaley_mid", 1.0f);
-			int localY = (int)Math.Round(sidedef.Fields.GetValue("offsety_mid", 0.0f));
+			double scaleX = sidedef.Fields.GetValue("scalex_mid", 1.0);
+			double scaleY = sidedef.Fields.GetValue("scaley_mid", 1.0);
+			int localY = (int)Math.Round(sidedef.Fields.GetValue("offsety_mid", 0.0));
 
-			int x = sidedef.OffsetX + (int)Math.Round(sidedef.Fields.GetValue("offsetx_mid", 0.0f));
+			int x = sidedef.OffsetX + (int)Math.Round(sidedef.Fields.GetValue("offsetx_mid", 0.0));
 			int y = (int)Tools.GetSidedefMiddleOffsetY(sidedef, sidedef.OffsetY + localY, scaleY, false);
 			CheckAlignment(sidedef, x, y, scaleX, scaleY, VisualGeometryType.WALL_MIDDLE, sidedef.MiddleTexture);
 		}
@@ -136,11 +136,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(!sidedef.LowRequired() || sidedef.LongLowTexture == MapSet.EmptyLongName) return;
 
-			float scaleX = sidedef.Fields.GetValue("scalex_bottom", 1.0f);
-			float scaleY = sidedef.Fields.GetValue("scaley_bottom", 1.0f);
-			int localY = (int)Math.Round(sidedef.Fields.GetValue("offsety_bottom", 0.0f));
+			double scaleX = sidedef.Fields.GetValue("scalex_bottom", 1.0);
+			double scaleY = sidedef.Fields.GetValue("scaley_bottom", 1.0);
+			int localY = (int)Math.Round(sidedef.Fields.GetValue("offsety_bottom", 0.0));
 
-			int x = sidedef.OffsetX + (int)Math.Round(sidedef.Fields.GetValue("offsetx_bottom", 0.0f));
+			int x = sidedef.OffsetX + (int)Math.Round(sidedef.Fields.GetValue("offsetx_bottom", 0.0));
 			int y = (int)Tools.GetSidedefBottomOffsetY(sidedef, sidedef.OffsetY + localY, scaleY, false);
 			CheckAlignment(sidedef, x, y, scaleX, scaleY, VisualGeometryType.WALL_LOWER, sidedef.LowTexture);
 		}

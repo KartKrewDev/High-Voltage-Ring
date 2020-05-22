@@ -197,8 +197,8 @@ namespace CodeImp.DoomBuilder.Controls
 					}
 
 					//ceiling offsets
-					float panX = s.Fields.GetValue("xpanningceiling", 0f);
-					float panY = s.Fields.GetValue("ypanningceiling", 0f);
+					double panX = s.Fields.GetValue("xpanningceiling", 0.0);
+					double panY = s.Fields.GetValue("ypanningceiling", 0.0);
 
 					if(panX != 0 || panY != 0) 
 					{
@@ -215,8 +215,8 @@ namespace CodeImp.DoomBuilder.Controls
 					}
 
 					//floor offsets
-					panX = s.Fields.GetValue("xpanningfloor", 0f);
-					panY = s.Fields.GetValue("ypanningfloor", 0f);
+					panX = s.Fields.GetValue("xpanningfloor", 0.0);
+					panY = s.Fields.GetValue("ypanningfloor", 0.0);
 
 					if(panX != 0 || panY != 0) 
 					{
@@ -233,8 +233,8 @@ namespace CodeImp.DoomBuilder.Controls
 					}
 
 					//ceiling scale
-					float scaleX = s.Fields.GetValue("xscaleceiling", 1.0f);
-					float scaleY = s.Fields.GetValue("yscaleceiling", 1.0f);
+					double scaleX = s.Fields.GetValue("xscaleceiling", 1.0);
+					double scaleY = s.Fields.GetValue("yscaleceiling", 1.0);
 
 					if(scaleX != 1.0f || scaleY != 1.0f) 
 					{
@@ -251,10 +251,10 @@ namespace CodeImp.DoomBuilder.Controls
 					}
 
 					//floor scale
-					scaleX = s.Fields.GetValue("xscalefloor", 1.0f);
-					scaleY = s.Fields.GetValue("yscalefloor", 1.0f);
+					scaleX = s.Fields.GetValue("xscalefloor", 1.0);
+					scaleY = s.Fields.GetValue("yscalefloor", 1.0);
 
-					if(scaleX != 1.0f || scaleY != 1.0f) 
+					if(scaleX != 1.0 || scaleY != 1.0) 
 					{
 						showExtededFloorInfo = true;
 						floorScale.Enabled = true;
@@ -269,8 +269,8 @@ namespace CodeImp.DoomBuilder.Controls
 					}
 
 					//rotation
-					float ceilangle = s.Fields.GetValue("rotationceiling", 0f);
-					if(ceilangle != 0f) 
+					double ceilangle = s.Fields.GetValue("rotationceiling", 0.0);
+					if(ceilangle != 0.0) 
 					{
 						showExtededCeilingInfo = true;
 						ceilingAngle.Enabled = true;
@@ -284,7 +284,7 @@ namespace CodeImp.DoomBuilder.Controls
 						ceilingAngleLabel.Enabled = false;
 					}
 
-					float floorangle = s.Fields.GetValue("rotationfloor", 0f);
+					double floorangle = s.Fields.GetValue("rotationfloor", 0.0);
 					if(floorangle != 0f) 
 					{
 						showExtededFloorInfo = true;

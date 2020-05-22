@@ -133,13 +133,13 @@ namespace CodeImp.DoomBuilder.Controls
 					}
 					else if(textbox.AllowDecimal)
 					{
-						float stepsizemod; //mxd
+						double stepsizemod; //mxd
 						if(usemodifierkeys)
 							stepsizemod = (ctrl ? stepsizeSmall : (shift ? stepsizeBig : stepsizeFloat));
 						else
 							stepsizemod = stepsizeFloat;
 						
-						float newvalue = (float)Math.Round(textbox.GetResultFloat(0.0f) - (buttons.Value * stepsizemod), General.Map.FormatInterface.VertexDecimals);
+						double newvalue = Math.Round(textbox.GetResultFloat(0.0f) - (buttons.Value * stepsizemod), General.Map.FormatInterface.VertexDecimals);
 						if((newvalue < 0.0f) && !textbox.AllowNegative) newvalue = 0.0f;
 						textbox.Text = newvalue.ToString();
 					}

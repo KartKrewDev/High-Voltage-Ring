@@ -173,16 +173,16 @@ namespace CodeImp.DoomBuilder.IO
 				UniversalCollection c = collections[i];
 				int[] args = new int[Linedef.NUM_ARGS];
 				string where = "thing " + i;
-				float x = GetCollectionEntry(c, "x", true, 0.0f, where);
-				float y = GetCollectionEntry(c, "y", true, 0.0f, where);
-				float height = GetCollectionEntry(c, "height", false, 0.0f, where);
+				double x = GetCollectionEntry(c, "x", true, 0.0, where);
+				double y = GetCollectionEntry(c, "y", true, 0.0, where);
+				double height = GetCollectionEntry(c, "height", false, 0.0, where);
 				int tag = GetCollectionEntry(c, "id", false, 0, where);
 				int angledeg = GetCollectionEntry(c, "angle", false, 0, where);
 				int pitch = GetCollectionEntry(c, "pitch", false, 0, where); //mxd
 				int roll = GetCollectionEntry(c, "roll", false, 0, where); //mxd
-				float scaleX = GetCollectionEntry(c, "scalex", false, 1.0f, where); //mxd
-				float scaleY = GetCollectionEntry(c, "scaley", false, 1.0f, where); //mxd
-				float scale = GetCollectionEntry(c, "scale", false, 0f, where); //mxd
+				double scaleX = GetCollectionEntry(c, "scalex", false, 1.0, where); //mxd
+				double scaleY = GetCollectionEntry(c, "scaley", false, 1.0, where); //mxd
+				double scale = GetCollectionEntry(c, "scale", false, 0.0, where); //mxd
 				int type = GetCollectionEntry(c, "type", true, 0, where);
 				int special = GetCollectionEntry(c, "special", false, 0, where);
 				args[0] = GetCollectionEntry(c, "arg0", false, 0, where);
@@ -403,15 +403,15 @@ namespace CodeImp.DoomBuilder.IO
 				if(tag == 0 && tags.Count > 1) tags.RemoveAt(0);
 
 				//mxd. Read slopes
-				float fslopex = GetCollectionEntry(c, "floorplane_a", false, 0.0f, where);
-				float fslopey = GetCollectionEntry(c, "floorplane_b", false, 0.0f, where);
-				float fslopez = GetCollectionEntry(c, "floorplane_c", false, 0.0f, where);
-				float foffset = GetCollectionEntry(c, "floorplane_d", false, float.NaN, where);
+				double fslopex = GetCollectionEntry(c, "floorplane_a", false, 0.0, where);
+				double fslopey = GetCollectionEntry(c, "floorplane_b", false, 0.0, where);
+				double fslopez = GetCollectionEntry(c, "floorplane_c", false, 0.0, where);
+				double foffset = GetCollectionEntry(c, "floorplane_d", false, double.NaN, where);
 
-				float cslopex = GetCollectionEntry(c, "ceilingplane_a", false, 0.0f, where);
-				float cslopey = GetCollectionEntry(c, "ceilingplane_b", false, 0.0f, where);
-				float cslopez = GetCollectionEntry(c, "ceilingplane_c", false, 0.0f, where);
-				float coffset = GetCollectionEntry(c, "ceilingplane_d", false, float.NaN, where);
+				double cslopex = GetCollectionEntry(c, "ceilingplane_a", false, 0.0, where);
+				double cslopey = GetCollectionEntry(c, "ceilingplane_b", false, 0.0, where);
+				double cslopez = GetCollectionEntry(c, "ceilingplane_c", false, 0.0, where);
+				double coffset = GetCollectionEntry(c, "ceilingplane_d", false, double.NaN, where);
 
 				//mxd. Read flags
 				Dictionary<string, bool> stringflags = new Dictionary<string, bool>(StringComparer.Ordinal);
@@ -456,14 +456,14 @@ namespace CodeImp.DoomBuilder.IO
 				// Read fields
 				UniversalCollection c = collections[i];
 				string where = "vertex " + i;
-				float x = GetCollectionEntry(c, "x", true, 0.0f, where);
-				float y = GetCollectionEntry(c, "y", true, 0.0f, where);
+				double x = GetCollectionEntry(c, "x", true, 0.0, where);
+				double y = GetCollectionEntry(c, "y", true, 0.0, where);
 
                 // [ZZ] Correct location if it's NaN. Note that there cannot be any meaningful value here, so I just reset it to 0,0 to avoid triggering the NaN exception
                 //      TODO: remove once the cause of NaN is reported
-                if (float.IsNaN(x) || float.IsNaN(y))
+                if (double.IsNaN(x) || double.IsNaN(y))
                 {
-                    x = y = 0f;
+                    x = y = 0.0;
                     General.ErrorLogger.Add(ErrorType.Warning, string.Format("Vertex {0} has NaN coordinates, resetting to 0,0", i));
                 }
 
@@ -472,8 +472,8 @@ namespace CodeImp.DoomBuilder.IO
 				if(v != null)
 				{
 					//mxd. zoffsets
-					v.ZCeiling = GetCollectionEntry(c, "zceiling", false, float.NaN, where); //mxd
-					v.ZFloor = GetCollectionEntry(c, "zfloor", false, float.NaN, where); //mxd
+					v.ZCeiling = GetCollectionEntry(c, "zceiling", false, double.NaN, where); //mxd
+					v.ZFloor = GetCollectionEntry(c, "zfloor", false, double.NaN, where); //mxd
 					
 					// Custom fields
 					ReadCustomFields(c, v, "vertex");
@@ -506,7 +506,7 @@ namespace CodeImp.DoomBuilder.IO
 					// Let's be kind and cast any int to a float if needed
 					if(type == (int)UniversalType.Float && e.Value is int) 
 					{
-						value = (float)(int)e.Value;
+						value = (double)(int)e.Value;
 					} 
 					else if(!e.IsValidType(e.Value.GetType())) 
 					{
@@ -550,7 +550,7 @@ namespace CodeImp.DoomBuilder.IO
 
 					// Determine default type
 					if(e.Value is int) type = (int)UniversalType.Integer;
-					else if(e.Value is float) type = (int)UniversalType.Float;
+					else if(e.Value is double) type = (int)UniversalType.Float;
 					else if(e.Value is bool) type = (int)UniversalType.Boolean;
 					else if(e.Value is string) type = (int)UniversalType.String;
 
@@ -573,10 +573,10 @@ namespace CodeImp.DoomBuilder.IO
 				if(e.Key == entryname)
 				{
 					// Let's be kind and cast any int to a float if needed
-					if((typeof(T) == typeof(float)) && (e.Value is int))
+					if((typeof(T) == typeof(double)) && (e.Value is int))
 					{
 						// Make it a float
-						object fvalue = (float)(int)e.Value;
+						object fvalue = (double)(int)e.Value;
 						result = (T)fvalue;
 					}
 					else

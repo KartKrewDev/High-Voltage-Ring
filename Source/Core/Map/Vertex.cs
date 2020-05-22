@@ -290,8 +290,8 @@ namespace CodeImp.DoomBuilder.Map
 		public void SnapToAccuracy(bool usepreciseposition)
 		{
 			// Round the coordinates
-			Vector2D newpos = new Vector2D((float)Math.Round(pos.x, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)),
-										   (float)Math.Round(pos.y, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)));
+			Vector2D newpos = new Vector2D(Math.Round(pos.x, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)),
+										   Math.Round(pos.y, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)));
 			this.Move(newpos);
 		}
 

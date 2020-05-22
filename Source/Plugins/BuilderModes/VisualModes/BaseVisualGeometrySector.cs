@@ -173,9 +173,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			double angle;
 
 			if(GeometryType == VisualGeometryType.CEILING)
-				angle = Angle2D.DegToRad(level.sector.Fields.GetValue("rotationceiling", 0f));
+				angle = Angle2D.DegToRad(level.sector.Fields.GetValue("rotationceiling", 0.0));
 			else
-				angle = Angle2D.DegToRad(level.sector.Fields.GetValue("rotationfloor", 0f));
+				angle = Angle2D.DegToRad(level.sector.Fields.GetValue("rotationfloor", 0.0));
 
 			Vector2D v = new Vector2D(offsetx, offsety).GetRotated(angle);
 
@@ -255,8 +255,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Check texture
 				if(target.FloorTexture != (isFloor ? Sector.Sector.FloorTexture : Sector.Sector.CeilTexture))	return;
 
-				scaleX = target.Fields.GetValue("xscalefloor", 1.0f);
-				scaleY = target.Fields.GetValue("yscalefloor", 1.0f);
+				scaleX = target.Fields.GetValue("xscalefloor", 1.0);
+				scaleY = target.Fields.GetValue("yscalefloor", 1.0);
 			} 
 			else 
 			{
@@ -272,8 +272,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Check texture
 				if(target.CeilTexture != (isFloor ? Sector.Sector.FloorTexture : Sector.Sector.CeilTexture)) return;
 
-				scaleX = target.Fields.GetValue("xscaleceiling", 1.0f);
-				scaleY = target.Fields.GetValue("yscaleceiling", 1.0f);
+				scaleX = target.Fields.GetValue("xscaleceiling", 1.0);
+				scaleY = target.Fields.GetValue("yscaleceiling", 1.0);
 			}
 
 			//find a linedef to align to
@@ -336,13 +336,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(alignx) 
 			{
 				if(Texture != null && Texture.IsImageLoaded) offset.x %= Texture.Width / scaleX;
-				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "xpanningfloor" : "xpanningceiling"), (float)Math.Round(-offset.x), 0f);
+				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "xpanningfloor" : "xpanningceiling"), Math.Round(-offset.x), 0.0);
 			}
 
 			if(aligny) 
 			{
 				if(Texture != null && Texture.IsImageLoaded) offset.y %= Texture.Height / scaleY;
-				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "ypanningfloor" : "ypanningceiling"), (float)Math.Round(offset.y), 0f);
+				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "ypanningfloor" : "ypanningceiling"), Math.Round(offset.y), 0.0);
 			}
 
 			//update geometry
@@ -866,9 +866,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				Point p = new Point(horizontal, vertical);
 				double angle = Angle2D.RadToDeg(General.Map.VisualCamera.AngleXY);
 				if(GeometryType == VisualGeometryType.CEILING) 
-					angle += level.sector.Fields.GetValue("rotationceiling", 0f);
+					angle += level.sector.Fields.GetValue("rotationceiling", 0.0);
 				else
-					angle += level.sector.Fields.GetValue("rotationfloor", 0f);
+					angle += level.sector.Fields.GetValue("rotationfloor", 0.0);
 
 				angle = General.ClampAngle(angle);
 
@@ -912,7 +912,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd
-		public virtual void OnChangeTextureRotation(float angle) 
+		public virtual void OnChangeTextureRotation(double angle) 
 		{
 			if(!General.Map.UDMF) return;
 
@@ -957,8 +957,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Adjust to camera view
 			double angle = Angle2D.RadToDeg(General.Map.VisualCamera.AngleXY);
-			if(GeometryType == VisualGeometryType.CEILING) angle += level.sector.Fields.GetValue("rotationceiling", 0f);
-			else angle += level.sector.Fields.GetValue("rotationfloor", 0f);
+			if(GeometryType == VisualGeometryType.CEILING) angle += level.sector.Fields.GetValue("rotationceiling", 0.0);
+			else angle += level.sector.Fields.GetValue("rotationfloor", 0.0);
 			angle = General.ClampAngle(angle);
 
 			if(angle > 315 || angle < 46)

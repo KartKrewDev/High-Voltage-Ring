@@ -84,7 +84,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Avoid black glows
 				if(glowcolor > 0)
 				{
-					float glowheight = data.Sector.Fields.GetValue((floor ? "floorglowheight" : "ceilingglowheight"), 0f);
+					double glowheight = data.Sector.Fields.GetValue((floor ? "floorglowheight" : "ceilingglowheight"), 0.0);
 					if(glowheight > 0f)
 					{
 						// Create glow data

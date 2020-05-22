@@ -298,14 +298,20 @@ namespace CodeImp.DoomBuilder.IO
 				//mxd. Slopes
 				if(s.FloorSlope.GetLengthSq() > 0) 
 				{
+					/*
 					coll.Add("floorplane_a", Math.Round(s.FloorSlope.x, Sector.SLOPE_DECIMALS));
 					coll.Add("floorplane_b", Math.Round(s.FloorSlope.y, Sector.SLOPE_DECIMALS));
 					coll.Add("floorplane_c", Math.Round(s.FloorSlope.z, Sector.SLOPE_DECIMALS));
 					coll.Add("floorplane_d",
 						(double.IsNaN(s.FloorSlopeOffset) ? 0f : Math.Round(s.FloorSlopeOffset, Sector.SLOPE_DECIMALS)));
+					*/
+					coll.Add("floorplane_a", s.FloorSlope.x);
+					coll.Add("floorplane_b", s.FloorSlope.y);
+					coll.Add("floorplane_c", s.FloorSlope.z);
+					coll.Add("floorplane_d", double.IsNaN(s.FloorSlopeOffset) ? 0.0 : s.FloorSlopeOffset);
 				}
 
-				if(s.CeilSlope.GetLengthSq() > 0) 
+				if (s.CeilSlope.GetLengthSq() > 0) 
 				{
 					coll.Add("ceilingplane_a", Math.Round(s.CeilSlope.x, Sector.SLOPE_DECIMALS));
 					coll.Add("ceilingplane_b", Math.Round(s.CeilSlope.y, Sector.SLOPE_DECIMALS));

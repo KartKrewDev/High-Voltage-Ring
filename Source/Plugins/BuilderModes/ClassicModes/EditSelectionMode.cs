@@ -90,12 +90,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			public SectorTextureInfo(Sector s)
 			{
 				// Get transform properties
-				Floor.Offset = new Vector2D(UniFields.GetFloat(s.Fields, "xpanningfloor", 0f), UniFields.GetFloat(s.Fields, "ypanningfloor", 0f));
-				Ceiling.Offset = new Vector2D(UniFields.GetFloat(s.Fields, "xpanningceiling", 0f), UniFields.GetFloat(s.Fields, "ypanningceiling", 0f));
-				Floor.Scale = new Vector2D(UniFields.GetFloat(s.Fields, "xscalefloor", 1.0f), -UniFields.GetFloat(s.Fields, "yscalefloor", 1.0f));
-				Ceiling.Scale = new Vector2D(UniFields.GetFloat(s.Fields, "xscaleceiling", 1.0f), -UniFields.GetFloat(s.Fields, "yscaleceiling", 1.0f));
-				Floor.Rotation = Angle2D.DegToRad(UniFields.GetFloat(s.Fields, "rotationfloor", 0f));
-				Ceiling.Rotation = Angle2D.DegToRad(UniFields.GetFloat(s.Fields, "rotationceiling", 0f));
+				Floor.Offset = new Vector2D(UniFields.GetFloat(s.Fields, "xpanningfloor", 0.0), UniFields.GetFloat(s.Fields, "ypanningfloor", 0.0));
+				Ceiling.Offset = new Vector2D(UniFields.GetFloat(s.Fields, "xpanningceiling", 0.0), UniFields.GetFloat(s.Fields, "ypanningceiling", 0.0));
+				Floor.Scale = new Vector2D(UniFields.GetFloat(s.Fields, "xscalefloor", 1.0), -UniFields.GetFloat(s.Fields, "yscalefloor", 1.0));
+				Ceiling.Scale = new Vector2D(UniFields.GetFloat(s.Fields, "xscaleceiling", 1.0), -UniFields.GetFloat(s.Fields, "yscaleceiling", 1.0));
+				Floor.Rotation = Angle2D.DegToRad(UniFields.GetFloat(s.Fields, "rotationfloor", 0.0));
+				Ceiling.Rotation = Angle2D.DegToRad(UniFields.GetFloat(s.Fields, "rotationceiling", 0.0));
 
 				// Get texture sizes
 				Floor.TextureSize = GetTextureSize(s.LongFloorTexture);

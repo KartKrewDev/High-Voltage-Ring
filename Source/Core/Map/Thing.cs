@@ -494,7 +494,7 @@ namespace CodeImp.DoomBuilder.Map
 		
 		// This updates all properties
 		// NOTE: This does not update sector! (call DetermineSector)
-		public void Update(int type, float x, float y, float zoffset, int angle, int pitch, int roll, float scaleX, float scaleY,
+		public void Update(int type, double x, double y, double zoffset, int angle, int pitch, int roll, double scaleX, double scaleY,
 						   Dictionary<string, bool> flags, int tag, int action, int[] args)
 		{
 			// Apply changes
@@ -673,9 +673,9 @@ namespace CodeImp.DoomBuilder.Map
 		public void SnapToAccuracy(bool usepreciseposition)
 		{
 			// Round the coordinates
-			Vector3D newpos = new Vector3D((float)Math.Round(pos.x, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)),
-										   (float)Math.Round(pos.y, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)),
-										   (float)Math.Round(pos.z, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)));
+			Vector3D newpos = new Vector3D(Math.Round(pos.x, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)),
+										   Math.Round(pos.y, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)),
+										   Math.Round(pos.z, (usepreciseposition ? General.Map.FormatInterface.VertexDecimals : 0)));
 			this.Move(newpos);
 		}
 		
