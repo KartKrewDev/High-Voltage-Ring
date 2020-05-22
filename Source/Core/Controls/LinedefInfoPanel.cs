@@ -445,16 +445,16 @@ namespace CodeImp.DoomBuilder.Controls
 					backpanel.Text += ". Offset " + l.Back.OffsetX + ", " + l.Back.OffsetY + ". Sector " + l.Back.Sector.Index + " ";
 
 					//sidedef top
-					hasTopFields = SetPairedUDMFFieldsLabel(l.Back.Fields, "offsetx_top", "offsety_top", 0f, backTopUDMFOffsetLabel, backTopUDMFOffset, highlight);
-					hasTopFields |= SetPairedUDMFFieldsLabel(l.Back.Fields, "scalex_top", "scaley_top", 1.0f, backTopUDMFScaleLabel, backTopUDMFScale, highlight);
+					hasTopFields = SetPairedUDMFFieldsLabel(l.Back.Fields, "offsetx_top", "offsety_top", 0.0, backTopUDMFOffsetLabel, backTopUDMFOffset, highlight);
+					hasTopFields |= SetPairedUDMFFieldsLabel(l.Back.Fields, "scalex_top", "scaley_top", 1.0, backTopUDMFScaleLabel, backTopUDMFScale, highlight);
 
 					//sidedef middle
-					hasMiddleFields = SetPairedUDMFFieldsLabel(l.Back.Fields, "offsetx_mid", "offsety_mid", 0f, backMidUDMFOffsetLabel, backMidUDMFOffset, highlight);
-					hasMiddleFields |= SetPairedUDMFFieldsLabel(l.Back.Fields, "scalex_mid", "scaley_mid", 1.0f, backMidUDMFScaleLabel, backMidUDMFScale, highlight);
+					hasMiddleFields = SetPairedUDMFFieldsLabel(l.Back.Fields, "offsetx_mid", "offsety_mid", 0.0, backMidUDMFOffsetLabel, backMidUDMFOffset, highlight);
+					hasMiddleFields |= SetPairedUDMFFieldsLabel(l.Back.Fields, "scalex_mid", "scaley_mid", 1.0, backMidUDMFScaleLabel, backMidUDMFScale, highlight);
 
 					//sidedef bottom
-					hasBottomFields = SetPairedUDMFFieldsLabel(l.Back.Fields, "offsetx_bottom", "offsety_bottom", 0f, backBottomUDMFOffsetLabel, backBottomUDMFOffset, highlight);
-					hasBottomFields |= SetPairedUDMFFieldsLabel(l.Back.Fields, "scalex_bottom", "scaley_bottom", 1.0f, backBottomUDMFScaleLabel, backBottomUDMFScale, highlight);
+					hasBottomFields = SetPairedUDMFFieldsLabel(l.Back.Fields, "offsetx_bottom", "offsety_bottom", 0.0, backBottomUDMFOffsetLabel, backBottomUDMFOffset, highlight);
+					hasBottomFields |= SetPairedUDMFFieldsLabel(l.Back.Fields, "scalex_bottom", "scaley_bottom", 1.0, backBottomUDMFScaleLabel, backBottomUDMFScale, highlight);
 
 					//visibility
 					backTopUDMFOffset.Visible = hasTopFields;

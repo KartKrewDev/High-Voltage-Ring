@@ -100,7 +100,7 @@ namespace CodeImp.DoomBuilder.Map
 		#region ================== mxd. Static methods
 
 		// float
-		public static void SetFloat(UniFields fields, string key, double value) { SetFloat(fields, key, value, 0f); }
+		public static void SetFloat(UniFields fields, string key, double value) { SetFloat(fields, key, value, 0.0); }
 		public static void SetFloat(UniFields fields, string key, double value, double defaultvalue)
 		{
 			if(fields == null) return;
