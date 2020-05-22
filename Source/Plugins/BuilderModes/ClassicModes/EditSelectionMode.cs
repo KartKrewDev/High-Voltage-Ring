@@ -898,8 +898,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				double trotation = rotateoffsets ? (si.Rotation + texrotation) : (si.Rotation);
 				Vector2D offset = selectioncenter.GetRotated(trotation);
 
-				fields["xpanning" + si.Part] = new UniValue(UniversalType.Float, (float)Math.Round(-offset.x, General.Map.FormatInterface.VertexDecimals));
-				fields["ypanning" + si.Part] = new UniValue(UniversalType.Float, (float)Math.Round(offset.y, General.Map.FormatInterface.VertexDecimals));
+				fields["xpanning" + si.Part] = new UniValue(UniversalType.Float, Math.Round(-offset.x, General.Map.FormatInterface.VertexDecimals));
+				fields["ypanning" + si.Part] = new UniValue(UniversalType.Float, Math.Round(offset.y, General.Map.FormatInterface.VertexDecimals));
 
 			}
 			// Restore texture offsets
@@ -911,7 +911,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Update rotation
 			if(rotateoffsets)
-				fields["rotation" + si.Part] = new UniValue(UniversalType.AngleDegreesFloat, General.ClampAngle((float)Math.Round(Angle2D.RadToDeg(si.Rotation + texrotation), General.Map.FormatInterface.VertexDecimals)));
+				fields["rotation" + si.Part] = new UniValue(UniversalType.AngleDegreesFloat, General.ClampAngle(Math.Round(Angle2D.RadToDeg(si.Rotation + texrotation), General.Map.FormatInterface.VertexDecimals)));
 			// Restore rotation
 			else 
 				fields["rotation" + si.Part] = new UniValue(UniversalType.AngleDegreesFloat, Angle2D.RadToDeg(si.Rotation));
@@ -919,8 +919,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Update scale
 			if(scaleoffsets)
 			{
-				fields["xscale" + si.Part] = new UniValue(UniversalType.Float, (float) Math.Round(si.Scale.x * scale.x, General.Map.FormatInterface.VertexDecimals));
-				fields["yscale" + si.Part] = new UniValue(UniversalType.Float, (float) Math.Round(-si.Scale.y * scale.y, General.Map.FormatInterface.VertexDecimals));
+				fields["xscale" + si.Part] = new UniValue(UniversalType.Float, Math.Round(si.Scale.x * scale.x, General.Map.FormatInterface.VertexDecimals));
+				fields["yscale" + si.Part] = new UniValue(UniversalType.Float, Math.Round(-si.Scale.y * scale.y, General.Map.FormatInterface.VertexDecimals));
 			}
 			// Restore scale
 			else 

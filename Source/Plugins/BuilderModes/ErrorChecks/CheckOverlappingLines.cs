@@ -86,11 +86,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 									// the lines may be touching at the ends when sharing the same vertex.
 									if(General.Map.FormatInterface.VertexDecimals > 0) //mxd
 									{
-										lu = (float)Math.Round(lu, General.Map.FormatInterface.VertexDecimals);
-										du = (float)Math.Round(du, General.Map.FormatInterface.VertexDecimals);
+										lu = Math.Round(lu, General.Map.FormatInterface.VertexDecimals);
+										du = Math.Round(du, General.Map.FormatInterface.VertexDecimals);
 									}
 									
-									if((lu > 0.0f) && (lu < 1.0f) && (du > 0.0f) && (du < 1.0f))
+									if((lu > 0.0) && (lu < 1.0) && (du > 0.0) && (du < 1.0))
 									{
 										// Check if not the same sector on all sides
 										Sector samesector = null;

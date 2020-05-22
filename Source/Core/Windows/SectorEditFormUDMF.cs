@@ -142,7 +142,7 @@ namespace CodeImp.DoomBuilder.Windows
 				//UDMF slopes
 				if(s.FloorSlope.GetLengthSq() > 0)
 				{
-					FloorSlopeAngleXY = General.ClampAngle((float)Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleXY()) - 180, 1));
+					FloorSlopeAngleXY = General.ClampAngle(Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleXY()) - 180, 1));
 					FloorSlopeAngleZ = -Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleZ()) - 90, 1);
 					FloorSlopeOffset = (double.IsNaN(s.FloorSlopeOffset) ? s.FloorHeight : s.FloorSlopeOffset);
 				} 
@@ -156,7 +156,7 @@ namespace CodeImp.DoomBuilder.Windows
 
 				if(s.CeilSlope.GetLengthSq() > 0)
 				{
-					CeilSlopeAngleXY = General.ClampAngle((float)Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleXY()) - 180, 1));
+					CeilSlopeAngleXY = General.ClampAngle(Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleXY()) - 180, 1));
 					CeilSlopeAngleZ = -Math.Round(270 - Angle2D.RadToDeg(s.CeilSlope.GetAngleZ()), 1);
 					CeilSlopeOffset = (double.IsNaN(s.CeilSlopeOffset) ? s.CeilHeight : s.CeilSlopeOffset);
 				} 
@@ -906,12 +906,12 @@ namespace CodeImp.DoomBuilder.Windows
 				}
 
 				// Clear horizontal slopes
-				if((float)Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleZ()), 3) == 90f)
+				if(Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleZ()), 3) == 90.0)
 				{
 					s.FloorSlope = new Vector3D();
 					s.FloorSlopeOffset = float.NaN;
 				}
-				if((float)Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleZ()), 3) == 270f)
+				if(Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleZ()), 3) == 270.0)
 				{
 					s.CeilSlope = new Vector3D();
 					s.CeilSlopeOffset = float.NaN;
@@ -1237,7 +1237,7 @@ namespace CodeImp.DoomBuilder.Windows
 				
 				foreach(Sector s in sectors) 
 				{
-					UniFields.SetFloat(s.Fields, "rotationfloor", sectorprops[s].FloorRotation, 0f);
+					UniFields.SetFloat(s.Fields, "rotationfloor", sectorprops[s].FloorRotation, 0.0);
 					s.UpdateNeeded = true;
 				}
 			} 
@@ -1247,7 +1247,7 @@ namespace CodeImp.DoomBuilder.Windows
 				
 				foreach(Sector s in sectors) 
 				{
-					UniFields.SetFloat(s.Fields, "rotationfloor", floorRotation.GetResultFloat(sectorprops[s].FloorRotation), 0f);
+					UniFields.SetFloat(s.Fields, "rotationfloor", floorRotation.GetResultFloat(sectorprops[s].FloorRotation), 0.0);
 					s.UpdateNeeded = true;
 				}
 			}
@@ -1271,7 +1271,7 @@ namespace CodeImp.DoomBuilder.Windows
 				
 				foreach(Sector s in sectors) 
 				{
-					UniFields.SetFloat(s.Fields, "rotationceiling", sectorprops[s].CeilRotation, 0f);
+					UniFields.SetFloat(s.Fields, "rotationceiling", sectorprops[s].CeilRotation, 0.0);
 					s.UpdateNeeded = true;
 				}
 			} 
@@ -1281,7 +1281,7 @@ namespace CodeImp.DoomBuilder.Windows
 				
 				foreach(Sector s in sectors) 
 				{
-					UniFields.SetFloat(s.Fields, "rotationceiling", ceilRotation.GetResultFloat(sectorprops[s].CeilRotation), 0f);
+					UniFields.SetFloat(s.Fields, "rotationceiling", ceilRotation.GetResultFloat(sectorprops[s].CeilRotation), 0.0);
 					s.UpdateNeeded = true;
 				}
 			}
@@ -1659,9 +1659,9 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if(s.FloorSlope.GetLengthSq() > 0) 
 			{
-				float anglexy = General.ClampAngle((float)Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleXY()) - 180, 1));
-				float anglez = -(float)Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleZ()) - 90, 1);
-				float offset = (float)Math.Round(GetVirtualSlopeOffset(s, floorslopecontrol.PivotMode, true), 1);
+				double anglexy = General.ClampAngle(Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleXY()) - 180, 1));
+				double anglez = -Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleZ()) - 90, 1);
+				double offset = Math.Round(GetVirtualSlopeOffset(s, floorslopecontrol.PivotMode, true), 1);
 
 				if(anglexy >= 180 && anglez < 0) 
 				{
@@ -1673,7 +1673,7 @@ namespace CodeImp.DoomBuilder.Windows
 			} 
 			else 
 			{
-				floorslopecontrol.SetValues(0f, 0f, s.FloorHeight, first);
+				floorslopecontrol.SetValues(0.0, 0.0, s.FloorHeight, first);
 			}
 		}
 
@@ -1681,9 +1681,9 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if(s.CeilSlope.GetLengthSq() > 0) 
 			{
-				float anglexy = General.ClampAngle((float)Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleXY()) - 180, 1));
-				float anglez = -(float)(270 - Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleZ()), 1));
-				float offset = (float)Math.Round(GetVirtualSlopeOffset(s, ceilingslopecontrol.PivotMode, false), 1);
+				double anglexy = General.ClampAngle(Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleXY()) - 180, 1));
+				double anglez = -(270 - Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleZ()), 1));
+				double offset = Math.Round(GetVirtualSlopeOffset(s, ceilingslopecontrol.PivotMode, false), 1);
 
 				if(anglexy >= 180 && anglez < 0) 
 				{
@@ -1695,7 +1695,7 @@ namespace CodeImp.DoomBuilder.Windows
 			} 
 			else 
 			{
-				ceilingslopecontrol.SetValues(0f, 0f, s.CeilHeight, first);
+				ceilingslopecontrol.SetValues(0.0, 0.0, s.CeilHeight, first);
 			}
 		}
 
@@ -1942,7 +1942,7 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				foreach(Sector s in sectors)
 				{
-					UniFields.SetFloat(s.Fields, "ceilingglowheight", sectorprops[s].CeilGlowHeight, 0f);
+					UniFields.SetFloat(s.Fields, "ceilingglowheight", sectorprops[s].CeilGlowHeight, 0.0);
 					s.UpdateNeeded = true;
 				}
 			}
@@ -1950,14 +1950,14 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				foreach(Sector s in sectors)
 				{
-					double value = General.Clamp(ceilingglowheight.GetResultFloat(sectorprops[s].CeilGlowHeight), 0f, float.MaxValue);
-					UniFields.SetFloat(s.Fields, "ceilingglowheight", value, 0f);
+					double value = General.Clamp(ceilingglowheight.GetResultFloat(sectorprops[s].CeilGlowHeight), 0.0, double.MaxValue);
+					UniFields.SetFloat(s.Fields, "ceilingglowheight", value, 0.0);
 					s.UpdateNeeded = true;
 				}
 			}
 
 			// Update "Reset" button
-			resetceilingglowheight.Visible = (ceilingglowheight.GetResultFloat(0f) != 0f);
+			resetceilingglowheight.Visible = (ceilingglowheight.GetResultFloat(0.0) != 0.0);
 
 			// Show height warning?
 			UpdateCeilingGlowHeightWarning();
@@ -1976,7 +1976,7 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				foreach(Sector s in sectors)
 				{
-					UniFields.SetFloat(s.Fields, "floorglowheight", sectorprops[s].FloorGlowHeight, 0f);
+					UniFields.SetFloat(s.Fields, "floorglowheight", sectorprops[s].FloorGlowHeight, 0.0);
 					s.UpdateNeeded = true;
 				}
 			}
@@ -1984,14 +1984,14 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				foreach(Sector s in sectors)
 				{
-					double value = General.Clamp(floorglowheight.GetResultFloat(sectorprops[s].FloorGlowHeight), 0f, double.MaxValue);
-					UniFields.SetFloat(s.Fields, "floorglowheight", value, 0f);
+					double value = General.Clamp(floorglowheight.GetResultFloat(sectorprops[s].FloorGlowHeight), 0.0, double.MaxValue);
+					UniFields.SetFloat(s.Fields, "floorglowheight", value, 0.0);
 					s.UpdateNeeded = true;
 				}
 			}
 
 			// Update "Reset" button
-			resetfloorglowheight.Visible = (floorglowheight.GetResultFloat(0f) != 0f);
+			resetfloorglowheight.Visible = (floorglowheight.GetResultFloat(0.0) != 0.0);
 
 			// Show height warning?
 			UpdateFloorGlowHeightWarning();

@@ -618,8 +618,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(coordinates.Length == 0) return null;
 
-			direction.x = (float)Math.Round(direction.x);
-			direction.y = (float)Math.Round(direction.y);
+			direction.x = Math.Round(direction.x);
+			direction.y = Math.Round(direction.y);
 
 			Vector3D[] translatedCoords = new Vector3D[coordinates.Length];
 
@@ -667,7 +667,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			//move them
 			for(int i = 0; i < coordinates.Length; i++)
-				translatedCoords[i] = new Vector3D((float)Math.Round(direction.x - (selectionCenter.x - coordinates[i].x)), (float)Math.Round(direction.y - (selectionCenter.y - coordinates[i].y)), (float)Math.Round(coordinates[i].z));
+				translatedCoords[i] = new Vector3D(Math.Round(direction.x - (selectionCenter.x - coordinates[i].x)), Math.Round(direction.y - (selectionCenter.y - coordinates[i].y)), Math.Round(coordinates[i].z));
 
 			return translatedCoords;
 		}
@@ -4487,18 +4487,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//mxd. Apply Scale
 				if(matchtop)
 				{
-					UniFields.SetFloat(j.sidedef.Fields, "scalex_top", first.scaleX, 1.0f);
-					UniFields.SetFloat(j.sidedef.Fields, "scaley_top", j.scaleY, 1.0f);
+					UniFields.SetFloat(j.sidedef.Fields, "scalex_top", first.scaleX, 1.0);
+					UniFields.SetFloat(j.sidedef.Fields, "scaley_top", j.scaleY, 1.0);
 				}
 				if(matchmid)
 				{
-					UniFields.SetFloat(j.controlSide.Fields, "scalex_mid", first.scaleX, 1.0f);
-					UniFields.SetFloat(j.controlSide.Fields, "scaley_mid", j.scaleY, 1.0f);
+					UniFields.SetFloat(j.controlSide.Fields, "scalex_mid", first.scaleX, 1.0);
+					UniFields.SetFloat(j.controlSide.Fields, "scaley_mid", j.scaleY, 1.0);
 				}
 				if(matchbottom)
 				{
-					UniFields.SetFloat(j.sidedef.Fields, "scalex_bottom", first.scaleX, 1.0f);
-					UniFields.SetFloat(j.sidedef.Fields, "scaley_bottom", j.scaleY, 1.0f);
+					UniFields.SetFloat(j.sidedef.Fields, "scalex_bottom", first.scaleX, 1.0);
+					UniFields.SetFloat(j.sidedef.Fields, "scaley_bottom", j.scaleY, 1.0);
 				}
 
 				if(j.forward) 
@@ -4615,7 +4615,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								}
 
 								j.sidedef.Fields["offsety_mid"] = new UniValue(UniversalType.Float, 
-									(float)Math.Round(offset, General.Map.FormatInterface.VertexDecimals)); //mxd
+									Math.Round(offset, General.Map.FormatInterface.VertexDecimals)); //mxd
 							}
 						}
 					}
@@ -4626,12 +4626,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						// If the texture gets replaced with a "hires" texture it adds more fuckery
 						if (texture is HiResImage)
-							forwardoffset = j.offsetx + (float)Math.Round(((float)Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
+							forwardoffset = j.offsetx + Math.Round((Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
 						else
-							forwardoffset = j.offsetx + (float)Math.Round(((float)Math.Round(j.sidedef.Line.Length) / scalex * Math.Abs(first.scaleX)) % vwidth, General.Map.FormatInterface.VertexDecimals);
+							forwardoffset = j.offsetx + Math.Round((Math.Round(j.sidedef.Line.Length) / scalex * Math.Abs(first.scaleX)) % vwidth, General.Map.FormatInterface.VertexDecimals);
 					}
 					else
-						forwardoffset = (float)Math.Round((j.offsetx + (float)Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals); 
+						forwardoffset = Math.Round((j.offsetx + Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals); 
 
 					// Done this sidedef
 					j.sidedef.Marked = true;
@@ -4656,12 +4656,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							// If the texture gets replaced with a "hires" texture it adds more fuckery
 							if (texture is HiResImage)
-								offset = (float)Math.Round((j.offsetx - j.sidedef.OffsetX - (float)Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
+								offset = Math.Round((j.offsetx - j.sidedef.OffsetX - Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
 							else
-								offset = (float)Math.Round((j.offsetx - j.sidedef.OffsetX - (float)Math.Round(j.sidedef.Line.Length) / scalex * first.scaleX) % vwidth, General.Map.FormatInterface.VertexDecimals);
+								offset = Math.Round((j.offsetx - j.sidedef.OffsetX - Math.Round(j.sidedef.Line.Length) / scalex * first.scaleX) % vwidth, General.Map.FormatInterface.VertexDecimals);
 						}
 						else
-							offset = (float)Math.Round((j.offsetx - j.sidedef.OffsetX - (float)Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals);
+							offset = Math.Round((j.offsetx - j.sidedef.OffsetX - Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals);
 
 						if(matchtop)
 						{
@@ -4731,7 +4731,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							else 
 							{
 								ImageData tex = General.Map.Data.GetTextureImage(j.sidedef.LongMiddleTexture);
-								double scale = !worldpanning ? j.scaleY / scaley : 1.0f;
+								double scale = !worldpanning ? j.scaleY / scaley : 1.0;
 								offset = Tools.GetSidedefMiddleOffsetY(j.sidedef, offset, scale, true);
 
 								if(tex != null && tex.IsImageLoaded)
@@ -4778,12 +4778,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						// If the texture gets replaced with a "hires" texture it adds more fuckery
 						if (texture is HiResImage)
-							backwardoffset = (float)Math.Round((j.offsetx - (float)Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
+							backwardoffset = Math.Round((j.offsetx - Math.Round(j.sidedef.Line.Length) / scalex) % vwidth, General.Map.FormatInterface.VertexDecimals);
 						else
-							backwardoffset = (float)Math.Round((j.offsetx - (float)Math.Round(j.sidedef.Line.Length) / scalex * Math.Abs(first.scaleX)) % vwidth, General.Map.FormatInterface.VertexDecimals);
+							backwardoffset = Math.Round((j.offsetx - Math.Round(j.sidedef.Line.Length) / scalex * Math.Abs(first.scaleX)) % vwidth, General.Map.FormatInterface.VertexDecimals);
 					}
 					else
-						backwardoffset = (float)Math.Round((j.offsetx - (float)Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals);
+						backwardoffset = Math.Round((j.offsetx - Math.Round(j.sidedef.Line.Length)) % vwidth, General.Map.FormatInterface.VertexDecimals);
 
 					// Done this sidedef
 					j.sidedef.Marked = true;

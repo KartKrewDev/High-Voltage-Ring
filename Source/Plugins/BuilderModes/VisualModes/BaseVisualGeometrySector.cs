@@ -292,16 +292,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Sector.Sector.Fields.BeforeFieldsChange();
 
 			//find an angle to rotate texture
-			float sourceAngle = (float)Math.Round(General.ClampAngle(isFront ? -Angle2D.RadToDeg(targetLine.Angle) + 90 : -Angle2D.RadToDeg(targetLine.Angle) - 90), 1);
+			double sourceAngle = Math.Round(General.ClampAngle(isFront ? -Angle2D.RadToDeg(targetLine.Angle) + 90 : -Angle2D.RadToDeg(targetLine.Angle) - 90), 1);
 			if(!isFront) sourceAngle = General.ClampAngle(sourceAngle + 180);
 
 			//update angle
-			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "rotationfloor" : "rotationceiling"), sourceAngle, 0f);
+			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "rotationfloor" : "rotationceiling"), sourceAngle, 0.0);
 
 			// Scale texture if it's a slope and the appropriate option is set
 			if (level.plane.Normal.z != 1.0f && BuilderPlug.Me.ScaleTexturesOnSlopes != 2)
 			{
-				Vector2D basescale = new Vector2D(1.0f, 1.0f);
+				Vector2D basescale = new Vector2D(1.0, 1.0);
 
 				// User wants to use the current scale as a base?
 				if(BuilderPlug.Me.ScaleTexturesOnSlopes == 1)
@@ -325,8 +325,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			//set scale
-			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "xscalefloor" : "xscaleceiling"), scaleX, 1.0f);
-			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "yscalefloor" : "yscaleceiling"), scaleY, 1.0f);
+			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "xscalefloor" : "xscaleceiling"), scaleX, 1.0);
+			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "yscalefloor" : "yscaleceiling"), scaleY, 1.0);
 
 			//update offset
 			double distToStart = Vector2D.Distance(hitpos, targetLine.Start.Position);
@@ -925,7 +925,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Set new angle
 			Sector s = GetControlSector();
 			s.Fields.BeforeFieldsChange();
-			UniFields.SetFloat(s.Fields, key, angle, 0.0f);
+			UniFields.SetFloat(s.Fields, key, angle, 0.0);
 
 			// Mark as changed
 			changed = true;

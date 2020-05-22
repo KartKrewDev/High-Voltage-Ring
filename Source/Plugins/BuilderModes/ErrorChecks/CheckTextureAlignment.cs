@@ -189,13 +189,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					continue;
 
 				// Not aligned if scaley is not equal
-				float targetscaley = GetSidedefValue(target, targetparttype, "scaley", 1.0f);
+				double targetscaley = GetSidedefValue(target, targetparttype, "scaley", 1.0);
 				if(targetscaley != linescaley) 
 				{
 					SubmitResult(new ResultTexturesMisaligned(sidedef, target, texturename));
 				}
 
-				float targetscalex = GetSidedefValue(target, targetparttype, "scalex", 1.0f);
+				double targetscalex = GetSidedefValue(target, targetparttype, "scalex", 1.0);
 
 				alignedY %= texture.Height;
 				if(alignedY < 0) alignedY += texture.Height;
@@ -238,7 +238,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					continue;
 
 				// Not aligned if scaley is not equal
-				float targetscaley = GetSidedefValue(target, targetparttype, "scaley", 1.0f);
+				double targetscaley = GetSidedefValue(target, targetparttype, "scaley", 1.0);
 				if(targetscaley != linescaley)
 				{
 					SubmitResult(new ResultTexturesMisaligned(sidedef, target, texturename));
@@ -247,7 +247,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				alignedY %= texture.Height;
 				if(alignedY < 0) alignedY += texture.Height;
 
-				int alignedX = (target.OffsetX + (int)GetSidedefValue(target, targetparttype, "offsetx", 0f) - (int)Math.Round(sidedef.Line.Length / scalex * linescalex)) % texture.Width;
+				int alignedX = (target.OffsetX + (int)GetSidedefValue(target, targetparttype, "offsetx", 0.0) - (int)Math.Round(sidedef.Line.Length / scalex * linescalex)) % texture.Width;
 				if(alignedX < 0) alignedX += texture.Width;
 
 				// Submit result if target offsets don't match expected ones
@@ -261,18 +261,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
-		private static float GetSidedefValue(Sidedef target, VisualGeometryType targetparttype, string key, float defaultvalue) 
+		private static double GetSidedefValue(Sidedef target, VisualGeometryType targetparttype, string key, double defaultvalue) 
 		{
 			switch(targetparttype)
 			{
 				case VisualGeometryType.WALL_UPPER:
-					return (float)Math.Round(UniFields.GetFloat(target.Fields, key + "_top", defaultvalue), 3);
+					return Math.Round(UniFields.GetFloat(target.Fields, key + "_top", defaultvalue), 3);
 
 				case VisualGeometryType.WALL_MIDDLE:
-					return (float)Math.Round(UniFields.GetFloat(target.Fields, key + "_mid", defaultvalue), 3);
+					return Math.Round(UniFields.GetFloat(target.Fields, key + "_mid", defaultvalue), 3);
 
 				case VisualGeometryType.WALL_LOWER:
-					return (float)Math.Round(UniFields.GetFloat(target.Fields, key + "_bottom", defaultvalue), 3);
+					return Math.Round(UniFields.GetFloat(target.Fields, key + "_bottom", defaultvalue), 3);
 			}
 
 			return 0;

@@ -475,7 +475,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				Line2D dline = new Line2D(mousemappos, points[points.Count - 1].pos);
 				bool foundintersection = false;
-				double u = 0.0f;
+				double u = 0.0;
 				List<Line2D> blines = new List<Line2D>();
 
 				// lines for left, top, right and bottom boundaries
@@ -491,7 +491,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						// only check for intersection if the last set point is not on the
 						// line we are checking against
-						if(blines[i].GetSideOfLine(points[points.Count - 1].pos) != 0.0f)
+						if(blines[i].GetSideOfLine(points[points.Count - 1].pos) != 0.0)
 						{
 							foundintersection = blines[i].GetIntersection(dline, out u);
 						}
@@ -520,8 +520,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else
 			{
 				// Normal position
-				p.pos.x = (float)Math.Round(vm.x); //mxd
-				p.pos.y = (float)Math.Round(vm.y); //mxd
+				p.pos.x = Math.Round(vm.x); //mxd
+				p.pos.y = Math.Round(vm.y); //mxd
 
 				return p;
 			}

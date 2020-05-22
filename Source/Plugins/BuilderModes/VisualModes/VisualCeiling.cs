@@ -315,7 +315,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				double pix = (int)Math.Round(Texture.Width * scaleX) - incrementX;
 				double newscaleX = Math.Round(pix / Texture.Width, 3);
 				scaleX = (newscaleX == 0 ? scaleX * -1 : newscaleX);
-				UniFields.SetFloat(s.Fields, "xscaleceiling", scaleX, 1.0f);
+				UniFields.SetFloat(s.Fields, "xscaleceiling", scaleX, 1.0);
 			}
 
 			if(incrementY != 0) 
@@ -323,7 +323,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				double pix = (int)Math.Round(Texture.Height * scaleY) - incrementY;
 				double newscaleY = Math.Round(pix / Texture.Height, 3);
 				scaleY = (newscaleY == 0 ? scaleY * -1 : newscaleY);
-				UniFields.SetFloat(s.Fields, "yscaleceiling", scaleY, 1.0f);
+				UniFields.SetFloat(s.Fields, "yscaleceiling", scaleY, 1.0);
 			}
 
 			mode.SetActionResult("Ceiling scale changed to " + scaleX.ToString("F03", CultureInfo.InvariantCulture) + ", " + scaleY.ToString("F03", CultureInfo.InvariantCulture) + " (" + (int)Math.Round(Texture.Width / scaleX) + " x " + (int)Math.Round(Texture.Height / scaleY) + ").");

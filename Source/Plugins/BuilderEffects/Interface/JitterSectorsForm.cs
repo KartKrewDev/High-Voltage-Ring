@@ -474,7 +474,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 				{
 					foreach(HeightOffsetVertexData vd in sectorData[i].Verts) 
 					{
-						vd.Vertex.ZCeiling = vd.InitialCeilingHeight - (float)Math.Floor(curAmmount
+						vd.Vertex.ZCeiling = vd.InitialCeilingHeight - Math.Floor(curAmmount
 							* ModifyByOffsetMode(vd.JitterCeilingHeight, ceiloffsetmode.SelectedIndex));
 					}
 				} 
@@ -506,7 +506,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 				{
 					foreach(HeightOffsetVertexData vd in sectorData[i].Verts) 
 					{
-						vd.Vertex.ZFloor = vd.InitialFloorHeight + (float)Math.Floor(curAmmount
+						vd.Vertex.ZFloor = vd.InitialFloorHeight + Math.Floor(curAmmount
 							* ModifyByOffsetMode(vd.JitterFloorHeight, flooroffsetmode.SelectedIndex));
 					}
 				} 

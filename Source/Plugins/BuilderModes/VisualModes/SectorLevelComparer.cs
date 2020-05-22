@@ -26,7 +26,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(x == y) return 0; //mxd
 
 			//mxd. Handle surfaces with the same height
-			float diff = (float)Math.Round(x.plane.GetZ(center) - y.plane.GetZ(center), 3);
+			double diff = Math.Round(x.plane.GetZ(center) - y.plane.GetZ(center), 3);
 			if(diff == 0)
 			{
 				bool xislight = (x.type == SectorLevelType.Light || x.type == SectorLevelType.Glow);

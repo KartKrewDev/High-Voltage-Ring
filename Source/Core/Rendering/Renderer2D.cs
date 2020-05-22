@@ -883,8 +883,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			Vector2D center = GridSetup.SnappedToGrid(0.5f * (ltview + rbview), size, sizeinv, angle, originx, originy);
 
 			// Get the angle vectors for the gridlines
-			Vector2D dx = new Vector2D((float)Math.Cos(angle), (float)Math.Sin(angle));
-			Vector2D dy = new Vector2D((float)-Math.Sin(angle), (float)Math.Cos(angle));
+			Vector2D dx = new Vector2D(Math.Cos(angle), Math.Sin(angle));
+			Vector2D dy = new Vector2D(-Math.Sin(angle), Math.Cos(angle));
 
 			double maxextent = Math.Max(mapsize.x, mapsize.y);
 			RectangleF bounds = new RectangleF((float)tlb.x, (float)tlb.y, (float)(rbb.x - tlb.x), (float)(rbb.y - tlb.y));
@@ -1897,8 +1897,8 @@ namespace CodeImp.DoomBuilder.Rendering
 				if(line.RenderArrowhead)
 				{
 					double angle = line.GetAngle();
-					Vector2D a1 = new Vector2D(line.End.x - scaler * (float)Math.Sin(angle - 0.46f), line.End.y + scaler * (float)Math.Cos(angle - 0.46f)).GetTransformed(translatex, translatey, scale, -scale); //arrowhead end 1
-					Vector2D a2 = new Vector2D(line.End.x - scaler * (float)Math.Sin(angle + 0.46f), line.End.y + scaler * (float)Math.Cos(angle + 0.46f)).GetTransformed(translatex, translatey, scale, -scale); //arrowhead end 2
+					Vector2D a1 = new Vector2D(line.End.x - scaler * Math.Sin(angle - 0.46f), line.End.y + scaler * Math.Cos(angle - 0.46f)).GetTransformed(translatex, translatey, scale, -scale); //arrowhead end 1
+					Vector2D a2 = new Vector2D(line.End.x - scaler * Math.Sin(angle + 0.46f), line.End.y + scaler * Math.Cos(angle + 0.46f)).GetTransformed(translatex, translatey, scale, -scale); //arrowhead end 2
 					
 					verts[pointscount] = verts[pointscount - 1];
 					verts[pointscount + 1].x = (float)a1.x;

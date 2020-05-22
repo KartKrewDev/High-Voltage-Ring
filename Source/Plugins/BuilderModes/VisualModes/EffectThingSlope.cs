@@ -93,7 +93,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					double angle = Angle2D.DoomToReal((int)Angle2D.RadToDeg(t.Angle));
 					double vangle = Angle2D.DegToRad(General.Clamp(t.Args[0], 0, 180)); //mxd. Don't underestimate user stupidity (or curiosity)!
-					Vector2D point = new Vector2D(t.Position.x + (float)Math.Cos(angle) * (float)Math.Sin(vangle), t.Position.y + (float)Math.Sin(angle) * (float)Math.Sin(vangle));
+					Vector2D point = new Vector2D(t.Position.x + Math.Cos(angle) * Math.Sin(vangle), t.Position.y + Math.Sin(angle) * Math.Sin(vangle));
 					Vector2D perpendicular = new Line2D(t.Position, point).GetPerpendicular();
 
 					Vector3D v1 = new Vector3D(t.Position.x, t.Position.y, t.Position.z + t.Sector.CeilHeight);
@@ -101,13 +101,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					Vector3D v2 = new Vector3D(
 						point.x + perpendicular.x,
 						point.y + perpendicular.y,
-						t.Position.z + t.Sector.CeilHeight + (float)Math.Cos(vangle)
+						t.Position.z + t.Sector.CeilHeight + Math.Cos(vangle)
 					);
 
 					Vector3D v3 = new Vector3D(
 						point.x - perpendicular.x,
 						point.y - perpendicular.y,
-						t.Position.z + t.Sector.CeilHeight + (float)Math.Cos(vangle)
+						t.Position.z + t.Sector.CeilHeight + Math.Cos(vangle)
 					);
 
 					SectorData sd = data.Mode.GetSectorData(t.Sector);

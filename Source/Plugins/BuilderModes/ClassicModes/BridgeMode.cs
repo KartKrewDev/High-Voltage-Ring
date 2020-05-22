@@ -163,9 +163,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.ClassicModes
 					//angle of line, connecting handles ControlledPoints
 					double dirAngle = -Math.Atan2(handle.Pair.ControlledPoint.y - handle.ControlledPoint.y, handle.Pair.ControlledPoint.x - handle.ControlledPoint.x);
 					double length = Math.Sqrt(Math.Pow(Math.Abs(pos.x), 2.0) + Math.Pow(Math.Abs(pos.y), 2.0));
-					double mirroredAngle = angle + dirAngle * 2.0f;
+					double mirroredAngle = angle + dirAngle * 2.0;
 
-					handle.Pair.RelativePosition = new Vector2D((float)Math.Sin(mirroredAngle) * length, (float)Math.Cos(mirroredAngle) * length);
+					handle.Pair.RelativePosition = new Vector2D(Math.Sin(mirroredAngle) * length, Math.Cos(mirroredAngle) * length);
 				} 
 				else if(form.CopyMode) 
 				{

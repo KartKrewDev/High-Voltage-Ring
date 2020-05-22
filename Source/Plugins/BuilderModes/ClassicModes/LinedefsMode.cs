@@ -290,11 +290,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				s.Fields.BeforeFieldsChange();
 
-				float sourceAngle = (float)Math.Round(General.ClampAngle(alignToFrontSide ? -Angle2D.RadToDeg(l.Angle) + 90 : -Angle2D.RadToDeg(l.Angle) - 90), 1);
+				double sourceAngle = Math.Round(General.ClampAngle(alignToFrontSide ? -Angle2D.RadToDeg(l.Angle) + 90 : -Angle2D.RadToDeg(l.Angle) - 90), 1);
 				if(!alignToFrontSide) sourceAngle = General.ClampAngle(sourceAngle + 180);
 
 				//update angle
-				UniFields.SetFloat(s.Fields, (alignFloors ? "rotationfloor" : "rotationceiling"), sourceAngle, 0f);
+				UniFields.SetFloat(s.Fields, (alignFloors ? "rotationfloor" : "rotationceiling"), sourceAngle, 0.0);
 
 				//update offset
 				Vector2D offset = (alignToFrontSide ? l.Start.Position : l.End.Position).GetRotated(Angle2D.DegToRad(sourceAngle));

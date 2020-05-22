@@ -115,8 +115,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Vector2D[] shape = new Vector2D[subdivisions + 1];
 
 			bool doBevel = false;
-			float hw = width / 2.0f;
-			float hh = height / 2.0f;
+			double hw = width / 2.0;
+			double hh = height / 2.0;
 
 			Vector2D center = new Vector2D(pStart.x + hw, pStart.y + hh);
 			double curAngle = angle;
@@ -127,13 +127,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				double px, py;
 				if(doBevel) 
 				{
-					px = (center.x - (float)Math.Sin(curAngle) * (hw + currentbevelwidth));
-					py = (center.y - (float)Math.Cos(curAngle) * (hh + currentbevelwidth));
+					px = (center.x - Math.Sin(curAngle) * (hw + currentbevelwidth));
+					py = (center.y - Math.Cos(curAngle) * (hh + currentbevelwidth));
 				} 
 				else 
 				{
-					px = (center.x - (float)Math.Sin(curAngle) * hw);
-					py = (center.y - (float)Math.Cos(curAngle) * hh);
+					px = (center.x - Math.Sin(curAngle) * hw);
+					py = (center.y - Math.Cos(curAngle) * hh);
 				}
 				doBevel = !doBevel;
 				shape[i] = new Vector2D(px, py);
@@ -159,8 +159,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// Calculate scalers
-			double scalerx = 1.0f;
-			double scalery = 1.0f;
+			double scalerx = 1.0;
+			double scalery = 1.0;
 			
 			if(minx != pStart.x || maxx != pEnd.x)
 				scalerx = (pEnd.x - pStart.x) / (maxx - minx);
@@ -192,7 +192,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(miny != pStart.y) offset.y = pStart.y - miny;
 
 			// Apply offset...
-			if(offset.x != 0.0f || offset.y != 0.0f)
+			if(offset.x != 0.0 || offset.y != 0.0)
 				for(int i = 0; i < shape.Length; i++) shape[i] += offset;
 
 			// Done

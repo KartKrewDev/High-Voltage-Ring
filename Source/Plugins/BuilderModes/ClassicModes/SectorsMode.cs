@@ -2016,8 +2016,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						foreach(Sector s in orderedselection) 
 						{
 							s.Fields.BeforeFieldsChange();
-							float u = index / (float) (orderedselection.Count - 1);
-							float b = (float)Math.Round(InterpolationTools.Interpolate(startbrightness, endbrightness, u, interpolationmode));
+							double u = index / (orderedselection.Count - 1);
+							double b = Math.Round(InterpolationTools.Interpolate(startbrightness, endbrightness, u, interpolationmode));
 
 							//absolute flag set?
 							if(s.Fields.GetValue(lightAbsKey, false)) 

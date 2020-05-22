@@ -640,8 +640,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			fp = WorldToTex(fp);
 			
 			// Snap to the nearest left-top corner
-			fp.x = (float)Math.Floor(fp.x / texture.ScaledWidth) * texture.ScaledWidth;
-			fp.y = (float)Math.Ceiling(fp.y / texture.ScaledHeight) * texture.ScaledHeight;
+			fp.x = Math.Floor(fp.x / texture.ScaledWidth) * texture.ScaledWidth;
+			fp.y = Math.Ceiling(fp.y / texture.ScaledHeight) * texture.ScaledHeight;
 
 			// Now move the offset so that the 0,0 point is at this location
 			// We want to work with the 0,0 location because it makes things easier.

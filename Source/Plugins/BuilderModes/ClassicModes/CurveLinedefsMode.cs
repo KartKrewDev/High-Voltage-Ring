@@ -150,8 +150,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//calculate some identities of a circle segment (refer to the graph in the url above)
 				double c = line.Length;
 
-				double d = (c / (float)Math.Tan(theta / 2)) / 2;
-				double R = d / (float)Math.Cos(theta / 2);
+				double d = (c /Math.Tan(theta / 2)) / 2;
+				double R = d / Math.Cos(theta / 2);
 				double h = R - d;
 
 				double yDeform = (fixedcurve ? 1 : distance / h);

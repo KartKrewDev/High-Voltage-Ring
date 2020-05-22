@@ -585,7 +585,7 @@ namespace CodeImp.DoomBuilder.Windows
 				{
 					double z = posZ.GetResultFloat(thingprops[i++].Z);
 					if(useabsoluteheight && !posZ.CheckIsRelative() && t.Sector != null)
-						z -= (float)Math.Round(Sector.GetFloorPlane(t.Sector).GetZ(t.Position.x, t.Position.y), General.Map.FormatInterface.VertexDecimals);
+						z -= Math.Round(Sector.GetFloorPlane(t.Sector).GetZ(t.Position.x, t.Position.y), General.Map.FormatInterface.VertexDecimals);
 					t.Move(new Vector3D(t.Position.x, t.Position.y, z));
 				}
 			}

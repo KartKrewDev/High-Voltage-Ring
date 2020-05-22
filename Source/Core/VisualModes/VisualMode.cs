@@ -483,7 +483,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				return;
 			}
 
-			MoveSelectedThings(new Vector2D((float)Math.Round(hitpos.x), (float)Math.Round(hitpos.y)), true);
+			MoveSelectedThings(new Vector2D(Math.Round(hitpos.x), Math.Round(hitpos.y)), true);
 		}
 
 		//mxd. 
@@ -494,7 +494,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			delta = delta.GetFixedLength(General.Settings.ViewDistance * 0.98f);
 			VisualPickResult target = PickObject(start, start + delta);
 
-			if(target.picked == null) return new Vector2D(float.NaN, float.NaN);
+			if(target.picked == null) return new Vector2D(double.NaN, double.NaN);
 
 			// Now find where exactly did we hit
 			VisualGeometry vg = target.picked as VisualGeometry;
@@ -504,7 +504,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			VisualThing vt = target.picked as VisualThing;
 			if(vt != null) return GetIntersection(start, start + delta, vt.CenterV3D, RenderDevice.V3D(vt.Center - vt.PositionV3));
 
-			return new Vector2D(float.NaN, float.NaN);
+			return new Vector2D(double.NaN, double.NaN);
 		}
 
 		//mxd. This checks intersection between line and plane 

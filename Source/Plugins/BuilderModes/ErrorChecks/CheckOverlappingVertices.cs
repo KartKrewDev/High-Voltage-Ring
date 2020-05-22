@@ -48,7 +48,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				foreach(Linedef l in block.Lines) 
 				{
 					if(v == l.Start || v == l.End) continue;
-					if((float)Math.Round(l.Line.GetDistanceToLine(v.Position, true), 3) == 0)
+					if(Math.Round(l.Line.GetDistanceToLine(v.Position, true), 3) == 0)
 						SubmitResult(new ResultVertexOverlappingLine(v, l));
 				}
 

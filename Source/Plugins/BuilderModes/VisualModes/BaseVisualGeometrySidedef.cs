@@ -709,7 +709,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					if (options.AutoWidth)
 					{
-						horizontalrepeat = (float)Math.Round(linelength / patternwidth);
+						horizontalrepeat = Math.Round(linelength / patternwidth);
 
 						if (horizontalrepeat == 0)
 							horizontalrepeat = 1.0f;
@@ -723,14 +723,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					offsetx = -Sidedef.OffsetX - options.ControlSideOffsetX;
 				}
 
-				UniFields.SetFloat(controlside.Fields, "scalex_" + partname, (float)Math.Round(scalex, General.Map.FormatInterface.VertexDecimals), 1.0f);
-				UniFields.SetFloat(Sidedef.Fields, "offsetx_" + partname, offsetx, 0.0f);
+				UniFields.SetFloat(controlside.Fields, "scalex_" + partname, Math.Round(scalex, General.Map.FormatInterface.VertexDecimals), 1.0);
+				UniFields.SetFloat(Sidedef.Fields, "offsetx_" + partname, offsetx, 0.0);
 			} 
 			else 
 			{
 				// Restore initial offsets
-				UniFields.SetFloat(controlside.Fields, "scalex_" + partname, options.InitialScaleX, 1.0f);
-				UniFields.SetFloat(Sidedef.Fields, "offsetx_" + partname, options.InitialOffsetX, 0.0f);
+				UniFields.SetFloat(controlside.Fields, "scalex_" + partname, options.InitialScaleX, 1.0);
+				UniFields.SetFloat(Sidedef.Fields, "offsetx_" + partname, options.InitialOffsetX, 0.0);
 			}
 
 			// Fit height
@@ -746,7 +746,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						if (options.AutoHeight)
 						{
-							verticalrepeat = (float)Math.Round((float)options.GlobalBounds.Height / patternheight);
+							verticalrepeat = Math.Round((float)options.GlobalBounds.Height / patternheight);
 
 							if (verticalrepeat == 0)
 								verticalrepeat = 1.0f;
@@ -755,7 +755,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								verticalrepeat /= Texture.Height / patternheight;
 						}
 
-						scaley = Texture.ScaledHeight / (options.Bounds.Height * ((float)options.GlobalBounds.Height / options.Bounds.Height)) * verticalrepeat;
+						scaley = Texture.ScaledHeight / (options.Bounds.Height * ((double)options.GlobalBounds.Height / options.Bounds.Height)) * verticalrepeat;
 
 						if(this is VisualLower) // Special cases, special cases...
 						{ 
@@ -778,10 +778,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						if (options.AutoHeight)
 						{
-							verticalrepeat = (float)Math.Round((float)options.Bounds.Height / patternheight);
+							verticalrepeat = Math.Round((double)options.Bounds.Height / patternheight);
 
 							if (verticalrepeat == 0)
-								verticalrepeat = 1.0f;
+								verticalrepeat = 1.0;
 
 							if (options.PatternHeight > 0)
 								verticalrepeat /= Texture.Height / patternheight;
@@ -801,15 +801,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 					}
 
-					UniFields.SetFloat(controlside.Fields, "scaley_" + partname, (float)Math.Round(scaley, General.Map.FormatInterface.VertexDecimals), 1.0f);
-					UniFields.SetFloat(Sidedef.Fields, "offsety_" + partname, (float)Math.Round(offsety, General.Map.FormatInterface.VertexDecimals), 0.0f);
+					UniFields.SetFloat(controlside.Fields, "scaley_" + partname, (float)Math.Round(scaley, General.Map.FormatInterface.VertexDecimals), 1.0);
+					UniFields.SetFloat(Sidedef.Fields, "offsety_" + partname, (float)Math.Round(offsety, General.Map.FormatInterface.VertexDecimals), 0.0);
 				}
 			} 
 			else 
 			{
 				// Restore initial offsets
-				UniFields.SetFloat(controlside.Fields, "scaley_" + partname, options.InitialScaleY, 1.0f);
-				UniFields.SetFloat(Sidedef.Fields, "offsety_" + partname, options.InitialOffsetY, 0.0f);
+				UniFields.SetFloat(controlside.Fields, "scaley_" + partname, options.InitialScaleY, 1.0);
+				UniFields.SetFloat(Sidedef.Fields, "offsety_" + partname, options.InitialOffsetY, 0.0);
 			}
 		}
 

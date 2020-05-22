@@ -1070,7 +1070,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 
 			v.stitch = true;
 			v.stitchline = true;
-			v.pos = new Vector2D((float)Math.Round(x, General.Map.FormatInterface.VertexDecimals), (float)Math.Round(y, General.Map.FormatInterface.VertexDecimals));
+			v.pos = new Vector2D(Math.Round(x, General.Map.FormatInterface.VertexDecimals), Math.Round(y, General.Map.FormatInterface.VertexDecimals));
 
 			return v;
 		}

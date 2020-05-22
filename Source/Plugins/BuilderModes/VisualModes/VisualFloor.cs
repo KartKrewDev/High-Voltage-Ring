@@ -273,7 +273,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(incrementX != 0) 
 			{
 				double pix = (int)Math.Round(Texture.Width * scaleX) - incrementX;
-				double newscaleX = (float)Math.Round(pix / Texture.Width, 3);
+				double newscaleX = Math.Round(pix / Texture.Width, 3);
 				scaleX = (newscaleX == 0 ? scaleX * -1 : newscaleX);
 				UniFields.SetFloat(s.Fields, "xscalefloor", scaleX, 1.0);
 			}
@@ -281,7 +281,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(incrementY != 0)
 			{
 				double pix = (int)Math.Round(Texture.Height * scaleY) - incrementY;
-				double newscaleY = (float)Math.Round(pix / Texture.Height, 3);
+				double newscaleY = Math.Round(pix / Texture.Height, 3);
 				scaleY = (newscaleY == 0 ? scaleY * -1 : newscaleY);
 				UniFields.SetFloat(s.Fields, "yscalefloor", scaleY, 1.0);
 			}

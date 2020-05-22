@@ -165,8 +165,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// For Vavoom type 3D floors the ceiling is lower than floor and they are reversed.
 			// We choose here.
-			float sourcetopheight = extrafloor.VavoomType ? sourceside.Sector.FloorHeight : sourceside.Sector.CeilHeight;
-			float sourcebottomheight = extrafloor.VavoomType ? sourceside.Sector.CeilHeight : sourceside.Sector.FloorHeight;
+			double sourcetopheight = extrafloor.VavoomType ? sourceside.Sector.FloorHeight : sourceside.Sector.CeilHeight;
+			double sourcebottomheight = extrafloor.VavoomType ? sourceside.Sector.CeilHeight : sourceside.Sector.FloorHeight;
 			
 			// Determine texture coordinates plane as they would be in normal circumstances.
 			// We can then use this plane to find any texture coordinate we need.
@@ -175,9 +175,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// NOTE: I use a small bias for the floor height, because if the difference in
 			// height is 0 then the TexturePlane doesn't work!
 			TexturePlane tp = new TexturePlane();
-			float floorbias = (sourcetopheight == sourcebottomheight) ? 1.0f : 0.0f;
+			double floorbias = (sourcetopheight == sourcebottomheight) ? 1.0f : 0.0f;
 
-			tp.trb.x = tp.tlt.x + (float)Math.Round(Sidedef.Line.Length); //mxd. (G)ZDoom snaps texture coordinates to integral linedef length
+			tp.trb.x = tp.tlt.x + Math.Round(Sidedef.Line.Length); //mxd. (G)ZDoom snaps texture coordinates to integral linedef length
 			tp.trb.y = tp.tlt.y + (sourcetopheight - sourcebottomheight) + floorbias;
 			
 			// Apply texture offset

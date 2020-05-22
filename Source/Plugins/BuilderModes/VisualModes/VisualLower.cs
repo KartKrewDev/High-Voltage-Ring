@@ -152,21 +152,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// NOTE: I use a small bias for the floor height, because if the difference in
 			// height is 0 then the TexturePlane doesn't work!
 			TexturePlane tp = new TexturePlane();
-			float floorbias = (Sidedef.Other.Sector.FloorHeight == Sidedef.Sector.FloorHeight) ? 1.0f : 0.0f;
+			double floorbias = (Sidedef.Other.Sector.FloorHeight == Sidedef.Sector.FloorHeight) ? 1.0 : 0.0;
 			if(Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
 			{
 				if(Sidedef.Sector.CeilTexture == General.Map.Config.SkyFlatName && Sidedef.Other.Sector.CeilTexture == General.Map.Config.SkyFlatName) 
 				{
 					// mxd. Replicate Doom texture offset glitch when front and back sector's ceilings are sky
-					tp.tlt.y = (float)Sidedef.Other.Sector.CeilHeight - Sidedef.Other.Sector.FloorHeight;
+					tp.tlt.y = (double)Sidedef.Other.Sector.CeilHeight - Sidedef.Other.Sector.FloorHeight;
 				} 
 				else 
 				{
 					// When lower unpegged is set, the lower texture is bound to the bottom
-					tp.tlt.y = (float) Sidedef.Sector.CeilHeight - Sidedef.Other.Sector.FloorHeight;
+					tp.tlt.y = (double) Sidedef.Sector.CeilHeight - Sidedef.Other.Sector.FloorHeight;
 				}
 			}
-			tp.trb.x = tp.tlt.x + (float)Math.Round(Sidedef.Line.Length); //mxd. (G)ZDoom snaps texture coordinates to integral linedef length
+			tp.trb.x = tp.tlt.x + Math.Round(Sidedef.Line.Length); //mxd. (G)ZDoom snaps texture coordinates to integral linedef length
 			tp.trb.y = tp.tlt.y + (Sidedef.Other.Sector.FloorHeight - (Sidedef.Sector.FloorHeight + floorbias));
 			
 			// Apply texture offset

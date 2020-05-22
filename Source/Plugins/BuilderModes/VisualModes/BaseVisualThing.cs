@@ -813,15 +813,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			if(incrementX != 0) 
 			{
-				float pix = (int)Math.Round(sprite.Width * scaleX) + incrementX;
-				float newscaleX = (float)Math.Round(pix / sprite.Width, 3);
+				double pix = (int)Math.Round(sprite.Width * scaleX) + incrementX;
+				double newscaleX = Math.Round(pix / sprite.Width, 3);
 				scaleX = (newscaleX == 0 ? scaleX * -1 : newscaleX);
 			}
 
 			if(incrementY != 0) 
 			{
-				float pix = (int)Math.Round(sprite.Height * scaleY) + incrementY;
-				float newscaleY = (float)Math.Round(pix / sprite.Height, 3);
+				double pix = (int)Math.Round(sprite.Height * scaleY) + incrementY;
+				double newscaleY = Math.Round(pix / sprite.Height, 3);
 				scaleY = (newscaleY == 0 ? scaleY * -1 : newscaleY);
 			}
 

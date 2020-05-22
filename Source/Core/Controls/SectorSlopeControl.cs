@@ -92,7 +92,7 @@ namespace CodeImp.DoomBuilder.Controls
 
 		#region ================== Methods
 
-		public void SetValues(float anglexy, float anglez, float offset, bool first) 
+		public void SetValues(double anglexy, double anglez, double offset, bool first) 
 		{
 			if(first) 
 			{

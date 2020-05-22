@@ -153,13 +153,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// NOTE: I use a small bias for the floor height, because if the difference in
 			// height is 0 then the TexturePlane doesn't work!
 			TexturePlane tp = new TexturePlane();
-			float ceilbias = (Sidedef.Other.Sector.CeilHeight == Sidedef.Sector.CeilHeight) ? 1.0f : 0.0f;
+			double ceilbias = (Sidedef.Other.Sector.CeilHeight == Sidedef.Sector.CeilHeight) ? 1.0 : 0.0;
 			if(!Sidedef.Line.IsFlagSet(General.Map.Config.UpperUnpeggedFlag))
 			{
 				// When lower unpegged is set, the lower texture is bound to the bottom
-				tp.tlt.y = tsz.y - ((float)Sidedef.Sector.CeilHeight - Sidedef.Other.Sector.CeilHeight);
+				tp.tlt.y = tsz.y - (Sidedef.Sector.CeilHeight - Sidedef.Other.Sector.CeilHeight);
 			}
-			tp.trb.x = tp.tlt.x + (float)Math.Round(Sidedef.Line.Length); //mxd. (G)ZDoom snaps texture coordinates to integral linedef length
+			tp.trb.x = tp.tlt.x + Math.Round(Sidedef.Line.Length); //mxd. (G)ZDoom snaps texture coordinates to integral linedef length
 			tp.trb.y = tp.tlt.y + (Sidedef.Sector.CeilHeight - (Sidedef.Other.Sector.CeilHeight + ceilbias));
 			
 			// Apply texture offset

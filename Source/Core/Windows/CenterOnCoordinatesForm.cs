@@ -18,8 +18,8 @@ namespace CodeImp.DoomBuilder.Windows
 
 		private void accept_Click(object sender, EventArgs e) 
 		{
-			coordinates.x = (float)Math.Round(General.Clamp(gotox.GetResult((int)coordinates.x), General.Map.FormatInterface.MinCoordinate, General.Map.FormatInterface.MaxCoordinate));
-			coordinates.y = (float)Math.Round(General.Clamp(gotoy.GetResult((int)coordinates.y), General.Map.FormatInterface.MinCoordinate, General.Map.FormatInterface.MaxCoordinate));
+			coordinates.x = Math.Round(General.Clamp(gotox.GetResult((int)coordinates.x), General.Map.FormatInterface.MinCoordinate, General.Map.FormatInterface.MaxCoordinate));
+			coordinates.y = Math.Round(General.Clamp(gotoy.GetResult((int)coordinates.y), General.Map.FormatInterface.MinCoordinate, General.Map.FormatInterface.MaxCoordinate));
 			
 			this.DialogResult = DialogResult.OK;
 			this.Close();
