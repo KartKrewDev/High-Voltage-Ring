@@ -616,7 +616,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					VertexBuffer lastbuffer = null;
 					foreach(SurfaceEntry entry in imgsurfaces.Value)
 					{
-                        graphics.SetUniform(UniformName.desaturation, entry.desaturation);
+                        graphics.SetUniform(UniformName.desaturation, (float)entry.desaturation);
                         
 						// Set the vertex buffer
 						SurfaceBufferSet set = sets[entry.numvertices];

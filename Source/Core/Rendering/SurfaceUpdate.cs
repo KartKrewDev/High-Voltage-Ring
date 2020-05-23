@@ -37,7 +37,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public long ceiltexture;
 
         //
-        public float desaturation;
+        public double desaturation;
 		
 		// Constructor
 		internal SurfaceUpdate(int numvertices, bool updatefloor, bool updateceiling)

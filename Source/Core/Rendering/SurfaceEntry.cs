@@ -50,7 +50,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public long ceiltexture;
 
         //
-        public float desaturation;
+        public double desaturation;
 		
 		// Constructor
 		internal SurfaceEntry(int numvertices, int bufferindex, int vertexoffset)

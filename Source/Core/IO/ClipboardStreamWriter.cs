@@ -279,12 +279,12 @@ namespace CodeImp.DoomBuilder.IO
 				{
 					writer.Write((int)UniversalType.Boolean);
 					writer.Write((bool)f.Value.Value);
-				} 
+				}/*
 				else if(f.Value.Value is float) 
 				{
 					writer.Write((int)UniversalType.Float);
 					writer.Write((float)f.Value.Value);
-				}
+				}*/
 				else if(f.Value.Value is double)
 				{
 					writer.Write((int)UniversalType.Float);

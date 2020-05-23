@@ -1687,7 +1687,7 @@ namespace CodeImp.DoomBuilder.Geometry
 					if(l.Front.MiddleRequired() && l.Front.LongMiddleTexture != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(l.Front.LongMiddleTexture)) 
 					{
 						ImageData texture = General.Map.Data.GetTextureImage(l.Front.LongMiddleTexture);
-						float offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
+						double offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
 						if(texture.IsImageLoaded) offset %= texture.Width;
 						if(offset > 0) UniFields.SetFloat(l.Front.Fields, "offsetx_mid", offset);
 					}
@@ -1695,7 +1695,7 @@ namespace CodeImp.DoomBuilder.Geometry
 					if(l.Front.HighRequired() && l.Front.LongHighTexture != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(l.Front.LongHighTexture)) 
 					{
 						ImageData texture = General.Map.Data.GetTextureImage(l.Front.LongHighTexture);
-						float offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
+						double offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
 						if(texture.IsImageLoaded) offset %= texture.Width;
 						if(offset > 0) UniFields.SetFloat(l.Front.Fields, "offsetx_top", offset);
 					}
@@ -1703,7 +1703,7 @@ namespace CodeImp.DoomBuilder.Geometry
 					if(l.Front.LowRequired() && l.Front.LongLowTexture != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(l.Front.LongLowTexture)) 
 					{
 						ImageData texture = General.Map.Data.GetTextureImage(l.Front.LongLowTexture);
-						float offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
+						double offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
 						if(texture.IsImageLoaded) offset %= texture.Width;
 						if(offset > 0) UniFields.SetFloat(l.Front.Fields, "offsetx_bottom", offset);
 					}
@@ -1714,7 +1714,7 @@ namespace CodeImp.DoomBuilder.Geometry
 					if(l.Back.MiddleRequired() && l.Back.LongMiddleTexture != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(l.Back.LongMiddleTexture)) 
 					{
 						ImageData texture = General.Map.Data.GetTextureImage(l.Back.LongMiddleTexture);
-						float offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
+						double offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
 						if(texture.IsImageLoaded) offset %= texture.Width;
 						if(offset > 0) UniFields.SetFloat(l.Back.Fields, "offsetx_mid", offset);
 					}
@@ -1722,7 +1722,7 @@ namespace CodeImp.DoomBuilder.Geometry
 					if(l.Back.HighRequired() && l.Back.LongHighTexture != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(l.Back.LongHighTexture)) 
 					{
 						ImageData texture = General.Map.Data.GetTextureImage(l.Back.LongHighTexture);
-						float offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
+						double offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
 						if(texture.IsImageLoaded) offset %= texture.Width;
 						if(offset > 0) UniFields.SetFloat(l.Back.Fields, "offsetx_top", offset);
 					}
@@ -1730,7 +1730,7 @@ namespace CodeImp.DoomBuilder.Geometry
 					if(l.Back.LowRequired() && l.Back.LongLowTexture != MapSet.EmptyLongName && General.Map.Data.GetTextureExists(l.Back.LongLowTexture)) 
 					{
 						ImageData texture = General.Map.Data.GetTextureImage(l.Back.LongLowTexture);
-						float offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
+						double offset = (int)Math.Round((reversed ? totalLength - curLength - l.Length : curLength));
 						if(texture.IsImageLoaded) offset %= texture.Width;
 						if(offset > 0) UniFields.SetFloat(l.Back.Fields, "offsetx_bottom", offset);
 					}

@@ -226,6 +226,7 @@ namespace CodeImp.DoomBuilder.Map
 			if(val1.Type != val2.Type) return false;
 			if(val1.Value is int) return (int)val1.Value == (int)val2.Value;
 			if(val1.Value is float) return (float)val1.Value == (float)val2.Value;
+			if(val1.Value is double) return (double)val1.Value == (double)val2.Value;
 			if(val1.Value is bool) return (bool)val1.Value == (bool)val2.Value;
 			if(val1.Value is string) return (string)val1.Value == (string)val2.Value;
 			throw new NotImplementedException("Unknown Custom Field type: " + val1.Value.GetType());

@@ -128,12 +128,12 @@ namespace CodeImp.DoomBuilder.Map
 		//mxd. Rednering
 		public Color4 FogColor { get { return fogcolor; } }
 		public SectorFogMode FogMode { get { return fogmode; } }
-        public float Desaturation
+        public double Desaturation
         {
             get
             {
                 if (General.Map.UDMF && Fields.ContainsKey("desaturation"))
-                    return (float)Fields["desaturation"].Value;
+                    return (double)Fields["desaturation"].Value;
                 return 0f;
             }
         }

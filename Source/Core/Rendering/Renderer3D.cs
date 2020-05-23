@@ -897,7 +897,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
 
                         // [ZZ] include desaturation factor
-                        graphics.SetUniform(UniformName.desaturation, sector.Sector.Desaturation);
+                        graphics.SetUniform(UniformName.desaturation, (float)sector.Sector.Desaturation);
 
 						// Render!
 						graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
@@ -994,7 +994,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
                             // [ZZ] apply desaturation
                             if (t.Thing.Sector != null)
-                                graphics.SetUniform(UniformName.desaturation, t.Thing.Sector.Desaturation);
+                                graphics.SetUniform(UniformName.desaturation, (float)t.Thing.Sector.Desaturation);
                             else graphics.SetUniform(UniformName.desaturation, 0.0f);
 
                             // Apply changes
@@ -1204,7 +1204,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     }
 
                     //
-                    graphics.SetUniform(UniformName.desaturation, sector.Sector.Desaturation);
+                    graphics.SetUniform(UniformName.desaturation, (float)sector.Sector.Desaturation);
 
                     // Set the colors to use
                     graphics.SetUniform(UniformName.sectorfogcolor, sector.Sector.FogColor);
@@ -1340,7 +1340,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetUniform(UniformName.stencilColor, t.StencilColor.ToColorValue());
 
                         //
-                        graphics.SetUniform(UniformName.desaturation, t.Thing.Sector.Desaturation);
+                        graphics.SetUniform(UniformName.desaturation, (float)t.Thing.Sector.Desaturation);
 
                         // Apply changes
                         graphics.SetUniform(UniformName.world, world);
@@ -1514,7 +1514,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
                 if (t.Thing.Sector != null)
-                    graphics.SetUniform(UniformName.desaturation, t.Thing.Sector.Desaturation);
+                    graphics.SetUniform(UniformName.desaturation, (float)t.Thing.Sector.Desaturation);
                 else graphics.SetUniform(UniformName.desaturation, 0.0f);
 
                 int lightIndex = 0;
