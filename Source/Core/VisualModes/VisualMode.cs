@@ -43,7 +43,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 	{
 		#region ================== Constants
 
-		private const float MOVE_SPEED_MULTIPLIER = 0.001f;
+		private const double MOVE_SPEED_MULTIPLIER = 0.001;
 		
 		#endregion
 
@@ -1164,10 +1164,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 			Vector3D camvecstrafe = Vector3D.FromAngleXY(General.Map.VisualCamera.AngleXY + Angle2D.PIHALF);
 			Vector3D cammovemul = General.Map.VisualCamera.MoveMultiplier;
 			Vector3D camdeltapos = new Vector3D();
-			Vector3D upvec = new Vector3D(0.0f, 0.0f, 1.0f);
+			Vector3D upvec = new Vector3D(0.0, 0.0, 1.0);
 
 			// Move the camera
-			float multiplier;
+			double multiplier;
 			if(General.Interface.ShiftState) multiplier = MOVE_SPEED_MULTIPLIER * 2.0f; else multiplier = MOVE_SPEED_MULTIPLIER;
 			if(keyforward) camdeltapos += camvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
 			if(keybackward) camdeltapos -= camvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;

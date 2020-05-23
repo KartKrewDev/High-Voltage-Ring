@@ -62,8 +62,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// Gravity
 		private Vector3D gravity;
-		private float cameraflooroffset = 41f;		// same as in doom
-		private float cameraceilingoffset = 10f;
+		private double cameraflooroffset = 41.0;		// same as in doom
+		private double cameraceilingoffset = 10.0;
 		
 		// Object picking
 		private VisualPickResult target;
@@ -1316,8 +1316,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			base.ProcessThings = (BuilderPlug.Me.ShowVisualThings != 0);
 			
 			// Setup the move multiplier depending on gravity
-			Vector3D movemultiplier = new Vector3D(1.0f, 1.0f, 1.0f);
-			if(BuilderPlug.Me.UseGravity) movemultiplier.z = 0.0f;
+			Vector3D movemultiplier = new Vector3D(1.0, 1.0, 1.0);
+			if(BuilderPlug.Me.UseGravity) movemultiplier.z = 0.0;
 			General.Map.VisualCamera.MoveMultiplier = movemultiplier;
 			
 			// Apply gravity?
@@ -1330,10 +1330,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				Vector3D feetposition = General.Map.VisualCamera.Position;
 				SectorLevel floorlevel = sd.GetFloorBelow(feetposition) ?? sd.Floor;
 				double floorheight = floorlevel.plane.GetZ(General.Map.VisualCamera.Position);
-				if(General.Map.VisualCamera.Position.z < (floorheight + cameraflooroffset + 0.1f))
+				if(General.Map.VisualCamera.Position.z < (floorheight + cameraflooroffset + 0.1))
 				{
 					// Stay above floor
-					gravity = new Vector3D(0.0f, 0.0f, 0.0f);
+					gravity = new Vector3D(0.0, 0.0, 0.0);
 					General.Map.VisualCamera.Position = new Vector3D(General.Map.VisualCamera.Position.x,
 																	 General.Map.VisualCamera.Position.y,
 																	 floorheight + cameraflooroffset);
@@ -1342,13 +1342,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					// Fall down
 					gravity.z += GRAVITY * General.Map.VisualCamera.Gravity * deltatime;
-					if(gravity.z > 3.0f) gravity.z = 3.0f;
+					if(gravity.z > 3.0) gravity.z = 3.0;
 
 					// Test if we don't go through a floor
-					if((General.Map.VisualCamera.Position.z + gravity.z) < (floorheight + cameraflooroffset + 0.1f))
+					if((General.Map.VisualCamera.Position.z + gravity.z) < (floorheight + cameraflooroffset + 0.1))
 					{
 						// Stay above floor
-						gravity = new Vector3D(0.0f, 0.0f, 0.0f);
+						gravity = new Vector3D(0.0, 0.0, 0.0);
 						General.Map.VisualCamera.Position = new Vector3D(General.Map.VisualCamera.Position.x,
 																		 General.Map.VisualCamera.Position.y,
 																		 floorheight + cameraflooroffset);
@@ -1361,10 +1361,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				// Camera above ceiling?
-				feetposition = General.Map.VisualCamera.Position - new Vector3D(0, 0, cameraflooroffset - 7.0f);
+				feetposition = General.Map.VisualCamera.Position - new Vector3D(0, 0, cameraflooroffset - 7.0);
 				SectorLevel ceillevel = sd.GetCeilingAbove(feetposition) ?? sd.Ceiling;
 				double ceilheight = ceillevel.plane.GetZ(General.Map.VisualCamera.Position);
-				if(General.Map.VisualCamera.Position.z > (ceilheight - cameraceilingoffset - 0.01f))
+				if(General.Map.VisualCamera.Position.z > (ceilheight - cameraceilingoffset - 0.01))
 				{
 					// Stay below ceiling
 					General.Map.VisualCamera.Position = new Vector3D(General.Map.VisualCamera.Position.x,
@@ -1374,7 +1374,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			else
 			{
-				gravity = new Vector3D(0.0f, 0.0f, 0.0f);
+				gravity = new Vector3D(0.0, 0.0, 0.0);
 			}
 			
 			// Do processing
