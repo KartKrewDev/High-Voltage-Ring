@@ -14,10 +14,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 	{
 		#region ================== Constants
 
-		private const double ANGLE_FROM_MOUSE = 0.0001f;
-		public const double MAX_ANGLEZ_LOW = 91f / Angle2D.PIDEG;
-		public const double MAX_ANGLEZ_HIGH = (360f - 91f) / Angle2D.PIDEG;
-		public const double THING_Z_OFFSET = 41.0f;
+		private const double ANGLE_FROM_MOUSE = 0.0001;
+		public const double MAX_ANGLEZ_LOW = 91.0 / Angle2D.PIDEG;
+		public const double MAX_ANGLEZ_HIGH = (360.0 - 91.0) / Angle2D.PIDEG;
+		public const double THING_Z_OFFSET = 41.0;
 		
 		#endregion
 
@@ -51,8 +51,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public VisualCamera()
 		{
 			// Initialize
-			movemultiplier = new Vector3D(1.0f, 1.0f, 1.0f);
-			anglexy = 0.0f;
+			movemultiplier = new Vector3D(1.0, 1.0, 1.0);
+			anglexy = 0.0;
 			anglez = Angle2D.PI;
 			sector = null;
 			
@@ -85,8 +85,14 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// Key input
 		internal void ProcessMovement(Vector3D deltavec)
 		{
-			// Calculate camera direction vectors
-			Vector3D camvec = Vector3D.FromAngleXYZ(anglexy, anglez);
+			// Calculate camera direction vectors. Multiply by a biggish number, so the decimal digits
+			// become less important. This is necessary because the vector will be converted to float
+			// when being passed to the renderer, and loss of decimal precision will cause the camera
+			// to become jittery when it's far away from the map origin. Muliplying by 10 seems to be
+			// enough for non-jittery forward/backward movement, but that's still jittery when looking
+			// straight up/down and then moving around, which doesn't happen at something bigger, like
+			// the 100 we're using here
+			Vector3D camvec = Vector3D.FromAngleXYZ(anglexy, anglez) * 100.0;
 
 			// Position the camera
 			position += deltavec;
