@@ -402,13 +402,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		protected override void SetTextureOffsetX(int x)
 		{
 			Sidedef.Fields.BeforeFieldsChange();
-			Sidedef.Fields["offsetx_mid"] = new UniValue(UniversalType.Float, (float)x);
+			Sidedef.Fields["offsetx_mid"] = new UniValue(UniversalType.Float, (double)x);
 		}
 
 		protected override void SetTextureOffsetY(int y)
 		{
 			Sidedef.Fields.BeforeFieldsChange();
-			Sidedef.Fields["offsety_mid"] = new UniValue(UniversalType.Float, (float)y);
+			Sidedef.Fields["offsety_mid"] = new UniValue(UniversalType.Float, (double)y);
 		}
 
 		protected override void MoveTextureOffset(int offsetx, int offsety)
