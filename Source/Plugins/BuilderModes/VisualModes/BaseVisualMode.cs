@@ -1187,13 +1187,26 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			allslopehandles.Clear();
 
-			if (General.Map.UDMF /* && General.Settings.ShowVisualSlopeHandles */)
+			BuildSlopeHandles(General.Map.Map.Sectors.ToList());
+		}
+
+		private void BuildSlopeHandles(List<Sector> sectors)
+		{
+			if (General.Map.UDMF)
 			{
-				foreach (Sector s in General.Map.Map.Sectors)
+				foreach (Sector s in sectors)
 				{
+					if (s.IsDisposed)
+					{
+						continue;
+					}
+
 					SectorData sectordata = GetSectorData(s);
 
 					sectordata.Update();
+
+					if (allslopehandles.ContainsKey(s))
+						allslopehandles.Remove(s);
 
 					foreach (Sidedef sidedef in s.Sidedefs)
 					{
@@ -1489,6 +1502,29 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				// Let the core do this (it will just dispose the sectors that were changed)
 				base.ResourcesReloadedPartial();
+
+				// The base doesn't know anything about slobe handles, so we have to clear them up ourself
+				if (General.Map.UDMF)
+				{
+					List<Sector> removedsectors = new List<Sector>();
+
+					// Get the sectors that were disposed...
+					foreach(Sector s in allslopehandles.Keys)
+					{
+						if (s.IsDisposed)
+							removedsectors.Add(s);
+					}
+
+					// ... so that we can remove their slope handles
+					foreach(Sector s in removedsectors)
+					{
+						allslopehandles[s].Clear();
+						allslopehandles.Remove(s);
+					}
+
+					// Rebuild slope handles for the changed sectors
+					BuildSlopeHandles(General.Map.Map.GetMarkedSectors(true));
+				}
 			}
 			else
 			{

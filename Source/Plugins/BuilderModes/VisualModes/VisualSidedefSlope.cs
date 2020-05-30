@@ -84,6 +84,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		public override bool PickFastReject(Vector3D from, Vector3D to, Vector3D dir)
 		{
+			if (sidedef.IsDisposed || sidedef.Sector.IsDisposed)
+				return false;
+
 			RectangleF bbox = sidedef.Sector.BBox;
 
 			if ((up && plane.Distance(from) > 0.0f) || (!up && plane.Distance(from) < 0.0f))
