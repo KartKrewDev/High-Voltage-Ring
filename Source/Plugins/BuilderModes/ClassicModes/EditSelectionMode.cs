@@ -1584,6 +1584,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					Dictionary<Sector, List<Sector>> controlsectors = new Dictionary<Sector, List<Sector>>();
 
+					// Keep track which floors and ceilings were already updated, otherwise it could happen that they are updated multiple times,
+					// resulting in wrong offsets
+					List<Sector> updatedcsfloors = new List<Sector>();
+					List<Sector> updatedcsceilings = new List<Sector>();
+
 					// Create cache of 3D floor control sectors that reference the selected sectors. Only do it if not pasting, since the slopes
 					// will only be updated when not pasting, since it'd otherwise screw up the original slopes 
 					if (!pasting)
@@ -1645,6 +1650,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							foreach (Sector cs in controlsectors[s])
 							{
+								// Floor of the control sector already uptated?
+								if (updatedcsfloors.Contains(cs))
+									continue;
+
+								// Is the floor sloped?
 								if (cs.FloorSlope.GetLengthSq() <= 0 || double.IsNaN(cs.FloorSlopeOffset / cs.FloorSlope.z))
 									continue;
 
@@ -1663,6 +1673,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								Plane p = new Plane(newcenter, angle, -cs.FloorSlope.GetAngleZ(), true);
 								cs.FloorSlope = p.Normal;
 								cs.FloorSlopeOffset = p.Offset;
+
+								updatedcsfloors.Add(cs);
 							}
 						}
 
@@ -1691,6 +1703,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							foreach (Sector cs in controlsectors[s])
 							{
+								// Ceiling of the controlsector already updated?
+								if (updatedcsceilings.Contains(cs))
+									continue;
+								
+								// Is the ceiling sloped?
 								if (cs.CeilSlope.GetLengthSq() <= 0 || double.IsNaN(cs.CeilSlopeOffset / cs.CeilSlope.z))
 									continue;
 
@@ -1709,6 +1726,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								Plane p = new Plane(newcenter, angle, -cs.CeilSlope.GetAngleZ(), false);
 								cs.CeilSlope = p.Normal;
 								cs.CeilSlopeOffset = p.Offset;
+
+								updatedcsceilings.Add(cs);
 							}
 						}
 					}
