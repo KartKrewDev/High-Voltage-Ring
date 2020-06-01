@@ -32,7 +32,7 @@ namespace CodeImp.DoomBuilder.Types
 
 		#region ================== Variables
 
-		private float value;
+		private double value;
 
 		#endregion
 
@@ -47,25 +47,25 @@ namespace CodeImp.DoomBuilder.Types
 			// Null?
 			if(value == null)
 			{
-				this.value = 0.0f;
+				this.value = 0.0;
 			}
 			// Compatible type?
-			else if((value is int) || (value is float) || (value is bool))
+			else if((value is int) || (value is float) || (value is double) || (value is bool))
 			{
 				// Set directly
-				this.value = Convert.ToSingle(value);
+				this.value = Convert.ToDouble(value);
 			}
 			else
 			{
 				// Try parsing as string
-				float result;
-				if(float.TryParse(value.ToString(), NumberStyles.Float, CultureInfo.CurrentCulture, out result))
+				double result;
+				if(double.TryParse(value.ToString(), NumberStyles.Float, CultureInfo.CurrentCulture, out result))
 				{
 					this.value = result;
 				}
 				else
 				{
-					this.value = 0.0f;
+					this.value = 0.0;
 				}
 			}
 		}
@@ -87,7 +87,7 @@ namespace CodeImp.DoomBuilder.Types
 
 		public override object GetDefaultValue()
 		{
-			return 0f;
+			return 0.0;
 		}
 
 		#endregion
