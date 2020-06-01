@@ -4254,6 +4254,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void ArchBetweenHandles()
 		{
 			List<IVisualEventReceiver> selectedsectors = GetSelectedObjects(true, false, false, false, false);
+
 			if (selectedsectors.Count < 2)
 			{
 				General.Interface.DisplayStatus(StatusType.Warning, "You need to select at least two floors and ceilings to slope arch between slope handles.");
@@ -4270,9 +4271,28 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			General.Map.UndoRedo.CreateUndo("Arch between slope handles");
 
-			Line2D handleline = new Line2D(handles[0].GetCenterPoint(), handles[1].GetCenterPoint());
-			double offsetangle = Angle2D.DegToRad(0.0);
-			double theta = Angle2D.DegToRad(180.0);
+			Vector2D p1 = handles[0].GetCenterPoint();
+			Vector2D p2 = handles[1].GetCenterPoint();
+
+			SlopeArchForm saf = new SlopeArchForm(this, p1, p2);
+			DialogResult result = saf.ShowDialog();
+
+			if (result == DialogResult.Cancel)
+				General.Map.UndoRedo.WithdrawUndo();
+			
+
+			UpdateChangedObjects();
+
+			General.Interface.DisplayStatus(StatusType.Action, "Arched between slope handles.");
+		}
+
+		public void DoArchBetweenHandles(Vector2D p1, Vector2D p2, double _theta, double _offsetangle, double scale)
+		{
+			List<IVisualEventReceiver> selectedsectors = GetSelectedObjects(true, false, false, false, false);
+
+			Line2D handleline = new Line2D(p1, p2);
+			double offsetangle = Angle2D.DegToRad(_offsetangle);
+			double theta = Angle2D.DegToRad(_theta);
 			double length = handleline.GetLength();
 
 			double right = Math.Cos(0.0);
@@ -4287,32 +4307,48 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			foreach (BaseVisualGeometrySector bvgs in selectedsectors)
 			{
-				double u1 = double.MaxValue;
-				double u2 = double.MinValue;
+				double u1 = 1.0;
+				double u2 = 0.0;
 
-				
+
 				foreach (Sidedef sd in bvgs.Sector.Sides.Keys)
 				{
 					double intersection;
 					double bla;
 
-					if (!Line2D.GetIntersection(handleline.v1, handleline.v2, sd.Line.Line.v1.x, sd.Line.Line.v1.y, sd.Line.Line.v2.x, sd.Line.Line.v2.y, out bla, out intersection, true))
+					if (!Line2D.GetIntersection(handleline.v1, handleline.v2, sd.Line.Line.v1.x, sd.Line.Line.v1.y, sd.Line.Line.v2.x, sd.Line.Line.v2.y, out bla, out intersection, false))
 						continue;
 
 					if (intersection < u1)
 						u1 = intersection;
-
 					if (intersection > u2)
 						u2 = intersection;
 				}
 
 				if (u1 == u2)
-					continue;
+				{
+					if(u1 >= 0.5)
+					{
+						u1 = 1.0;
+					}
+					else
+					{
+						u2 = 0.0;
+					}
+
+				}
 
 				double xpos1 = sectionstart + (u1 * length);
 				double xpos2 = sectionstart + (u2 * length);
-				double height1 = Math.Sqrt(radius * radius - xpos1 * xpos1);
-				double height2 = Math.Sqrt(radius * radius - xpos2 * xpos2);
+				double height1 = Math.Sqrt(radius * radius - xpos1 * xpos1) * scale;
+				double height2 = Math.Sqrt(radius * radius - xpos2 * xpos2) * scale;
+
+				if (double.IsNaN(height1))
+					height1 = 0.0;
+
+				if (double.IsNaN(height2))
+					height2 = 0.0;
+
 				double slopeangle = Vector2D.GetAngle(new Vector2D(xpos1, height1), new Vector2D(xpos2, height2));
 
 				Plane plane = new Plane(new Vector3D(handleline.GetCoordinatesAt(u1), height1), handleline.GetAngle() + Angle2D.PIHALF, slopeangle, true);
@@ -4324,8 +4360,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			UpdateChangedObjects();
-
-			General.Interface.DisplayStatus(StatusType.Action, "Arched between slope handles.");
 		}
 
 		#endregion
