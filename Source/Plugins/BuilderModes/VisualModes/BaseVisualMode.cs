@@ -4268,25 +4268,64 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				return;
 			}
 
-			double theta = Angle2D.DegToRad(90.0);
+			General.Map.UndoRedo.CreateUndo("Arch between slope handles");
 
-			General.Map.UndoRedo.CreateUndo("Slope between slope handles");
+			Line2D handleline = new Line2D(handles[0].GetCenterPoint(), handles[1].GetCenterPoint());
+			double offsetangle = Angle2D.DegToRad(0.0);
+			double theta = Angle2D.DegToRad(180.0);
+			double length = handleline.GetLength();
 
-			Line3D line = new Line3D(handles[0].GetCenterPoint(), handles[1].GetCenterPoint());
-			double anglez = line.GetAngleZ();
-			
+			double right = Math.Cos(0.0);
+			double left = Math.Cos(theta + offsetangle);
+			double middle = Math.Cos(offsetangle);
 
-			double angle = line.GetAngle();
+			double radius = length / (middle - left);
+			double leftdelimiter = Math.Cos(offsetangle + theta);
+			double rightdelimiter = Math.Cos(offsetangle);
 
-			Vector2D v1 = new Vector2D(line.Start).GetRotated(angle);
-			Vector2D v2 = new Vector2D(line.End).GetRotated(angle);
+			double sectionstart = Math.Cos(offsetangle + theta) * radius;
 
-			Line2D line2d = new Line2D(v1, v2);
-			double length = line2d.GetLength();
-			double startx = Math.Cos(anglez - theta / 2) * length;
+			foreach (BaseVisualGeometrySector bvgs in selectedsectors)
+			{
+				double u1 = double.MaxValue;
+				double u2 = double.MinValue;
 
-			Vector2D z1 = v1.GetRotated(-angle);
-			Vector2D z2 = v2.GetRotated(-angle);
+				
+				foreach (Sidedef sd in bvgs.Sector.Sides.Keys)
+				{
+					double intersection;
+					double bla;
+
+					if (!Line2D.GetIntersection(handleline.v1, handleline.v2, sd.Line.Line.v1.x, sd.Line.Line.v1.y, sd.Line.Line.v2.x, sd.Line.Line.v2.y, out bla, out intersection, true))
+						continue;
+
+					if (intersection < u1)
+						u1 = intersection;
+
+					if (intersection > u2)
+						u2 = intersection;
+				}
+
+				if (u1 == u2)
+					continue;
+
+				double xpos1 = sectionstart + (u1 * length);
+				double xpos2 = sectionstart + (u2 * length);
+				double height1 = Math.Sqrt(radius * radius - xpos1 * xpos1);
+				double height2 = Math.Sqrt(radius * radius - xpos2 * xpos2);
+				double slopeangle = Vector2D.GetAngle(new Vector2D(xpos1, height1), new Vector2D(xpos2, height2));
+
+				Plane plane = new Plane(new Vector3D(handleline.GetCoordinatesAt(u1), height1), handleline.GetAngle() + Angle2D.PIHALF, slopeangle, true);
+
+				VisualSidedefSlope.ApplySlope(bvgs.Level, plane, this);
+				bvgs.Sector.UpdateSectorGeometry(true);
+
+				Debug.WriteLine(string.Format("sector: {0} | xpos1: {1}, height1: {2} | xpos2: {3}, height2: {4} | slope angle: {5}", bvgs.Sector.Sector.Index, xpos1, xpos2, height1, height2, slopeangle));
+			}
+
+			UpdateChangedObjects();
+
+			General.Interface.DisplayStatus(StatusType.Action, "Arched between slope handles.");
 		}
 
 		#endregion
