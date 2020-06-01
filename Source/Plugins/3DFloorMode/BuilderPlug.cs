@@ -929,6 +929,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 						try
 						{
 							newtag = BuilderPlug.Me.ControlSectorArea.GetNewSectorTag(tagblacklist);
+							tagblacklist.Add(newtag);
 						}
 						catch (Exception e)
 						{
