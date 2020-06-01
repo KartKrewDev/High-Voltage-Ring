@@ -66,5 +66,12 @@ namespace CodeImp.DoomBuilder.Geometry
 			Vector2D d = GetDelta();
 			return -Math.Atan2(-d.y, d.x) + Angle2D.PIHALF;
 		}
+
+		public double GetAngleZ()
+		{
+			Vector3D d = GetDelta();
+
+			return Math.Atan2(Math.Sqrt(d.x*d.x + d.y*d.y), d.z);
+		}
 	}
 }

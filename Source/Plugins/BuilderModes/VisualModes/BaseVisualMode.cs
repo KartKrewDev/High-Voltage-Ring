@@ -751,6 +751,64 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					break;
 			}
 		}
+
+		private List<VisualSidedefSlope> GetSlopeHandlePair()
+		{
+			List<VisualSidedefSlope> handles = GetSelectedSlopeHandles();
+
+			// No handles selected, try to slope between highlighted handle and it smart pivot
+			if (handles.Count == 0 && HighlightedTarget is VisualSidedefSlope)
+			{
+				VisualSidedefSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
+				if (handle == null)
+				{
+					General.Interface.DisplayStatus(StatusType.Warning, "Couldn't find a smart pivot handle.");
+					return handles;
+				}
+
+				handles.Add((VisualSidedefSlope)HighlightedTarget);
+				handles.Add(handle);
+			}
+			// One handle selected, try to slope between it and the highlighted handle or the selected one's smart pivot
+			else if (handles.Count == 1)
+			{
+				if (HighlightedTarget == handles[0] || !(HighlightedTarget is VisualSidedefSlope))
+				{
+					VisualSidedefSlope handle;
+
+					if (HighlightedTarget is VisualSidedefSlope)
+						handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
+					else
+						handle = VisualSidedefSlope.GetSmartPivotHandle(handles[0], this);
+
+					if (handle == null)
+					{
+						General.Interface.DisplayStatus(StatusType.Warning, "Couldn't find a smart pivot handle.");
+						return handles;
+					}
+
+					handles.Add(handle);
+				}
+				else
+				{
+					handles.Add((VisualSidedefSlope)HighlightedTarget);
+				}
+			}
+			// Return if more than two handles are selected
+			else if (handles.Count > 2)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Too many slope handles selected.");
+				return handles;
+			}
+			// Everything else
+			else if (handles.Count != 2)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "No slope handles selected or highlighted.");
+				return handles;
+			}
+
+			return handles;
+		}
 		
 		#endregion
 
@@ -4164,56 +4222,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				return;
 			}
 
-			List<VisualSidedefSlope> handles = GetSelectedSlopeHandles();
+			List<VisualSidedefSlope> handles = GetSlopeHandlePair();
 
-			// No handles selected, try to slope between highlighted handle and it smart pivot
-			if (handles.Count == 0 && HighlightedTarget is VisualSidedefSlope)
+			if (handles.Count != 2)
 			{
-				VisualSidedefSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
-				if (handle == null)
-				{
-					General.Interface.DisplayStatus(StatusType.Warning, "Couldn't find a smart pivot handle.");
-					return;
-				}
-
-				handles.Add((VisualSidedefSlope)HighlightedTarget);
-				handles.Add(handle);
-			}
-			// One handle selected, try to slope between it and the highlighted handle or the selected one's smart pivot
-			else if (handles.Count == 1)
-			{
-				if (HighlightedTarget == handles[0] || !(HighlightedTarget is VisualSidedefSlope))
-				{
-					VisualSidedefSlope handle;
-
-					if(HighlightedTarget is VisualSidedefSlope)
-						handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
-					else
-						handle = VisualSidedefSlope.GetSmartPivotHandle(handles[0], this);
-
-					if (handle == null)
-					{
-						General.Interface.DisplayStatus(StatusType.Warning, "Couldn't find a smart pivot handle.");
-						return;
-					}
-
-					handles.Add(handle);
-				}
-				else
-				{
-					handles.Add((VisualSidedefSlope)HighlightedTarget);
-				}
-			}
-			// Return if more than two handles are selected
-			else if(handles.Count > 2)
-			{
-				General.Interface.DisplayStatus(StatusType.Warning, "Too many slope handles selected.");
-				return;
-			}
-			// Everything else
-			else if(handles.Count != 2)
-			{
-				General.Interface.DisplayStatus(StatusType.Warning, "No slope handles selected or highlighted.");
+				General.Interface.DisplayStatus(StatusType.Warning, "You need to select exactly two slope handles.");
 				return;
 			}
 
@@ -4235,6 +4248,45 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			UpdateChangedObjects();
 
 			General.Interface.DisplayStatus(StatusType.Action, "Sloped between slope handles.");
+		}
+
+		[BeginAction("archbetweenhandles")]
+		public void ArchBetweenHandles()
+		{
+			List<IVisualEventReceiver> selectedsectors = GetSelectedObjects(true, false, false, false, false);
+			if (selectedsectors.Count < 2)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "You need to select at least two floors and ceilings to slope arch between slope handles.");
+				return;
+			}
+
+			List<VisualSidedefSlope> handles = GetSlopeHandlePair();
+
+			if (handles.Count != 2)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "You need to select exactly two slope handles.");
+				return;
+			}
+
+			double theta = Angle2D.DegToRad(90.0);
+
+			General.Map.UndoRedo.CreateUndo("Slope between slope handles");
+
+			Line3D line = new Line3D(handles[0].GetCenterPoint(), handles[1].GetCenterPoint());
+			double anglez = line.GetAngleZ();
+			
+
+			double angle = line.GetAngle();
+
+			Vector2D v1 = new Vector2D(line.Start).GetRotated(angle);
+			Vector2D v2 = new Vector2D(line.End).GetRotated(angle);
+
+			Line2D line2d = new Line2D(v1, v2);
+			double length = line2d.GetLength();
+			double startx = Math.Cos(anglez - theta / 2) * length;
+
+			Vector2D z1 = v1.GetRotated(-angle);
+			Vector2D z2 = v2.GetRotated(-angle);
 		}
 
 		#endregion
