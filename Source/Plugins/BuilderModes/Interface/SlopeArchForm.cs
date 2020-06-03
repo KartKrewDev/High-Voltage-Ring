@@ -12,35 +12,41 @@ using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Editing;
 using CodeImp.DoomBuilder.Geometry;
 
-namespace CodeImp.DoomBuilder.BuilderModes.Interface
+namespace CodeImp.DoomBuilder.BuilderModes
 {
-	public partial class SlopeArchForm : DelayedForm
+	internal partial class SlopeArchForm : DelayedForm
 	{
 		private EditMode mode;
 		private double originaltheta;
 		private double originaloffset;
-		private Vector2D p1;
-		private Vector2D p2;
+		private double originalscale;
+		private double originalheightoffset;
+		private SlopeArcher slopearcher;
+		public event EventHandler UpdateChangedObjects;
 
-		public SlopeArchForm(EditMode mode, Vector2D p1, Vector2D p2)
+		internal SlopeArchForm(EditMode mode, SlopeArcher slopearcher)
 		{
 			InitializeComponent();
 
 			this.mode = mode;
-			this.p1 = p1;
-			this.p2 = p2;
+			this.slopearcher = slopearcher;
 
-			originaltheta = 90.0;
-			originaloffset = 45.0;
+			originaltheta = Angle2D.RadToDeg(this.slopearcher.Theta);
+			originaloffset = Angle2D.RadToDeg(this.slopearcher.OffsetAngle);
+			originalscale = this.slopearcher.Scale;
+			originalheightoffset = this.slopearcher.HeightOffset;
 
 			theta.Text = originaltheta.ToString();
 			offset.Text = originaloffset.ToString();
+			scale.Text = (originalscale * 100.0).ToString();
+			heightoffset.Text = originalheightoffset.ToString();
 		}
 
 		private void UpdateArch(object sender, EventArgs e)
 		{
 			double t = theta.GetResultFloat(originaltheta);
 			double o = offset.GetResultFloat(originaloffset);
+			double s = scale.GetResultFloat(originalscale * 100.0) / 100.0;
 
 			if (t > 180.0)
 				theta.Text = "180";
@@ -48,9 +54,46 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			if (t + o > 180.0 || t + o < 0.0)
 				return;
 
-			double s = up.Checked ? 1.0 : -1.0;
+			if(!up.Checked)
+				s *= -1.0;
 
-			((BaseVisualMode)mode).DoArchBetweenHandles(p1, p2, t, o, s);
+			slopearcher.Theta = Angle2D.DegToRad(t);
+			slopearcher.OffsetAngle = Angle2D.DegToRad(o);
+			slopearcher.Scale = s;
+			slopearcher.HeightOffset = heightoffset.GetResultFloat(originalheightoffset);
+
+			slopearcher.ApplySlope();
+
+			UpdateChangedObjects?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void SlopeArchForm_Shown(object sender, EventArgs e)
+		{
+			slopearcher.ApplySlope();
+			UpdateChangedObjects?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void halfcircle_Click(object sender, EventArgs e)
+		{
+			theta.Text = "180";
+			offset.Text = "0";
+		}
+
+		private void quartercircleleft_Click(object sender, EventArgs e)
+		{
+			theta.Text = "90";
+			offset.Text = "90";
+		}
+
+		private void quartercircleright_Click(object sender, EventArgs e)
+		{
+			theta.Text = "90";
+			offset.Text = "0";
+		}
+
+		private void label1_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

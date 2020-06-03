@@ -1,4 +1,4 @@
-﻿namespace CodeImp.DoomBuilder.BuilderModes.Interface
+﻿namespace CodeImp.DoomBuilder.BuilderModes
 {
 	partial class SlopeArchForm
 	{
@@ -36,6 +36,13 @@
 			this.accept = new System.Windows.Forms.Button();
 			this.up = new System.Windows.Forms.RadioButton();
 			this.down = new System.Windows.Forms.RadioButton();
+			this.scale = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.quartercircleleft = new System.Windows.Forms.Button();
+			this.quartercircleright = new System.Windows.Forms.Button();
+			this.halfcircle = new System.Windows.Forms.Button();
+			this.heightoffset = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+			this.label4 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// theta
@@ -60,11 +67,12 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(19, 17);
+			this.label1.Location = new System.Drawing.Point(61, 12);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(31, 13);
+			this.label1.Size = new System.Drawing.Size(37, 13);
 			this.label1.TabIndex = 19;
-			this.label1.Text = "theta";
+			this.label1.Text = "Angle:";
+			this.label1.Click += new System.EventHandler(this.label1_Click);
 			// 
 			// offset
 			// 
@@ -88,11 +96,11 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(22, 47);
+			this.label2.Location = new System.Drawing.Point(32, 43);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(33, 13);
+			this.label2.Size = new System.Drawing.Size(66, 13);
 			this.label2.TabIndex = 21;
-			this.label2.Text = "offset";
+			this.label2.Text = "Angle offset:";
 			// 
 			// cancel
 			// 
@@ -118,7 +126,7 @@
 			// 
 			this.up.AutoSize = true;
 			this.up.Checked = true;
-			this.up.Location = new System.Drawing.Point(22, 96);
+			this.up.Location = new System.Drawing.Point(22, 131);
 			this.up.Name = "up";
 			this.up.Size = new System.Drawing.Size(39, 17);
 			this.up.TabIndex = 24;
@@ -130,7 +138,7 @@
 			// down
 			// 
 			this.down.AutoSize = true;
-			this.down.Location = new System.Drawing.Point(22, 119);
+			this.down.Location = new System.Drawing.Point(22, 154);
 			this.down.Name = "down";
 			this.down.Size = new System.Drawing.Size(53, 17);
 			this.down.TabIndex = 25;
@@ -138,12 +146,105 @@
 			this.down.UseVisualStyleBackColor = true;
 			this.down.CheckedChanged += new System.EventHandler(this.UpdateArch);
 			// 
+			// scale
+			// 
+			this.scale.AllowDecimal = true;
+			this.scale.AllowExpressions = false;
+			this.scale.AllowNegative = false;
+			this.scale.AllowRelative = false;
+			this.scale.ButtonStep = 5;
+			this.scale.ButtonStepBig = 15F;
+			this.scale.ButtonStepFloat = 5F;
+			this.scale.ButtonStepSmall = 15F;
+			this.scale.ButtonStepsUseModifierKeys = true;
+			this.scale.ButtonStepsWrapAround = false;
+			this.scale.Location = new System.Drawing.Point(104, 67);
+			this.scale.Name = "scale";
+			this.scale.Size = new System.Drawing.Size(63, 24);
+			this.scale.StepValues = null;
+			this.scale.TabIndex = 26;
+			this.scale.WhenTextChanged += new System.EventHandler(this.UpdateArch);
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(61, 72);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(37, 13);
+			this.label3.TabIndex = 27;
+			this.label3.Text = "Scale:";
+			// 
+			// quartercircleleft
+			// 
+			this.quartercircleleft.Location = new System.Drawing.Point(173, 12);
+			this.quartercircleleft.Name = "quartercircleleft";
+			this.quartercircleleft.Size = new System.Drawing.Size(113, 23);
+			this.quartercircleleft.TabIndex = 28;
+			this.quartercircleleft.Text = "Quarter circle left";
+			this.quartercircleleft.UseVisualStyleBackColor = true;
+			this.quartercircleleft.Click += new System.EventHandler(this.quartercircleleft_Click);
+			// 
+			// quartercircleright
+			// 
+			this.quartercircleright.Location = new System.Drawing.Point(173, 67);
+			this.quartercircleright.Name = "quartercircleright";
+			this.quartercircleright.Size = new System.Drawing.Size(113, 23);
+			this.quartercircleright.TabIndex = 29;
+			this.quartercircleright.Text = "Quarter circle right";
+			this.quartercircleright.UseVisualStyleBackColor = true;
+			this.quartercircleright.Click += new System.EventHandler(this.quartercircleright_Click);
+			// 
+			// halfcircle
+			// 
+			this.halfcircle.Location = new System.Drawing.Point(173, 38);
+			this.halfcircle.Name = "halfcircle";
+			this.halfcircle.Size = new System.Drawing.Size(113, 23);
+			this.halfcircle.TabIndex = 30;
+			this.halfcircle.Text = "Half circle";
+			this.halfcircle.UseVisualStyleBackColor = true;
+			this.halfcircle.Click += new System.EventHandler(this.halfcircle_Click);
+			// 
+			// heightoffset
+			// 
+			this.heightoffset.AllowDecimal = true;
+			this.heightoffset.AllowExpressions = false;
+			this.heightoffset.AllowNegative = true;
+			this.heightoffset.AllowRelative = false;
+			this.heightoffset.ButtonStep = 8;
+			this.heightoffset.ButtonStepBig = 16F;
+			this.heightoffset.ButtonStepFloat = 8F;
+			this.heightoffset.ButtonStepSmall = 16F;
+			this.heightoffset.ButtonStepsUseModifierKeys = true;
+			this.heightoffset.ButtonStepsWrapAround = false;
+			this.heightoffset.Location = new System.Drawing.Point(104, 97);
+			this.heightoffset.Name = "heightoffset";
+			this.heightoffset.Size = new System.Drawing.Size(63, 24);
+			this.heightoffset.StepValues = null;
+			this.heightoffset.TabIndex = 31;
+			this.heightoffset.WhenTextChanged += new System.EventHandler(this.UpdateArch);
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(29, 102);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(70, 13);
+			this.label4.TabIndex = 32;
+			this.label4.Text = "Height offset:";
+			// 
 			// SlopeArchForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(205, 251);
+			this.ClientSize = new System.Drawing.Size(298, 230);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.heightoffset);
+			this.Controls.Add(this.halfcircle);
+			this.Controls.Add(this.quartercircleright);
+			this.Controls.Add(this.quartercircleleft);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.scale);
 			this.Controls.Add(this.down);
 			this.Controls.Add(this.up);
 			this.Controls.Add(this.accept);
@@ -158,6 +259,7 @@
 			this.Name = "SlopeArchForm";
 			this.ShowIcon = false;
 			this.Text = "SlopeArchForm";
+			this.Shown += new System.EventHandler(this.SlopeArchForm_Shown);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -173,5 +275,12 @@
 		private System.Windows.Forms.Button accept;
 		private System.Windows.Forms.RadioButton up;
 		private System.Windows.Forms.RadioButton down;
+		private Controls.ButtonsNumericTextbox scale;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Button quartercircleleft;
+		private System.Windows.Forms.Button quartercircleright;
+		private System.Windows.Forms.Button halfcircle;
+		private Controls.ButtonsNumericTextbox heightoffset;
+		private System.Windows.Forms.Label label4;
 	}
 }

@@ -4273,9 +4273,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			Vector2D p1 = handles[0].GetCenterPoint();
 			Vector2D p2 = handles[1].GetCenterPoint();
+			int baseheight = handles[0].Level.type == SectorLevelType.Ceiling ? handles[0].Sidedef.Sector.CeilHeight : handles[0].Sidedef.Sector.FloorHeight;
 
-			SlopeArchForm saf = new SlopeArchForm(this, p1, p2);
+			SlopeArcher sa = new SlopeArcher(this, selectedsectors, handles[0], handles[1], Angle2D.DegToRad(90.0), Angle2D.DegToRad(45.0), 1.0);
+
+			SlopeArchForm saf = new SlopeArchForm(this, sa);
+			saf.UpdateChangedObjects += Interface_OnUpdateChangedObjects;
 			DialogResult result = saf.ShowDialog();
+			saf.UpdateChangedObjects -= Interface_OnUpdateChangedObjects;
 
 			if (result == DialogResult.Cancel)
 				General.Map.UndoRedo.WithdrawUndo();
@@ -4286,79 +4291,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.DisplayStatus(StatusType.Action, "Arched between slope handles.");
 		}
 
-		public void DoArchBetweenHandles(Vector2D p1, Vector2D p2, double _theta, double _offsetangle, double scale)
+		private void Interface_OnUpdateChangedObjects(object sender, EventArgs e)
 		{
-			List<IVisualEventReceiver> selectedsectors = GetSelectedObjects(true, false, false, false, false);
-
-			Line2D handleline = new Line2D(p1, p2);
-			double offsetangle = Angle2D.DegToRad(_offsetangle);
-			double theta = Angle2D.DegToRad(_theta);
-			double length = handleline.GetLength();
-
-			double right = Math.Cos(0.0);
-			double left = Math.Cos(theta + offsetangle);
-			double middle = Math.Cos(offsetangle);
-
-			double radius = length / (middle - left);
-			double leftdelimiter = Math.Cos(offsetangle + theta);
-			double rightdelimiter = Math.Cos(offsetangle);
-
-			double sectionstart = Math.Cos(offsetangle + theta) * radius;
-
-			foreach (BaseVisualGeometrySector bvgs in selectedsectors)
-			{
-				double u1 = 1.0;
-				double u2 = 0.0;
-
-
-				foreach (Sidedef sd in bvgs.Sector.Sides.Keys)
-				{
-					double intersection;
-					double bla;
-
-					if (!Line2D.GetIntersection(handleline.v1, handleline.v2, sd.Line.Line.v1.x, sd.Line.Line.v1.y, sd.Line.Line.v2.x, sd.Line.Line.v2.y, out bla, out intersection, false))
-						continue;
-
-					if (intersection < u1)
-						u1 = intersection;
-					if (intersection > u2)
-						u2 = intersection;
-				}
-
-				if (u1 == u2)
-				{
-					if(u1 >= 0.5)
-					{
-						u1 = 1.0;
-					}
-					else
-					{
-						u2 = 0.0;
-					}
-
-				}
-
-				double xpos1 = sectionstart + (u1 * length);
-				double xpos2 = sectionstart + (u2 * length);
-				double height1 = Math.Sqrt(radius * radius - xpos1 * xpos1) * scale;
-				double height2 = Math.Sqrt(radius * radius - xpos2 * xpos2) * scale;
-
-				if (double.IsNaN(height1))
-					height1 = 0.0;
-
-				if (double.IsNaN(height2))
-					height2 = 0.0;
-
-				double slopeangle = Vector2D.GetAngle(new Vector2D(xpos1, height1), new Vector2D(xpos2, height2));
-
-				Plane plane = new Plane(new Vector3D(handleline.GetCoordinatesAt(u1), height1), handleline.GetAngle() + Angle2D.PIHALF, slopeangle, true);
-
-				VisualSidedefSlope.ApplySlope(bvgs.Level, plane, this);
-				bvgs.Sector.UpdateSectorGeometry(true);
-
-				Debug.WriteLine(string.Format("sector: {0} | xpos1: {1}, height1: {2} | xpos2: {3}, height2: {4} | slope angle: {5}", bvgs.Sector.Sector.Index, xpos1, xpos2, height1, height2, slopeangle));
-			}
-
 			UpdateChangedObjects();
 		}
 
