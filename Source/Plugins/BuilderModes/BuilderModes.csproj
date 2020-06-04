@@ -492,7 +492,6 @@
     <Compile Include="VisualModes\SectorLevelComparer.cs" />
     <Compile Include="VisualModes\SectorLevelType.cs" />
     <Compile Include="VisualModes\SlopeArcher.cs" />
-    <Compile Include="VisualModes\SlopeArchSettings.cs" />
     <Compile Include="VisualModes\TexturePlane.cs" />
     <Compile Include="VisualModes\ThingData.cs" />
     <Compile Include="VisualModes\VertexData.cs" />
