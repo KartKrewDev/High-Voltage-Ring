@@ -62,7 +62,7 @@
 			this.theta.Size = new System.Drawing.Size(63, 24);
 			this.theta.StepValues = null;
 			this.theta.TabIndex = 18;
-			this.theta.WhenTextChanged += new System.EventHandler(this.UpdateArch);
+			this.theta.WhenTextChanged += new System.EventHandler(this.theta_WhenTextChanged);
 			// 
 			// label1
 			// 
@@ -72,7 +72,6 @@
 			this.label1.Size = new System.Drawing.Size(37, 13);
 			this.label1.TabIndex = 19;
 			this.label1.Text = "Angle:";
-			this.label1.Click += new System.EventHandler(this.label1_Click);
 			// 
 			// offset
 			// 
@@ -91,7 +90,7 @@
 			this.offset.Size = new System.Drawing.Size(63, 24);
 			this.offset.StepValues = null;
 			this.offset.TabIndex = 20;
-			this.offset.WhenTextChanged += new System.EventHandler(this.UpdateArch);
+			this.offset.WhenTextChanged += new System.EventHandler(this.offset_WhenTextChanged);
 			// 
 			// label2
 			// 
@@ -133,7 +132,7 @@
 			this.up.TabStop = true;
 			this.up.Text = "Up";
 			this.up.UseVisualStyleBackColor = true;
-			this.up.CheckedChanged += new System.EventHandler(this.UpdateArch);
+			this.up.CheckedChanged += new System.EventHandler(this.up_CheckedChanged);
 			// 
 			// down
 			// 
@@ -144,7 +143,7 @@
 			this.down.TabIndex = 25;
 			this.down.Text = "Down";
 			this.down.UseVisualStyleBackColor = true;
-			this.down.CheckedChanged += new System.EventHandler(this.UpdateArch);
+			this.down.CheckedChanged += new System.EventHandler(this.down_CheckedChanged);
 			// 
 			// scale
 			// 
@@ -163,7 +162,7 @@
 			this.scale.Size = new System.Drawing.Size(63, 24);
 			this.scale.StepValues = null;
 			this.scale.TabIndex = 26;
-			this.scale.WhenTextChanged += new System.EventHandler(this.UpdateArch);
+			this.scale.WhenTextChanged += new System.EventHandler(this.scale_WhenTextChanged);
 			// 
 			// label3
 			// 
@@ -221,7 +220,7 @@
 			this.heightoffset.Size = new System.Drawing.Size(63, 24);
 			this.heightoffset.StepValues = null;
 			this.heightoffset.TabIndex = 31;
-			this.heightoffset.WhenTextChanged += new System.EventHandler(this.UpdateArch);
+			this.heightoffset.WhenTextChanged += new System.EventHandler(this.heightoffset_WhenTextChanged);
 			// 
 			// label4
 			// 

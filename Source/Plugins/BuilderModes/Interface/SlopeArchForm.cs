@@ -23,6 +23,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private double originalheightoffset;
 		private SlopeArcher slopearcher;
 		public event EventHandler UpdateChangedObjects;
+		bool updating;
 
 		internal SlopeArchForm(EditMode mode, SlopeArcher slopearcher)
 		{
@@ -40,9 +41,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			offset.Text = originaloffset.ToString();
 			scale.Text = (originalscale * 100.0).ToString();
 			heightoffset.Text = originalheightoffset.ToString();
+
+			updating = false;
 		}
 
-		private void UpdateArch(object sender, EventArgs e)
+		private void UpdateArch()
 		{
 			double t = theta.GetResultFloat(originaltheta);
 			double o = offset.GetResultFloat(originaloffset);
@@ -75,25 +78,99 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		private void halfcircle_Click(object sender, EventArgs e)
 		{
+			updating = true;
+
 			theta.Text = "180";
 			offset.Text = "0";
+
+			UpdateArch();
+
+			updating = false;
 		}
 
 		private void quartercircleleft_Click(object sender, EventArgs e)
 		{
+			updating = true;
+
 			theta.Text = "90";
 			offset.Text = "90";
+
+			UpdateArch();
+
+			updating = false;
 		}
 
 		private void quartercircleright_Click(object sender, EventArgs e)
 		{
+			updating = true;
+
 			theta.Text = "90";
 			offset.Text = "0";
+
+			UpdateArch();
+
+			updating = false;
 		}
 
-		private void label1_Click(object sender, EventArgs e)
+		private void theta_WhenTextChanged(object sender, EventArgs e)
 		{
+			if (updating)
+				return;
 
+			updating = true;
+
+			double t = theta.GetResultFloat(originaltheta);
+
+			if (t > 180.0)
+				t = 180.0;
+
+			double o = (180 - t) / 2.0;
+
+			offset.Text = o.ToString();
+
+			UpdateArch();
+
+			updating = false;
+		}
+
+		private void offset_WhenTextChanged(object sender, EventArgs e)
+		{
+			if (updating)
+				return;
+
+			UpdateArch();
+		}
+
+		private void scale_WhenTextChanged(object sender, EventArgs e)
+		{
+			if (updating)
+				return;
+
+			UpdateArch();
+		}
+
+		private void heightoffset_WhenTextChanged(object sender, EventArgs e)
+		{
+			if (updating)
+				return;
+
+			UpdateArch();
+		}
+
+		private void up_CheckedChanged(object sender, EventArgs e)
+		{
+			if (updating)
+				return;
+
+			UpdateArch();
+		}
+
+		private void down_CheckedChanged(object sender, EventArgs e)
+		{
+			if (updating)
+				return;
+
+			UpdateArch();
 		}
 	}
 }
