@@ -121,8 +121,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			double t = theta.GetResultFloat(originaltheta);
 
+			if (t <= 0.0)
+			{
+				t = 1.0;
+				theta.Text = "1";
+			}
+
 			if (t > 180.0)
+			{
 				t = 180.0;
+				theta.Text = "180";
+			}
 
 			double o = (180 - t) / 2.0;
 

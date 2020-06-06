@@ -27,7 +27,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		public double Theta { get { return theta; } set { theta = value; CalculateBaseHeightOffset(); } }
 		public double OffsetAngle { get { return offsetangle; } set { offsetangle = value; CalculateBaseHeightOffset(); } }
-		public double Scale { get { return scale; } set { scale = value; } }
+		public double Scale { get { return scale; } set { scale = value; CalculateBaseHeightOffset(); } }
 		public int Baseheight { get { return baseheight; } }
 		public double HeightOffset { get { return heightoffset; } set { heightoffset = value; } }
 
@@ -50,13 +50,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else
 				baseheight = handle1.Level.extrafloor ? handle1.Level.sector.CeilHeight : handle1.Level.sector.FloorHeight;
 
-			//baseheight = handle1.Level.type == SectorLevelType.Ceiling ? handle1.Level.sector.CeilHeight : handle1.Level.sector.FloorHeight;
 			baseheightoffset = 0.0;
 		}
 
 		private void CalculateBaseHeightOffset()
 		{
-			double right = Math.Cos(0.0);
+			/*
 			double left = Math.Cos(theta + offsetangle);
 			double middle = Math.Cos(offsetangle);
 
@@ -67,11 +66,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			double sectionstart = Math.Cos(offsetangle + theta) * radius;
 
 			baseheightoffset = Math.Sqrt(radius * radius - sectionstart * sectionstart) * scale;
+			*/
 		}
 
 		public void ApplySlope()
 		{
-			double right = Math.Cos(0.0);
 			double left = Math.Cos(theta + offsetangle);
 			double middle = Math.Cos(offsetangle);
 
@@ -81,11 +80,31 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			double sectionstart = Math.Cos(offsetangle + theta) * radius;
 
+			baseheightoffset = Math.Sqrt(radius * radius - sectionstart * sectionstart) * scale;
+
 			foreach (BaseVisualGeometrySector bvgs in sectors)
 			{
+				HashSet<Vertex> vertices = new HashSet<Vertex>(bvgs.Sector.Sides.Count * 2);
 				double u1 = 1.0;
 				double u2 = 0.0;
 
+				foreach (Sidedef sd in bvgs.Sector.Sides.Keys)
+				{
+					vertices.Add(sd.Line.Start);
+					vertices.Add(sd.Line.End);
+				}
+
+				foreach(Vertex v in vertices)
+				{
+					double intersection = handleline.GetNearestOnLine(v.Position);
+
+					if (intersection < u1)
+						u1 = intersection;
+					if (intersection > u2)
+						u2 = intersection;
+				}
+
+				/*
 				foreach (Sidedef sd in bvgs.Sector.Sides.Keys)
 				{
 					double intersection;
@@ -99,7 +118,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if (intersection > u2)
 						u2 = intersection;
 				}
+				*/
 
+				/*
 				if (u1 == u2)
 				{
 					if (u1 >= 0.5)
@@ -112,6 +133,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 				}
+				*/
 
 				double xpos1 = sectionstart + (u1 * length);
 				double xpos2 = sectionstart + (u2 * length);
