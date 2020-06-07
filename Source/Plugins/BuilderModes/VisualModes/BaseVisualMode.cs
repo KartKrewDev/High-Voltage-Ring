@@ -4271,13 +4271,30 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			General.Map.UndoRedo.CreateUndo("Arch between slope handles");
 
-			Vector2D p1 = handles[0].GetCenterPoint();
-			Vector2D p2 = handles[1].GetCenterPoint();
+			Vector3D p1 = handles[0].GetCenterPoint();
+			Vector3D p2 = handles[1].GetCenterPoint();
+			double linelength = new Line2D(p1, p2).GetLength();
+			double zdiff = Math.Abs(p1.z - p2.z);
+			double zangle = (p1 - p2).GetAngleZ();
+
+			if (zangle == Math.PI)
+				zangle = 0.0;
+			else if (zangle > Math.PI)
+				zangle -= Math.PI;
+
+			// zangle += Math.PI / 4.0;
+			zangle *= 4;
+			double angle = Math.Sqrt(linelength * linelength + zdiff * zdiff) - zangle;
+
+			double bla = Angle2D.RadToDeg(angle);
+			double blaz = Angle2D.RadToDeg(zangle);
+
 			int baseheight = handles[0].Level.type == SectorLevelType.Ceiling ? handles[0].Sidedef.Sector.CeilHeight : handles[0].Sidedef.Sector.FloorHeight;
 
-			SlopeArcher sa = new SlopeArcher(this, selectedsectors, handles[0], handles[1], Angle2D.DegToRad(90.0), Angle2D.DegToRad(45.0), 1.0);
+			//SlopeArcher sa = new SlopeArcher(this, selectedsectors, handles[0], handles[1], Angle2D.DegToRad(90.0), Angle2D.DegToRad(45.0), 1.0);
+			SlopeArcher sa = new SlopeArcher(this, selectedsectors, handles[0], handles[1], angle, zangle, 1.0);
 
-			SlopeArchForm saf = new SlopeArchForm(this, sa);
+			SlopeArchForm saf = new SlopeArchForm(sa);
 			saf.UpdateChangedObjects += Interface_OnUpdateChangedObjects;
 			DialogResult result = saf.ShowDialog();
 			saf.UpdateChangedObjects -= Interface_OnUpdateChangedObjects;

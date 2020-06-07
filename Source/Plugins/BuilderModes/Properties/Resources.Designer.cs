@@ -313,6 +313,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap HalfCircle {
+            get {
+                object obj = ResourceManager.GetObject("HalfCircle", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Hide {
             get {
                 object obj = ResourceManager.GetObject("Hide", resourceCulture);
@@ -416,6 +426,26 @@ namespace CodeImp.DoomBuilder.BuilderModes.Properties {
         internal static System.Drawing.Bitmap PlaceThings {
             get {
                 object obj = ResourceManager.GetObject("PlaceThings", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap QuarterCircleTopLeft {
+            get {
+                object obj = ResourceManager.GetObject("QuarterCircleTopLeft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap QuarterCircleTopRight {
+            get {
+                object obj = ResourceManager.GetObject("QuarterCircleTopRight", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
