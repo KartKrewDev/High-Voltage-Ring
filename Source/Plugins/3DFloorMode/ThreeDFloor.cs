@@ -257,8 +257,11 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			// With multiple tag support in UDMF only one tag is needed, so bind it right away
 			if (General.Map.UDMF == true)
 			{
-				if(isnew)
+				if (isnew)
+				{
 					udmftag = BuilderPlug.Me.ControlSectorArea.GetNewSectorTag(tagblacklist);
+					tagblacklist.Add(udmftag);
+				}					
 
 				BindTag(udmftag);
 			}

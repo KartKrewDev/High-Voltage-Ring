@@ -111,12 +111,17 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			threeDFloorPanel.ScrollControlIntoView(dup);
 		}
 
+		/// <summary>
+		/// Splits the 3D floor, creating a new 3D floor for every checked sector
+		/// </summary>
+		/// <param name="ctrl">The control for the 3D floor that's to be split</param>
 		public void SplitThreeDFloor(ThreeDFloorHelperControl ctrl)
 		{
-			var items = new List<int>();
-			var controls = new List<ThreeDFloorHelperControl>();
+			List<int> items = new List<int>();
+			List<ThreeDFloorHelperControl> controls = new List<ThreeDFloorHelperControl>() { ctrl };
 			int numsplits = 0;
 
+			// Create a list of all checked sectors
 			for (int i = 0; i < ctrl.checkedListBoxSectors.Items.Count; i++)
 			{
 				if(ctrl.checkedListBoxSectors.GetItemCheckState(i) == CheckState.Checked)
@@ -134,39 +139,37 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				have to add exactly one additional control
 			*/
 
-			controls.Add(ctrl);
-
 			if (items.Count == 1)
-			{
 				numsplits = 1;
-			}
 			else
-			{
 				numsplits = items.Count - 1;
-			}
 
+			// Get new controls for the additional 3D floors
 			for (int i = 0; i < numsplits; i++)
 			{
 				var newctrl = GetThreeDFloorControl();
 
 				newctrl.Update(ctrl);
-				newctrl.Show();
-
 				controls.Add(newctrl);
 			}
 
+			// Update the ckeckboxes of the controls to reflect the split 3D floors
 			for (int i = controls.Count - 1; i >= 0 ; i--)
 			{
+				// Uncheck all sectors...
 				for (int j = 0; j < items.Count; j++)
-				{
-					controls[i].checkedListBoxSectors.SetItemChecked(j, false);
-				}
+					controls[i].checkedListBoxSectors.SetItemChecked(items[j], false);
 
+				// ... and only check a single one
 				if (useitem >= 0)
 					controls[i].checkedListBoxSectors.SetItemChecked(items[useitem], true);
 
 				useitem--;
 			}
+
+			// Show the new controls
+			foreach (Control c in controls)
+				c.Show();
 		}
 
 		public void DetachThreeDFloor(ThreeDFloorHelperControl ctrl)

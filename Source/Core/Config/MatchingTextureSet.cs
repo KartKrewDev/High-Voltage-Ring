@@ -140,7 +140,7 @@ namespace CodeImp.DoomBuilder.Config
 		internal bool AddTexture(ImageData image)
 		{
 			// Check against regex
-			if(regex.IsMatch(image.Name.ToUpperInvariant()))
+			if(regex.IsMatch(image.ShortName.ToUpperInvariant()))
 			{
 				// Matches! Add it.
 				textures.Add(image);
@@ -158,7 +158,7 @@ namespace CodeImp.DoomBuilder.Config
 		internal bool AddFlat(ImageData image)
 		{
 			// Check against regex
-			if(regex.IsMatch(image.Name.ToUpperInvariant()))
+			if(regex.IsMatch(image.ShortName.ToUpperInvariant()))
 			{
 				// Matches! Add it.
 				flats.Add(image);
@@ -174,7 +174,7 @@ namespace CodeImp.DoomBuilder.Config
 		// This only checks if the given image is a match
 		internal bool IsMatch(ImageData image)
 		{
-			return regex.IsMatch(image.Name.ToUpperInvariant());
+			return regex.IsMatch(image.ShortName.ToUpperInvariant());
 		}
 
 		// This only checks if the given texture name is a match (mxd)
