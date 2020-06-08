@@ -45,6 +45,7 @@
 			this.quartercircleleft = new System.Windows.Forms.Button();
 			this.lockoffset = new System.Windows.Forms.CheckBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.invert = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -112,7 +113,7 @@
 			// cancel
 			// 
 			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(147, 167);
+			this.cancel.Location = new System.Drawing.Point(147, 194);
 			this.cancel.Name = "cancel";
 			this.cancel.Size = new System.Drawing.Size(88, 24);
 			this.cancel.TabIndex = 22;
@@ -122,7 +123,7 @@
 			// accept
 			// 
 			this.accept.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.accept.Location = new System.Drawing.Point(53, 167);
+			this.accept.Location = new System.Drawing.Point(53, 194);
 			this.accept.Name = "accept";
 			this.accept.Size = new System.Drawing.Size(88, 24);
 			this.accept.TabIndex = 23;
@@ -258,21 +259,32 @@
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.invert);
 			this.groupBox1.Controls.Add(this.up);
 			this.groupBox1.Controls.Add(this.down);
 			this.groupBox1.Location = new System.Drawing.Point(156, 65);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(108, 69);
+			this.groupBox1.Size = new System.Drawing.Size(108, 96);
 			this.groupBox1.TabIndex = 35;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Direction";
+			// 
+			// invert
+			// 
+			this.invert.Location = new System.Drawing.Point(6, 65);
+			this.invert.Name = "invert";
+			this.invert.Size = new System.Drawing.Size(96, 23);
+			this.invert.TabIndex = 36;
+			this.invert.Text = "Invert";
+			this.invert.UseVisualStyleBackColor = true;
+			this.invert.Click += new System.EventHandler(this.invert_Click);
 			// 
 			// SlopeArchForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(286, 203);
+			this.ClientSize = new System.Drawing.Size(286, 228);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.lockoffset);
 			this.Controls.Add(this.label4);
@@ -321,5 +333,6 @@
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.CheckBox lockoffset;
 		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.Button invert;
 	}
 }

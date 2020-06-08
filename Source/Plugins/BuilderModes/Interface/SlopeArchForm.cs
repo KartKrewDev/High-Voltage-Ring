@@ -289,6 +289,39 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			offset.Enabled = !offset.Enabled;
 		}
 
+		/// <summary>
+		/// Inverts the current slope
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void invert_Click(object sender, EventArgs e)
+		{
+			// Flip up/down direction
+			if(up.Checked)
+			{
+				up.Checked = false;
+				down.Checked = true;
+			}
+			else
+			{
+				up.Checked = true;
+				down.Checked = false;
+			}
+
+			double t = theta.GetResultFloat(originaltheta);
+			double o = offset.GetResultFloat(originaloffset);
+
+			// Subtract theta from the offset, if the result is greater than 0, otherwise add theta
+			if (o - t < 0.0)
+				o = o + t;
+			else
+				o = o - t;
+
+			offset.Text = o.ToString();
+
+			UpdateArch();
+		}
+
 		#endregion
 	}
 }
