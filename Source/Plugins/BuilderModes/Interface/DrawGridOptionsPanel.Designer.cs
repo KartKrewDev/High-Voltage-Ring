@@ -43,6 +43,7 @@
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.relativeinterpolation = new System.Windows.Forms.CheckBox();
 			this.showguidelines = new System.Windows.Forms.CheckBox();
 			this.continuousdrawing = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
@@ -54,8 +55,8 @@
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.gridlockmode);
 			this.groupBox1.Controls.Add(this.label5);
 			this.groupBox1.Controls.Add(this.triangulate);
@@ -73,8 +74,8 @@
 			// 
 			// gridlockmode
 			// 
-			this.gridlockmode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.gridlockmode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.gridlockmode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.gridlockmode.FormattingEnabled = true;
 			this.gridlockmode.Items.AddRange(new object[] {
@@ -154,8 +155,8 @@
 			// 
 			// groupBox2
 			// 
-			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox2.Controls.Add(this.interpvmode);
 			this.groupBox2.Controls.Add(this.interphmode);
 			this.groupBox2.Controls.Add(this.label3);
@@ -169,8 +170,8 @@
 			// 
 			// interpvmode
 			// 
-			this.interpvmode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.interpvmode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.interpvmode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.interpvmode.FormattingEnabled = true;
 			this.interpvmode.Location = new System.Drawing.Point(77, 46);
@@ -182,8 +183,8 @@
 			// 
 			// interphmode
 			// 
-			this.interphmode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.interphmode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.interphmode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.interphmode.FormattingEnabled = true;
 			this.interphmode.Location = new System.Drawing.Point(77, 19);
@@ -213,16 +214,28 @@
 			// 
 			// groupBox3
 			// 
-			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox3.Controls.Add(this.relativeinterpolation);
 			this.groupBox3.Controls.Add(this.showguidelines);
 			this.groupBox3.Controls.Add(this.continuousdrawing);
 			this.groupBox3.Location = new System.Drawing.Point(3, 225);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(200, 71);
+			this.groupBox3.Size = new System.Drawing.Size(200, 98);
 			this.groupBox3.TabIndex = 11;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Additional options";
+			// 
+			// relativeinterpolation
+			// 
+			this.relativeinterpolation.AutoSize = true;
+			this.relativeinterpolation.Location = new System.Drawing.Point(20, 70);
+			this.relativeinterpolation.Name = "relativeinterpolation";
+			this.relativeinterpolation.Size = new System.Drawing.Size(125, 17);
+			this.relativeinterpolation.TabIndex = 17;
+			this.relativeinterpolation.Text = "Relative interpolation";
+			this.relativeinterpolation.UseVisualStyleBackColor = true;
+			this.relativeinterpolation.CheckedChanged += new System.EventHandler(this.relativeinterpolation_CheckedChanged);
 			// 
 			// showguidelines
 			// 
@@ -286,5 +299,6 @@
 		private System.Windows.Forms.ComboBox gridlockmode;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.CheckBox showguidelines;
+		private System.Windows.Forms.CheckBox relativeinterpolation;
 	}
 }

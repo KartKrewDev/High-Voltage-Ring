@@ -45,6 +45,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private int horizontalslices;
 		private int verticalslices;
 		private bool triangulate;
+		private bool relativeinterpolation;
 		private GridLockMode gridlockmode;
 		private InterpolationTools.Mode horizontalinterpolation;
 		private InterpolationTools.Mode verticalinterpolation;
@@ -471,28 +472,41 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private void UpdateReferencePoints(DrawnVertex p1, DrawnVertex p2) 
 		{
 			if(!p1.pos.IsFinite() || !p2.pos.IsFinite()) return;
-			
-			if(p1.pos.x < p2.pos.x) 
+
+			// If relative interpolation is enabled the interpolation will use the point where the drawing
+			// started as the origin, not always the top left corner
+			if (relativeinterpolation)
 			{
 				start.x = p1.pos.x;
+				start.y = p1.pos.y;
 				end.x = p2.pos.x;
-			} 
-			else 
+				end.y = p2.pos.y;
+			}
+			else
 			{
-				start.x = p2.pos.x;
-				end.x = p1.pos.x;
+				if (p1.pos.x < p2.pos.x)
+				{
+					start.x = p1.pos.x;
+					end.x = p2.pos.x;
+				}
+				else
+				{
+					start.x = p2.pos.x;
+					end.x = p1.pos.x;
+				}
+
+				if (p1.pos.y < p2.pos.y)
+				{
+					start.y = p1.pos.y;
+					end.y = p2.pos.y;
+				}
+				else
+				{
+					start.y = p2.pos.y;
+					end.y = p1.pos.y;
+				}
 			}
 
-			if(p1.pos.y < p2.pos.y) 
-			{
-				start.y = p1.pos.y;
-				end.y = p2.pos.y;
-			} 
-			else 
-			{
-				start.y = p2.pos.y;
-				end.y = p1.pos.y;
-			}
 
 			width = (int)(end.x - start.x);
 			height = (int)(end.y - start.y);
@@ -507,8 +521,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Load stored settings
 			triangulate = General.Settings.ReadPluginSetting("drawgridmode.triangulate", false);
 			gridlockmode = (GridLockMode)General.Settings.ReadPluginSetting("drawgridmode.gridlockmode", 0);
-			horizontalslices = Math.Max(General.Settings.ReadPluginSetting("drawgridmode.horizontalslices", 3), 3);
-			verticalslices = Math.Max(General.Settings.ReadPluginSetting("drawgridmode.verticalslices", 3), 3);
+			horizontalslices = Math.Max(General.Settings.ReadPluginSetting("drawgridmode.horizontalslices", 3), 1);
+			verticalslices = Math.Max(General.Settings.ReadPluginSetting("drawgridmode.verticalslices", 3), 1);
+			relativeinterpolation = General.Settings.ReadPluginSetting("drawgridmode.relativeinterpolation", true);
 			horizontalinterpolation = (InterpolationTools.Mode)General.Settings.ReadPluginSetting("drawgridmode.horizontalinterpolation", 0);
 			verticalinterpolation = (InterpolationTools.Mode)General.Settings.ReadPluginSetting("drawgridmode.verticalinterpolation", 0);
 			
@@ -527,10 +542,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			panel.OnGridLockModeChanged += OptionsPanelOnGridLockChanged;
 			panel.OnContinuousDrawingChanged += OnContinuousDrawingChanged;
 			panel.OnShowGuidelinesChanged += OnShowGuidelinesChanged;
+			panel.OnRelativeInterpolationChanged += OnRelativeInterpolationChanged;
 
 			// Needs to be set after adding the OnContinuousDrawingChanged event...
 			panel.ContinuousDrawing = General.Settings.ReadPluginSetting("drawgridmode.continuousdrawing", false);
 			panel.ShowGuidelines = General.Settings.ReadPluginSetting("drawgridmode.showguidelines", false);
+			panel.RelativeInterpolation = relativeinterpolation;
 		}
 
 		protected override void AddInterface()
@@ -548,6 +565,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Settings.WritePluginSetting("drawgridmode.gridlockmode", (int)gridlockmode);
 			General.Settings.WritePluginSetting("drawgridmode.horizontalslices", horizontalslices);
 			General.Settings.WritePluginSetting("drawgridmode.verticalslices", verticalslices);
+			General.Settings.WritePluginSetting("drawgridmode.relativeinterpolation", relativeinterpolation);
 			General.Settings.WritePluginSetting("drawgridmode.horizontalinterpolation", (int)horizontalinterpolation);
 			General.Settings.WritePluginSetting("drawgridmode.verticalinterpolation", (int)verticalinterpolation);
 			General.Settings.WritePluginSetting("drawgridmode.continuousdrawing", panel.ContinuousDrawing);
@@ -557,6 +575,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.RemoveDocker(docker);
 			panel.Dispose();
 			panel = null;
+		}
+
+		protected void OnRelativeInterpolationChanged(object value, EventArgs e)
+		{
+			relativeinterpolation = (bool)value;
+			Update();
 		}
 
 		#endregion

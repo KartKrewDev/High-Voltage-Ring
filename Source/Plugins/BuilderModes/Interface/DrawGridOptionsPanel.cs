@@ -11,6 +11,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public event EventHandler OnGridLockModeChanged;
 		public event EventHandler OnContinuousDrawingChanged;
 		public event EventHandler OnShowGuidelinesChanged;
+		public event EventHandler OnRelativeInterpolationChanged;
 
 		private bool blockevents;
 
@@ -22,6 +23,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public int MaxVerticalSlices { get { return (int)slicesV.Maximum; } set { slicesV.Maximum = value; } }
 		public bool ContinuousDrawing { get { return continuousdrawing.Checked; } set { continuousdrawing.Checked = value; } }
 		public bool ShowGuidelines { get { return showguidelines.Checked; } set { showguidelines.Checked = value; } }
+		public bool RelativeInterpolation { get { return relativeinterpolation.Checked; } set { relativeinterpolation.Checked = value; } }
 
 		public InterpolationMode HorizontalInterpolationMode 
 		{
@@ -86,17 +88,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(mode == GridLockMode.NONE || mode == GridLockMode.HORIZONTAL) slicesV.Value = 3;
 			blockevents = false;
 
-			if(OnValueChanged != null) OnValueChanged(this, EventArgs.Empty);
+			OnValueChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void continuousdrawing_CheckedChanged(object sender, EventArgs e)
 		{
-			if(OnContinuousDrawingChanged != null) OnContinuousDrawingChanged(continuousdrawing.Checked, EventArgs.Empty);
+			OnContinuousDrawingChanged?.Invoke(continuousdrawing.Checked, EventArgs.Empty);
 		}
 
 		private void showguidelines_CheckedChanged(object sender, EventArgs e)
 		{
-			if(OnShowGuidelinesChanged != null) OnShowGuidelinesChanged(showguidelines.Checked, EventArgs.Empty);
+			OnShowGuidelinesChanged?.Invoke(showguidelines.Checked, EventArgs.Empty);
+		}
+
+		private void relativeinterpolation_CheckedChanged(object sender, EventArgs e)
+		{
+			OnRelativeInterpolationChanged?.Invoke(relativeinterpolation.Checked, EventArgs.Empty);
 		}
 	}
 }
