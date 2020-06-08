@@ -181,6 +181,12 @@
     <Compile Include="Interface\PreferencesForm.Designer.cs">
       <DependentUpon>PreferencesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\SlopeArchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interface\SlopeArchForm.Designer.cs">
+      <DependentUpon>SlopeArchForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -196,6 +202,9 @@
     <Compile Include="ClassicModes\VerticesMode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Interface\SlopeArchForm.resx">
+      <DependentUpon>SlopeArchForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Actions.cfg" />
   </ItemGroup>
   <ItemGroup>
@@ -482,6 +491,7 @@
     <Compile Include="VisualModes\SectorLevel.cs" />
     <Compile Include="VisualModes\SectorLevelComparer.cs" />
     <Compile Include="VisualModes\SectorLevelType.cs" />
+    <Compile Include="VisualModes\SlopeArcher.cs" />
     <Compile Include="VisualModes\TexturePlane.cs" />
     <Compile Include="VisualModes\ThingData.cs" />
     <Compile Include="VisualModes\VertexData.cs" />
