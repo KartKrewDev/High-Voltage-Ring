@@ -96,7 +96,7 @@
 			this.offset.Size = new System.Drawing.Size(63, 24);
 			this.offset.StepValues = null;
 			this.offset.TabIndex = 20;
-			this.offset.WhenTextChanged += new System.EventHandler(this.offset_changed);
+			this.offset.WhenButtonsClicked += new System.EventHandler(this.offset_changed);
 			this.offset.WhenEnterPressed += new System.EventHandler(this.offset_changed);
 			this.offset.Leave += new System.EventHandler(this.offset_changed);
 			// 

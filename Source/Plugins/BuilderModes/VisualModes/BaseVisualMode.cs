@@ -1835,6 +1835,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			ShowTargetInfo();
 		}
 
+		private void Interface_OnUpdateChangedObjects(object sender, EventArgs e)
+		{
+			UpdateChangedObjects();
+		}
+
 		//mxd
 		private void SelectioninfoupdatetimerOnTick(object sender, EventArgs eventArgs) 
 		{
@@ -4250,6 +4255,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.DisplayStatus(StatusType.Action, "Sloped between slope handles.");
 		}
 
+		/// <summary>
+		/// Applies plane equation slopes to selected sectors, based on the selected slope handles
+		/// </summary>
 		[BeginAction("archbetweenhandles")]
 		public void ArchBetweenHandles()
 		{
@@ -4273,26 +4281,27 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			Vector3D p1 = handles[0].GetCenterPoint();
 			Vector3D p2 = handles[1].GetCenterPoint();
-			double linelength = new Line2D(p1, p2).GetLength();
+			double linelength = Line2D.GetLength(p2.x - p1.x, p2.y - p1.y);
 			double zdiff = Math.Abs(p1.z - p2.z);
-			double zangle = (p1 - p2).GetAngleZ();
+			double theta;
+			double offsetangle;
 
-			if (zangle == Math.PI)
-				zangle = 0.0;
-			else if (zangle > Math.PI)
-				zangle -= Math.PI;
+			// Compute theta and the offset angle. Special handling if the slope handles are at the same height
+			if (zdiff == 0.0)
+			{
+				theta = Math.PI;
+				offsetangle = 0.0;
+			}
+			else
+			{
+				theta = Math.Atan(zdiff / linelength) * 2;
+				offsetangle = Math.PI / 2.0;
 
-			// zangle += Math.PI / 4.0;
-			zangle *= 4;
-			double angle = Math.Sqrt(linelength * linelength + zdiff * zdiff) - zangle;
+				if (p2.z < p1.z)
+					offsetangle -= theta;
+			}
 
-			double bla = Angle2D.RadToDeg(angle);
-			double blaz = Angle2D.RadToDeg(zangle);
-
-			int baseheight = handles[0].Level.type == SectorLevelType.Ceiling ? handles[0].Sidedef.Sector.CeilHeight : handles[0].Sidedef.Sector.FloorHeight;
-
-			//SlopeArcher sa = new SlopeArcher(this, selectedsectors, handles[0], handles[1], Angle2D.DegToRad(90.0), Angle2D.DegToRad(45.0), 1.0);
-			SlopeArcher sa = new SlopeArcher(this, selectedsectors, handles[0], handles[1], angle, zangle, 1.0);
+			SlopeArcher sa = new SlopeArcher(this, selectedsectors, handles[0], handles[1], theta, offsetangle, 1.0);
 
 			SlopeArchForm saf = new SlopeArchForm(sa);
 			saf.UpdateChangedObjects += Interface_OnUpdateChangedObjects;
@@ -4301,16 +4310,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			if (result == DialogResult.Cancel)
 				General.Map.UndoRedo.WithdrawUndo();
-			
+			else
+			{
+				UpdateChangedObjects();
 
-			UpdateChangedObjects();
-
-			General.Interface.DisplayStatus(StatusType.Action, "Arched between slope handles.");
-		}
-
-		private void Interface_OnUpdateChangedObjects(object sender, EventArgs e)
-		{
-			UpdateChangedObjects();
+				General.Interface.DisplayStatus(StatusType.Action, "Arched between slope handles.");
+			}
 		}
 
 		#endregion

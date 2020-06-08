@@ -1,9 +1,28 @@
-﻿using System;
+﻿#region ================== Copyright (c) 2020 Boris Iwanski
+
+/*
+ * This program is free software: you can redistribute it and/or modify
+ *
+ * it under the terms of the GNU General Public License as published by
+ * 
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * 
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see<http://www.gnu.org/licenses/>.
+ */
+
+#endregion
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CodeImp.DoomBuilder.Editing;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.VisualModes;
 using CodeImp.DoomBuilder.Geometry;
@@ -25,9 +44,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private Line2D handleline;
 		private double length;
 
-		public double Theta { get { return theta; } set { theta = value; CalculateBaseHeightOffset(); } }
-		public double OffsetAngle { get { return offsetangle; } set { offsetangle = value; CalculateBaseHeightOffset(); } }
-		public double Scale { get { return scale; } set { scale = value; CalculateBaseHeightOffset(); } }
+		public double Theta { get { return theta; } set { theta = value; } }
+		public double OffsetAngle { get { return offsetangle; } set { offsetangle = value; } }
+		public double Scale { get { return scale; } set { scale = value; } }
 		public int Baseheight { get { return baseheight; } }
 		public double HeightOffset { get { return heightoffset; } set { heightoffset = value; } }
 
@@ -53,22 +72,27 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			baseheightoffset = 0.0;
 		}
 
-		private void CalculateBaseHeightOffset()
-		{
-			/*
-			double left = Math.Cos(theta + offsetangle);
-			double middle = Math.Cos(offsetangle);
-
-			double radius = length / (middle - left);
-			double leftdelimiter = Math.Cos(offsetangle + theta);
-			double rightdelimiter = Math.Cos(offsetangle);
-
-			double sectionstart = Math.Cos(offsetangle + theta) * radius;
-
-			baseheightoffset = Math.Sqrt(radius * radius - sectionstart * sectionstart) * scale;
-			*/
-		}
-
+		/// <summary>
+		/// Applies the slopes to the sectors.
+		/// 
+		/// We have:
+		/// - theta
+		/// - offset angle ("offset")
+		/// - horizontal line length ("length")
+		///
+		/// What we need to compute:
+		/// - x coordinate where the line starts in the circle ("left", this is cos(theta + offset angle))
+		/// - x coordinate where the line ends in the circle ("middle", this is cos(offset angle))
+		///
+		/// With this data we can calculate some more required variables:
+		/// - radius: length / (middle - left)
+		/// - left delimiter: cos(offset + theta) * radius
+		/// - right delimiter: cos(rotation) * radius (should be same as left delimiter + length)
+		/// - section start, in map units: cos(offset + theta) * radius
+		/// - base height offset (where the slope starts)
+		///
+		/// Then we can simply use pythagoras to compute the y position for an x position on the length
+		/// </summary>
 		public void ApplySlope()
 		{
 			double left = Math.Cos(theta + offsetangle);
@@ -94,6 +118,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					vertices.Add(sd.Line.End);
 				}
 
+				// Get the two points that are the furthest apart on the line between the slope handles
 				foreach(Vertex v in vertices)
 				{
 					double intersection = handleline.GetNearestOnLine(v.Position);
@@ -104,37 +129,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						u2 = intersection;
 				}
 
-				/*
-				foreach (Sidedef sd in bvgs.Sector.Sides.Keys)
-				{
-					double intersection;
-					double bla;
-
-					if (!Line2D.GetIntersection(handleline.v1, handleline.v2, sd.Line.Line.v1.x, sd.Line.Line.v1.y, sd.Line.Line.v2.x, sd.Line.Line.v2.y, out bla, out intersection, false))
-						continue;
-
-					if (intersection < u1)
-						u1 = intersection;
-					if (intersection > u2)
-						u2 = intersection;
-				}
-				*/
-
-				/*
-				if (u1 == u2)
-				{
-					if (u1 >= 0.5)
-					{
-						u1 = 1.0;
-					}
-					else
-					{
-						u2 = 0.0;
-					}
-
-				}
-				*/
-
+				// Compute the x position and the corrosponding height of the coordinates
 				double xpos1 = sectionstart + (u1 * length);
 				double xpos2 = sectionstart + (u2 * length);
 				double height1 = Math.Sqrt(radius * radius - xpos1 * xpos1) * scale;
@@ -146,20 +141,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if (double.IsNaN(height2))
 					height2 = 0.0;
 
-				height1 = height1 - baseheightoffset + baseheight;
-				height2 = height2 - baseheightoffset + baseheight;
+				// Adjust the heights
+				height1 = height1 - baseheightoffset + baseheight + heightoffset;
+				height2 = height2 - baseheightoffset + baseheight + heightoffset;
 
-				height1 += heightoffset;
-				height2 += heightoffset;
-
+				// Get the angle of the slope. We cheat a bit and substitute the y value of the vectors with the height of the points
 				double slopeangle = Vector2D.GetAngle(new Vector2D(xpos1, height1), new Vector2D(xpos2, height2));
 
+				// Always let the plane point up, VisualSidedefSlope.ApplySlope will invert it if necessary
 				Plane plane = new Plane(new Vector3D(handleline.GetCoordinatesAt(u1), height1), handleline.GetAngle() + Angle2D.PIHALF, slopeangle, true);
 
 				VisualSidedefSlope.ApplySlope(bvgs.Level, plane, mode);
-				bvgs.Sector.UpdateSectorGeometry(true);
 
-				//Debug.WriteLine(string.Format("sector: {0} | xpos1: {1}, height1: {2} | xpos2: {3}, height2: {4} | slope angle: {5}", bvgs.Sector.Sector.Index, xpos1, xpos2, height1, height2, slopeangle));
+				bvgs.Sector.UpdateSectorGeometry(true);
 			}
 		}
 	}
