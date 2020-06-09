@@ -703,7 +703,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(resetsidemarks) General.Map.Map.ClearMarkedSidedefs(false);
 
 			// Begin with first sidedef
-			if(SidedefTextureMatch(mode, start, originaltextures))
+			if(SidedefTextureMatch(mode, start, originaltextures, true))
 				todo.Push(new Tools.SidedefFillJob { sidedef = start, forward = true });
 
 			// Continue until nothing more to align
@@ -766,12 +766,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
                 if ((ld.Start == v) && (side1 != null) && !side1.Marked)
 				{
-					if(SidedefTextureMatch(mode, side1, texturelongnames))
+					if(SidedefTextureMatch(mode, side1, texturelongnames, true))
 						stack.Push(new Tools.SidedefFillJob { forward = forward, sidedef = side1 });
 				}
 				else if((ld.End == v) && (side2 != null) && !side2.Marked)
 				{
-					if(SidedefTextureMatch(mode, side2, texturelongnames))
+					if(SidedefTextureMatch(mode, side2, texturelongnames, true))
 						stack.Push(new Tools.SidedefFillJob { forward = forward, sidedef = side2 });
 				}
 			}
@@ -781,16 +781,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		#region ================== Texture Alignment
 
-		//mxd. This checks if any of the sidedef texture match the given textures
 		public static bool SidedefTextureMatch(BaseVisualMode mode, Sidedef sd, HashSet<long> texturelongnames)
+		{
+			return SidedefTextureMatch(mode, sd, texturelongnames, false);
+		}
+
+		//mxd. This checks if any of the sidedef texture match the given textures
+		public static bool SidedefTextureMatch(BaseVisualMode mode, Sidedef sd, HashSet<long> texturelongnames, bool needgeometry)
 		{
 			if(!mode.VisualSectorExists(sd.Sector)) return false;
 			VisualSidedefParts parts = ((BaseVisualSector)mode.GetVisualSector(sd.Sector)).GetSidedefParts(sd);
 
-			return (texturelongnames.Contains(sd.LongHighTexture) && (parts.upper != null && parts.upper.Triangles > 0)) ||
-				   (texturelongnames.Contains(sd.LongLowTexture) && (parts.lower != null && parts.lower.Triangles > 0)) ||
+			return (texturelongnames.Contains(sd.LongHighTexture) && (parts.upper != null && (needgeometry ? parts.upper.Triangles > 0 : true))) ||
+				   (texturelongnames.Contains(sd.LongLowTexture) && (parts.lower != null && (needgeometry ? parts.lower.Triangles > 0 : true))) ||
 				   (texturelongnames.Contains(sd.LongMiddleTexture)
-				   && ((parts.middledouble != null && parts.middledouble.Triangles > 0) || (parts.middlesingle != null && parts.middlesingle.Triangles > 0)));
+				   && ((parts.middledouble != null && (needgeometry ? parts.middledouble.Triangles > 0 : true)) || (parts.middlesingle != null && (needgeometry ? parts.middlesingle.Triangles > 0 : true))));
 		}
 
 		#endregion

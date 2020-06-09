@@ -4570,12 +4570,26 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if (VisualSectorExists(j.sidedef.Sector))
 				{
 					VisualSidedefParts parts = ((BaseVisualSector)GetVisualSector(j.sidedef.Sector)).GetSidedefParts(j.sidedef);
-					VisualSidedefParts controlparts = (j.sidedef != j.controlSide ? ((BaseVisualSector)GetVisualSector(j.controlSide.Sector)).GetSidedefParts(j.controlSide) : parts);
+					//VisualSidedefParts controlparts = (j.sidedef != j.controlSide ? ((BaseVisualSector)GetVisualSector(j.controlSide.Sector)).GetSidedefParts(j.controlSide) : parts);
 
 					matchtop = (!j.sidedef.Marked && (!singleselection || texturehashes.Contains(j.sidedef.LongHighTexture)) && (parts.upper != null && parts.upper.Triangles > 0));
 					matchbottom = (!j.sidedef.Marked && (!singleselection || texturehashes.Contains(j.sidedef.LongLowTexture)) && (parts.lower != null && parts.lower.Triangles > 0));
 					matchmid = ((!singleselection || texturehashes.Contains(j.controlSide.LongMiddleTexture))
-						&& ((controlparts.middledouble != null && controlparts.middledouble.Triangles > 0) || (controlparts.middlesingle != null && controlparts.middlesingle.Triangles > 0))); //mxd
+						&& ((parts.middledouble != null && parts.middledouble.Triangles > 0) || (parts.middlesingle != null && parts.middlesingle.Triangles > 0))); //mxd
+
+					// "Normal" sidedef parts didn't match? Check 3D floors
+					if(matchmid == false && parts.middle3d != null && parts.middle3d.Count > 0)
+					{
+						foreach(VisualMiddle3D vm3d in parts.middle3d)
+						{
+							if(vm3d.Triangles > 0 && texturehashes.Contains(vm3d.Texture.LongName))
+							{
+								matchmid = true;
+								break;
+							}
+						}
+					}
+
 
 					//mxd. If there's a selection, check if matched part is actually selected
 					if(checkselectedsidedefparts && !singleselection)
