@@ -269,28 +269,18 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		private void detachAllButton_Click(object sender, EventArgs e)
 		{
-			List<ThreeDFloorHelperControl> controls = threeDFloorPanel.Controls.OfType<ThreeDFloorHelperControl>().ToList();
+			List<ThreeDFloorHelperControl> controls = threeDFloorPanel.Controls.OfType<ThreeDFloorHelperControl>().Where(o => o.Used).ToList();
 
 			foreach (ThreeDFloorHelperControl ctrl in controls)
-			{
-				if (ctrl.Used)
-				{
-					DetachThreeDFloor(ctrl);
-				}
-			}
+				DetachThreeDFloor(ctrl);
 		}
 
 		private void splitAllButton_Click(object sender, EventArgs e)
 		{
-			List<ThreeDFloorHelperControl> controls = threeDFloorPanel.Controls.OfType<ThreeDFloorHelperControl>().ToList();
+			List<ThreeDFloorHelperControl> controls = threeDFloorPanel.Controls.OfType<ThreeDFloorHelperControl>().Where(o => o.Used).ToList();
 
 			foreach (ThreeDFloorHelperControl ctrl in controls)
-			{
-				if (ctrl.Used)
-				{
-					SplitThreeDFloor(ctrl);
-				}
-			}
+				SplitThreeDFloor(ctrl);
 		}
 	}
 }
