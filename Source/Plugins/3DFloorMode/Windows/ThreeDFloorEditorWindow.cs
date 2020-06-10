@@ -266,5 +266,31 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 			General.Map.Map.Update();
 		}
+
+		private void detachAllButton_Click(object sender, EventArgs e)
+		{
+			List<ThreeDFloorHelperControl> controls = threeDFloorPanel.Controls.OfType<ThreeDFloorHelperControl>().ToList();
+
+			foreach (ThreeDFloorHelperControl ctrl in controls)
+			{
+				if (ctrl.Used)
+				{
+					DetachThreeDFloor(ctrl);
+				}
+			}
+		}
+
+		private void splitAllButton_Click(object sender, EventArgs e)
+		{
+			List<ThreeDFloorHelperControl> controls = threeDFloorPanel.Controls.OfType<ThreeDFloorHelperControl>().ToList();
+
+			foreach (ThreeDFloorHelperControl ctrl in controls)
+			{
+				if (ctrl.Used)
+				{
+					SplitThreeDFloor(ctrl);
+				}
+			}
+		}
 	}
 }

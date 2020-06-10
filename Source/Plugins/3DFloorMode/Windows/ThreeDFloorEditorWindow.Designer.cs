@@ -36,8 +36,10 @@
 			this.sharedThreeDFloorsCheckBox = new System.Windows.Forms.CheckBox();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.no3dfloorspanel = new System.Windows.Forms.Panel();
-			this.label1 = new System.Windows.Forms.Label();
 			this.add3dfloorbutton2 = new System.Windows.Forms.Button();
+			this.label1 = new System.Windows.Forms.Label();
+			this.detachAllButton = new System.Windows.Forms.Button();
+			this.splitAllButton = new System.Windows.Forms.Button();
 			this.no3dfloorspanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -113,17 +115,6 @@
 			this.no3dfloorspanel.Size = new System.Drawing.Size(760, 500);
 			this.no3dfloorspanel.TabIndex = 0;
 			// 
-			// label1
-			// 
-			this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.label1.AutoSize = true;
-			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(279, 212);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(227, 25);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "There are no 3D floors";
-			// 
 			// add3dfloorbutton2
 			// 
 			this.add3dfloorbutton2.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -136,6 +127,39 @@
 			this.add3dfloorbutton2.UseVisualStyleBackColor = true;
 			this.add3dfloorbutton2.Click += new System.EventHandler(this.addThreeDFloorButton_Click);
 			// 
+			// label1
+			// 
+			this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.label1.AutoSize = true;
+			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label1.Location = new System.Drawing.Point(279, 212);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(227, 25);
+			this.label1.TabIndex = 0;
+			this.label1.Text = "There are no 3D floors";
+			// 
+			// detachAllButton
+			// 
+			this.detachAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.detachAllButton.Location = new System.Drawing.Point(332, 513);
+			this.detachAllButton.Name = "detachAllButton";
+			this.detachAllButton.Size = new System.Drawing.Size(75, 23);
+			this.detachAllButton.TabIndex = 5;
+			this.detachAllButton.Text = "Detach all";
+			this.detachAllButton.UseVisualStyleBackColor = true;
+			this.detachAllButton.Click += new System.EventHandler(this.detachAllButton_Click);
+			// 
+			// splitAllButton
+			// 
+			this.splitAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.splitAllButton.Location = new System.Drawing.Point(254, 513);
+			this.splitAllButton.Name = "splitAllButton";
+			this.splitAllButton.Size = new System.Drawing.Size(75, 23);
+			this.splitAllButton.TabIndex = 6;
+			this.splitAllButton.Text = "Split all";
+			this.splitAllButton.UseVisualStyleBackColor = true;
+			this.splitAllButton.Click += new System.EventHandler(this.splitAllButton_Click);
+			// 
 			// ThreeDFloorEditorWindow
 			// 
 			this.AcceptButton = this.okButton;
@@ -143,6 +167,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(784, 548);
+			this.Controls.Add(this.splitAllButton);
+			this.Controls.Add(this.detachAllButton);
 			this.Controls.Add(this.no3dfloorspanel);
 			this.Controls.Add(this.sharedThreeDFloorsCheckBox);
 			this.Controls.Add(this.addThreeDFloorButton);
@@ -177,5 +203,7 @@
 		private System.Windows.Forms.Panel no3dfloorspanel;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button add3dfloorbutton2;
+		private System.Windows.Forms.Button detachAllButton;
+		private System.Windows.Forms.Button splitAllButton;
 	}
 }
