@@ -360,12 +360,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				case GridLockMode.VERTICAL:
 					slicesH = horizontalslices;
-					slicesV = height / General.Map.Grid.GridSize;
+					slicesV = Math.Abs(height / General.Map.Grid.GridSize);
 					break;
 
 				case GridLockMode.BOTH:
-					slicesH = width / General.Map.Grid.GridSize;
-					slicesV = height / General.Map.Grid.GridSize;
+					slicesH = Math.Abs(width / General.Map.Grid.GridSize);
+					slicesV = Math.Abs(height / General.Map.Grid.GridSize);
 					break;
 			}
 
