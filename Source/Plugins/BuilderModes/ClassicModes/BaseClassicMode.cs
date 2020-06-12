@@ -100,6 +100,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Switch to EditSelectionMode
 			EditSelectionMode editmode = new EditSelectionMode();
 			editmode.Pasting = true;
+			editmode.UpdateSlopes = false;
 			editmode.PasteOptions = options;
 			General.Editing.ChangeMode(editmode);
 		}

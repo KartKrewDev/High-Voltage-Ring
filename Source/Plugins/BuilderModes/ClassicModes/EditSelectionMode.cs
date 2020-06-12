@@ -212,7 +212,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// Options
 		private bool snaptogrid;		// SHIFT to toggle
-		private bool snaptonearest;		// CTRL to enable
+		private bool snaptonearest;     // CTRL to enable
+
+		private bool updateslopes;
 		
 		#endregion
 
@@ -222,6 +224,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		
 		public bool Pasting { get { return pasting; } set { pasting = value; } }
 		public PasteOptions PasteOptions { get { return pasteoptions; } set { pasteoptions = value.Copy(); } }
+		
+		public bool UpdateSlopes { get { return updateslopes; } set { updateslopes = value; } }
 
 		//mxd. Modification
 		internal bool UsePrecisePosition { get { return usepreciseposition; } set { usepreciseposition = value; } }
@@ -246,6 +250,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			// Initialize
 			mode = ModifyMode.None;
+			updateslopes = true;
 		}
 
 		//mxd. Another constructor. Used indirectly from ImportObjAsTerrainMode.OnAccept.
@@ -254,6 +259,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Initialize
 			this.pasting = pasting;
 			this.mode = ModifyMode.None;
+			this.updateslopes = true;
 		}
 
 		// Disposer
@@ -1591,7 +1597,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					// Create cache of 3D floor control sectors that reference the selected sectors. Only do it if not pasting, since the slopes
 					// will only be updated when not pasting, since it'd otherwise screw up the original slopes 
-					if (!pasting)
+					if (updateslopes)
 					{
 						foreach (Linedef ld in General.Map.Map.Linedefs)
 						{
@@ -1646,7 +1652,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 
 						// Update the slopes of 3D floor control sectors. Only do it if not pasting, since it'd otherwise screw up the original slopes 
-						if (!pasting && controlsectors.ContainsKey(s))
+						if (updateslopes && controlsectors.ContainsKey(s))
 						{
 							foreach (Sector cs in controlsectors[s])
 							{
@@ -1699,7 +1705,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 
 						// Update the slopes of 3D floor control sectors. Only do it if not pasting, since it'd otherwise screw up the original slopes 
-						if (!pasting && controlsectors.ContainsKey(s))
+						if (updateslopes && controlsectors.ContainsKey(s))
 						{
 							foreach (Sector cs in controlsectors[s])
 							{

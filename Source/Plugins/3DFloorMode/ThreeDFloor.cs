@@ -219,11 +219,20 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		public bool CreateGeometry(List<int> tagblacklist)
 		{
+			int newtag;
+
+			return CreateGeometry(tagblacklist, false, out newtag);
+		}
+
+		public bool CreateGeometry(List<int> tagblacklist, bool forcenewtag, out int newtag)
+		{
 			List<DrawnVertex> drawnvertices = new List<DrawnVertex>();
 			List<Vertex> vertices = new List<Vertex>();
 			Vector3D slopetopthingpos = new Vector3D(0, 0, 0);
 			Vector3D slopebottomthingpos = new Vector3D(0, 0, 0);
 			Line2D slopeline = new Line2D(0, 0, 0, 0);
+
+			newtag = -1;
 
 			drawnvertices = BuilderPlug.Me.ControlSectorArea.GetNewControlSectorVertices();
 
@@ -257,9 +266,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			// With multiple tag support in UDMF only one tag is needed, so bind it right away
 			if (General.Map.UDMF == true)
 			{
-				if (isnew)
+				if (isnew || forcenewtag)
 				{
-					udmftag = BuilderPlug.Me.ControlSectorArea.GetNewSectorTag(tagblacklist);
+					newtag = udmftag = BuilderPlug.Me.ControlSectorArea.GetNewSectorTag(tagblacklist);
 					tagblacklist.Add(udmftag);
 				}					
 

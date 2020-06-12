@@ -225,7 +225,7 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 		
 		// This performs the copy. Returns false when copy was cancelled.
-		private static bool DoCopySelection(string desc)
+		public static bool DoCopySelection(string desc)
 		{
 			// Check if possible to copy/paste
 			if(General.Editing.Mode.Attributes.AllowCopyPaste)
@@ -285,7 +285,7 @@ namespace CodeImp.DoomBuilder.Editing
 		}
 		
 		// This performs the paste. Returns false when paste was cancelled.
-		private static void DoPasteSelection(PasteOptions options)
+		public static void DoPasteSelection(PasteOptions options)
 		{
 			// Check if possible to copy/paste
 			if(General.Editing.Mode.Attributes.AllowCopyPaste)
