@@ -30,6 +30,19 @@ using CodeImp.DoomBuilder.Map;
 
 namespace CodeImp.DoomBuilder.ThreeDFloorMode
 {
+	[Serializable]
+	public class NoSpaceInCSAException : Exception
+	{
+		public NoSpaceInCSAException()
+		{ }
+
+		public NoSpaceInCSAException(string message) : base(message)
+		{ }
+
+		public NoSpaceInCSAException(string message, Exception innerException) : base(message, innerException)
+		{ }
+	}
+
 	public class ControlSectorArea
 	{
 
@@ -318,7 +331,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				}
 			}
 
-			throw new Exception("Not enough space for control sector relocation");
+			throw new NoSpaceInCSAException("Not enough space for control sector relocation");
 		}
 
 		public List<DrawnVertex> GetNewControlSectorVertices()
@@ -354,7 +367,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				}
 			}
 
-			throw new Exception("No space left for control sectors");
+			throw new NoSpaceInCSAException("No space left for control sectors");
 		}
 
 		public bool Inside(float x, float y)

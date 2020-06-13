@@ -61,10 +61,12 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 	{
 		#region ================== Constants
 
+		private const string duplicateundodescription = "Duplicate 3D floor control sectors before pasting";
+
 		#endregion
 
 		#region ================== Variables
-		
+
 		// Highlighted item
 		protected Sector highlighted;
 		protected ThreeDFloor highlighted3dfloor;
@@ -87,6 +89,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		ControlSectorArea.Highlight csahighlight = ControlSectorArea.Highlight.None;
 		bool dragging = false;
+		bool withdrawduplicateundo;
 
 		bool paintselectpressed;
 
@@ -108,10 +111,19 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		{
 			threedfloors = BuilderPlug.GetThreeDFloors(General.Map.Map.Sectors.ToList());
 
-			if(General.Editing.Mode is EditSelectionMode && ((EditSelectionMode)General.Editing.Mode).Cancelled)
-			{
+			withdrawduplicateundo = false;
 
+			// If we're coming from EditSelectionMode, and that modes was cancelled check if the last undo was to create
+			// duplicated 3D floors. If that's the case we want to withdraw that undo, too. Don't do it here, though, as the other
+			// mode is still active, do it in OnEngage instead
+			if (General.Editing.Mode is EditSelectionMode &&
+				((EditSelectionMode)General.Editing.Mode).Cancelled &&
+				General.Map.UndoRedo.NextUndo != null &&
+				General.Map.UndoRedo.NextUndo.Description == duplicateundodescription)
+			{
+				withdrawduplicateundo = true;
 			}
+				
 		}
 
 		// Disposer
@@ -674,6 +686,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			UpdateLabels();
 			updateOverlaySurfaces();
 			UpdateOverlay();
+
+			// Withdraw the undo that was created when 
+			if (withdrawduplicateundo)
+				General.Map.UndoRedo.WithdrawUndo();
 		}
 
 		void ViewSelectionNumbers_Click(object sender, EventArgs e)
@@ -1516,9 +1532,12 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 						tagblacklist.Add(tag);
 
 			if (duplicatethreedfloors.Count == 0)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Selected geometry doesn't contain 3D floors");
 				return;
+			}
 
-			General.Map.UndoRedo.CreateUndo("Duplicate 3D floor control sectors before pasting");
+			General.Map.UndoRedo.CreateUndo(duplicateundodescription);
 
 			// Create a new control sector for each 3D floor that needs to be duplicated. Force it to generate
 			// a new tag, and store the old (current) and new tag
@@ -1527,13 +1546,14 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				int newtag;
 				int oldtag = tdf.UDMFTag;
 
-				if(tdf.CreateGeometry(new List<int>(), true, out newtag))
+				try
 				{
+					tdf.CreateGeometry(new List<int>(), true, out newtag);
 					tagreplacements[oldtag] = newtag;
 				}
-				else
+				catch(NoSpaceInCSAException e)
 				{
-					General.Interface.DisplayStatus(StatusType.Warning, "Could not create 3D floor control sector geometry");
+					General.Interface.DisplayStatus(StatusType.Warning, string.Format("Could not create 3D floor control sector geometry: {0}", e.Message));
 					General.Map.UndoRedo.WithdrawUndo();
 					return;
 				}
