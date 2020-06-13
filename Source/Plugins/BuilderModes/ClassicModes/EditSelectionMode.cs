@@ -1438,6 +1438,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Cancel mode
 		public override void OnCancel()
 		{
+			// Only allow the following code to be run once
+			if (cancelled)
+				return;
+
 			base.OnCancel();
 
 			// Paste operation?

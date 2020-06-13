@@ -605,121 +605,123 @@ namespace CodeImp.DoomBuilder.Editing
 					// Call UndoBegin event
 					if(General.Editing.Mode.OnUndoBegin())
 					{
-						// Cancel volatile mode, if any
-						// This returns false when mode was not volatile
-						if(!General.Editing.CancelVolatileMode())
+						// biwa. Previously being in a volatile mode simply switch back the the previous
+						// stable mode without actually performing the undo. This causes problems when the
+						// volatile mode create undo snapshots. EditSelectionMode does this, and removing
+						// it's undo snapshot only works because the mode's OnCancel is called twice.
+						// Maybe the logic of CancelVolatileMode is just wrong.
+						General.Editing.CancelVolatileMode();
+
+						geometrychanged = false;
+						populationchanged = false;
+						General.Map.Map.ClearAllMarks(false);
+						General.Map.Map.BeginAddRemove();
+							
+						// Go for all levels to undo
+						for(int lvl = 0; lvl < levels; lvl++)
 						{
-							geometrychanged = false;
-							populationchanged = false;
-							General.Map.Map.ClearAllMarks(false);
-							General.Map.Map.BeginAddRemove();
-							
-							// Go for all levels to undo
-							for(int lvl = 0; lvl < levels; lvl++)
+							FinishRecording();
+								
+							if(isundosnapshot)
 							{
-								FinishRecording();
-								
-								if(isundosnapshot)
+								if(snapshot != null)
 								{
-									if(snapshot != null)
+									// This snapshot was made by a previous call to this
+									// function and should go on the redo list
+									lock(redos)
 									{
-										// This snapshot was made by a previous call to this
-										// function and should go on the redo list
-										lock(redos)
-										{
-											// The current top of the stack can now be written to disk
-											// because it is no longer the next immediate redo level
-											if(redos.Count > 0) redos[0].StoreOnDisk = true;
+										// The current top of the stack can now be written to disk
+										// because it is no longer the next immediate redo level
+										if(redos.Count > 0) redos[0].StoreOnDisk = true;
 											
-											// Put it on the stack
-											redos.Insert(0, snapshot);
-											LimitUndoRedoLevel(redos);
-										}
+										// Put it on the stack
+										redos.Insert(0, snapshot);
+										LimitUndoRedoLevel(redos);
 									}
 								}
-								else
-								{
-									// The snapshot can be undone immediately and it will
-									// be recorded for the redo list
-									if(snapshot != null)
-										u = snapshot;
-								}
-								
-								// No immediate snapshot to undo? Then get the next one from the stack
-								if(u == null)
-								{
-									lock(undos)
-									{
-										if(undos.Count > 0)
-										{
-											// Get undo snapshot
-											u = undos[0];
-											undos.RemoveAt(0);
-											
-											// Make the current top of the stack load into memory
-											// because it just became the next immediate undo level
-											if(undos.Count > 0) undos[0].StoreOnDisk = false;
-										}
-										else
-										{
-											// Nothing more to undo
-											u = null;
-											break;
-										}
-									}
-								}
-								
-								General.WriteLogLine("Performing undo \"" + u.Description + "\", Ticket ID " + u.TicketID + "...");
-								
-								if((levels == 1) && showmessage)
-									General.Interface.DisplayStatus(StatusType.Action, u.Description + " undone.");
-								
-								// Make a snapshot for redo
-								StartRecording(u.Description);
-								isundosnapshot = true;
-								
-								// Reset grouping
-								lastgroupplugin = null;
-
-								// Play back the stream in reverse
-								MemoryStream data = u.GetStream();
-								PlaybackStream(data);
-								data.Dispose();
-								
-								// Done with this snapshot
-								u = null;
-								levelsundone++;
 							}
-							
-							General.Map.Map.EndAddRemove();
-							
-							if((levels > 1) && showmessage)
-								General.Interface.DisplayStatus(StatusType.Action, "Undone " + levelsundone + " changes.");
-							
-							// Remove selection
-							General.Map.Map.ClearAllSelected();
-							
-							// Update map
-							General.Map.Map.Update();
-							foreach(Thing t in General.Map.Map.Things) if(t.Marked) t.UpdateConfiguration();
-							General.Map.ThingsFilter.Update();
-							General.Map.Data.UpdateUsedTextures();
-							General.MainWindow.RefreshInfo();
-							//General.MainWindow.RedrawDisplay();
-							
-							// Map changed!
-							General.Map.IsChanged = true;
-							
-							// Done
-							General.Editing.Mode.OnUndoEnd();
-							General.Plugins.OnUndoEnd();
+							else
+							{
+								// The snapshot can be undone immediately and it will
+								// be recorded for the redo list
+								if(snapshot != null)
+									u = snapshot;
+							}
+								
+							// No immediate snapshot to undo? Then get the next one from the stack
+							if(u == null)
+							{
+								lock(undos)
+								{
+									if(undos.Count > 0)
+									{
+										// Get undo snapshot
+										u = undos[0];
+										undos.RemoveAt(0);
+											
+										// Make the current top of the stack load into memory
+										// because it just became the next immediate undo level
+										if(undos.Count > 0) undos[0].StoreOnDisk = false;
+									}
+									else
+									{
+										// Nothing more to undo
+										u = null;
+										break;
+									}
+								}
+							}
+								
+							General.WriteLogLine("Performing undo \"" + u.Description + "\", Ticket ID " + u.TicketID + "...");
+								
+							if((levels == 1) && showmessage)
+								General.Interface.DisplayStatus(StatusType.Action, u.Description + " undone.");
+								
+							// Make a snapshot for redo
+							StartRecording(u.Description);
+							isundosnapshot = true;
+								
+							// Reset grouping
+							lastgroupplugin = null;
 
-							// Update interface
-							General.Editing.Mode.UpdateSelectionInfo(); //mxd
-							General.MainWindow.RedrawDisplay(); //mxd
-							dobackgroundwork = true;
-							General.MainWindow.UpdateInterface();
+							// Play back the stream in reverse
+							MemoryStream data = u.GetStream();
+							PlaybackStream(data);
+							data.Dispose();
+								
+							// Done with this snapshot
+							u = null;
+							levelsundone++;
 						}
+							
+						General.Map.Map.EndAddRemove();
+							
+						if((levels > 1) && showmessage)
+							General.Interface.DisplayStatus(StatusType.Action, "Undone " + levelsundone + " changes.");
+							
+						// Remove selection
+						General.Map.Map.ClearAllSelected();
+							
+						// Update map
+						General.Map.Map.Update();
+						foreach(Thing t in General.Map.Map.Things) if(t.Marked) t.UpdateConfiguration();
+						General.Map.ThingsFilter.Update();
+						General.Map.Data.UpdateUsedTextures();
+						General.MainWindow.RefreshInfo();
+						//General.MainWindow.RedrawDisplay();
+							
+						// Map changed!
+						General.Map.IsChanged = true;
+							
+						// Done
+						General.Editing.Mode.OnUndoEnd();
+						General.Plugins.OnUndoEnd();
+
+						// Update interface
+						General.Editing.Mode.UpdateSelectionInfo(); //mxd
+						General.MainWindow.RedrawDisplay(); //mxd
+						dobackgroundwork = true;
+						General.MainWindow.UpdateInterface();
 					}
 				}
 			}
