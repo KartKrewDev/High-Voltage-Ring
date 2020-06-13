@@ -98,6 +98,8 @@ namespace CodeImp.DoomBuilder.Editing
 		public bool IsMouseInside { get { return mouseinside; } }
 		public MouseButtons MouseDragging { get { return mousedragging; } }
 
+		public bool Cancelled { get { return cancelled; } }
+
 		// Selection
 		public bool IsSelecting { get { return selecting; } }
 		public Vector2D SelectionStart { get { return selectstart; } }

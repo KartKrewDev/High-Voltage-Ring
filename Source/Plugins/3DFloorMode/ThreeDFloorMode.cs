@@ -107,6 +107,11 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		public ThreeDFloorHelperMode()
 		{
 			threedfloors = BuilderPlug.GetThreeDFloors(General.Map.Map.Sectors.ToList());
+
+			if(General.Editing.Mode is EditSelectionMode && ((EditSelectionMode)General.Editing.Mode).Cancelled)
+			{
+
+			}
 		}
 
 		// Disposer
