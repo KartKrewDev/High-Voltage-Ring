@@ -203,30 +203,31 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			snaptogrid = (snaptocardinaldirection || gridlockmode != GridLockMode.NONE || (General.Interface.ShiftState ^ General.Interface.SnapToGrid));
 			snaptonearest = (gridlockmode == GridLockMode.NONE && (General.Interface.CtrlState ^ General.Interface.AutoMerge));
 
-			DrawnVertex curp;
-			if(points.Count == 1)
-			{
-				// Handle the case when start point is not on current grid.
-				Vector2D gridoffset = General.Map.Grid.SnappedToGrid(points[0].pos) - points[0].pos;
-				curp = GetCurrentPosition(mousemappos + gridoffset, snaptonearest, snaptogrid, snaptocardinaldirection, usefourcardinaldirections, renderer, points);
-				curp.pos -= gridoffset;
-			}
-			else
-			{
-				curp = GetCurrentPosition();
-			}
-			
+			DrawnVertex curp = GetCurrentPosition();
+
+			Vector2D curvertexpos = curp.pos;
 			float vsize = (renderer.VertexSize + 1.0f) / renderer.Scale;
+
+			curp.pos = curp.pos.GetRotated(-General.Map.Grid.GridRotate);
 
 			// Render drawing lines
 			if(renderer.StartOverlay(true)) 
 			{
 				PixelColor color = snaptonearest ? stitchcolor : losecolor;
+				Vector2D startrotated = start.GetRotated(General.Map.Grid.GridRotate);
+				Vector2D endrotated = end.GetRotated(General.Map.Grid.GridRotate);
 
-				if(points.Count == 1) 
+				if (points.Count == 1) 
 				{
 					UpdateReferencePoints(points[0], curp);
 					List<Vector2D[]> shapes = GetShapes(start, end);
+
+					// Rotate the shape to fit the grid rotation
+					foreach(Vector2D[] shape in shapes)
+					{
+						for(int i=0; i < shape.Length; i++)
+							shape[i] = shape[i].GetRotated(General.Map.Grid.GridRotate);
+					}
 
 					// Render guidelines
 					if(showguidelines)
@@ -250,14 +251,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(width == 0 || height == 0)
 					{
 						// Render label for line
-						labels[0].Move(start, end);
+						labels[0].Move(startrotated, endrotated);
 						renderer.RenderText(labels[0].TextLabel);
 					}
 					else
 					{
 						// Render labels for grid
-						Vector2D[] labelCoords = { start, new Vector2D(end.x, start.y), end, new Vector2D(start.x, end.y), start };
-						for(int i = 1; i < 5; i++)
+						Vector2D[] labelCoords = { startrotated, new Vector2D(end.x, start.y).GetRotated(General.Map.Grid.GridRotate), endrotated, new Vector2D(start.x, end.y).GetRotated(General.Map.Grid.GridRotate), startrotated };
+
+						for (int i = 1; i < 5; i++)
 						{
 							labels[i - 1].Move(labelCoords[i], labelCoords[i - 1]);
 							renderer.RenderText(labels[i - 1].TextLabel);
@@ -268,10 +270,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(horizontalslices > 1 || verticalslices > 1) 
 					{
 						string text = "H: " + (slicesH - 1) + "; V: " + (slicesV - 1);
-						if(width > text.Length * vsize && height > 16 * vsize)
+						if(Math.Abs(width) > text.Length * vsize && Math.Abs(height) > 16 * vsize)
 						{
 							hintlabel.Text = text;
-							hintlabel.Move(start, end);
+							hintlabel.Move(startrotated, endrotated);
 							renderer.RenderText(hintlabel.TextLabel);
 						}
 					}
@@ -279,7 +281,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				else 
 				{
 					// Render vertex at cursor
-					renderer.RenderRectangleFilled(new RectangleF((float)(curp.pos.x - vsize), (float)(curp.pos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
+					renderer.RenderRectangleFilled(new RectangleF((float)(curvertexpos.x - vsize), (float)(curvertexpos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 				}
 
 				// Done
@@ -297,7 +299,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				pos.y > General.Map.Config.TopBoundary || pos.y < General.Map.Config.BottomBoundary)
 				return false;
 
-			DrawnVertex newpoint = new DrawnVertex { pos = pos, stitch = true, stitchline = stitchline };
+			DrawnVertex newpoint = new DrawnVertex();
+			newpoint.pos = pos.GetRotated(-General.Map.Grid.GridRotate);
+			newpoint.stitch = true; //stitch
+			newpoint.stitchline = stitchline;
 			points.Add(newpoint);
 
 			if(points.Count == 1) 
@@ -314,11 +319,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			} 
 			else 
 			{
-				// Handle the case when start point is not on current grid.
-				Vector2D gridoffset = General.Map.Grid.SnappedToGrid(points[0].pos) - points[0].pos;
-				newpoint = GetCurrentPosition(mousemappos + gridoffset, snaptonearest, snaptogrid, snaptocardinaldirection, usefourcardinaldirections, renderer, new List<DrawnVertex> { points[0] });
-				newpoint.pos -= gridoffset;
-				
 				// Create vertices for final shape.
 				UpdateReferencePoints(points[0], newpoint);
 				List<Vector2D[]> shapes = GetShapes(start, end);
@@ -326,9 +326,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				foreach(Vector2D[] shape in shapes) 
 				{
 					DrawnVertex[] verts = new DrawnVertex[shape.Length];
-					for(int i = 0; i < shape.Length; i++) 
+					for(int i = 0; i < shape.Length; i++)
 					{
-						newpoint = new DrawnVertex { pos = shape[i], stitch = true, stitchline = stitchline };
+						newpoint = new DrawnVertex {
+							pos = shape[i].GetRotated(General.Map.Grid.GridRotate), // Take grid rotation into account
+							stitch = true,
+							stitchline = stitchline
+						};
 						verts[i] = newpoint;
 					}
 
