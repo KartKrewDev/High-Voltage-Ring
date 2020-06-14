@@ -232,9 +232,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			renderer.Present();
 		}
 
-		//mxd
 		protected void RenderGuidelines(Vector2D start, Vector2D end, PixelColor c)
 		{
+			RenderGuidelines(start, end, c, 0.0);
+		}
+
+		//mxd
+		protected void RenderGuidelines(Vector2D start, Vector2D end, PixelColor c, double angle)
+		{
+			start = start.GetRotated(angle);
+			end = end.GetRotated(angle);
+
 			if(end.x != start.x && end.y != start.y)
 			{
 				Vector2D tr = new Vector2D(Math.Max(end.x, start.x), Math.Max(end.y, start.y));
@@ -242,10 +250,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				// Create guidelines
 				Line3D[] lines = new Line3D[5];
-				lines[0] = new Line3D(new Vector2D(tr.x, General.Map.Config.TopBoundary), new Vector2D(tr.x, General.Map.Config.BottomBoundary), c, false);
-				lines[1] = new Line3D(new Vector2D(bl.x, General.Map.Config.TopBoundary), new Vector2D(bl.x, General.Map.Config.BottomBoundary), c, false);
-				lines[2] = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, tr.y), new Vector2D(General.Map.Config.RightBoundary, tr.y), c, false);
-				lines[3] = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, bl.y), new Vector2D(General.Map.Config.RightBoundary, bl.y), c, false);
+				lines[0] = new Line3D(new Vector2D(tr.x, General.Map.Config.TopBoundary).GetRotated(-angle), new Vector2D(tr.x, General.Map.Config.BottomBoundary).GetRotated(-angle), c, false);
+				lines[1] = new Line3D(new Vector2D(bl.x, General.Map.Config.TopBoundary).GetRotated(-angle), new Vector2D(bl.x, General.Map.Config.BottomBoundary).GetRotated(-angle), c, false);
+				lines[2] = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, tr.y).GetRotated(-angle), new Vector2D(General.Map.Config.RightBoundary, tr.y).GetRotated(-angle), c, false);
+				lines[3] = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, bl.y).GetRotated(-angle), new Vector2D(General.Map.Config.RightBoundary, bl.y).GetRotated(-angle), c, false);
 
 				// Create current line extent. Make sure v1 is to the left of v2
 				Line2D current = (end.x < start.x ? new Line2D(end, start) : new Line2D(start, end));

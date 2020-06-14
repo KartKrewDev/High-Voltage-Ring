@@ -141,21 +141,31 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			snaptonearest = General.Interface.CtrlState ^ General.Interface.AutoMerge;
 
 			DrawnVertex curp = GetCurrentPosition();
+			Vector2D curvertexpos = curp.pos;
 			float vsize = (renderer.VertexSize + 1.0f) / renderer.Scale;
+
+			curp.pos = curp.pos.GetRotated(-General.Map.Grid.GridRotate);
 
 			// Render drawing lines
 			if(renderer.StartOverlay(true)) 
 			{
 				PixelColor color = snaptonearest ? stitchcolor : losecolor;
-				
-				if(points.Count == 1) 
+				Vector2D startrotated = start.GetRotated(General.Map.Grid.GridRotate);
+				Vector2D endrotated = end.GetRotated(General.Map.Grid.GridRotate);
+
+				if (points.Count == 1) 
 				{
 					UpdateReferencePoints(points[0], curp);
+
 					Vector2D[] shape = GetShape(start, end);
+
+					// Rotate the shape to fit the grid rotation
+					for (int i = 0; i < shape.Length; i++)
+						shape[i] = shape[i].GetRotated(General.Map.Grid.GridRotate);
 
 					// Render guidelines
 					if(showguidelines)
-						RenderGuidelines(start, end, General.Colors.Guideline.WithAlpha(80));
+						RenderGuidelines(startrotated, endrotated, General.Colors.Guideline.WithAlpha(80), -General.Map.Grid.GridRotate);
 
 					//render shape
 					for(int i = 1; i < shape.Length; i++)
@@ -169,14 +179,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(shape.Length == 2)
 					{
 						// Render label for line
-						labels[0].Move(start, end);
+						labels[0].Move(startrotated, endrotated);
 						renderer.RenderText(labels[0].TextLabel);
 					}
 					else if(shape.Length > 3)
 					{
 						// Render labels for rectangle
-						Vector2D[] labelCoords = { start, new Vector2D(end.x, start.y), end, new Vector2D(start.x, end.y), start };
-						for(int i = 1; i < 5; i++) 
+						Vector2D[] labelCoords = { startrotated, new Vector2D(end.x, start.y).GetRotated(General.Map.Grid.GridRotate), endrotated, new Vector2D(start.x, end.y).GetRotated(General.Map.Grid.GridRotate), startrotated };
+
+						for (int i = 1; i < 5; i++) 
 						{
 							labels[i - 1].Move(labelCoords[i], labelCoords[i - 1]);
 							renderer.RenderText(labels[i - 1].TextLabel);
@@ -188,7 +199,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							//render hint
 							if(width > 64 * vsize && height > 16 * vsize)
 							{
-								hintlabel.Move(start, end);
+								hintlabel.Move(startrotated, endrotated);
 								hintlabel.Text = GetHintText();
 								renderer.RenderText(hintlabel.TextLabel);
 							}
@@ -207,7 +218,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				else 
 				{
 					// Render vertex at cursor
-					renderer.RenderRectangleFilled(new RectangleF((float)(curp.pos.x - vsize), (float)(curp.pos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
+					renderer.RenderRectangleFilled(new RectangleF((float)(curvertexpos.x - vsize), (float)(curvertexpos.y - vsize), vsize * 2.0f, vsize * 2.0f), color, true);
 				}
 
 				// Done
@@ -306,7 +317,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(!p1.pos.IsFinite() || !p2.pos.IsFinite()) return;
 
 			// Make sure start always stays at left and up from the end
-			if(p1.pos.x < p2.pos.x) 
+			if (p1.pos.x < p2.pos.x) 
 			{
 				start.x = p1.pos.x;
 				end.x = p2.pos.x;
@@ -341,12 +352,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				return false;
 
 			DrawnVertex newpoint = new DrawnVertex();
-			newpoint.pos = pos;
+			newpoint.pos = pos.GetRotated(-General.Map.Grid.GridRotate);
 			newpoint.stitch = true; //stitch
 			newpoint.stitchline = stitchline;
 			points.Add(newpoint);
 
-			if(points.Count == 1) //add point and labels
+			if (points.Count == 1) //add point and labels
 			{ 
 				labels.AddRange(new[] { new LineLengthLabel(false, true), new LineLengthLabel(false, true), new LineLengthLabel(false, true), new LineLengthLabel(false, true) });
 				hintlabel = new HintLabel(General.Colors.InfoLine);
@@ -363,6 +374,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				UpdateReferencePoints(points[0], newpoint);
 				points = new List<DrawnVertex>(); //clear points
 				Vector2D[] shape = GetShape(start, end);
+
+				// Rotate the shape to fit the grid rotation
+				for (int i = 0; i < shape.Length; i++)
+					shape[i] = shape[i].GetRotated(General.Map.Grid.GridRotate);
 
 				// We don't want base.DrawPointAt to call Update() here, because it will mess labels[] 
 				// and trigger shape.Count number of display redraws...
