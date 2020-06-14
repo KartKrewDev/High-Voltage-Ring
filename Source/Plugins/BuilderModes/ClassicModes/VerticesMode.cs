@@ -303,7 +303,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(snaptogrid)
 					{
 						// Find all points where the grid intersects the line
-						List<Vector2D> points = l.GetGridIntersections();
+						List<Vector2D> points = l.GetGridIntersections(General.Map.Grid.GridRotate, General.Map.Grid.GridOriginX, General.Map.Grid.GridOriginY);
 						insertpos = mousemappos;
 						double distance = double.MaxValue;
 						foreach(Vector2D p in points)
@@ -476,7 +476,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(General.Interface.ShiftState ^ General.Interface.SnapToGrid) 
 					{
 						// Find all points where the grid intersects the line
-						List<Vector2D> points = l.GetGridIntersections();
+						List<Vector2D> points = l.GetGridIntersections(General.Map.Grid.GridRotate, General.Map.Grid.GridOriginX, General.Map.Grid.GridOriginY);
+
 						if(points.Count == 0) 
 						{
 							insertpreview = l.NearestOnLine(mousemappos);
@@ -839,8 +840,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(snaptogrid)
 					{
 						// Find all points where the grid intersects the line
-						List<Vector2D> points = l.GetGridIntersections();
-						if(points.Count == 0) 
+						List<Vector2D> points = l.GetGridIntersections(General.Map.Grid.GridRotate, General.Map.Grid.GridOriginX, General.Map.Grid.GridOriginY);
+						if (points.Count == 0) 
 						{
 							//mxd. Just use the nearest point on line
 							insertpos = l.NearestOnLine(mousemappos);

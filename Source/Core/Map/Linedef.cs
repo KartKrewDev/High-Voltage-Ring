@@ -899,17 +899,17 @@ namespace CodeImp.DoomBuilder.Map
 		// This returns all points at which the line intersects with the grid
 		public List<Vector2D> GetGridIntersections()
 		{
-			return GetGridIntersections(0.0f);
+			return GetGridIntersections(0.0);
 		}
 
 		
-		public List<Vector2D> GetGridIntersections(double gridrotation, double gridoriginx = 0.0f, double gridoriginy = 0.0f) 
+		public List<Vector2D> GetGridIntersections(double gridrotation, double gridoriginx = 0.0, double gridoriginy = 0.0) 
 		{
 			return GetGridIntersections(new Vector2D(), gridrotation, gridoriginx, gridoriginy);
 		}
 
 		// This returns all points at which the line intersects with the grid
-		public List<Vector2D> GetGridIntersections(Vector2D gridoffset, double gridrotation = 0.0f, double gridoriginx = 0.0f, double gridoriginy = 0.0f)
+		public List<Vector2D> GetGridIntersections(Vector2D gridoffset, double gridrotation = 0.0, double gridoriginx = 0.0, double gridoriginy = 0.0)
 		{
 			List<Vector2D> coords = new List<Vector2D>();
 			Vector2D v = new Vector2D();
@@ -960,7 +960,7 @@ namespace CodeImp.DoomBuilder.Map
 				{
 					// Add intersection point at this x coordinate
 					double u = (gx - minx) / (maxx - minx);
-					if(reversex) u = 1.0f - u;
+					if(reversex) u = 1.0 - u;
 					v.x = gx;
 					v.y = v1.y + (v2.y - v1.y) * u;
 					coords.Add(v);
@@ -975,7 +975,7 @@ namespace CodeImp.DoomBuilder.Map
 				{
 					// Add intersection point at this y coordinate
 					double u = (gy - miny) / (maxy - miny);
-					if(reversey) u = 1.0f - u;
+					if(reversey) u = 1.0 - u;
 					v.x = v1.x + (v2.x - v1.x) * u;
 					v.y = gy;
 					coords.Add(v);
