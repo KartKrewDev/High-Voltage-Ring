@@ -150,14 +150,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(renderer.StartOverlay(true)) 
 			{
 				PixelColor color = snaptonearest ? stitchcolor : losecolor;
-				Vector2D startrotated = start.GetRotated(General.Map.Grid.GridRotate);
-				Vector2D endrotated = end.GetRotated(General.Map.Grid.GridRotate);
 
 				if (points.Count == 1) 
 				{
 					UpdateReferencePoints(points[0], curp);
 
 					Vector2D[] shape = GetShape(start, end);
+
+					Vector2D startrotated = start.GetRotated(General.Map.Grid.GridRotate);
+					Vector2D endrotated = end.GetRotated(General.Map.Grid.GridRotate);
 
 					// Rotate the shape to fit the grid rotation
 					for (int i = 0; i < shape.Length; i++)
