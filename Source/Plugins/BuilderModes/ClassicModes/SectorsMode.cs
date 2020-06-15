@@ -2621,6 +2621,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.RedrawDisplay();
 		}
 
+		[BeginAction("smartgridtransform", BaseAction = true)]
+		protected void SmartGridTransform()
+		{
+			General.Map.Grid.SetGridRotation(0.0);
+			General.Map.Grid.SetGridOrigin(0, 0);
+			General.Map.GridVisibilityChanged();
+			General.Interface.RedrawDisplay();
+		}
+
 		#endregion
 	}
 }

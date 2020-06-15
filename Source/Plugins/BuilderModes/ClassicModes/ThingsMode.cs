@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Actions;
 using CodeImp.DoomBuilder.BuilderModes.Interface;
@@ -1571,6 +1572,38 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			var form = new SelectSimilarElementOptionsPanel();
 			if(form.Setup(this)) form.ShowDialog(General.Interface);
+		}
+
+		[BeginAction("smartgridtransform", BaseAction = true)]
+		protected void SmartGridTransform()
+		{
+			if(General.Map.Map.SelectedThingsCount > 1)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Either nothing or exactly one thing must be selected");
+				General.Interface.MessageBeep(MessageBeepType.Warning);
+				return;
+			}
+
+			Thing thing = null;
+
+			if (General.Map.Map.SelectedThingsCount == 1)
+				thing = General.Map.Map.GetSelectedThings(true).First();
+			else if (highlighted != null)
+				thing = highlighted;
+
+			if(thing != null)
+			{
+				General.Map.Grid.SetGridOrigin(thing.Position.x, thing.Position.y);
+				General.Map.GridVisibilityChanged();
+				General.Interface.RedrawDisplay();
+			}
+			else
+			{
+				General.Map.Grid.SetGridRotation(0.0);
+				General.Map.Grid.SetGridOrigin(0, 0);
+				General.Map.GridVisibilityChanged();
+				General.Interface.RedrawDisplay();
+			}
 		}
 
 		#endregion

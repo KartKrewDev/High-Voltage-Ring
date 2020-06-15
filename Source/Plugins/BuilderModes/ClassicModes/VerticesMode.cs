@@ -1128,7 +1128,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			else
 			{
-				General.Map.Grid.SetGridRotation(0.0f);
+				General.Map.Grid.SetGridRotation(0.0);
 				General.Map.Grid.SetGridOrigin(0, 0);
 				General.Map.GridVisibilityChanged();
 				General.Interface.RedrawDisplay();
