@@ -177,7 +177,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						Vector2D prevp = points[points.Count - 1].pos;
 						renderguidelabels = (curp.pos.x != prevp.x && curp.pos.y != prevp.y);
-						RenderGuidelines(prevp, curp.pos, General.Colors.Guideline.WithAlpha(80));
+						RenderGuidelines(prevp, curp.pos, General.Colors.Guideline.WithAlpha(80), -General.Map.Grid.GridRotate);
 					}
 					
 					// Render lines
@@ -284,7 +284,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						extentend = Line2D.GetIntersectionPoint(bottom, current, false);
 				}
 
-				lines[4] = new Line3D(extentstart, extentend, c, false);
+				lines[4] = new Line3D(extentstart.GetRotated(-angle), extentend.GetRotated(-angle), c, false);
 
 				// Render them
 				renderer.RenderArrows(lines);
@@ -292,10 +292,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Update horiz/vert length labels
 				if(guidelabels != null)
 				{
-					guidelabels[0].Move(tr, new Vector2D(tr.x, bl.y));
-					guidelabels[1].Move(new Vector2D(bl.x, tr.y), tr);
-					guidelabels[2].Move(new Vector2D(tr.x, bl.y), bl);
-					guidelabels[3].Move(bl, new Vector2D(bl.x, tr.y));
+					guidelabels[0].Move(tr.GetRotated(-angle), new Vector2D(tr.x, bl.y).GetRotated(-angle));
+					guidelabels[1].Move(new Vector2D(bl.x, tr.y).GetRotated(-angle), tr.GetRotated(-angle));
+					guidelabels[2].Move(new Vector2D(tr.x, bl.y).GetRotated(-angle), bl.GetRotated(-angle));
+					guidelabels[3].Move(bl.GetRotated(-angle), new Vector2D(bl.x, tr.y).GetRotated(-angle));
 				}
 			}
 			// Render horizontal line + 2 vertical guidelines

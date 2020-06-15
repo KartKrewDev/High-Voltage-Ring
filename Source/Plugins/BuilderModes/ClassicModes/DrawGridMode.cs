@@ -231,7 +231,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					// Render guidelines
 					if(showguidelines)
-						RenderGuidelines(start, end, General.Colors.Guideline.WithAlpha(80));
+						RenderGuidelines(start, end, General.Colors.Guideline.WithAlpha(80), -General.Map.Grid.GridRotate);
 
 					//render shape
 					foreach(Vector2D[] shape in shapes) 
