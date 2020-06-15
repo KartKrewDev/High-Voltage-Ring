@@ -301,24 +301,24 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Render horizontal line + 2 vertical guidelines
 			else if(end.x != start.x)
 			{
-				Line3D l = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, end.y), new Vector2D(General.Map.Config.RightBoundary, end.y), c, false);
-				Line3D gs = new Line3D(new Vector2D(start.x, General.Map.Config.TopBoundary), new Vector2D(start.x, General.Map.Config.BottomBoundary), c, false);
-				Line3D ge = new Line3D(new Vector2D(end.x, General.Map.Config.TopBoundary), new Vector2D(end.x, General.Map.Config.BottomBoundary), c, false);
+				Line3D l = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, end.y).GetRotated(-angle), new Vector2D(General.Map.Config.RightBoundary, end.y).GetRotated(-angle), c, false);
+				Line3D gs = new Line3D(new Vector2D(start.x, General.Map.Config.TopBoundary).GetRotated(-angle), new Vector2D(start.x, General.Map.Config.BottomBoundary).GetRotated(-angle), c, false);
+				Line3D ge = new Line3D(new Vector2D(end.x, General.Map.Config.TopBoundary).GetRotated(-angle), new Vector2D(end.x, General.Map.Config.BottomBoundary).GetRotated(-angle), c, false);
 				renderer.RenderArrows(new List<Line3D> { l, gs, ge });
 			}
 			// Render vertical line + 2 horizontal guidelines
 			else if(end.y != start.y)
 			{
-				Line3D l = new Line3D(new Vector2D(end.x, General.Map.Config.TopBoundary), new Vector2D(end.x, General.Map.Config.BottomBoundary), c, false);
-				Line3D gs = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, start.y), new Vector2D(General.Map.Config.RightBoundary, start.y), c, false);
-				Line3D ge = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, end.y), new Vector2D(General.Map.Config.RightBoundary, end.y), c, false);
+				Line3D l = new Line3D(new Vector2D(end.x, General.Map.Config.TopBoundary).GetRotated(-angle), new Vector2D(end.x, General.Map.Config.BottomBoundary).GetRotated(-angle), c, false);
+				Line3D gs = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, start.y).GetRotated(-angle), new Vector2D(General.Map.Config.RightBoundary, start.y).GetRotated(-angle), c, false);
+				Line3D ge = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, end.y).GetRotated(-angle), new Vector2D(General.Map.Config.RightBoundary, end.y).GetRotated(-angle), c, false);
 				renderer.RenderArrows(new List<Line3D> {l, gs, ge});
 			}
 			// Start and end match. Render a cross
 			else
 			{
-				Line3D gs = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, start.y), new Vector2D(General.Map.Config.RightBoundary, start.y), c, false);
-				Line3D ge = new Line3D(new Vector2D(start.x, General.Map.Config.TopBoundary), new Vector2D(start.x, General.Map.Config.BottomBoundary), c, false);
+				Line3D gs = new Line3D(new Vector2D(General.Map.Config.LeftBoundary, start.y).GetRotated(-angle), new Vector2D(General.Map.Config.RightBoundary, start.y).GetRotated(-angle), c, false);
+				Line3D ge = new Line3D(new Vector2D(start.x, General.Map.Config.TopBoundary).GetRotated(-angle), new Vector2D(start.x, General.Map.Config.BottomBoundary).GetRotated(-angle), c, false);
 				renderer.RenderArrows(new List<Line3D> { gs, ge });
 			}
 		}
