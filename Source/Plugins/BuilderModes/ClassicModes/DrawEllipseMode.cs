@@ -144,10 +144,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			shape[subdivisions] = shape[0];
 
 			// Now fit it inside the bounding box
-			double minx = float.MaxValue;
-			double miny = float.MaxValue;
-			double maxx = float.MinValue;
-			double maxy = float.MinValue;
+			double minx = double.MaxValue;
+			double miny = double.MaxValue;
+			double maxx = double.MinValue;
+			double maxy = double.MinValue;
 
 			// Calculate shape extents
 			foreach(Vector2D v in shape)
@@ -178,8 +178,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// Calculate shape extents again...
-			minx = float.MaxValue;
-			miny = float.MaxValue;
+			minx = double.MaxValue;
+			miny = double.MaxValue;
 			foreach(Vector2D v in shape)
 			{
 				if(v.x < minx) minx = v.x;

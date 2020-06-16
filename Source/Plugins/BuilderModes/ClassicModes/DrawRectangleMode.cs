@@ -341,8 +341,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// Update size
-			width = (int)(end.x - start.x);
-			height = (int)(end.y - start.y);
+			width = (int)Math.Round(end.x - start.x);
+			height = (int)Math.Round(end.y - start.y);
 		}
 
 		// This draws a point at a specific location
