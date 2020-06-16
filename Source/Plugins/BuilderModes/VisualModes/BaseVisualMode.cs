@@ -4444,6 +4444,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// (set the marked property to true for the sidedefs outside the selection)
 		private void AutoAlignTexturesUDMF(BaseVisualGeometrySidedef start, ImageData texture, bool alignx, bool aligny, bool resetsidemarks, bool checkselectedsidedefparts) 
 		{
+			HashSet<long> alignedsides = new HashSet<long>(100);
 			// Mark all sidedefs false (they will be marked true when the texture is aligned)
 			if(resetsidemarks) General.Map.Map.ClearMarkedSidedefs(false);
 			if(!texture.IsImageLoaded) return;
@@ -4561,10 +4562,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Get the align job to do
 				SidedefAlignJob j = todo.Pop();
 
-				// Make sure to not align already aligned textures. This prevents unexpected
-				// results when aligning textures on circular shapes
-				if (j.sidedef.Marked)
+				// Make sure that each combination of sidedef and control side is only aligned once. 
+				// This prevents unexpected results when aligning textures on circular shapes
+				long checksum = (long)j.sidedef.Index << 32 | (long)j.controlSide.Index;
+				if (alignedsides.Contains(checksum))
 					continue;
+				else
+					alignedsides.Add(checksum);
 
 				//mxd. Get visual parts
 				if (VisualSectorExists(j.sidedef.Sector))
