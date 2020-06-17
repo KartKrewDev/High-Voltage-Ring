@@ -818,6 +818,38 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		[BeginAction("exporttoimage")]
+		private void ExportToImage()
+		{
+			// Convert geometry selection to sectors
+			General.Map.Map.ConvertSelection(SelectionType.Sectors);
+
+			// Get sectors
+			ICollection<Sector> sectors = General.Map.Map.SelectedSectorsCount == 0 ? General.Map.Map.Sectors : General.Map.Map.GetSelectedSectors(true);
+			if (sectors.Count == 0)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Image export failed. Map has no sectors!");
+				return;
+			}
+
+			ImageExporter exporter = new ImageExporter();
+
+			ImageExportSettingsForm form = new ImageExportSettingsForm();
+			if (form.ShowDialog() == DialogResult.OK)
+			{
+				ImageExportSettings settings = new ImageExportSettings(Path.GetFileName(form.FilePath), Path.GetDirectoryName(form.FilePath), form.Floor, form.GetPixelFormat(), form.GetImageFormat());
+
+				try
+				{
+					exporter.Export(sectors, settings);
+				}
+				catch(ArgumentException e) // Happens if there's not enough consecutive memory so create the file
+				{
+					MessageBox.Show("Exporting failed. There's likely not enough consecutive free memory to create the image. Try a lower color depth or file format", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
+
 		#endregion
 	}
 }

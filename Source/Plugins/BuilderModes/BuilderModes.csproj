@@ -163,6 +163,12 @@
     <Compile Include="Interface\FindReplaceForm.Designer.cs">
       <DependentUpon>FindReplaceForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\ImageExportSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interface\ImageExportSettingsForm.Designer.cs">
+      <DependentUpon>ImageExportSettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interface\MakeDoorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -187,6 +193,7 @@
     <Compile Include="Interface\SlopeArchForm.Designer.cs">
       <DependentUpon>SlopeArchForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="IO\ImageExporter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -202,6 +209,9 @@
     <Compile Include="ClassicModes\VerticesMode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Interface\ImageExportSettingsForm.resx">
+      <DependentUpon>ImageExportSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Interface\SlopeArchForm.resx">
       <DependentUpon>SlopeArchForm.cs</DependentUpon>
     </EmbeddedResource>
