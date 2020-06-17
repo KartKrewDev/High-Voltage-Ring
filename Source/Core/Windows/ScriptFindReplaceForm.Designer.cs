@@ -178,8 +178,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// findinbox
 			// 
-			this.findinbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.findinbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.findinbox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.findinbox.FormattingEnabled = true;
 			this.findinbox.Items.AddRange(new object[] {
@@ -201,8 +201,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// findbox
 			// 
-			this.findbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.findbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.findbox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
 			this.findbox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
 			this.findbox.FormattingEnabled = true;
@@ -235,8 +235,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// replacebox
 			// 
-			this.replacebox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.replacebox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.replacebox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
 			this.replacebox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
 			this.replacebox.FormattingEnabled = true;
@@ -256,16 +256,13 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// replaceinbox
 			// 
-			this.replaceinbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.replaceinbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.replaceinbox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.replaceinbox.FormattingEnabled = true;
 			this.replaceinbox.Items.AddRange(new object[] {
             "Current tab",
-            "All opened tabs (current script type)",
-            "All opened tabs (any script type)",
-            "All resources (current script type)",
-            "All resources (any script type)"});
+            "All opened tabs"});
 			this.replaceinbox.Location = new System.Drawing.Point(9, 124);
 			this.replaceinbox.Name = "replaceinbox";
 			this.replaceinbox.Size = new System.Drawing.Size(276, 21);
@@ -282,8 +279,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// replacefindbox
 			// 
-			this.replacefindbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.replacefindbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.replacefindbox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
 			this.replacefindbox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
 			this.replacefindbox.FormattingEnabled = true;
@@ -338,12 +335,12 @@ namespace CodeImp.DoomBuilder.Windows
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ScriptFindReplaceForm";
-			this.Opacity = 0;
+			this.Opacity = 0D;
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.Text = "Find and Replace";
-			this.Shown += new System.EventHandler(this.ScriptFindReplaceForm_Shown);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScriptFindReplaceForm_FormClosing);
+			this.Shown += new System.EventHandler(this.ScriptFindReplaceForm_Shown);
 			this.tabs.ResumeLayout(false);
 			this.tabfind.ResumeLayout(false);
 			this.tabfind.PerformLayout();
