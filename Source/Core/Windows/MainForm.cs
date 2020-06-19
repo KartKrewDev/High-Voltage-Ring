@@ -2060,7 +2060,7 @@ namespace CodeImp.DoomBuilder.Windows
 			buttonnewmap.Visible = General.Settings.ToolbarFile;
 			buttonopenmap.Visible = General.Settings.ToolbarFile;
 			buttonsavemap.Visible = General.Settings.ToolbarFile;
-			buttonscripteditor.Visible = General.Settings.ToolbarScript && maploaded;
+			buttonscripteditor.Visible = General.Settings.ToolbarScript && maploaded && General.Map.Config.HasScriptLumps(); // Only show script editor if there a script lumps defined
 			buttonundo.Visible = General.Settings.ToolbarUndo && maploaded;
 			buttonredo.Visible = General.Settings.ToolbarUndo && maploaded;
 			buttoncut.Visible = General.Settings.ToolbarCopy && maploaded;

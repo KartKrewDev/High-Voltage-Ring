@@ -1892,6 +1892,10 @@ namespace CodeImp.DoomBuilder
 		[BeginAction("openscripteditor")]
 		internal void ShowScriptEditor() 
 		{
+			// Only show the script editor if there a script lumps defined
+			if (!General.Map.Config.HasScriptLumps())
+				return;
+
 			Cursor.Current = Cursors.WaitCursor;
 
 			// Load the window?

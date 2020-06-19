@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Editing;
@@ -1224,6 +1225,15 @@ namespace CodeImp.DoomBuilder.Config
 
 			// Unknown sector effect...
 			return new SectorEffectInfo(effect, "Unknown", false, false);
+		}
+
+		/// <summary>
+		/// Checks if there a script lumps defined in the configuration
+		/// </summary>
+		/// <returns>true if there are script lumps defined, false if not</returns>
+		public bool HasScriptLumps()
+		{
+			return maplumps.Values.Count(o => o.ScriptBuild) > 0;
 		}
 		
 		#endregion
