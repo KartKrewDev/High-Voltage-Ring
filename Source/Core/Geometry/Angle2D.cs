@@ -27,10 +27,10 @@ namespace CodeImp.DoomBuilder.Geometry
 		#region ================== Constants
 
 		public const double PI = Math.PI;
-		public const double PIHALF = Math.PI * 0.5f;
-		public const double PI2 = Math.PI * 2f;
-		public const double PIDEG = 57.295779513082320876798154814105f;
-		public const double SQRT2 = 1.4142135623730950488016887242097f;
+		public const double PIHALF = Math.PI * 0.5;
+		public const double PI2 = Math.PI * 2;
+		public const double PIDEG = 57.295779513082320876798154814105;
+		public const double SQRT2 = 1.4142135623730950488016887242097;
 		
 		#endregion
 
@@ -109,10 +109,10 @@ namespace CodeImp.DoomBuilder.Geometry
 			// It's a good idea to check explicitly if cos2 is within [-1 .. 1] range
 			double alpha2 =
 				(cos2 <= -1) ? PI :
-				(cos2 >= 1) ? 0.0f :
+				(cos2 >= 1) ? 0.0 :
 				Math.Acos(cos2);
 
-			double rs = alpha2 * 0.5f;
+			double rs = alpha2 * 0.5;
 
 			// Now revolve the ambiguities.
 			// 1. If dot product of two vectors is negative - the angle is definitely
@@ -124,7 +124,7 @@ namespace CodeImp.DoomBuilder.Geometry
 
 			// 2. Determine the sign. For this we'll use the Determinant of two vectors.
 			double det = (ab.x * cb.y - ab.y * cb.x);
-			if(det < 0) rs = (2.0f * PI) - rs;
+			if(det < 0) rs = (2.0 * PI) - rs;
 
 			return rs;
 		}
