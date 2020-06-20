@@ -1509,6 +1509,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		{
 			List<Sector> selectedsectors;
 			List<ThreeDFloor> duplicatethreedfloors;
+			List<DrawnVertex> drawnvertices;
 			Dictionary<int, int> tagreplacements = new Dictionary<int, int>();
 			List<int> tagblacklist = new List<int>();
 
@@ -1537,10 +1538,18 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				return;
 			}
 
+			try
+			{
+				drawnvertices = BuilderPlug.Me.ControlSectorArea.GetNewControlSectorVertices(duplicatethreedfloors.Count);
+			}
+			catch (NoSpaceInCSAException e)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, string.Format("Could not create 3D floor control sector geometry: {0}", e.Message));
+				return;
+			}
+
 			General.Map.UndoRedo.CreateUndo(duplicateundodescription);
-
-			List<DrawnVertex> drawnvertices = BuilderPlug.Me.ControlSectorArea.GetNewControlSectorVertices(duplicatethreedfloors.Count);
-
+			
 			// Create a new control sector for each 3D floor that needs to be duplicated. Force it to generate
 			// a new tag, and store the old (current) and new tag
 			foreach (ThreeDFloor tdf in duplicatethreedfloors)
@@ -1548,17 +1557,14 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				int newtag;
 				int oldtag = tdf.UDMFTag;
 
-				try
+				if(!tdf.CreateGeometry(new List<int>(), drawnvertices, true, out newtag))
 				{
-					tdf.CreateGeometry(new List<int>(), drawnvertices, true, out newtag);
-					tagreplacements[oldtag] = newtag;
-				}
-				catch(NoSpaceInCSAException e)
-				{
-					General.Interface.DisplayStatus(StatusType.Warning, string.Format("Could not create 3D floor control sector geometry: {0}", e.Message));
+					// No need to show a warning here, that was already done by CreateGeometry
 					General.Map.UndoRedo.WithdrawUndo();
 					return;
 				}
+
+				tagreplacements[oldtag] = newtag;
 			}
 
 			// Replace the old tags of the selected sectors with the new tags
