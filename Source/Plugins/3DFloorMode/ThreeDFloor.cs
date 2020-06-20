@@ -53,7 +53,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		private int topheight;
 		private int bottomheight;
 		private bool isnew;
-		private bool rebuild;
 		private int udmftag;
 		private List<int> tags;
 
@@ -73,7 +72,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		public int TopHeight { get { return topheight; } set { topheight = value; } }
 		public int BottomHeight { get { return bottomheight; } set { bottomheight = value; } }
 		public bool IsNew { get { return isnew; } set { isnew = value; } }
-		public bool Rebuild { get { return rebuild; } set { rebuild = value; } }
 		public int UDMFTag { get { return udmftag; } set { udmftag = value; } }
 		public List<int> Tags { get { return tags; } set { tags = value; } }
 		public Vector3D FloorSlope {  get { return floorslope; } set { floorslope = value; } }
@@ -217,16 +215,15 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			}
 		}
 
-		public bool CreateGeometry(List<int> tagblacklist)
+		public bool CreateGeometry(List<int> tagblacklist, List<DrawnVertex> alldrawnvertices)
 		{
 			int newtag;
 
-			return CreateGeometry(tagblacklist, false, out newtag);
+			return CreateGeometry(tagblacklist, alldrawnvertices, false, out newtag);
 		}
 
-		public bool CreateGeometry(List<int> tagblacklist, bool forcenewtag, out int newtag)
+		public bool CreateGeometry(List<int> tagblacklist, List<DrawnVertex> alldrawnvertices, bool forcenewtag, out int newtag)
 		{
-			List<DrawnVertex> drawnvertices = new List<DrawnVertex>();
 			List<Vertex> vertices = new List<Vertex>();
 			Vector3D slopetopthingpos = new Vector3D(0, 0, 0);
 			Vector3D slopebottomthingpos = new Vector3D(0, 0, 0);
@@ -234,7 +231,19 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 			newtag = -1;
 
-			drawnvertices = BuilderPlug.Me.ControlSectorArea.GetNewControlSectorVertices();
+			// We need 5 vertices to draw the control sector
+			if(alldrawnvertices.Count < 5)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Could not draw new sector: not enough vertices");
+				return false;
+			}
+
+			// Get the first 5 vertices in the list and also remove them from the list, so that creating further
+			// control sectors won't use them
+			List<DrawnVertex> drawnvertices = alldrawnvertices.GetRange(0, 5);
+			alldrawnvertices.RemoveRange(0, 5);
+
+			// drawnvertices = BuilderPlug.Me.ControlSectorArea.GetNewControlSectorVertices();
 
 			if (Tools.DrawLines(drawnvertices) == false)
 			{
@@ -274,21 +283,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 				BindTag(udmftag);
 			}
-
-			// Snap to map format accuracy
-			General.Map.Map.SnapAllToAccuracy();
-
-			General.Map.Map.BeginAddRemove();
-			//MapSet.JoinVertices(vertices, vertices, false, MapSet.STITCH_DISTANCE);
-			General.Map.Map.EndAddRemove();
-
-			// Update textures
-			General.Map.Data.UpdateUsedTextures();
-
-			// Update caches
-			General.Map.Map.Update();
-			General.Interface.RedrawDisplay();
-			General.Map.IsChanged = true;
 
 			return true;
 		}
@@ -372,11 +366,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			}
 
 			General.Map.Map.EndAddRemove();
-
-			// Update cache values
-			General.Map.IsChanged = true;
-			General.Map.Map.Update();
-
 		}
 
 		public void DeleteControlSector()

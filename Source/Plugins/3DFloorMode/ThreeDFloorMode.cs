@@ -1539,6 +1539,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 			General.Map.UndoRedo.CreateUndo(duplicateundodescription);
 
+			List<DrawnVertex> drawnvertices = BuilderPlug.Me.ControlSectorArea.GetNewControlSectorVertices(duplicatethreedfloors.Count);
+
 			// Create a new control sector for each 3D floor that needs to be duplicated. Force it to generate
 			// a new tag, and store the old (current) and new tag
 			foreach (ThreeDFloor tdf in duplicatethreedfloors)
@@ -1548,7 +1550,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 				try
 				{
-					tdf.CreateGeometry(new List<int>(), true, out newtag);
+					tdf.CreateGeometry(new List<int>(), drawnvertices, true, out newtag);
 					tagreplacements[oldtag] = newtag;
 				}
 				catch(NoSpaceInCSAException e)

@@ -336,6 +336,12 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		public List<DrawnVertex> GetNewControlSectorVertices()
 		{
+			return GetNewControlSectorVertices(1);
+		}
+
+		public List<DrawnVertex> GetNewControlSectorVertices(int numsectors)
+		{
+			List<DrawnVertex> dv = new List<DrawnVertex>();
 			BlockMap<BlockEntry> blockmap = CreateBlockmap();
 
 			int margin = (int)((gridsize - sectorsize) / 2);
@@ -353,7 +359,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					// The way our blockmap is built and queried we will always get exactly one block
 					if (blocks[0].Sectors.Count == 0)
 					{
-						List<DrawnVertex> dv = new List<DrawnVertex>();
 						Point p = new Point(x + margin, y - margin);
 
 						dv.Add(SectorVertex(p.X, p.Y));
@@ -362,7 +367,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 						dv.Add(SectorVertex(p.X, p.Y - BuilderPlug.Me.ControlSectorArea.SectorSize));
 						dv.Add(SectorVertex(p.X, p.Y));
 
-						return dv;
+						numsectors--;
+
+						if (numsectors == 0)
+							return dv;
 					}
 				}
 			}
