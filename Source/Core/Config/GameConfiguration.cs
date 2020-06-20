@@ -1233,7 +1233,7 @@ namespace CodeImp.DoomBuilder.Config
 		/// <returns>true if there are script lumps defined, false if not</returns>
 		public bool HasScriptLumps()
 		{
-			return maplumps.Values.Count(o => o.ScriptBuild) > 0;
+			return maplumps.Values.Count(o => o.ScriptBuild || o.Script != null) > 0;
 		}
 		
 		#endregion
