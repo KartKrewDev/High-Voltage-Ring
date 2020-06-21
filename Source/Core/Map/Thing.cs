@@ -266,6 +266,22 @@ namespace CodeImp.DoomBuilder.Map
 			sector = map.GetSectorByCoordinates(pos);
 		}
 
+		/// <summary>
+		/// Determines what sector a thing is in, given a blockmap
+		/// </summary>
+		/// <param name="blockmap">The blockmap to use</param>
+		public void DetermineSector(BlockMap<BlockEntry> blockmap)
+		{
+			BlockEntry be = blockmap.GetBlockAt(pos);
+
+			foreach (Sector s in be.Sectors)
+				if (s.Intersect(pos))
+				{
+					sector = s;
+					return;
+				}
+		}
+
 		// This determines which sector the thing is in and links it
 		public void DetermineSector(VisualBlockMap blockmap)
 		{

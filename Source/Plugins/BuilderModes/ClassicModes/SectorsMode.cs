@@ -69,8 +69,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		//mxd. Cached overlays stuff
 		private FlatVertex[] overlayGeometry;
 		private Dictionary<Sector, string[]> selectedEffectLabels;
-		private Dictionary<Sector, string[]> unselectedEffectLabels; 
-		
+		private Dictionary<Sector, string[]> unselectedEffectLabels;
+
+		// The blockmap makes synchronized editing faster
+		BlockMap<BlockEntry> blockmap;
+
 		#endregion
 
 		#region ================== Properties
@@ -542,8 +545,20 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					//mxd. Also (de)select things?
 					if(General.Interface.AltState ^ BuilderPlug.Me.SyncronizeThingEdit)
 					{
-						foreach(Thing t in General.Map.Map.Things) 
-							if(t.Sector == s && t.Selected != s.Selected) t.Selected = s.Selected;
+						List<BlockEntry> belist = blockmap.GetSquareRange(s.BBox);
+
+						foreach(BlockEntry be in belist)
+						{
+							foreach(Thing t in be.Things)
+							{
+								if (t.Sector == null)
+									t.DetermineSector(blockmap);
+
+								if (t.Sector == s && t.Selected != s.Selected) t.Selected = s.Selected;
+							}
+						}
+						//foreach(Thing t in General.Map.Map.Things) 
+						//	if(t.Sector == s && t.Selected != s.Selected) t.Selected = s.Selected;
 					}
 
 					if(update) 
@@ -723,19 +738,31 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//mxd. Update the tooltip
 			BuilderPlug.Me.MenusForm.SyncronizeThingEditButton.ToolTipText = "Synchronized Things Editing" + Environment.NewLine + BuilderPlug.Me.MenusForm.SyncronizeThingEditSectorsItem.ToolTipText;
 
-			//mxd. Determine thing sectors. Cause SyncronizeThingEdit requires that
-			foreach(Thing t in General.Map.Map.Things) t.DetermineSector();
+			// Create the blockmap
+			RectangleF area = MapSet.CreateArea(General.Map.Map.Vertices);
+			area = MapSet.IncreaseArea(area, General.Map.Map.Things);
+			blockmap = new BlockMap<BlockEntry>(area);
+			blockmap.AddSectorsSet(General.Map.Map.Sectors);
+			blockmap.AddThingsSet(General.Map.Map.Things);
 
 			//mxd. Select things as well?
 			if(BuilderPlug.Me.SyncronizeThingEdit)
 			{
 				ICollection<Sector> sectors = General.Map.Map.GetSelectedSectors(true);
-				if(sectors.Count > 0)
+
+				foreach(Sector s in sectors)
 				{
-					foreach(Thing t in General.Map.Map.Things)
+					List<BlockEntry> belist = blockmap.GetSquareRange(s.BBox);
+
+					foreach (BlockEntry be in belist)
 					{
-						if(!t.Selected && t.Sector != null && sectors.Contains(t.Sector))
-							t.Selected = true;
+						foreach (Thing t in be.Things)
+						{
+							if (t.Sector == null)
+								t.DetermineSector(blockmap);
+
+							if (t.Sector == s && t.Selected != s.Selected) t.Selected = s.Selected;
+						}
 					}
 				}
 			}
