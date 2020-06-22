@@ -32,7 +32,7 @@ namespace CodeImp.DoomBuilder.Map
 	{
 		#region ================== Constants
 
-		public const float SIDE_POINT_DISTANCE = 0.01f;
+		public const double SIDE_POINT_DISTANCE = 0.01;
 		public const int NUM_ARGS = 5;
 		
 		#endregion
@@ -389,8 +389,8 @@ namespace CodeImp.DoomBuilder.Map
 				// Recalculate values
 				lengthsq = delta.GetLengthSq();
 				length = Math.Sqrt(lengthsq);
-				if(length > 0f) lengthinv = 1f / length; else lengthinv = 1f / 0.0000000001f;
-				if(lengthsq > 0f) lengthsqinv = 1f / lengthsq; else lengthsqinv = 1f / 0.0000000001f;
+				if(length > 0.0) lengthinv = 1.0 / length; else lengthinv = 1.0 / 0.0000000001;
+				if(lengthsq > 0.0) lengthsqinv = 1.0 / lengthsq; else lengthsqinv = 1.0 / 0.0000000001;
 				angle = delta.GetAngle();
 				double l = Math.Min(start.Position.x, end.Position.x);
 				double t = Math.Min(start.Position.y, end.Position.y);
@@ -864,8 +864,8 @@ namespace CodeImp.DoomBuilder.Map
 			}
 
 			Vector2D p = new Vector2D();
-			p.x = start.Position.x + (end.Position.x - start.Position.x) * 0.5f - n.y;
-			p.y = start.Position.y + (end.Position.y - start.Position.y) * 0.5f + n.x;
+			p.x = start.Position.x + (end.Position.x - start.Position.x) * 0.5 - n.y;
+			p.y = start.Position.y + (end.Position.y - start.Position.y) * 0.5 + n.x;
 
 			return p;
 		}
@@ -873,7 +873,7 @@ namespace CodeImp.DoomBuilder.Map
 		// This returns a point in the middle of the line
 		public Vector2D GetCenterPoint()
 		{
-			return start.Position + (end.Position - start.Position) * 0.5f;
+			return start.Position + (end.Position - start.Position) * 0.5;
 		}
 		
 		// This applies single/double sided flags
@@ -998,7 +998,7 @@ namespace CodeImp.DoomBuilder.Map
 		public Vector2D NearestOnLine(Vector2D pos)
 		{
 			double u = Line2D.GetNearestOnLine(start.Position, end.Position, pos);
-			if(u < 0f) u = 0f; else if(u > 1f) u = 1f;
+			if(u < 0.0) u = 0.0; else if(u > 1.0) u = 1.0;
 			return Line2D.GetCoordinatesAt(start.Position, end.Position, u);
 		}
 
@@ -1018,13 +1018,13 @@ namespace CodeImp.DoomBuilder.Map
 				// from the vertices, which will result in linedefs being equally far away. We still need 
 				// special handling for linedefs that are shorter than 1 mu (which is possible in UDMF)
 				// Detailed explanation here: https://github.com/jewalky/GZDoom-Builder-Bugfix/issues/307
-				if (lengthinv > 1.0f)
+				if (lengthinv > 1.0)
 				{
-					u = Math.Max(0f, Math.Min(1f, u));
+					u = Math.Max(0, Math.Min(1.0, u));
 				}
 				else
 				{
-					u = Math.Max(lengthinv, Math.Min(1f - lengthinv, u));
+					u = Math.Max(lengthinv, Math.Min(1.0 - lengthinv, u));
 				}
 			}
 
@@ -1061,7 +1061,7 @@ namespace CodeImp.DoomBuilder.Map
 			double u = ((p.x - v1.x) * (v2.x - v1.x) + (p.y - v1.y) * (v2.y - v1.y)) * lengthsqinv;
 
 			// Limit intersection offset to the line
-			if(bounded) if(u < 0f) u = 0f; else if(u > 1f) u = 1f;
+			if(bounded) if(u < 0.0) u = 0.0; else if(u > 1.0) u = 1.0;
 			
 			// Calculate intersection point
 			Vector2D i = v1 + u * (v2 - v1);
