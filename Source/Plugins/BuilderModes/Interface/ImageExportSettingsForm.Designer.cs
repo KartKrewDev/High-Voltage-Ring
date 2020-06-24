@@ -40,6 +40,9 @@
 			this.label3 = new System.Windows.Forms.Label();
 			this.rbFloor = new System.Windows.Forms.RadioButton();
 			this.rbCeiling = new System.Windows.Forms.RadioButton();
+			this.cbFullbright = new System.Windows.Forms.CheckBox();
+			this.cbBrightmap = new System.Windows.Forms.CheckBox();
+			this.cbTiles = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// tbExportPath
@@ -71,7 +74,7 @@
 			// cancel
 			// 
 			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(360, 110);
+			this.cancel.Location = new System.Drawing.Point(360, 153);
 			this.cancel.Name = "cancel";
 			this.cancel.Size = new System.Drawing.Size(75, 23);
 			this.cancel.TabIndex = 7;
@@ -81,7 +84,7 @@
 			// 
 			// export
 			// 
-			this.export.Location = new System.Drawing.Point(279, 110);
+			this.export.Location = new System.Drawing.Point(279, 153);
 			this.export.Name = "export";
 			this.export.Size = new System.Drawing.Size(75, 23);
 			this.export.TabIndex = 6;
@@ -141,7 +144,7 @@
 			// 
 			this.rbFloor.AutoSize = true;
 			this.rbFloor.Checked = true;
-			this.rbFloor.Location = new System.Drawing.Point(227, 38);
+			this.rbFloor.Location = new System.Drawing.Point(197, 39);
 			this.rbFloor.Name = "rbFloor";
 			this.rbFloor.Size = new System.Drawing.Size(48, 17);
 			this.rbFloor.TabIndex = 12;
@@ -152,12 +155,44 @@
 			// rbCeiling
 			// 
 			this.rbCeiling.AutoSize = true;
-			this.rbCeiling.Location = new System.Drawing.Point(227, 60);
+			this.rbCeiling.Location = new System.Drawing.Point(197, 61);
 			this.rbCeiling.Name = "rbCeiling";
 			this.rbCeiling.Size = new System.Drawing.Size(56, 17);
 			this.rbCeiling.TabIndex = 13;
 			this.rbCeiling.Text = "Ceiling";
 			this.rbCeiling.UseVisualStyleBackColor = true;
+			// 
+			// cbFullbright
+			// 
+			this.cbFullbright.AutoSize = true;
+			this.cbFullbright.Checked = true;
+			this.cbFullbright.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbFullbright.Location = new System.Drawing.Point(279, 40);
+			this.cbFullbright.Name = "cbFullbright";
+			this.cbFullbright.Size = new System.Drawing.Size(87, 17);
+			this.cbFullbright.TabIndex = 14;
+			this.cbFullbright.Text = "Use fullbright";
+			this.cbFullbright.UseVisualStyleBackColor = true;
+			// 
+			// cbBrightmap
+			// 
+			this.cbBrightmap.AutoSize = true;
+			this.cbBrightmap.Location = new System.Drawing.Point(279, 64);
+			this.cbBrightmap.Name = "cbBrightmap";
+			this.cbBrightmap.Size = new System.Drawing.Size(106, 17);
+			this.cbBrightmap.TabIndex = 15;
+			this.cbBrightmap.Text = "Create brightmap";
+			this.cbBrightmap.UseVisualStyleBackColor = true;
+			// 
+			// cbTiles
+			// 
+			this.cbTiles.AutoSize = true;
+			this.cbTiles.Location = new System.Drawing.Point(279, 88);
+			this.cbTiles.Name = "cbTiles";
+			this.cbTiles.Size = new System.Drawing.Size(110, 17);
+			this.cbTiles.TabIndex = 16;
+			this.cbTiles.Text = "Create 64x64 tiles";
+			this.cbTiles.UseVisualStyleBackColor = true;
 			// 
 			// ImageExportSettingsForm
 			// 
@@ -165,7 +200,10 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(447, 145);
+			this.ClientSize = new System.Drawing.Size(447, 188);
+			this.Controls.Add(this.cbTiles);
+			this.Controls.Add(this.cbBrightmap);
+			this.Controls.Add(this.cbFullbright);
 			this.Controls.Add(this.rbCeiling);
 			this.Controls.Add(this.rbFloor);
 			this.Controls.Add(this.label3);
@@ -201,5 +239,8 @@
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.RadioButton rbFloor;
 		private System.Windows.Forms.RadioButton rbCeiling;
+		private System.Windows.Forms.CheckBox cbFullbright;
+		private System.Windows.Forms.CheckBox cbBrightmap;
+		private System.Windows.Forms.CheckBox cbTiles;
 	}
 }

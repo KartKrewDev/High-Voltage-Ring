@@ -832,20 +832,28 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				return;
 			}
 
-			ImageExporter exporter = new ImageExporter();
-
 			ImageExportSettingsForm form = new ImageExportSettingsForm();
 			if (form.ShowDialog() == DialogResult.OK)
 			{
-				ImageExportSettings settings = new ImageExportSettings(Path.GetFileName(form.FilePath), Path.GetDirectoryName(form.FilePath), form.Floor, form.GetPixelFormat(), form.GetImageFormat());
+				ImageExportSettings settings = new ImageExportSettings(Path.GetDirectoryName(form.FilePath), Path.GetFileNameWithoutExtension(form.FilePath), Path.GetExtension(form.FilePath), form.Floor, form.Fullbright, form.Brightmap, form.Tiles, form.GetPixelFormat(), form.GetImageFormat());
+				ImageExporter exporter = new ImageExporter(sectors, settings);
 
-				try
+				string text = "The following images will be created:\n\n" + string.Join("\n", exporter.GetImageNames());
+
+				DialogResult result = MessageBox.Show(text, "Export to image", MessageBoxButtons.OKCancel);
+
+				if (result == DialogResult.OK)
 				{
-					exporter.Export(sectors, settings);
-				}
-				catch(ArgumentException e) // Happens if there's not enough consecutive memory so create the file
-				{
-					MessageBox.Show("Exporting failed. There's likely not enough consecutive free memory to create the image. Try a lower color depth or file format", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					try
+					{
+						exporter.Export();
+
+						MessageBox.Show("Export successful.", "Export to image", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+					catch (ArgumentException e) // Happens if there's not enough consecutive memory to create the file
+					{
+						MessageBox.Show("Exporting failed. There's likely not enough consecutive free memory to create the image. Try a lower color depth or file format", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
 				}
 			}
 		}

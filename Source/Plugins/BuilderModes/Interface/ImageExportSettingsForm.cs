@@ -41,6 +41,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		public string FilePath { get { return tbExportPath.Text.Trim(); } }
 		public bool Floor { get { return rbFloor.Checked; } }
+		public bool Fullbright { get { return cbFullbright.Checked; } }
+		public bool Brightmap { get { return cbBrightmap.Checked; } }
+		public bool Tiles { get { return cbTiles.Checked; } }
 
 		#endregion
 
@@ -66,6 +69,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 				saveFileDialog.FileName = Path.GetDirectoryName(General.Map.FilePathName) + Path.DirectorySeparatorChar + name + ".png";
 				tbExportPath.Text = saveFileDialog.FileName;
 			}
+
+			cbFullbright.Checked = General.Settings.ReadPluginSetting("imageexportfullbright", true);
+			cbBrightmap.Checked = General.Settings.ReadPluginSetting("imageexportbrightmap", false);
+			cbTiles.Checked = General.Settings.ReadPluginSetting("imageexporttiles", false);
 		}
 
 		#endregion
@@ -126,6 +133,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void export_Click(object sender, EventArgs e)
 		{
+			 General.Settings.WritePluginSetting("imageexportfullbright", cbFullbright.Checked);
+			 General.Settings.WritePluginSetting("imageexportbrightmap", cbBrightmap.Checked);
+			 General.Settings.WritePluginSetting("imageexporttiles", cbTiles.Checked);
+
 			this.DialogResult = DialogResult.OK;
 			this.Close();
 		}
