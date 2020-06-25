@@ -299,7 +299,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "rotationfloor" : "rotationceiling"), sourceAngle, 0.0);
 
 			// Scale texture if it's a slope and the appropriate option is set
-			if (level.plane.Normal.z != 1.0f && BuilderPlug.Me.ScaleTexturesOnSlopes != 2)
+			if (level.plane.Normal.z != 1.0 && BuilderPlug.Me.ScaleTexturesOnSlopes != 2)
 			{
 				Vector2D basescale = new Vector2D(1.0, 1.0);
 
@@ -317,10 +317,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				Vector3D targetlineperpendicular = Vector3D.CrossProduct(targetlinevector, level.plane.Normal);
 
 				if (alignx)
-					scaleX = Math.Abs(basescale.x * (1.0f / Math.Cos(targetlinevector.GetAngleZ())));
+					scaleX = Math.Abs(basescale.x * (1.0 / Math.Cos(targetlinevector.GetAngleZ())));
 
 				if (aligny)
-					scaleY = Math.Abs(basescale.y * (1.0f / Math.Cos(targetlineperpendicular.GetAngleZ())));
+					scaleY = Math.Abs(basescale.y * (1.0 / Math.Cos(targetlineperpendicular.GetAngleZ())));
 
 			}
 
@@ -336,13 +336,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(alignx) 
 			{
 				if(Texture != null && Texture.IsImageLoaded) offset.x %= Texture.Width / scaleX;
-				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "xpanningfloor" : "xpanningceiling"), Math.Round(-offset.x), 0.0);
+				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "xpanningfloor" : "xpanningceiling"), Math.Round(-offset.x, 6), 0.0);
 			}
 
 			if(aligny) 
 			{
 				if(Texture != null && Texture.IsImageLoaded) offset.y %= Texture.Height / scaleY;
-				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "ypanningfloor" : "ypanningceiling"), Math.Round(offset.y), 0.0);
+				UniFields.SetFloat(Sector.Sector.Fields, (isFloor ? "ypanningfloor" : "ypanningceiling"), Math.Round(offset.y, 6), 0.0);
 			}
 
 			//update geometry
