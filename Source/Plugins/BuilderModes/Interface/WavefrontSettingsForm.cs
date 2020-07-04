@@ -1,8 +1,10 @@
 ﻿#region ================== Namespaces
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
+using System.Linq;
 using CodeImp.DoomBuilder.Windows;
 
 #endregion
@@ -15,8 +17,21 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		public string FilePath { get { return tbExportPath.Text.Trim(); } }
 		public bool ExportTextures { get { return cbExportTextures.Checked; } }
-		public bool UseGZDoomScale { get { return cbFixScale.Checked; } }
+		public bool UseGZDoomScale { get { return cbExportForGZDoom.Checked; } }
 		public float ObjScale { get { return (float)nudScale.Value; } }
+		public string BasePath { get { return tbBasePath.Text.Trim(); } }
+		public string ActorPath { get { return tbActorPath.Text.Trim(); } }
+		public string ModelPath { get { return tbModelPath.Text.Trim(); } }
+		public string ActorName { get { return tbActorName.Text.Trim(); } }
+		public List<string> SkipTextures { get { return lbSkipTextures.Items.Cast<string>().ToList(); } }
+		public bool IgnoreControlSectors { get { return cbIgnoreControlSectors.Checked; } }
+		public bool NormalizeLowestVertex { get { return cbNormalizeLowestVertex.Checked; } }
+		public bool CenterModel { get { return cbCenterModel.Checked; } }
+		public bool NoGravity { get { return cbNoGravity.Checked; } }
+		public bool SpawnOnCeiling { get { return cbSpawnOnCeiling.Checked; } }
+		public bool Solid { get { return cbSolid.Checked; } }
+		public bool ZScript { get { return rbZScript.Checked; } }
+		public string Sprite { get { return tbSprite.Text.Trim().ToUpperInvariant(); } }
 
 		#endregion
 
@@ -38,11 +53,45 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 			//restore settings
 			cbExportTextures.Checked = General.Settings.ReadPluginSetting("objexporttextures", false);
-			cbFixScale.Checked = General.Settings.ReadPluginSetting("objgzdoomscale", false);
+			cbExportForGZDoom.Checked = General.Settings.ReadPluginSetting("objgzdoomscale", false);
 			nudScale.Value = (decimal)General.Settings.ReadPluginSetting("objscale", 1.0f);
 
 			this.Text = "Export " + (sectorsCount == -1 ? "whole map" : sectorsCount + (sectorsCount > 1 ? "sectors" : "sector")) + " to Wavefront .obj";
+
+			if (General.Map.Config.MixTexturesFlats)
+			{
+				bAddFlat.Visible = false;
+				bAddTexture.Width = bRemoveTexture.Width;
+				bAddTexture.Text = "Add texture/flat";
+			}
+
+			string mapname = Path.GetFileNameWithoutExtension(General.Map.FileTitle);
+			tbActorName.Text = char.ToUpper(mapname[0]) + mapname.Substring(1);
+			tbBasePath.Text = General.Settings.ReadPluginSetting("objbasepath", Path.GetDirectoryName(General.Map.FilePathName));
+			tbActorPath.Text = General.Settings.ReadPluginSetting("objactorpath", Path.GetDirectoryName(General.Map.FilePathName));
+			tbModelPath.Text = General.Settings.ReadPluginSetting("objmodelpath", Path.GetDirectoryName(General.Map.FilePathName));
+			tbSprite.Text = General.Settings.ReadPluginSetting("objsprite", "PLAY");
+
+			// Toggle enable/disable manually because cbFixScale is a child of the group box, so disabling
+			// the group box would also disable cbFixScale
+			foreach (Control c in gbGZDoom.Controls)
+			{
+				if (c != cbExportForGZDoom)
+					c.Enabled = cbExportForGZDoom.Checked;
+			}
 		}
+
+		#region ================== Methods
+
+		private bool PathIsValid(string path)
+		{
+			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				path += Path.DirectorySeparatorChar;
+
+			return Directory.Exists(Path.GetDirectoryName(path));
+		}
+
+		#endregion
 
 		#region ================== Events
 
@@ -54,23 +103,57 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void export_Click(object sender, EventArgs e) 
 		{
-			//check settings
-			if(nudScale.Value == 0) 
+			// Check settings
+			if (cbExportForGZDoom.Checked)
 			{
-				MessageBox.Show("Scale should not be zero!");
-				return;
+				if(!PathIsValid(tbBasePath.Text.Trim()))
+				{
+					MessageBox.Show("Base path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (!PathIsValid(tbActorPath.Text.Trim()))
+				{
+					MessageBox.Show("Actor path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (!PathIsValid(tbModelPath.Text.Trim()))
+				{
+					MessageBox.Show("Model path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (cbExportForGZDoom.Checked && tbSprite.Text.Trim().Length != 4)
+				{
+					MessageBox.Show("Sprite name must be exactly 4 alphanumeric characters long!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
 			}
-			if(!Directory.Exists(Path.GetDirectoryName(tbExportPath.Text))) 
+			else // Not exporting for GZDoom
 			{
-				MessageBox.Show("Selected path does not exist!");
-				return;
+				if (nudScale.Value == 0)
+				{
+					MessageBox.Show("Scale should not be zero!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (!Directory.Exists(Path.GetDirectoryName(tbExportPath.Text)))
+				{
+					MessageBox.Show("Selected path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
 			}
 
 			//save settings
 			General.Settings.WritePluginSetting("objexporttextures", cbExportTextures.Checked);
-			General.Settings.WritePluginSetting("objgzdoomscale", cbFixScale.Checked);
+			General.Settings.WritePluginSetting("objgzdoomscale", cbExportForGZDoom.Checked);
 			General.Settings.WritePluginSetting("objscale", (float)nudScale.Value);
-			
+			General.Settings.WritePluginSetting("objbasepath", tbBasePath.Text);
+			General.Settings.WritePluginSetting("objactorpath", tbActorPath.Text);
+			General.Settings.WritePluginSetting("objmodelpath", tbModelPath.Text);
+			General.Settings.WritePluginSetting("objsprite", tbSprite.Text.ToUpperInvariant());
+
 			this.DialogResult = DialogResult.OK;
 			this.Close();
 		}
@@ -82,5 +165,99 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		#endregion
 
+		private void cbFixScale_CheckedChanged(object sender, EventArgs e)
+		{
+			// Toggle enable/disable manually because cbFixScale is a child of the group box, so disabling
+			// the group box would also disable cbFixScale
+			foreach(Control c in cbExportForGZDoom.Parent.Controls)
+			{
+				if (c != cbExportForGZDoom)
+					c.Enabled = !c.Enabled;
+			}
+
+			tbExportPath.Enabled = browse.Enabled = cbExportTextures.Enabled = nudScale.Enabled = !cbExportForGZDoom.Checked;
+		}
+
+		private void bAddTexture_Click(object sender, EventArgs e)
+		{
+			string name = General.Interface.BrowseTexture(General.Interface, "-");
+
+			foreach(string n in lbSkipTextures.Items)
+			{
+				if (n == name)
+					return;
+			}
+
+			lbSkipTextures.Items.Add(name);
+		}
+
+		private void bAddFlat_Click(object sender, EventArgs e)
+		{
+			string name = General.Interface.BrowseFlat(General.Interface, "-");
+
+			foreach (string n in lbSkipTextures.Items)
+			{
+				if (n == name)
+					return;
+			}
+
+			lbSkipTextures.Items.Add(name);
+		}
+
+		private void bRemoveTexture_Click(object sender, EventArgs e)
+		{
+			ListBox.SelectedObjectCollection items = new ListBox.SelectedObjectCollection(lbSkipTextures);
+			//items = lbSkipTextures.SelectedItems;
+
+			for (int i = items.Count - 1; i >= 0; i--)
+			{
+				lbSkipTextures.Items.Remove(items[i]);
+			}
+		}
+
+		private void bBrowseBasePath_Click(object sender, EventArgs e)
+		{
+			folderBrowserDialog.SelectedPath = tbBasePath.Text;
+
+			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+			{
+				tbBasePath.Text = folderBrowserDialog.SelectedPath;
+
+				if (string.IsNullOrWhiteSpace(tbActorPath.Text))
+					tbActorPath.Text = tbBasePath.Text;
+
+				if (string.IsNullOrWhiteSpace(tbModelPath.Text))
+					tbModelPath.Text = tbBasePath.Text;
+			}
+		}
+
+		private void bBrowseActorPath_Click(object sender, EventArgs e)
+		{
+			folderBrowserDialog.SelectedPath = tbActorPath.Text;
+
+			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+				tbActorPath.Text = folderBrowserDialog.SelectedPath;
+		}
+
+		private void bBrowseModelPath_Click(object sender, EventArgs e)
+		{
+			folderBrowserDialog.SelectedPath = tbModelPath.Text;
+
+			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+				tbModelPath.Text = folderBrowserDialog.SelectedPath;
+		}
+
+		private void bResetPaths_Click(object sender, EventArgs e)
+		{
+			tbBasePath.Text = tbActorPath.Text = tbModelPath.Text = Path.GetDirectoryName(General.Map.FilePathName);
+		}
+
+		private void cbSpawnOnCeiling_CheckedChanged(object sender, EventArgs e)
+		{
+			if (cbSpawnOnCeiling.Checked)
+				cbNoGravity.Checked = true;
+
+			cbNoGravity.Enabled = !cbSpawnOnCeiling.Checked;
+		}
 	}
 }

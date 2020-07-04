@@ -812,7 +812,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			WavefrontSettingsForm form = new WavefrontSettingsForm(General.Map.Map.SelectedSectorsCount == 0 ? -1 : sectors.Count);
 			if(form.ShowDialog() == DialogResult.OK) 
 			{
-				WavefrontExportSettings data = new WavefrontExportSettings(Path.GetFileNameWithoutExtension(form.FilePath), Path.GetDirectoryName(form.FilePath), form.ObjScale, form.UseGZDoomScale, form.ExportTextures);
+				WavefrontExportSettings data = new WavefrontExportSettings(form);
 				WavefrontExporter e = new WavefrontExporter();
 				e.Export(sectors, data);
 			}

@@ -12,6 +12,7 @@ using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Windows;
+using CodeImp.DoomBuilder.BuilderModes.Interface;
 using System.Windows.Forms;
 
 #endregion
@@ -26,19 +27,80 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		public readonly string ObjName;
 		public readonly string ObjPath;
 		public readonly float Scale;
-		public readonly bool FixScale;
+		public readonly bool ExportForGZDoom;
 		public readonly bool ExportTextures;
 		public bool Valid;
 		public string[] Textures;
 		public string[] Flats;
+		public string ActorName;
+		public string BasePath;
+		public string ActorPath;
+		public string ModelPath;
+		public List<string> SkipTextures;
+		public bool IgnoreControlSectors;
+		public bool NormalizeLowestVertex;
+		public bool CenterModel;
+		public bool ZScript;
 
-		public WavefrontExportSettings(string name, string path, float scale, bool fixScale, bool exportTextures) 
+		// Actor properties and flags
+		public int Radius;
+		public int Height;
+		public string Sprite;
+		public bool NoGravity;
+		public bool SpawnOnCeiling;
+		public bool Solid;
+
+		/*
+		public WavefrontExportSettings(string name, string path, float scale, bool fixScale, bool exportTextures, string actorName, string basePath, string actorPath, string modelPath, List<string> skipTextures, bool ignoreControlSectors) 
 		{
 			ObjName = name;
 			ObjPath = path;
 			Scale = scale;
 			FixScale = fixScale;
 			ExportTextures = exportTextures;
+
+			ActorName = actorName;
+			BasePath = basePath;
+			ActorPath = actorPath;
+			ModelPath = modelPath;
+			SkipTextures = skipTextures;
+			IgnoreControlSectors = ignoreControlSectors;
+
+			Radius = 20;
+			Height = 16;
+
+			Valid = false;
+			Obj = string.Empty;
+			Textures = null;
+			Flats = null;
+		}
+		*/
+
+		public WavefrontExportSettings(WavefrontSettingsForm form)
+		{
+			ObjName = Path.GetFileNameWithoutExtension(form.FilePath);
+			ObjPath = Path.GetDirectoryName(form.FilePath);
+			Scale = form.ObjScale;
+			ExportForGZDoom = form.UseGZDoomScale;
+			ExportTextures = form.ExportTextures;
+
+			ActorName = form.ActorName;
+			BasePath = form.BasePath;
+			ActorPath = form.ActorPath;
+			ModelPath = form.ModelPath;
+			SkipTextures = form.SkipTextures;
+			IgnoreControlSectors = form.IgnoreControlSectors;
+			NormalizeLowestVertex = form.NormalizeLowestVertex;
+			CenterModel = form.CenterModel;
+			ZScript = form.ZScript;
+
+			NoGravity = form.NoGravity;
+			SpawnOnCeiling = form.SpawnOnCeiling;
+			Solid = form.Solid;
+			Sprite = form.Sprite;
+
+			Radius = 20;
+			Height = 16;
 
 			Valid = false;
 			Obj = string.Empty;
@@ -77,7 +139,8 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				return;
 			}
 
-			if(settings.ExportTextures) 
+			// Export Textures, but only of it's not exporting for GZDoom
+			if(settings.ExportTextures && !settings.ExportForGZDoom) 
 			{
 				//save all used textures
 				if(settings.Textures != null) 
@@ -143,8 +206,17 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			}
 
 			//write obj
-			string savePath = Path.Combine(settings.ObjPath, settings.ObjName);
-			using(StreamWriter sw = new StreamWriter(savePath + ".obj", false))
+			string savePath;
+
+			if (settings.ExportForGZDoom)
+				savePath = Path.Combine(settings.ModelPath, settings.ActorName + ".obj");
+			else
+				savePath = Path.Combine(settings.ObjPath, settings.ObjName + ".obj");
+
+			// Make sure the directory is there
+			Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+
+			using (StreamWriter sw = new StreamWriter(savePath, false))
 				sw.Write(settings.Obj);
 
 			//create mtl
@@ -184,9 +256,87 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				}
 			}
 
-			//write mtl
-			using(StreamWriter sw = new StreamWriter(savePath + ".mtl", false))
-				sw.Write(mtl.ToString());
+			if (!settings.ExportForGZDoom)
+			{
+				// Make sure the directory is there
+				Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+
+				// Write mtl (only if not exporting for GZDoom, since it will be ignored anyway
+				using (StreamWriter sw = new StreamWriter(savePath + ".mtl", false))
+					sw.Write(mtl.ToString());
+			}
+			else
+			{
+				// Create ZScript or DECORATE
+				Stream stream;
+				string path = Path.Combine(settings.ActorPath, settings.ActorName);
+
+				if (settings.ZScript)
+				{
+					stream = BuilderPlug.Me.GetResourceStream("ObjExportZScriptTemplate.txt");
+					path += ".zs";
+				}
+				else
+				{
+					stream = BuilderPlug.Me.GetResourceStream("ObjExportDecorateTemplate.txt");
+					path += ".txt";
+				}
+
+				using (StreamReader reader = new StreamReader(stream, Encoding.ASCII))
+				{
+					string template = reader.ReadToEnd();
+
+					template = template.Replace("{ActorName}", settings.ActorName);
+					template = template.Replace("{Sprite}", settings.Sprite);
+					template = template.Replace("{FlagNoGravity}", settings.NoGravity ? "+NOGRAVITY" : "");
+					template = template.Replace("{FlagSpawnOnCeiling}", settings.SpawnOnCeiling ? "+SPAWNCEILING" : "");
+					template = template.Replace("{FlagSolid}", settings.Solid ? "+SOLID" : "");
+					template = template.Replace("{PropRadius}", settings.Radius.ToString());
+					template = template.Replace("{PropHeight}", settings.Height.ToString());
+
+					// Make sure the directory is there
+					Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+					using (StreamWriter sw = new StreamWriter(path, false))
+						sw.Write(template);
+				}
+
+				// Create MODELDEF
+				stream = BuilderPlug.Me.GetResourceStream("ObjExportModeldefTemplate.txt");
+
+				using (StreamReader reader = new StreamReader(stream, Encoding.ASCII))
+				{
+					path = Path.Combine(settings.BasePath, "modeldef." + settings.ActorName + ".txt");
+					string template = reader.ReadToEnd();
+
+					// The path to the model is relative to the base path, so generate the base path
+					string basepath = settings.BasePath.Trim();
+					string modelpath = settings.ModelPath.Trim();
+
+					// Make sue there's a directory separator at the end of the paths, otherwise it'll not work correctly
+					if (!basepath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+						basepath += Path.DirectorySeparatorChar;
+
+					if (!modelpath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+						modelpath += Path.DirectorySeparatorChar;
+
+					Uri baseUri = new Uri(basepath);
+					Uri modelUri = new Uri(modelpath);
+
+					Uri relativeUri = baseUri.MakeRelativeUri(modelUri);
+					string relativepath = Uri.UnescapeDataString(relativeUri.OriginalString);
+
+					template = template.Replace("{ActorName}", settings.ActorName);
+					template = template.Replace("{ModelPath}", relativepath);
+					template = template.Replace("{Sprite}", settings.Sprite);
+
+					// Make sure the directory is there
+					Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+					using (StreamWriter sw = new StreamWriter(path, false))
+						sw.Write(template);
+				}
+			}
 
 			//done
 			General.Interface.DisplayStatus(StatusType.Warning, "Geometry exported to \"" + savePath + ".obj\"");
@@ -214,25 +364,43 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			//create visual geometry
 			foreach(Sector s in sectors) 
 			{
-				BaseVisualSector bvs = mode.CreateBaseVisualSector(s);
-				if(bvs != null) visualSectors.Add(bvs);
+				bool addvs = true;
+
+				// Check if the sector has, or shares a line with a 3D floor control sector, and ignore it if necessary
+				if (data.ExportForGZDoom && data.IgnoreControlSectors)
+				{
+					foreach (Sidedef sd in s.Sidedefs)
+					{
+						if (sd.Line.Action == 160)
+						{
+							addvs = false;
+							break;
+						}
+					}
+				}
+
+				if (addvs)
+				{
+					BaseVisualSector bvs = mode.CreateBaseVisualSector(s);
+					if (bvs != null) visualSectors.Add(bvs);
+				}
 			}
 
-			if(visualSectors.Count == 0) 
+			if (visualSectors.Count == 0) 
 			{
 				General.ErrorLogger.Add(ErrorType.Error, "OBJ Exporter: no visual sectors to export!");
 				return;
 			}
 
 			//sort geometry
-			List<Dictionary<string, List<WorldVertex[]>>> geometryByTexture = SortGeometry(visualSectors);
+			List<Dictionary<string, List<WorldVertex[]>>> geometryByTexture = SortGeometry(visualSectors, data.SkipTextures);
 
 			//restore vm settings
 			if(renderingEffectsDisabled) mode.ToggleEnhancedRendering();
 			mode.Dispose();
 
 			//create obj
-			StringBuilder obj = CreateObjGeometry(geometryByTexture, data);
+			StringBuilder obj = CreateObjGeometry(geometryByTexture, ref data);
 
 			if(obj.Length == 0) 
 			{
@@ -242,7 +410,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 			//add header
 			obj.Insert(0, "o " + General.Map.Options.LevelName + Environment.NewLine); //name
-			obj.Insert(0, "# Created by GZDoom Builder " + Application.ProductVersion + Environment.NewLine + Environment.NewLine);
+			obj.Insert(0, "# Created by Ultimate Doom Builder " + Application.ProductVersion + Environment.NewLine + Environment.NewLine);
 			obj.Insert(0, "# " + General.Map.FileTitle + ", map " + General.Map.Options.LevelName + Environment.NewLine);
 			data.Obj = obj.ToString();
 
@@ -259,12 +427,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			data.Valid = true;
 		}
 
-		private static List<Dictionary<string, List<WorldVertex[]>>> SortGeometry(List<BaseVisualSector> visualSectors) 
+		private static List<Dictionary<string, List<WorldVertex[]>>> SortGeometry(List<BaseVisualSector> visualSectors, List<string>skipTextures) 
 		{
 			var texturegeo = new Dictionary<string, List<WorldVertex[]>>(StringComparer.Ordinal);
-			texturegeo.Add(DEFAULT, new List<WorldVertex[]>());
+			//texturegeo.Add(DEFAULT, new List<WorldVertex[]>());
 			var flatgeo = new Dictionary<string, List<WorldVertex[]>>(StringComparer.Ordinal);
-			flatgeo.Add(DEFAULT, new List<WorldVertex[]>());
+			//flatgeo.Add(DEFAULT, new List<WorldVertex[]>());
 
 			foreach(BaseVisualSector vs in visualSectors) 
 			{
@@ -273,16 +441,22 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				if(vs.Floor != null) 
 				{
 					texture = vs.Sector.FloorTexture;
-					CheckTextureName(ref flatgeo, ref texture);
-					flatgeo[texture].AddRange(OptimizeGeometry(vs.Floor.Vertices, vs.Floor.GeometryType, vs.Floor.Sector.Sector.Labels.Count > 1));
+					if (!skipTextures.Contains(texture))
+					{
+						CheckTextureName(ref flatgeo, ref texture);
+						flatgeo[texture].AddRange(OptimizeGeometry(vs.Floor.Vertices, vs.Floor.GeometryType, vs.Floor.Sector.Sector.Labels.Count > 1));
+					}
 				}
 
 				//ceiling
 				if(vs.Ceiling != null) 
 				{
 					texture = vs.Sector.CeilTexture;
-					CheckTextureName(ref flatgeo, ref texture);
-					flatgeo[texture].AddRange(OptimizeGeometry(vs.Ceiling.Vertices, vs.Ceiling.GeometryType, vs.Ceiling.Sector.Sector.Labels.Count > 1));
+					if (!skipTextures.Contains(texture))
+					{
+						CheckTextureName(ref flatgeo, ref texture);
+						flatgeo[texture].AddRange(OptimizeGeometry(vs.Ceiling.Vertices, vs.Ceiling.GeometryType, vs.Ceiling.Sector.Sector.Labels.Count > 1));
+					}
 				}
 
 				//walls
@@ -294,24 +468,33 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 						if(part.upper != null && part.upper.Vertices != null) 
 						{
 							texture = part.upper.Sidedef.HighTexture;
-							CheckTextureName(ref texturegeo, ref texture);
-							texturegeo[texture].AddRange(OptimizeGeometry(part.upper.Vertices, part.upper.GeometryType));
+							if (!skipTextures.Contains(texture))
+							{
+								CheckTextureName(ref texturegeo, ref texture);
+								texturegeo[texture].AddRange(OptimizeGeometry(part.upper.Vertices, part.upper.GeometryType));
+							}
 						}
 
 						//middle single
 						if(part.middlesingle != null && part.middlesingle.Vertices != null) 
 						{
 							texture = part.middlesingle.Sidedef.MiddleTexture;
-							CheckTextureName(ref texturegeo, ref texture);
-							texturegeo[texture].AddRange(OptimizeGeometry(part.middlesingle.Vertices, part.middlesingle.GeometryType));
+							if (!skipTextures.Contains(texture))
+							{
+								CheckTextureName(ref texturegeo, ref texture);
+								texturegeo[texture].AddRange(OptimizeGeometry(part.middlesingle.Vertices, part.middlesingle.GeometryType));
+							}
 						}
 
 						//middle double
 						if(part.middledouble != null && part.middledouble.Vertices != null) 
 						{
 							texture = part.middledouble.Sidedef.MiddleTexture;
-							CheckTextureName(ref texturegeo, ref texture);
-							texturegeo[texture].AddRange(OptimizeGeometry(part.middledouble.Vertices, part.middledouble.GeometryType));
+							if (!skipTextures.Contains(texture))
+							{
+								CheckTextureName(ref texturegeo, ref texture);
+								texturegeo[texture].AddRange(OptimizeGeometry(part.middledouble.Vertices, part.middledouble.GeometryType));
+							}
 						}
 
 						//middle3d
@@ -321,8 +504,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 							{
 								if(m3d.Vertices == null) continue;
 								texture = m3d.GetControlLinedef().Front.MiddleTexture;
-								CheckTextureName(ref texturegeo, ref texture);
-								texturegeo[texture].AddRange(OptimizeGeometry(m3d.Vertices, m3d.GeometryType));
+								if (!skipTextures.Contains(texture))
+								{
+									CheckTextureName(ref texturegeo, ref texture);
+									texturegeo[texture].AddRange(OptimizeGeometry(m3d.Vertices, m3d.GeometryType));
+								}
 							}
 						}
 
@@ -332,8 +518,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 						if(part.lower != null && part.lower.Vertices != null) 
 						{
 							texture = part.lower.Sidedef.LowTexture;
-							CheckTextureName(ref texturegeo, ref texture);
-							texturegeo[texture].AddRange(OptimizeGeometry(part.lower.Vertices, part.lower.GeometryType));
+							if (!skipTextures.Contains(texture))
+							{
+								CheckTextureName(ref texturegeo, ref texture);
+								texturegeo[texture].AddRange(OptimizeGeometry(part.lower.Vertices, part.lower.GeometryType));
+							}
 						}
 					}
 				}
@@ -342,16 +531,22 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				foreach(VisualCeiling vc in vs.ExtraCeilings) 
 				{
 					texture = vc.GetControlSector().CeilTexture;
-					CheckTextureName(ref flatgeo, ref texture);
-					flatgeo[texture].AddRange(OptimizeGeometry(vc.Vertices, (vc.ExtraFloor.VavoomType ? vc.GeometryType : VisualModes.VisualGeometryType.FLOOR)));
+					if (!skipTextures.Contains(texture))
+					{
+						CheckTextureName(ref flatgeo, ref texture);
+						flatgeo[texture].AddRange(OptimizeGeometry(vc.Vertices, (vc.ExtraFloor.VavoomType ? vc.GeometryType : VisualModes.VisualGeometryType.FLOOR)));
+					}
 				}
 
 				//3d floors
 				foreach(VisualFloor vf in vs.ExtraFloors) 
 				{
 					texture = vf.GetControlSector().FloorTexture;
-					CheckTextureName(ref flatgeo, ref texture);
-					flatgeo[texture].AddRange(OptimizeGeometry(vf.Vertices, (vf.ExtraFloor.VavoomType ? vf.GeometryType : VisualModes.VisualGeometryType.CEILING)));
+					if (!skipTextures.Contains(texture))
+					{
+						CheckTextureName(ref flatgeo, ref texture);
+						flatgeo[texture].AddRange(OptimizeGeometry(vf.Vertices, (vf.ExtraFloor.VavoomType ? vf.GeometryType : VisualModes.VisualGeometryType.CEILING)));
+					}
 				}
 
 				//backsides(?)
@@ -412,7 +607,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 		#region ================== OBJ Creation
 
-		private static StringBuilder CreateObjGeometry(List<Dictionary<string, List<WorldVertex[]>>> geometryByTexture, WavefrontExportSettings data) 
+		private static StringBuilder CreateObjGeometry(List<Dictionary<string, List<WorldVertex[]>>> geometryByTexture, ref WavefrontExportSettings data) 
 		{
 			StringBuilder obj = new StringBuilder();
 			const string vertexFormatter = "{0} {2} {1}\n";
@@ -426,8 +621,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			int nc = 0;
 			int uvc = 0;
 
+			Vector3D tl = new Vector3D(double.MaxValue, double.MinValue, double.MinValue);
+			Vector3D br = new Vector3D(double.MinValue, double.MaxValue, double.MaxValue);
+
 			//optimize geometry
-			foreach(Dictionary<string, List<WorldVertex[]>> dictionary in geometryByTexture) 
+			foreach (Dictionary<string, List<WorldVertex[]>> dictionary in geometryByTexture) 
 			{
 				foreach(KeyValuePair<string, List<WorldVertex[]>> group in dictionary) 
 				{
@@ -496,15 +694,45 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				}
 			}
 
+			// Get the dimensions of the model
+			foreach(Dictionary<WorldVertex, VertexIndices> vdata in vertexDataByTexture.Values)
+			{
+				foreach(WorldVertex wv in vdata.Keys)
+				{
+					if (wv.x < tl.x) tl.x = wv.x;
+					if (wv.x > br.x) br.x = wv.x;
+					if (wv.y > tl.y) tl.y = wv.y;
+					if (wv.y < br.y) br.y = wv.y;
+					if (wv.z > tl.z) tl.z = wv.z;
+					if (wv.z < br.z) br.z = wv.z;
+				}
+			}
+
+			data.Radius = br.x - tl.x > tl.y - br.y ? (int)(tl.y - br.y) / 2 : (int)(br.x - tl.x) / 2;
+			data.Height = (int)(tl.z - br.z);
+
 			//write geometry
 			//write vertices
-			if(data.FixScale) 
+			if (data.ExportForGZDoom) 
 			{
-				foreach(KeyValuePair<Vector3D, int> group in uniqueVerts)
-					obj.Append(string.Format(CultureInfo.InvariantCulture, "v " + vertexFormatter, -group.Key.x * data.Scale, group.Key.y * data.Scale, group.Key.z * data.Scale * 1.2f));
+				Vector2D offset;
+
+				if (data.CenterModel)
+					offset = new Vector2D(tl.x + (br.x - tl.x) / 2.0, tl.y + (br.y - tl.y) / 2.0);
+				else
+					offset = new Vector2D(0.0, 0.0);
+
+				foreach (KeyValuePair<Vector3D, int> group in uniqueVerts)
+				{
+					double z = (group.Key.z - (data.NormalizeLowestVertex ? br.z : 0)) * data.Scale * 1.2f;
+
+					obj.Append(string.Format(CultureInfo.InvariantCulture, "v " + vertexFormatter, (group.Key.x - offset.x) * data.Scale, (group.Key.y - offset.y) * data.Scale, z));
+				}
 			} 
 			else 
 			{
+				// biwa. Not sure why the x-axis is flipped here, since it will result in wrong normals when using the model directly in GZDoom. For this reason
+				// I disabled the flipping above
 				foreach(KeyValuePair<Vector3D, int> group in uniqueVerts)
 					obj.Append(string.Format(CultureInfo.InvariantCulture, "v " + vertexFormatter, -group.Key.x * data.Scale, group.Key.y * data.Scale, group.Key.z * data.Scale));
 			}
@@ -515,10 +743,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 			//write UV coords
 			foreach(KeyValuePair<PointF, int> group in uniqueUVs)
-				obj.Append(string.Format(CultureInfo.InvariantCulture, "vt {0} {1}\n", group.Key.X, -group.Key.Y));
+				if(data.ExportForGZDoom) // Flip the U value when exporting for GZDoom
+					obj.Append(string.Format(CultureInfo.InvariantCulture, "vt {0} {1}\n", -group.Key.X, -group.Key.Y));
+				else
+					obj.Append(string.Format(CultureInfo.InvariantCulture, "vt {0} {1}\n", group.Key.X, -group.Key.Y));
 
-			//write material library
-			obj.Append("mtllib ").Append(data.ObjName + ".mtl").Append("\n");
+			// GZDoom ignores the material lib, so don't add it if the model is for GZDoom
+			if (!data.ExportForGZDoom)
+			{
+				obj.Append("mtllib ").Append(data.ObjName + ".mtl").Append("\n");
+			}
 
 			//write materials and surface indices
 			foreach(Dictionary<string, List<WorldVertex[]>> dictionary in geometryByTexture) 

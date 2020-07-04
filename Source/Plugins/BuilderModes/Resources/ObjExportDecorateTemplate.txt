@@ -1,0 +1,14 @@
+﻿ACTOR {ActorName}
+{
+	Radius {PropRadius}
+	Height {PropHeight}
+	{FlagNoGravity}
+	{FlagSpawnOnCeiling}
+	{FlagSolid}
+  
+	States {
+		Spawn:
+			{Sprite} A -1
+			Stop
+	}
+}
