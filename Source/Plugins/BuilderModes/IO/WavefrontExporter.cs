@@ -106,6 +106,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			Obj = string.Empty;
 			Textures = null;
 			Flats = null;
+
+			if (ExportForGZDoom)
+				SkipTextures.Add("-");
 		}
 	}
 
@@ -393,7 +396,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			}
 
 			//sort geometry
-			List<Dictionary<string, List<WorldVertex[]>>> geometryByTexture = SortGeometry(visualSectors, data.SkipTextures);
+			List<Dictionary<string, List<WorldVertex[]>>> geometryByTexture = SortGeometry(visualSectors, data.SkipTextures, !data.ExportForGZDoom);
 
 			//restore vm settings
 			if(renderingEffectsDisabled) mode.ToggleEnhancedRendering();
@@ -427,14 +430,18 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			data.Valid = true;
 		}
 
-		private static List<Dictionary<string, List<WorldVertex[]>>> SortGeometry(List<BaseVisualSector> visualSectors, List<string>skipTextures) 
+		private static List<Dictionary<string, List<WorldVertex[]>>> SortGeometry(List<BaseVisualSector> visualSectors, List<string>skipTextures, bool defaultOnMissingTextures) 
 		{
 			var texturegeo = new Dictionary<string, List<WorldVertex[]>>(StringComparer.Ordinal);
-			//texturegeo.Add(DEFAULT, new List<WorldVertex[]>());
 			var flatgeo = new Dictionary<string, List<WorldVertex[]>>(StringComparer.Ordinal);
-			//flatgeo.Add(DEFAULT, new List<WorldVertex[]>());
 
-			foreach(BaseVisualSector vs in visualSectors) 
+			if (defaultOnMissingTextures)
+			{
+				texturegeo.Add(DEFAULT, new List<WorldVertex[]>());
+				flatgeo.Add(DEFAULT, new List<WorldVertex[]>());
+			}
+
+			foreach (BaseVisualSector vs in visualSectors) 
 			{
 				//floor
 				string texture;
