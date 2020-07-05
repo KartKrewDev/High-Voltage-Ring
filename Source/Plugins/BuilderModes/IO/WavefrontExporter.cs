@@ -294,6 +294,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					template = template.Replace("{FlagNoGravity}", settings.NoGravity ? "+NOGRAVITY" : "");
 					template = template.Replace("{FlagSpawnOnCeiling}", settings.SpawnOnCeiling ? "+SPAWNCEILING" : "");
 					template = template.Replace("{FlagSolid}", settings.Solid ? "+SOLID" : "");
+					template = template.Replace("{FlagInvulnerable}", settings.Solid ? "+INVULNERABLE" : "");
+					template = template.Replace("{FlagNoDamage}", settings.Solid ? "+NODAMAGE" : "");
+					template = template.Replace("{FlagShootable}", settings.Solid ? "+SHOOTABLE" : "");
+					template = template.Replace("{FlagNotAutoAimed}", settings.Solid ? "+NOTAUTOAIMED" : "");
+					template = template.Replace("{FlagNeverTarget}", settings.Solid ? "+NEVERTARGET" : "");
+					template = template.Replace("{FlagDontThrust}", settings.Solid ? "+DONTTHRUST" : "");
 					template = template.Replace("{PropRadius}", settings.Radius.ToString());
 					template = template.Replace("{PropHeight}", settings.Height.ToString());
 

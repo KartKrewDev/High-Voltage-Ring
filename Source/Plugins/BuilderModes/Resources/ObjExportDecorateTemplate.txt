@@ -5,6 +5,12 @@
 	{FlagNoGravity}
 	{FlagSpawnOnCeiling}
 	{FlagSolid}
+	{FlagInvulnerable}
+	{FlagNoDamage}
+	{FlagShootable}
+	{FlagNotAutoAimed}
+	{FlagNeverTarget}
+	{FlagDontThrust}
   
 	States {
 		Spawn:
