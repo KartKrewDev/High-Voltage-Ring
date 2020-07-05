@@ -40,7 +40,11 @@ namespace CodeImp.DoomBuilder.Data
 			this.sourcescale = scale;
 			this.sourcesize = Size.Empty;
 			SetName(name);
-			
+
+			// biwa. HiRes replacements always seem to use worldpanning. There is no documentation about it, but not
+			// setting it can cause issues (see https://github.com/jewalky/UltimateDoomBuilder/issues/432)
+			worldpanning = true;
+
 			// We have no destructor
 			GC.SuppressFinalize(this);
 		}
@@ -52,6 +56,10 @@ namespace CodeImp.DoomBuilder.Data
 			this.scale = other.scale;
 			this.sourcescale = other.sourcescale;
 			this.sourcesize = other.sourcesize;
+
+			// biwa. HiRes replacements always seem to use worldpanning. There is no documentation about it, but not
+			// setting it can cause issues (see https://github.com/jewalky/UltimateDoomBuilder/issues/432)
+			worldpanning = true;
 
 			// Copy names
 			this.name = other.name;
