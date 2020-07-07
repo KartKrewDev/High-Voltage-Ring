@@ -4237,8 +4237,8 @@ namespace CodeImp.DoomBuilder.Windows
 					break;
 
 				case General.WM_MOUSEHWHEEL:
-					int delta = m.WParam.ToInt32() >> 16;
-					OnMouseHWheel(delta);
+                    int delta = unchecked((short)(m.WParam.ToInt64() >> 16));
+                    OnMouseHWheel(delta);
 					m.Result = new IntPtr(delta);
 					break;
 					
