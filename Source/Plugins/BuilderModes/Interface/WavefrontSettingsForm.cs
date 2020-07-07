@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using CodeImp.DoomBuilder.Windows;
+using CodeImp.DoomBuilder.Controls;
 
 #endregion
 
@@ -222,11 +223,13 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void bBrowseBasePath_Click(object sender, EventArgs e)
 		{
-			folderBrowserDialog.SelectedPath = tbBasePath.Text;
+			FolderSelectDialog dirdialog = new FolderSelectDialog();
+			dirdialog.Title = "Select base folder";
+			dirdialog.InitialDirectory = tbBasePath.Text;
 
-			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+			if (dirdialog.ShowDialog(this.Handle))
 			{
-				tbBasePath.Text = folderBrowserDialog.SelectedPath;
+				tbBasePath.Text = dirdialog.FileName;
 
 				if (string.IsNullOrWhiteSpace(tbActorPath.Text))
 					tbActorPath.Text = tbBasePath.Text;
@@ -238,18 +241,26 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void bBrowseActorPath_Click(object sender, EventArgs e)
 		{
-			folderBrowserDialog.SelectedPath = tbActorPath.Text;
+			FolderSelectDialog dirdialog = new FolderSelectDialog();
+			dirdialog.Title = "Select actor folder";
+			dirdialog.InitialDirectory = tbActorPath.Text;
 
-			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-				tbActorPath.Text = folderBrowserDialog.SelectedPath;
+			if (dirdialog.ShowDialog(this.Handle))
+			{
+				tbActorPath.Text = dirdialog.FileName;
+			}
 		}
 
 		private void bBrowseModelPath_Click(object sender, EventArgs e)
 		{
-			folderBrowserDialog.SelectedPath = tbModelPath.Text;
+			FolderSelectDialog dirdialog = new FolderSelectDialog();
+			dirdialog.Title = "Select model folder";
+			dirdialog.InitialDirectory = tbModelPath.Text;
 
-			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-				tbModelPath.Text = folderBrowserDialog.SelectedPath;
+			if (dirdialog.ShowDialog(this.Handle))
+			{
+				tbModelPath.Text = dirdialog.FileName;
+			}
 		}
 
 		private void bResetPaths_Click(object sender, EventArgs e)
