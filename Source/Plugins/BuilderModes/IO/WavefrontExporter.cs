@@ -739,7 +739,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				{
 					double z = (group.Key.z - (data.NormalizeLowestVertex ? br.z : 0)) * data.Scale * 1.2f;
 
-					obj.Append(string.Format(CultureInfo.InvariantCulture, "v " + vertexFormatter, (group.Key.x - offset.x) * data.Scale, (group.Key.y - offset.y) * data.Scale, z));
+					obj.Append(string.Format(CultureInfo.InvariantCulture, "v " + vertexFormatter, (group.Key.x - offset.x) * data.Scale, -(group.Key.y - offset.y) * data.Scale, z));
 				}
 			} 
 			else 
