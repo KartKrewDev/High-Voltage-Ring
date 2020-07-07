@@ -42,7 +42,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			string name = Path.GetFileNameWithoutExtension(General.Map.FileTitle) + "_" + General.Map.Options.LevelName + ".obj";
 			if(string.IsNullOrEmpty(General.Map.FilePathName)) 
 			{
-				saveFileDialog.FileName = name;
+				string tmpPath = Path.GetTempPath();
+				saveFileDialog.InitialDirectory = tmpPath;
+				saveFileDialog.FileName = Path.GetDirectoryName(tmpPath) + Path.DirectorySeparatorChar + name;
+				tbExportPath.Text = saveFileDialog.FileName;
 			} 
 			else 
 			{
@@ -67,9 +70,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 			string mapname = Path.GetFileNameWithoutExtension(General.Map.FileTitle);
 			tbActorName.Text = char.ToUpper(mapname[0]) + mapname.Substring(1);
-			tbBasePath.Text = General.Settings.ReadPluginSetting("objbasepath", Path.GetDirectoryName(General.Map.FilePathName));
-			tbActorPath.Text = General.Settings.ReadPluginSetting("objactorpath", Path.GetDirectoryName(General.Map.FilePathName));
-			tbModelPath.Text = General.Settings.ReadPluginSetting("objmodelpath", Path.GetDirectoryName(General.Map.FilePathName));
+
+			string initialPath = General.Map.FilePathName == "" ? Path.GetTempPath() : General.Map.FilePathName;
+			tbBasePath.Text = General.Settings.ReadPluginSetting("objbasepath", Path.GetDirectoryName(initialPath));
+			tbActorPath.Text = General.Settings.ReadPluginSetting("objactorpath", Path.GetDirectoryName(initialPath));
+			tbModelPath.Text = General.Settings.ReadPluginSetting("objmodelpath", Path.GetDirectoryName(initialPath));
 			tbSprite.Text = General.Settings.ReadPluginSetting("objsprite", "PLAY");
 
 			// Toggle enable/disable manually because cbFixScale is a child of the group box, so disabling
