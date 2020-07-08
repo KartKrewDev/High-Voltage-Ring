@@ -132,8 +132,9 @@ namespace CodeImp.DoomBuilder.Windows
 				"Something happened",
 				"The Device is Error",
 				"Worship me, and I may yet be merciful... then again, maybe not.",
- 				"EXTERMINATE"
-			};
+ 				"EXTERMINATE",
+                "What you spend years building may be destroyed overnight; build it anyway"
+            };
 
 			this.Text = titles[new Random().Next(0, titles.Length - 1)];
 			bContinue.Enabled = !isterminating;
