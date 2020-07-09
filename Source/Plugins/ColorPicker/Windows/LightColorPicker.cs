@@ -135,7 +135,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 			colorPickerSlider1.OnValueChanged += OnSliderValueChanged;
 
 			//either both of them or none are used
-			if(Array.IndexOf(LIGHT_USES_ANGLE_VALUE, referenceThing.DynamicLightType) != -1) 
+			if(Array.IndexOf(LIGHT_USES_ANGLE_VALUE, referenceThing.DynamicLightType.LightNum) != -1) 
 			{
 				showAllControls = true;
 				colorPickerSlider2.Label = typeInfo.Args[4].Title + ":";
