@@ -151,18 +151,34 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				}
 
 				Bitmap brushtexture;
+				Vector2D textureoffset = new Vector2D();
+				Vector2D texturescale = new Vector2D();
 
 				if (settings.Floor)
+				{
 					brushtexture = General.Map.Data.GetFlatImage(s.FloorTexture).ExportBitmap();
+
+					textureoffset.x = s.Fields.GetValue("xpanningfloor", 0.0);
+					textureoffset.y = s.Fields.GetValue("ypanningfloor", 0.0);
+
+					// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
+					texturescale.x = 1.0 / s.Fields.GetValue("xscalefloor", 1.0);
+					texturescale.y = 1.0 / s.Fields.GetValue("yscalefloor", 1.0);
+				}
 				else
+				{
 					brushtexture = General.Map.Data.GetFlatImage(s.CeilTexture).ExportBitmap();
+
+					textureoffset.x = s.Fields.GetValue("xpanningceiling", 0.0);
+					textureoffset.y = s.Fields.GetValue("ypanningceiling", 0.0);
+
+					// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
+					texturescale.x = 1.0 / s.Fields.GetValue("xscaleceiling", 1.0);
+					texturescale.y = 1.0 / s.Fields.GetValue("yscaleceiling", 1.0);
+				}
 
 				if (!settings.Fullbright)
 					brushtexture = AdjustBrightness(brushtexture, s.Brightness > 0 ? s.Brightness / 255.0f : 0.0f);
-
-				Vector2D textureoffset = new Vector2D();
-				textureoffset.x = s.Fields.GetValue("xpanningfloor", 0.0);
-				textureoffset.y = s.Fields.GetValue("ypanningfloor", 0.0);
 
 				// Create the transformation matrix
 				Matrix matrix = new Matrix();
@@ -170,6 +186,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				matrix.Translate((float)(-offset.x * rotationvector.x), (float)(offset.x * rotationvector.y)); // Left/right offset from the map origin
 				matrix.Translate((float)(offset.y * rotationvector.y), (float)(offset.y * rotationvector.x)); // Up/down offset from the map origin
 				matrix.Translate(-(float)textureoffset.x, -(float)textureoffset.y); // Texture offset 
+				matrix.Scale((float)texturescale.x, (float)texturescale.y);
 
 				// Create the texture brush and apply the matrix
 				TextureBrush tbrush = new TextureBrush(brushtexture);
