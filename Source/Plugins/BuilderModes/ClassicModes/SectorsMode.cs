@@ -54,7 +54,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// Highlighted item
 		private Sector highlighted;
-		private readonly Association highlightasso = new Association();
+		private readonly Association highlightasso;
 
 		// Interface
 		new private bool editpressed;
@@ -87,6 +87,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Constructor
 		public SectorsMode()
 		{
+			highlightasso = new Association(renderer);
+
 			//mxd
 			effects = new Dictionary<int, string[]>();
 			foreach(SectorEffectInfo info in General.Map.Config.SortedSectorEffects) 
@@ -413,12 +415,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Set highlight association
 			if(s != null && s.Tag != 0) 
 			{
-				Vector2D center = (s.Labels.Count > 0 ? s.Labels[0].position : new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2));
-				highlightasso.Set(center, s.Tags, UniversalType.SectorTag);
+				highlightasso.Set(s);
 			} 
 			else 
 			{
-				highlightasso.Set(new Vector2D(), 0, 0);
+				highlightasso.Clear();
 			}
 
 			// New association highlights something?
@@ -843,7 +844,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if((highlighted != null) && !highlighted.IsDisposed)
 				{
 					renderer.PlotSector(highlighted, General.Colors.Highlight);
-					BuilderPlug.PlotReverseAssociations(renderer, highlightasso, eventlines);
+					highlightasso.Plot();
 				}
 				renderer.Finish();
 			}
@@ -862,9 +863,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Render selection
 			if(renderer.StartOverlay(false)) 
 			{
-				if(highlighted != null && !highlighted.IsDisposed) BuilderPlug.RenderReverseAssociations(renderer, highlightasso, eventlines); //mxd
-				if(selecting) RenderMultiSelection();
-				renderer.RenderArrows(eventlines); //mxd
+				if (highlighted != null && !highlighted.IsDisposed) highlightasso.Render();
+				if (selecting) RenderMultiSelection();
+
 				renderer.Finish();
 			}
 			

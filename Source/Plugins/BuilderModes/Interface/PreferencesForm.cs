@@ -65,6 +65,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			defaultceilheight.Text = General.Settings.DefaultCeilingHeight.ToString();//mxd
 			defaultfloorheight.Text = General.Settings.DefaultFloorHeight.ToString(); //mxd
 			scaletexturesonslopes.SelectedIndex = General.Settings.ReadPluginSetting("scaletexturesonslopes", 0);
+			eventlinelabelvisibility.SelectedIndex = General.Settings.ReadPluginSetting("eventlinelabelvisibility", 3);
+			eventlinelabelstyle.SelectedIndex = General.Settings.ReadPluginSetting("eventlinelabelstyle", 2);
 		}
 
 		#endregion
@@ -93,6 +95,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Settings.WritePluginSetting("dontmovegeometryoutsidemapboundary", dontMoveGeometryOutsideBounds.Checked);//mxd
 			General.Settings.WritePluginSetting("syncselection", syncSelection.Checked);//mxd
 			General.Settings.WritePluginSetting("scaletexturesonslopes", scaletexturesonslopes.SelectedIndex);
+			General.Settings.WritePluginSetting("eventlinelabelvisibility", eventlinelabelvisibility.SelectedIndex);
+			General.Settings.WritePluginSetting("eventlinelabelstyle", eventlinelabelstyle.SelectedIndex);
 			General.Settings.SwitchViewModes = switchviewmodes.Checked; //mxd
 			General.Settings.SplitLineBehavior = (SplitLineBehavior)splitbehavior.SelectedIndex;//mxd
 			

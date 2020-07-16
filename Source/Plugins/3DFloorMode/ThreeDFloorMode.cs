@@ -70,7 +70,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		// Highlighted item
 		protected Sector highlighted;
 		protected ThreeDFloor highlighted3dfloor;
-		private Association highlightasso = new Association();
+		private Association highlightasso;
 		private FlatVertex[] overlayGeometry;
 		private FlatVertex[] overlaygeometry3dfloors;
 		private FlatVertex[] overlaygeometry3dfloors_highlighted;
@@ -110,6 +110,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		public ThreeDFloorHelperMode()
 		{
 			threedfloors = BuilderPlug.GetThreeDFloors(General.Map.Map.Sectors.ToList());
+			highlightasso = new Association(renderer);
 
 			withdrawduplicateundo = false;
 
@@ -123,7 +124,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			{
 				withdrawduplicateundo = true;
 			}
-				
 		}
 
 		// Disposer
@@ -437,10 +437,10 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			if (s != null)
 			{
 				Vector2D center = (s.Labels.Count > 0 ? s.Labels[0].position : new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2));
-				highlightasso.Set(center, s.Tag, UniversalType.SectorTag);
+				highlightasso.Set(s);
 			}
 			else
-				highlightasso.Set(new Vector2D(), 0, 0);
+				highlightasso.Clear();
 
 			// New association highlights something?
 			if((s != null) && (s.Tag > 0)) completeredraw = true;

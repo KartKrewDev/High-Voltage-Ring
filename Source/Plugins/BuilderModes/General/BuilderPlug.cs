@@ -138,11 +138,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private bool showlightradii; //mxd
 		private bool showsoundradii; //mxd
 		private int scaletexturesonslopes; // 0 = base scale of 1, 1 = use current scale as base, 2 = don't scale
-		
+		private int eventlinelabelvisibility; // 0 = never show, 1 = forward only, 2 = reverse only, 3 = forward + reverse
+		private int eventlinelabelstyle; // 0 = Action only, 1 = Action + short arguments, 2 = action + full arguments
+		private bool eventlinedistinctcolors;
+
 		#endregion
 
 		#region ================== Properties
-		
+
 		public override string Name { get { return "Ultimate Doom Builder"; } } //mxd
 		public static BuilderPlug Me { get { return me; } }
 
@@ -193,6 +196,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool ShowLightRadii { get { return showlightradii; } internal set { showlightradii = value; } } //mxd
 		public bool ShowSoundRadii { get { return showsoundradii; } internal set { showsoundradii = value; } } //mxd
 		public int ScaleTexturesOnSlopes { get { return scaletexturesonslopes; } internal set { scaletexturesonslopes = value; } }
+		public int EventLineLabelVisibility { get { return eventlinelabelvisibility; } internal set { eventlinelabelvisibility = value; } }
+		public int EventLineLabelStyle { get { return eventlinelabelstyle; } internal set { eventlinelabelstyle = value; } }
+		public bool EventLineDistinctColors { get { return eventlinedistinctcolors; } internal set { eventlinedistinctcolors = value; } }
 
 		//mxd. "Make Door" action persistent settings
 		internal MakeDoorSettings MakeDoor;
@@ -297,6 +303,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			dontMoveGeometryOutsideMapBoundary = General.Settings.ReadPluginSetting("dontmovegeometryoutsidemapboundary", false); //mxd
 			syncSelection = General.Settings.ReadPluginSetting("syncselection", false); //mxd
 			scaletexturesonslopes = General.Settings.ReadPluginSetting("scaletexturesonslopes", 0);
+			eventlinelabelvisibility = General.Settings.ReadPluginSetting("eventlinelabelvisibility", 3);
+			eventlinelabelstyle = General.Settings.ReadPluginSetting("eventlinelabelstyle", 2);
+			eventlinedistinctcolors = General.Settings.ReadPluginSetting("eventlinedistinctcolors", true);
 		}
 
 		//mxd. Load settings, which can be changed via UI
@@ -618,176 +627,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Return list
 			return found.ToArray();
-		}
-		
-		// This renders the associated sectors/linedefs with the indication color
-		public static void PlotAssociations(IRenderer2D renderer, Association asso, List<Line3D> eventlines) 
-		{
-			// Tag must be above zero
-			if(General.GetByIndex(asso.Tags, 0) < 1) return;
-			
-			// Sectors?
-			switch(asso.Type)
-			{
-				case UniversalType.SectorTag: {
-					foreach(Sector s in General.Map.Map.Sectors)
-					{
-						if(!asso.Tags.Overlaps(s.Tags))continue;
-						renderer.PlotSector(s, General.Colors.Indication);
-						
-						if(!General.Settings.GZShowEventLines) continue;
-						Vector2D end = (s.Labels.Count > 0 ? s.Labels[0].position : new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2));
-						eventlines.Add(new Line3D(asso.Center, end)); //mxd
-					}
-					break;
-				}
-
-				case UniversalType.LinedefTag: {
-					foreach(Linedef l in General.Map.Map.Linedefs) 
-					{
-						if(!asso.Tags.Overlaps(l.Tags)) continue;
-						renderer.PlotLinedef(l, General.Colors.Indication);
-						if(General.Settings.GZShowEventLines) eventlines.Add(new Line3D(asso.Center, l.GetCenterPoint())); //mxd
-					}
-					break;
-				}
-			}
-		}
-
-		// This renders the associated things with the indication color
-		public static void RenderAssociations(IRenderer2D renderer, Association asso, List<Line3D> eventlines)
-		{
-			// Tag must be above zero
-			if(General.GetByIndex(asso.Tags, 0) < 1) return;
-
-			// Things?
-			switch(asso.Type)
-			{
-				case UniversalType.ThingTag:
-					foreach(Thing t in General.Map.Map.Things)
-					{
-						if(!asso.Tags.Contains(t.Tag)) continue;
-
-						//Do not draw the association if the user is hovering over a child link
-						ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
-						if (ti != null && ti.ThingLink < 0)
-							continue;
-
-						renderer.RenderThing(t, General.Colors.Indication, General.Settings.ActiveThingsAlpha);
-						if(General.Settings.GZShowEventLines) eventlines.Add(new Line3D(asso.Center, t.Position)); //mxd
-					}
-					break;
-
-				case UniversalType.SectorTag:
-					foreach(Sector s in General.Map.Map.Sectors) 
-					{
-						if(!asso.Tags.Overlaps(s.Tags)) continue;
-						int highlightedColor = General.Colors.Highlight.WithAlpha(128).ToInt();
-						FlatVertex[] verts = new FlatVertex[s.FlatVertices.Length];
-						s.FlatVertices.CopyTo(verts, 0);
-						for(int i = 0; i < verts.Length; i++) verts[i].c = highlightedColor;
-						renderer.RenderGeometry(verts, null, true);
-					}
-					break;
-			}
-		}
-
-		// This renders the associated sectors/linedefs with the indication color
-		public static void PlotReverseAssociations(IRenderer2D renderer, Association asso, List<Line3D> eventlines)
-		{
-			// Tag must be above zero
-			if(General.GetByIndex(asso.Tags, 0) < 1) return;
-			
-			// Doom style referencing to sectors?
-			if(General.Map.Config.LineTagIndicatesSectors && (asso.Type == UniversalType.SectorTag))
-			{
-				// Linedefs
-				foreach(Linedef l in General.Map.Map.Linedefs)
-				{
-					// Any action on this line?
-					if(l.Action <= 0 || !asso.Tags.Overlaps(l.Tags)) continue;
-					renderer.PlotLinedef(l, General.Colors.Indication);
-					if(General.Settings.GZShowEventLines) eventlines.Add(new Line3D(l.GetCenterPoint(), asso.Center)); //mxd
-				}
-			}
-
-			// Linedefs
-			foreach(Linedef l in General.Map.Map.Linedefs)
-			{
-				// Known action on this line?
-				if((l.Action > 0) && General.Map.Config.LinedefActions.ContainsKey(l.Action))
-				{
-					LinedefActionInfo action = General.Map.Config.LinedefActions[l.Action];
-					if( ((action.Args[0].Type == (int)asso.Type) && (asso.Tags.Contains(l.Args[0]))) ||
-						((action.Args[1].Type == (int)asso.Type) && (asso.Tags.Contains(l.Args[1]))) ||
-						((action.Args[2].Type == (int)asso.Type) && (asso.Tags.Contains(l.Args[2]))) ||
-						((action.Args[3].Type == (int)asso.Type) && (asso.Tags.Contains(l.Args[3]))) ||
-						((action.Args[4].Type == (int)asso.Type) && (asso.Tags.Contains(l.Args[4]))))
-					{
-						renderer.PlotLinedef(l, General.Colors.Indication);
-						if(General.Settings.GZShowEventLines) eventlines.Add(new Line3D(l.GetCenterPoint(), asso.Center)); //mxd
-					}
-				}
-			}
-		}
-
-		// This renders the associated things with the indication color
-		public static void RenderReverseAssociations(IRenderer2D renderer, Association asso, List<Line3D> eventlines)
-		{
-			// Tag must be above zero
-			if(General.GetByIndex(asso.Tags, 0) < 1) return;
-
-			// Things
-			foreach(Thing t in General.Map.Map.Things)
-			{
-				// Get the thing type info
-				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
-
-				// Known action on this thing?
-				if((t.Action > 0) && General.Map.Config.LinedefActions.ContainsKey(t.Action))
-				{
-					//Do not draw the association if this is a child link.
-					//  This prevents a reverse link to a thing via an argument, when it should be a direct tag-to-tag link instead.
-					if(ti != null && asso.DirectLinkType < 0 && asso.DirectLinkType != -t.Type)
-						continue;
-
-					LinedefActionInfo action = General.Map.Config.LinedefActions[t.Action];
-					if(  ((action.Args[0].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[0]))) ||
-						 ((action.Args[1].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[1]))) ||
-						 ((action.Args[2].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[2]))) ||
-						 ((action.Args[3].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[3]))) ||
-						 ((action.Args[4].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[4]))))
-					{
-						renderer.RenderThing(t, General.Colors.Indication, General.Settings.ActiveThingsAlpha);
-						if(General.Settings.GZShowEventLines) eventlines.Add(new Line3D(t.Position, asso.Center)); //mxd
-					}
-
-					//If there is a link setup on this thing, and it matches the association, then draw a direct link to any matching tag
-					if(ti != null && asso.DirectLinkType == t.Type && asso.Tags.Contains(t.Tag))
-					{
-						renderer.RenderThing(t, General.Colors.Indication, General.Settings.ActiveThingsAlpha);
-						if (General.Settings.GZShowEventLines) eventlines.Add(new Line3D(t.Position, asso.Center));
-					}
-				}
-				//mxd. Thing action on this thing?
-				else if(t.Action == 0)
-				{
-					//Draw the association, unless it is a child link.
-					//  This prevents a reverse link to a thing via an argument, when it should be a direct tag-to-tag link instead.
-					if(ti != null && asso.DirectLinkType >= 0 && Math.Abs(asso.DirectLinkType) != t.Type)
-					{
-						if(  ((ti.Args[0].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[0]))) ||
-							 ((ti.Args[1].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[1]))) ||
-							 ((ti.Args[2].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[2]))) ||
-							 ((ti.Args[3].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[3]))) ||
-							 ((ti.Args[4].Type == (int)asso.Type) && (asso.Tags.Contains(t.Args[4]))))
-						{
-							renderer.RenderThing(t, General.Colors.Indication, General.Settings.ActiveThingsAlpha);
-							if(General.Settings.GZShowEventLines) eventlines.Add(new Line3D(t.Position, asso.Center));
-						}
-					}
-				}
-			}
 		}
 
 		#endregion

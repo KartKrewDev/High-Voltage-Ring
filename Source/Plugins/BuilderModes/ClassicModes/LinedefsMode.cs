@@ -56,8 +56,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// Highlighted item
 		private Linedef highlighted;
-		private readonly Association[] association = new Association[Linedef.NUM_ARGS];
-		private readonly Association highlightasso = new Association();
+		private readonly Association highlightasso;
 		private Vector2D insertpreview = new Vector2D(float.NaN, float.NaN); //mxd
 
 		//mxd. Text labels
@@ -82,7 +81,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public LinedefsMode()
 		{
 			//mxd. Associations now requre initializing...
-			for(int i = 0; i < association.Length; i++) association[i] = new Association();
+			highlightasso = new Association(renderer);
 		}
 
 		//mxd
@@ -125,9 +124,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					labels[highlighted].Color = General.Colors.Highlight;
 					completeredraw = true;
 				}
-				
+
 				// Previous association highlights something?
-				if(highlighted.Tag != 0) completeredraw = true;
+				if (!highlightasso.IsEmpty) completeredraw = true;
 			}
 			
 			// Set highlight association
@@ -141,57 +140,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				// New association highlights something?
-				if(l.Tag != 0)
-				{
-					highlightasso.Set(new Vector2D((l.Start.Position + l.End.Position) / 2), l.Tags, UniversalType.LinedefTag);
-					completeredraw = true; 
-				}
+				highlightasso.Set(l);
+
+				// Only need a complete redraw if the association contains elements
+				if (!highlightasso.IsEmpty) completeredraw = true;
 			}
 			else
 			{
-				highlightasso.Set(new Vector2D(), 0, 0);
+				// Only need a complete redraw if the old association wasn't empty
+				if (!highlightasso.IsEmpty) completeredraw = true;
+				highlightasso.Clear();
 			}
 
-			// Use the line tag to highlight sectors (Doom style)
-			if(General.Map.Config.LineTagIndicatesSectors)
-			{
-				if(l != null)
-					association[0].Set(new Vector2D((l.Start.Position  + l.End.Position)/2), l.Tags, UniversalType.SectorTag);
-				else
-					association[0].Set(new Vector2D(), 0, 0);
-			}
-			else
-			{
-				LinedefActionInfo action = null;
-
-				if(l != null)
-				{
-					// Check if we can find the linedefs action
-					if((l.Action > 0) && General.Map.Config.LinedefActions.ContainsKey(l.Action))
-						action = General.Map.Config.LinedefActions[l.Action];
-				}
-				
-				// Determine linedef associations
-				for(int i = 0; i < Linedef.NUM_ARGS; i++)
-				{
-					// Previous association highlights something?
-					if((association[i].Type == UniversalType.SectorTag) ||
-					   (association[i].Type == UniversalType.LinedefTag) ||
-					   (association[i].Type == UniversalType.ThingTag)) completeredraw = true;
-
-					// Make new association
-					if(action != null)
-						association[i].Set(new Vector2D((l.Start.Position  + l.End.Position)/2), l.Args[i], action.Args[i].Type);
-					else
-						association[i].Set(new Vector2D(), 0, 0);
-
-					// New association highlights something?
-					if((association[i].Type == UniversalType.SectorTag) ||
-					   (association[i].Type == UniversalType.LinedefTag) ||
-					   (association[i].Type == UniversalType.ThingTag)) completeredraw = true;
-				}
-			}
-			
 			// If we're changing associations, then we
 			// need to redraw the entire display
 			if(completeredraw)
@@ -599,11 +559,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(renderer.StartPlotter(true))
 			{
 				renderer.PlotLinedefSet(General.Map.Map.Linedefs);
-				for(int i = 0; i < Linedef.NUM_ARGS; i++) BuilderPlug.PlotAssociations(renderer, association[i], eventlines);
 				
 				if((highlighted != null) && !highlighted.IsDisposed)
 				{
-					BuilderPlug.PlotReverseAssociations(renderer, highlightasso, eventlines);
+					//BuilderPlug.PlotReverseAssociations(renderer, highlightasso, eventlines);
+					highlightasso.Plot();
 					renderer.PlotLinedef(highlighted, General.Colors.Highlight);
 				}
 				renderer.PlotVerticesSet(General.Map.Map.Vertices);
@@ -623,8 +583,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				if(!selecting) //mxd
 				{ 
-					for(int i = 0; i < Linedef.NUM_ARGS; i++) BuilderPlug.RenderAssociations(renderer, association[i], eventlines);
-					if((highlighted != null) && !highlighted.IsDisposed) BuilderPlug.RenderReverseAssociations(renderer, highlightasso, eventlines); //mxd
+					if ((highlighted != null) && !highlighted.IsDisposed) highlightasso.Render(); //mxd
 				}
 				else
 				{
@@ -639,8 +598,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					float vsize = (renderer.VertexSize + 1.0f) / renderer.Scale;
 					renderer.RenderRectangleFilled(new RectangleF((float)(insertpreview.x - vsize), (float)(insertpreview.y - vsize), vsize * 2.0f, vsize * 2.0f), General.Colors.InfoLine.WithAlpha(alpha), true);
 				}
-
-				renderer.RenderArrows(eventlines); //mxd
 
 				//mxd. Render sector tag labels
 				if(BuilderPlug.Me.ViewSelectionEffects)

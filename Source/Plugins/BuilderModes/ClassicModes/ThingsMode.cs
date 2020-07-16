@@ -56,9 +56,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// Highlighted item
 		private Thing highlighted;
-		private readonly Association[] association = new Association[Thing.NUM_ARGS];
-		private readonly Association directasso = new Association();
-		private readonly Association highlightasso = new Association();
+		private readonly Association highlightasso;
 
 		// Interface
 		new private bool editpressed;
@@ -89,8 +87,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public ThingsMode()
 		{
 			//mxd. Associations now requre initializing...
-			for(int i = 0; i < association.Length; i++) association[i] = new Association();
-			directasso = new Association();
+			highlightasso = new Association(renderer);
 		}
 
 		//mxd
@@ -234,8 +231,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				renderer.PlotLinedefSet(General.Map.Map.Linedefs);
 				renderer.PlotVerticesSet(General.Map.Map.Vertices);
 
-				for(int i = 0; i < Thing.NUM_ARGS; i++) BuilderPlug.PlotAssociations(renderer, association[i], eventlines);
-				if(highlighted != null && !highlighted.IsDisposed) BuilderPlug.PlotReverseAssociations(renderer, highlightasso, eventlines);
+				if (highlighted != null && !highlighted.IsDisposed) highlightasso.Plot();
 				
 				renderer.Finish();
 			}
@@ -246,13 +242,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				float alpha = (General.Settings.FixedThingsScale ? Presentation.THINGS_ALPHA : General.Settings.ActiveThingsAlpha); //mxd
 				renderer.RenderThingSet(General.Map.ThingsFilter.HiddenThings, General.Settings.HiddenThingsAlpha);
 				renderer.RenderThingSet(General.Map.ThingsFilter.VisibleThings, alpha);
-				for(int i = 0; i < Thing.NUM_ARGS; i++) BuilderPlug.RenderAssociations(renderer, association[i], eventlines);
-				BuilderPlug.RenderAssociations(renderer, directasso, eventlines);
 				
 				if(highlighted != null && !highlighted.IsDisposed)
 				{
 					renderer.RenderThing(highlighted, General.Colors.Highlight, alpha);
-					BuilderPlug.RenderReverseAssociations(renderer, highlightasso, eventlines); //mxd
+					highlightasso.Render();
 				}
 
 				//mxd. Event lines
@@ -364,11 +358,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					linktype = ti.ThingLink;
 
 				// New association highlights something?
-				if(t.Tag != 0) highlightasso.Set(t.Position, t.Tag, UniversalType.ThingTag, linktype);
+				highlightasso.Set(t);
 			}
 			else
 			{
-				highlightasso.Set(new Vector2D(), 0, 0);
+				highlightasso.Clear();
 			}
 
 			if(highlighted != null) //mxd
@@ -379,46 +373,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				highlighted.Highlighted = false;
 			}
 
-			//mxd. Determine thing associations
-			bool clearassociations = true; //mxd
-			if(t != null)
-			{
-				t.Highlighted = true; //mxd
-				
-				// Check if we can find the linedefs action
-				if((t.Action > 0) && General.Map.Config.LinedefActions.ContainsKey(t.Action))
-				{
-					clearassociations = false;
-					LinedefActionInfo action = General.Map.Config.LinedefActions[t.Action];
-					for(int i = 0; i < Thing.NUM_ARGS; i++)
-						association[i].Set(t.Position, t.Args[i], action.Args[i].Type);
-
-					//Some things, such as Patrol and Interpolation specials, are associated via a shared tag rather than an argument
-					ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
-					if (ti != null && ti.ThingLink < 0) 
-						directasso.Set(t.Position, t.Tag, (int)UniversalType.ThingTag);
-				}
-				//mxd. Check if we can use thing arguments
-				else if(t.Action == 0)
-				{
-					ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
-					if(ti != null)
-					{
-						clearassociations = false;
-						for(int i = 0; i < Thing.NUM_ARGS; i++)
-							association[i].Set(t.Position, t.Args[i], ti.Args[i].Type);
-					}
-				}
-			}
-
-			// mxd. Clear associations?
-			if(clearassociations)
-			{
-				for (int i = 0; i < Thing.NUM_ARGS; i++)
-					association[i].Set(new Vector2D(), 0, 0);
-				directasso.Set(new Vector2D(), 0, 0);
-			}
-			
 			// Set new highlight and redraw display
 			highlighted = t;
 			General.Interface.RedrawDisplay();
