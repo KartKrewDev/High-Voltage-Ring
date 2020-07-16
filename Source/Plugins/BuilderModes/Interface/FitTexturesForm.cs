@@ -13,8 +13,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 {
 	internal struct FitTextureOptions
 	{
-		public float HorizontalRepeat;
-		public float VerticalRepeat;
+		public double HorizontalRepeat;
+		public double VerticalRepeat;
 		public int PatternWidth;
 		public int PatternHeight;
 		public bool FitWidth;
@@ -44,12 +44,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		private static Point location = Point.Empty;
 		private bool blockupdate;
-		private int prevhorizrepeat;
-		private int prevvertrepeat;
+		private double prevhorizrepeat;
+		private double prevvertrepeat;
 
 		// Settings
-		private static int horizontalrepeat = 1;
-		private static int verticalrepeat = 1;
+		private static double horizontalrepeat = 1.0;
+		private static double verticalrepeat = 1.0;
 		private static bool fitacrosssurfaces = true;
 		private static bool fitwidth = true;
 		private static bool fitheight = true;
@@ -90,13 +90,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				return false;
 			}
 
-#if DEBUG
-			//debug
-			DrawDebugUV();
-#endif
-
 			// Restore settings
 			blockupdate = true;
+
+			// Make sure we start with sensible values for horizontal and vertical repeat
+			if (horizontalrepeat == 0.0)
+				horizontalrepeat = 1.0;
+
+			if (verticalrepeat == 0.0)
+				verticalrepeat = 1.0;
 
 			horizrepeat.Text = horizontalrepeat.ToString();
 			vertrepeat.Text = verticalrepeat.ToString();
@@ -127,12 +129,23 @@ namespace CodeImp.DoomBuilder.BuilderModes
 											PatternWidth = (int)patternwidth.GetResultFloat(0),
 											PatternHeight = (int)patternheight.GetResultFloat(0),
 											AutoWidth = cbautowidth.Checked,
-											AutoHeight = cbautoheight.Checked,
-											HorizontalRepeat = (float)horizrepeat.GetResultFloat(0),
-											VerticalRepeat = (float)vertrepeat.GetResultFloat(0)
+											AutoHeight = cbautoheight.Checked
 			                            };
 
-			foreach(SortedVisualSide side in strips) side.OnTextureFit(options);
+			// Default horizonal repeat to 1 if  the value can't be parsed or if it's 0
+			double hrepeat = horizrepeat.GetResultFloat(double.NaN);
+			if (double.IsNaN(hrepeat) || hrepeat == 0.0)
+				hrepeat = 1.0;
+
+			// Default vertical repeat to 1 if  the value can't be parsed or if it's 0
+			double vrepeat = vertrepeat.GetResultFloat(double.NaN);
+			if (double.IsNaN(vrepeat) || vrepeat == 0.0)
+				vrepeat = 1.0;
+
+			options.HorizontalRepeat = hrepeat;
+			options.VerticalRepeat = vrepeat;
+
+			foreach (SortedVisualSide side in strips) side.OnTextureFit(options);
 		}
 
 		private void UpdateRepeatGroup()
@@ -155,8 +168,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			labelvertrepeat.Enabled = cbfitheight.Checked;
 			vertrepeat.Enabled = cbfitheight.Checked && !cbautoheight.Checked;
 			resetvert.Enabled = cbfitheight.Checked && !cbautoheight.Checked;
-			
-			
 		}
 
 		#endregion
@@ -170,8 +181,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Store settings
 			if(this.DialogResult == DialogResult.OK)
 			{
-				horizontalrepeat = (int)horizrepeat.GetResultFloat(0);
-				verticalrepeat = (int)vertrepeat.GetResultFloat(0);
+				horizontalrepeat = horizrepeat.GetResultFloat(0);
+				verticalrepeat = vertrepeat.GetResultFloat(0);
 				fitacrosssurfaces = cbfitwidth.Checked;
 				fitwidth = cbfitwidth.Checked;
 				fitheight = cbfitheight.Checked;
@@ -194,13 +205,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(blockupdate) return;
 
-			if(horizrepeat.GetResultFloat(0) == 0)
-			{
-				horizrepeat.Text = prevhorizrepeat > 0 ? "-1" : "1";
-				return;
-			}
-
-			prevhorizrepeat = (int)horizrepeat.GetResultFloat(0);
+			prevhorizrepeat = horizrepeat.GetResultFloat(1);
 			UpdateChanges();
 		}
 
@@ -208,13 +213,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(blockupdate) return;
 
-			if(vertrepeat.GetResultFloat(0) == 0) 
-			{
-				vertrepeat.Text = prevvertrepeat > 0 ? "-1" : "1";
-				return;
-			}
-
-			prevvertrepeat = (int)vertrepeat.GetResultFloat(0);
+			prevvertrepeat = vertrepeat.GetResultFloat(1);
 			UpdateChanges();
 		}
 
@@ -244,72 +243,5 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		#endregion
-
-		#region ================== Debug
-
-#if DEBUG
-		private void DrawDebugUV()
-		{
-			const int margin = 20;
-
-			//sort by texture...
-			Dictionary<long, List<SortedVisualSide>> sortedstrips = new Dictionary<long, List<SortedVisualSide>>();
-			foreach(SortedVisualSide side in strips)
-			{
-				if(!sortedstrips.ContainsKey(side.Side.Texture.LongName))
-					sortedstrips.Add(side.Side.Texture.LongName, new List<SortedVisualSide>());
-
-				sortedstrips[side.Side.Texture.LongName].Add(side);
-			}
-
-			foreach(KeyValuePair<long, List<SortedVisualSide>> pair in sortedstrips)
-			{
-				//find bounds
-				int minx = int.MaxValue;
-				int maxx = int.MinValue;
-				int miny = int.MaxValue;
-				int maxy = int.MinValue;
-
-				foreach(SortedVisualSide side in pair.Value) 
-				{
-					if(side.Bounds.X < minx) minx = side.Bounds.X;
-					if(side.Bounds.X + side.Bounds.Width > maxx) maxx = side.Bounds.X + side.Bounds.Width;
-					if(side.Bounds.Y < miny) miny = side.Bounds.Y;
-					if(side.Bounds.Y + side.Bounds.Height > maxy) maxy = side.Bounds.Y + side.Bounds.Height;
-				}
-
-				Bitmap bmp = new Bitmap(maxx - minx + margin * 2, maxy - miny + margin * 2);
-
-				using(Graphics g = Graphics.FromImage(bmp)) 
-				{
-					int i = 0;
-
-					foreach(SortedVisualSide side in pair.Value) 
-					{
-						Color c = General.Colors.BrightColors[General.Random(0, General.Colors.BrightColors.Length - 1)].ToColor();
-						int x = side.Bounds.X - minx + margin;
-						int y = side.Bounds.Y - miny + margin;
-
-						using(Pen p = new Pen(c))
-						{
-							g.DrawRectangle(p, x, y, side.Bounds.Width, side.Bounds.Height);
-						}
-						using(Brush b = new SolidBrush(c))
-						{
-							g.DrawString(i++ + ": line " + side.Side.Sidedef.Line.Index + "; x:" + side.Bounds.X + " y:" + side.Bounds.Y, this.Font, b, x + 2, y + 2);
-						}
-					}
-				}
-
-				bmp.Save("testuv_" + pair.Value[0].Side.Texture.ShortName + ".png", ImageFormat.Png);
-			}
-
-			General.Interface.DisplayStatus(StatusType.Info, "Saved test image!");
-		}
-#endif
-
-		#endregion
-
-
 	}
 }
