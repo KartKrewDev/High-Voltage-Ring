@@ -27,6 +27,7 @@ jobs:
         if [[ "${{ runner.os }}" == 'macOS' ]]; then
           make mac
         elif [[ "${{ runner.os }}" == 'Linux' ]]; then
+          sudo apt-get update
           sudo apt install mesa-common-dev
           make linux
         fi
