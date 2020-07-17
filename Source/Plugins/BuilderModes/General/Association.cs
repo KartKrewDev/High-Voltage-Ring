@@ -137,7 +137,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				center = t.Position;
 
 				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
-				directlinktype = ti.ThingLink;
+
+				if (ti != null)
+					directlinktype = ti.ThingLink;
+				else
+					directlinktype = 0;
 
 				type = UniversalType.ThingTag;
 				tags = new HashSet<int>(new int[] { t.Tag });
