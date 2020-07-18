@@ -70,7 +70,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			linedefs = new List<Linedef>();
 			eventlines = new Dictionary<string, List<Line3D>>();
 
-			font = new Font(new FontFamily(General.Settings.TextLabelFontName), General.Settings.TextLabelFontSize, (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular));
+			try
+			{
+				font = new Font(new FontFamily(General.Settings.TextLabelFontName), General.Settings.TextLabelFontSize, (General.Settings.TextLabelFontBold ? FontStyle.Bold : FontStyle.Regular));
+			}
+			catch (Exception) // Fallback if the font couldn't be loaded
+			{
+				font = ((MainForm)General.Interface).Font;
+			}
 
 			distinctcolors = new List<PixelColor>
 			{
