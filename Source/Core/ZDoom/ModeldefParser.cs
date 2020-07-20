@@ -114,7 +114,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                         }
 
                         //mxd. Backward slashes are not supported
-                        if (filename.Contains(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
+                        if (filename.Contains("\\"))
                         {
                             ReportError("Only forward slashes are supported by ZDoom");
                             return false;
