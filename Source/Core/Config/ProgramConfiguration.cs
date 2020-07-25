@@ -292,10 +292,10 @@ namespace CodeImp.DoomBuilder.Config
 		#region ================== Loading / Saving
 
 		// This loads the program configuration
-		internal bool Load(string cfgfilepathname, string defaultfilepathname)
+		internal bool Load(string cfgfilepathname, string defaultfilepathname, string legacyfilepathname)
 		{
 			// First parse it
-			if(Read(cfgfilepathname, defaultfilepathname))
+			if(Read(cfgfilepathname, defaultfilepathname, legacyfilepathname))
 			{
 				// Read the cache variables
 				blackbrowsers = cfg.ReadSetting("blackbrowsers", true);
@@ -520,15 +520,25 @@ namespace CodeImp.DoomBuilder.Config
 		}
 		
 		// This reads the configuration
-		private bool Read(string cfgfilepathname, string defaultfilepathname)
+		private bool Read(string cfgfilepathname, string defaultfilepathname, string legacyfilepathname)
 		{
 			// Check if no config for this user exists yet
 			if(!File.Exists(cfgfilepathname))
 			{
-				// Copy new configuration
-				General.WriteLogLine("Local user program configuration is missing!");
-				File.Copy(defaultfilepathname, cfgfilepathname);
-				General.WriteLogLine("New program configuration copied for local user");
+				// Does an legacy configuration exist?
+				if (File.Exists(legacyfilepathname))
+				{
+					General.WriteLogLine("Local user program configuration is missing!");
+					File.Copy(legacyfilepathname, cfgfilepathname);
+					General.WriteLogLine("Copied legacy configuration \"" + legacyfilepathname + "\" for local user");
+				}
+				else
+				{
+					// Copy new configuration
+					General.WriteLogLine("Local user program configuration is missing!");
+					File.Copy(defaultfilepathname, cfgfilepathname);
+					General.WriteLogLine("New program configuration copied for local user");
+				}
 			}
 
 			// Load it

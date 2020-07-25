@@ -128,10 +128,11 @@ namespace CodeImp.DoomBuilder
 		//internal const int SIF_ALL = SIF_RANGE + SIF_PAGE + SIF_POS + SIF_TRACKPOS;
 		
 		// Files and Folders
-		private const string SETTINGS_FILE = "GZBuilder.cfg";
-		private const string DEFAULT_SETTINGS_FILE = "GZBuilder.default.cfg"; //mxd
+		private const string LEGACY_SETTINGS_FILE = "GZBuilder.cfg"; // To make transision from GZDB* easier
+		private const string SETTINGS_FILE = "UDBuilder.cfg";
+		private const string DEFAULT_SETTINGS_FILE = "UDBuilder.default.cfg"; //mxd
 		private const string SETTINGS_DIR = "Doom Builder";
-		private const string LOG_FILE = "GZBuilder.log";
+		private const string LOG_FILE = "UDBuilder.log";
 		private const string GAME_CONFIGS_DIR = "Configurations";
 		private const string COMPILERS_DIR = "Compilers";
 		private const string PLUGINS_DIR = "Plugins";
@@ -612,7 +613,9 @@ namespace CodeImp.DoomBuilder
 			settings = new ProgramConfiguration();
 			string defaultsettingsfile = Path.Combine(apppath, DEFAULT_SETTINGS_FILE);
 			string usersettingsfile = nosettings ? defaultsettingsfile : Path.Combine(settingspath, SETTINGS_FILE);
-			if(settings.Load(usersettingsfile, defaultsettingsfile))
+			string legacysettingsfile = nosettings ? String.Empty : Path.Combine(settingspath, LEGACY_SETTINGS_FILE);
+
+			if(settings.Load(usersettingsfile, defaultsettingsfile, legacysettingsfile))
 			{
 				// Create error logger
 				errorlogger = new ErrorLogger();

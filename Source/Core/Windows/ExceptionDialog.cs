@@ -12,6 +12,8 @@ namespace CodeImp.DoomBuilder.Windows
 {
 	public partial class ExceptionDialog : Form
 	{
+		private const string CRASH_DUMP_FILE = "UDBCrash.txt";
+
 		private readonly bool isterminating;
 		private readonly string logpath;
 		
@@ -19,7 +21,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			InitializeComponent();
 
-			logpath = Path.Combine(General.SettingsPath, @"GZCrash.txt");
+			logpath = Path.Combine(General.SettingsPath, CRASH_DUMP_FILE);
 			Exception ex = (Exception)e.ExceptionObject;
 			errorDescription.Text = "Error in " + ex.Source + ":";
 			string sysinfo = GetSystemInfo();
@@ -36,7 +38,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			InitializeComponent();
 
-			logpath = Path.Combine(General.SettingsPath, @"GZCrash.txt");
+			logpath = Path.Combine(General.SettingsPath, CRASH_DUMP_FILE);
 			errorDescription.Text = "Error in " + e.Exception.Source + ":";
 			string sysinfo = GetSystemInfo();
 			using(StreamWriter sw = File.CreateText(logpath)) 
