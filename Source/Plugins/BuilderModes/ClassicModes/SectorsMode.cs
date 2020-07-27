@@ -682,6 +682,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		/// <summary>
+		/// Create a blockmap containing sectors and things. This is used to speed determining which sector a
+		/// thing is in when synchronized thing editing is enabled
+		/// </summary>
+		private void CreateBlockmap()
+		{
+			RectangleF area = MapSet.CreateArea(General.Map.Map.Vertices);
+			area = MapSet.IncreaseArea(area, General.Map.Map.Things);
+			blockmap = new BlockMap<BlockEntry>(area);
+			blockmap.AddSectorsSet(General.Map.Map.Sectors);
+			blockmap.AddThingsSet(General.Map.Map.Things);
+		}
+
 		#endregion
 		
 		#region ================== Events
@@ -740,13 +753,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			BuilderPlug.Me.MenusForm.SyncronizeThingEditButton.ToolTipText = "Synchronized Things Editing" + Environment.NewLine + BuilderPlug.Me.MenusForm.SyncronizeThingEditSectorsItem.ToolTipText;
 
 			// Create the blockmap
-			RectangleF area = MapSet.CreateArea(General.Map.Map.Vertices);
-			area = MapSet.IncreaseArea(area, General.Map.Map.Things);
-			blockmap = new BlockMap<BlockEntry>(area);
-			blockmap.AddSectorsSet(General.Map.Map.Sectors);
-			blockmap.AddThingsSet(General.Map.Map.Things);
+			CreateBlockmap();
 
-			//mxd. Select things as well?
+			// Select things in the selected sectors if synchronized thing editing is enabled
 			if(BuilderPlug.Me.SyncronizeThingEdit)
 			{
 				ICollection<Sector> sectors = General.Map.Map.GetSelectedSectors(true);
@@ -1408,6 +1417,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// When undo is performed
 		public override void OnUndoEnd()
 		{
+			// Recreate the blockmap to not include the potentially un-done sectors and things anymore
+			CreateBlockmap();
+
 			// Clear labels
 			SetupLabels();
 			UpdateEffectLabels(); //mxd
@@ -1427,6 +1439,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// When redo is performed
 		public override void OnRedoEnd()
 		{
+			// Recreate the blockmap to include the potentially re-done sectors and things again
+			CreateBlockmap();
+
 			// Clear labels
 			SetupLabels();
 			UpdateEffectLabels(); //mxd
@@ -1884,6 +1899,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				General.Map.Map.EndAddRemove(); //mxd
+
+				// Recreate the blockmap since it shouldn't include the deleted sectors anymore
+				CreateBlockmap();
 			}
 
 			if(selectedthings.Count > 0 || selectedsectors.Count > 0)
