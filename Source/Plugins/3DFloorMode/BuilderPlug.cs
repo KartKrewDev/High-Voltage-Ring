@@ -758,21 +758,51 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		public static List<ThreeDFloor> GetThreeDFloors(List<Sector> sectors)
 		{
 			List<ThreeDFloor> tdf = new List<ThreeDFloor>();
-			List<Sector> tmpsectors = new List<Sector>();
+			HashSet<Sector> tmpsectors = new HashSet<Sector>();
+			HashSet<Sector> potentialsectors = new HashSet<Sector>();
+			Dictionary<int, List<Sector>> tags = new Dictionary<int, List<Sector>>();
 
 			// Immediately return if the list is empty
 			if (sectors.Count == 0)
 				return tdf;
 
+			// Build a dictionary of tags used by 3D floor action and which control sector they belong to
 			foreach (Linedef ld in General.Map.Map.Linedefs)
-				if (ld.Action == 160)
-					foreach (Sector s in sectors)
-						if (s != null && s.Tags.Contains(ld.Args[0]) && !tmpsectors.Contains(ld.Front.Sector))
-							tmpsectors.Add(ld.Front.Sector);
-				
+			{
+				if (ld.Action == 160 && ld.Args[0] != 0)
+				{
+					if (!tags.ContainsKey(ld.Args[0]))
+						tags.Add(ld.Args[0], new List<Sector>() { ld.Front.Sector });
+					else
+						tags[ld.Args[0]].Add(ld.Front.Sector);
+				}
+			}
+
+			// Create a list of 3D floor control sectors that reference the given sectors
+			foreach (Sector s in sectors)
+			{
+				if (s == null || s.IsDisposed)
+					continue;
+
+				IEnumerable<int> intersecttags = tags.Keys.Intersect(s.Tags);
+
+				if (intersecttags.Count() == 0)
+					continue;
+
+				// This sector is tagged to contain a 3D floor. Using this will speed up creating the 3D floors later
+				potentialsectors.Add(s);
+
+				foreach(int it in intersecttags)
+				{
+					foreach (Sector its in tags[it])
+						tmpsectors.Add(its);
+				}
+			}
+
+			// Create 3D floors from the found sectors
 			foreach(Sector s in tmpsectors)
 				if(s != null)
-					tdf.Add(new ThreeDFloor(s));
+					tdf.Add(new ThreeDFloor(s, potentialsectors));
 
 			return tdf;
 		}
@@ -1033,22 +1063,27 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			return null;
 		}
 
+		public static List<Sector> GetSectorsByTag(int tag)
+		{
+			return GetSectorsByTag(General.Map.Map.Sectors, tag);
+		}
+
+		public static List<Sector> GetSectorsByTag(IEnumerable sectors, int tag)
+		{
+			List<Sector> taggedsectors = new List<Sector>();
+
+			foreach (Sector s in sectors)
+				if (s.Tags.Contains(tag))
+					taggedsectors.Add(s);
+
+			return taggedsectors;
+		}
+
 		#endregion
 	}
 
 	public static class ThreeDFloorHelpers
 	{
-		public static List<Sector> GetSectorsByTag(this MapSet ms, int tag)
-		{
-			List<Sector> sectors = new List<Sector>();
-
-			foreach (Sector s in ms.Sectors)
-				if (s.Tags.Contains(tag))
-					sectors.Add(s);
-
-			return sectors;
-		}
-
 		public static bool ContainsAllElements<T>(this List<T> list1, List<T> list2)
 		{
 			if (list1.Count != list2.Count)

@@ -256,6 +256,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 		private void Render3DFloorLabels(Dictionary<Sector, string[]> labelsgroup)
 		{
+			Dictionary<string, float> sizecache = new Dictionary<string, float>();
+			List<ITextLabel> textlabels = new List<ITextLabel>();
+
 			foreach (KeyValuePair<Sector, string[]> group in labelsgroup)
 			{
 				// Render labels
@@ -265,21 +268,35 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					TextLabel l = labelarray[i];
 					l.Color = General.Colors.InfoLine;
 
-					// Render only when enough space for the label to see
-					float requiredsize =  (General.Interface.MeasureString(group.Value[0], l.Font).Width / 2) / renderer.Scale;
+					// Render only when enough space for the label to see. MeasureString is expensive, so cache the result
+					if (!sizecache.ContainsKey(group.Value[0]))
+						sizecache[group.Value[0]] = (General.Interface.MeasureString(group.Value[0], l.Font).Width / 2) / renderer.Scale;
+
+					float requiredsize = sizecache[group.Value[0]];
 
 					if (requiredsize > group.Key.Labels[i].radius)
 					{
-						l.Text = group.Value[1];
+						if (!sizecache.ContainsKey(group.Value[1]))
+							sizecache[group.Value[1]] = (General.Interface.MeasureString(group.Value[1], l.Font).Width / 2) / renderer.Scale;
+
+						requiredsize = sizecache[group.Value[1]];
+
+						if (requiredsize > group.Key.Labels[i].radius)
+							l.Text = (requiredsize > group.Key.Labels[i].radius * 4 ? string.Empty : "+");
+						else
+							l.Text = group.Value[1];
 					}
 					else
 					{
 						l.Text = group.Value[0];
 					}
 
-					renderer.RenderText(l);
+					if(!string.IsNullOrEmpty(l.Text))
+						textlabels.Add(l);
 				}
 			}
+
+			renderer.RenderText(textlabels);
 		}
 
 		// Generates the tooltip for the 3D floors

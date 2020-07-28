@@ -99,7 +99,12 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			alpha = 255;
 		}
 
-		public ThreeDFloor(Sector sector)
+		public  ThreeDFloor(Sector sector) : this(sector, General.Map.Map.Sectors)
+		{
+			// Nothing extra do do here
+		}
+
+		public ThreeDFloor(Sector sector, IEnumerable<Sector> potentialsectors)
 		{
 			if (sector == null)
 				throw new Exception("Sector can't be null");
@@ -127,7 +132,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					flags = sd.Line.Args[2];
 					alpha = sd.Line.Args[3];
 
-					foreach (Sector s in General.Map.Map.GetSectorsByTag(sd.Line.Args[0]))
+					foreach (Sector s in BuilderPlug.GetSectorsByTag(potentialsectors, sd.Line.Args[0]))
 					{
 						if(!taggedsectors.Contains(s))
 							taggedsectors.Add(s);
@@ -293,7 +298,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 
 			foreach (Sidedef sd in sector.Sidedefs)
 			{
-				if (sd.Line.Action == 160 && General.Map.Map.GetSectorsByTag(sd.Line.Args[0]).Count == 0)
+				if (sd.Line.Action == 160 && BuilderPlug.GetSectorsByTag(sd.Line.Args[0]).Count == 0)
 				{
 					sd.Line.Action = 0;
 

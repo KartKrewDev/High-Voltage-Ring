@@ -542,7 +542,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			{
 				for (int i = firsttag; i <= lasttag; i++)
 				{
-					if (!tagblacklist.Contains(i) && General.Map.Map.GetSectorsByTag(i).Count == 0)
+					if (!tagblacklist.Contains(i) && BuilderPlug.GetSectorsByTag(i).Count == 0)
 						return i;
 				}
 

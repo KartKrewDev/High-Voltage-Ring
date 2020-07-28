@@ -170,7 +170,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			{
 				if (sd.Line.Action == 160)
 				{
-					foreach (Sector ts in General.Map.Map.GetSectorsByTag(sd.Line.Args[0]))
+					foreach (Sector ts in BuilderPlug.GetSectorsByTag(sd.Line.Args[0]))
 					{
 						if (!taggedsectors.Contains(ts))
 							taggedsectors.Add(ts);
