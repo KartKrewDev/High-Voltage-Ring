@@ -741,23 +741,26 @@ namespace CodeImp.DoomBuilder.Data
 			return images;
 		}
 
+		/// <summary>
+		/// Gets a correctly cased file from a path/file. This is required for case sensitive file systems.
+		/// </summary>
+		/// <param name="filename">File name without path</param>
+		/// <param name="pathname">Path to the file</param>
+		/// <param name="type">Type of file (i.e. everything before the first dot)</param>
+		/// <returns>Array with one element on success, array with no elements on failure</returns>
 		protected string[] GetFileAtPath(string filename, string pathname, string type)
 		{
-			string[] allfilenames;
 			string fullname = Path.Combine(pathname, filename);
+
 			if (FileExists(fullname))
 			{
-				allfilenames = new string[1];
-				allfilenames[0] = Path.Combine(pathname, filename);
-				allfilenames[0] = GetCorrectCaseForFile(allfilenames[0]);
+				return new string[1] { GetCorrectCaseForFile(fullname) };
 			}
 			else
 			{
-				allfilenames = new string[0];
 				General.ErrorLogger.Add(ErrorType.Warning, "Unable to load " + type + " file \"" + fullname + "\"");
+				return new string[0];
 			}
-
-			return allfilenames;
 		}
 
 		// This copies images from a collection unless they already exist in the list
@@ -823,7 +826,11 @@ namespace CodeImp.DoomBuilder.Data
 			}
 		}
 
-		// Unix-like systems have case-sensitive filesystems. Use this to correct the case of a filename with the given path.
+		/// <summary>
+		/// Returns the correctly cased file from a path/file. This is required for case sensitive file systems. For PK3s the input will already have the correct case.
+		/// </summary>
+		/// <param name="filepathname">File name get the the correctly cased name from</param>
+		/// <returns></returns>
 		protected virtual string GetCorrectCaseForFile(string filepathname)
 		{
 			return filepathname;

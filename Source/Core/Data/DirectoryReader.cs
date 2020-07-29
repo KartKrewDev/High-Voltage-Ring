@@ -468,6 +468,7 @@ namespace CodeImp.DoomBuilder.Data
 		{
 			MemoryStream s = null;
 			string casecorrectfilename = GetCorrectCaseForFile(filename);
+
 			try
 			{
 				lock(this)
@@ -514,6 +515,11 @@ namespace CodeImp.DoomBuilder.Data
 			return tempfile;
 		}
 
+		/// <summary>
+		/// Returns the correctly cased file from a path/file. This is required for case sensitive file systems.
+		/// </summary>
+		/// <param name="filepathname">File name get the the correctly cased name from</param>
+		/// <returns></returns>
 		protected override string GetCorrectCaseForFile(string filepathname)
 		{
 			return files.GetFileInfo(filepathname).filepathname;
