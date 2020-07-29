@@ -754,7 +754,7 @@ namespace CodeImp.DoomBuilder.Data
 
 			if (FileExists(fullname))
 			{
-				return new string[1] { GetCorrectCaseForFile(fullname) };
+				return new string[1] { fullname };
 			}
 			else
 			{
