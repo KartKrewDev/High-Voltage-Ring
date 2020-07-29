@@ -22,8 +22,6 @@ jobs:
         $options = @( `
           '-property:Configuration=${{ matrix.configuration }}', `
           '-property:Platform=${{ matrix.platform }}', `
-          '-property:WindowsTargetPlatformVersion=10.0', `
-          '-property:PlatformToolset=v142', `
           '-maxcpucount', `
           '-verbosity:minimal' `
         )
