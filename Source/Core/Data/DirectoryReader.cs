@@ -467,12 +467,12 @@ namespace CodeImp.DoomBuilder.Data
 		internal override MemoryStream LoadFile(string filename)
 		{
 			MemoryStream s = null;
-
-			try 
+			string casecorrectfilename = GetCorrectCaseForFile(filename);
+			try
 			{
 				lock(this)
 				{
-					s = new MemoryStream(File.ReadAllBytes(Path.Combine(location.location, filename)));
+					s = new MemoryStream(File.ReadAllBytes(Path.Combine(location.location, casecorrectfilename)));
 				}
 			} 
 			catch(Exception e) 
@@ -512,6 +512,11 @@ namespace CodeImp.DoomBuilder.Data
 			string tempfile = General.MakeTempFilename(General.Map.TempPath, "wad");
 			File.Copy(Path.Combine(location.location, filename), tempfile);
 			return tempfile;
+		}
+
+		protected override string GetCorrectCaseForFile(string filepathname)
+		{
+			return files.GetFileInfo(filepathname).filepathname;
 		}
 
 		#endregion
