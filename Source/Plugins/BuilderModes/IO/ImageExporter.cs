@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
 using System.Diagnostics;
@@ -156,7 +157,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 				if (settings.Floor)
 				{
-					brushtexture = General.Map.Data.GetFlatImage(s.FloorTexture).ExportBitmap();
+					// The image might have a color correction applied, but we need it without. So we use LocalGetBitmap, because it reloads the image,
+					// but doesn't applie the color correction if we set UseColorCorrection to false first
+					ImageData imagedata = General.Map.Data.GetFlatImage(s.FloorTexture);
+					imagedata.UseColorCorrection = false;
+					brushtexture = imagedata.LocalGetBitmap();
+					imagedata.UseColorCorrection = true;
 
 					textureoffset.x = s.Fields.GetValue("xpanningfloor", 0.0);
 					textureoffset.y = s.Fields.GetValue("ypanningfloor", 0.0);
@@ -167,7 +173,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				}
 				else
 				{
-					brushtexture = General.Map.Data.GetFlatImage(s.CeilTexture).ExportBitmap();
+					// The image might have a color correction applied, but we need it without. So we use LocalGetBitmap, because it reloads the image,
+					// but doesn't applie the color correction if we set UseColorCorrection to false first
+					ImageData imagedata = General.Map.Data.GetFlatImage(s.CeilTexture);
+					imagedata.UseColorCorrection = false;
+					brushtexture = imagedata.LocalGetBitmap();
+					imagedata.UseColorCorrection = true;
 
 					textureoffset.x = s.Fields.GetValue("xpanningceiling", 0.0);
 					textureoffset.y = s.Fields.GetValue("ypanningceiling", 0.0);
