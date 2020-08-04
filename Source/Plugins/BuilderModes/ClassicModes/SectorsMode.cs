@@ -2062,7 +2062,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						foreach(Sector s in orderedselection) 
 						{
 							s.Fields.BeforeFieldsChange();
-							double u = index / (orderedselection.Count - 1);
+							double u = index / (double)(orderedselection.Count - 1);
 							double b = Math.Round(InterpolationTools.Interpolate(startbrightness, endbrightness, u, interpolationmode));
 
 							//absolute flag set?
@@ -2102,7 +2102,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					int index = 0;
 					foreach(Sector s in orderedselection) 
 					{
-						float u = index / (float)(orderedselection.Count - 1);
+						double u = index / (double)(orderedselection.Count - 1);
 						s.Brightness = (int)Math.Round(InterpolationTools.Interpolate(start.Brightness, end.Brightness, u, interpolationmode)); //mxd
 						index++;
 					}
