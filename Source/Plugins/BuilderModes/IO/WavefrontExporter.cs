@@ -264,8 +264,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				// Make sure the directory is there
 				Directory.CreateDirectory(Path.GetDirectoryName(savePath));
 
+				string mtlPath = Path.Combine(Path.GetDirectoryName(savePath), Path.GetFileNameWithoutExtension(savePath) + ".mtl");
+
 				// Write mtl (only if not exporting for GZDoom, since it will be ignored anyway
-				using (StreamWriter sw = new StreamWriter(savePath + ".mtl", false))
+				using (StreamWriter sw = new StreamWriter(mtlPath, false))
 					sw.Write(mtl.ToString());
 			}
 			else
@@ -348,7 +350,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			}
 
 			//done
-			General.Interface.DisplayStatus(StatusType.Warning, "Geometry exported to \"" + savePath + ".obj\"");
+			General.Interface.DisplayStatus(StatusType.Warning, "Geometry exported to \"" + savePath);
 		}
 
 		#endregion
