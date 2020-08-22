@@ -595,7 +595,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 						// Change size with the scale from the ruler
 						double newscale = resizeaxis.GetNearestOnLine(snappedmappos);
-						size = (basesize * resizefilter) * newscale + size * (1.0f - resizefilter);
+
+
+						Vector2D newsize = (basesize * resizefilter) * newscale + size * (1.0f - resizefilter);
+
+						// Do not allow the new size to be completely squashed to a line
+						if (newsize.x == 0.0 || newsize.y == 0.0)
+							break;
+
+						size = newsize;
 
 						//mxd. Update scale
 						newscale = 1f / newscale;
