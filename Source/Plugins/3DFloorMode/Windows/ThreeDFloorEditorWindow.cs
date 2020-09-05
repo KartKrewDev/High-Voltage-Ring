@@ -282,5 +282,31 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			foreach (ThreeDFloorHelperControl ctrl in controls)
 				SplitThreeDFloor(ctrl);
 		}
+
+		private void checkAllButton_Click(object sender, EventArgs e)
+		{
+			List<ThreeDFloorHelperControl> controls = threeDFloorPanel.Controls.OfType<ThreeDFloorHelperControl>().Where(o => o.Used).ToList();
+
+			foreach (ThreeDFloorHelperControl ctrl in controls)
+			{
+				for (int i = 0; i < ctrl.checkedListBoxSectors.Items.Count; i++)
+				{
+					ctrl.checkedListBoxSectors.SetItemChecked(i, true);
+				}
+			}
+		}
+
+		private void uncheckAllButton_Click(object sender, EventArgs e)
+		{
+			List<ThreeDFloorHelperControl> controls = threeDFloorPanel.Controls.OfType<ThreeDFloorHelperControl>().Where(o => o.Used).ToList();
+
+			foreach (ThreeDFloorHelperControl ctrl in controls)
+			{
+				for (int i = 0; i < ctrl.checkedListBoxSectors.Items.Count; i++)
+				{
+					ctrl.checkedListBoxSectors.SetItemChecked(i, false);
+				}
+			}
+		}
 	}
 }

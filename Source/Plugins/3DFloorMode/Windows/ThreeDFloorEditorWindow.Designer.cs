@@ -40,6 +40,8 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.detachAllButton = new System.Windows.Forms.Button();
 			this.splitAllButton = new System.Windows.Forms.Button();
+			this.checkAllButton = new System.Windows.Forms.Button();
+			this.uncheckAllButton = new System.Windows.Forms.Button();
 			this.no3dfloorspanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -141,7 +143,7 @@
 			// detachAllButton
 			// 
 			this.detachAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.detachAllButton.Location = new System.Drawing.Point(332, 513);
+			this.detachAllButton.Location = new System.Drawing.Point(335, 513);
 			this.detachAllButton.Name = "detachAllButton";
 			this.detachAllButton.Size = new System.Drawing.Size(75, 23);
 			this.detachAllButton.TabIndex = 5;
@@ -160,6 +162,28 @@
 			this.splitAllButton.UseVisualStyleBackColor = true;
 			this.splitAllButton.Click += new System.EventHandler(this.splitAllButton_Click);
 			// 
+			// checkAllButton
+			// 
+			this.checkAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.checkAllButton.Location = new System.Drawing.Point(416, 513);
+			this.checkAllButton.Name = "checkAllButton";
+			this.checkAllButton.Size = new System.Drawing.Size(75, 23);
+			this.checkAllButton.TabIndex = 7;
+			this.checkAllButton.Text = "Check all";
+			this.checkAllButton.UseVisualStyleBackColor = true;
+			this.checkAllButton.Click += new System.EventHandler(this.checkAllButton_Click);
+			// 
+			// uncheckAllButton
+			// 
+			this.uncheckAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.uncheckAllButton.Location = new System.Drawing.Point(497, 513);
+			this.uncheckAllButton.Name = "uncheckAllButton";
+			this.uncheckAllButton.Size = new System.Drawing.Size(75, 23);
+			this.uncheckAllButton.TabIndex = 8;
+			this.uncheckAllButton.Text = "Unheck all";
+			this.uncheckAllButton.UseVisualStyleBackColor = true;
+			this.uncheckAllButton.Click += new System.EventHandler(this.uncheckAllButton_Click);
+			// 
 			// ThreeDFloorEditorWindow
 			// 
 			this.AcceptButton = this.okButton;
@@ -167,6 +191,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(784, 548);
+			this.Controls.Add(this.uncheckAllButton);
+			this.Controls.Add(this.checkAllButton);
 			this.Controls.Add(this.splitAllButton);
 			this.Controls.Add(this.detachAllButton);
 			this.Controls.Add(this.no3dfloorspanel);
@@ -205,5 +231,7 @@
 		private System.Windows.Forms.Button add3dfloorbutton2;
 		private System.Windows.Forms.Button detachAllButton;
 		private System.Windows.Forms.Button splitAllButton;
+		private System.Windows.Forms.Button checkAllButton;
+		private System.Windows.Forms.Button uncheckAllButton;
 	}
 }
