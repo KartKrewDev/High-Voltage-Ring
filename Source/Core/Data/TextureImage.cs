@@ -88,7 +88,7 @@ namespace CodeImp.DoomBuilder.Data
 				bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
 				bitmapdata = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
 				pixels = (PixelColor*)bitmapdata.Scan0.ToPointer();
-				General.ZeroMemory(new IntPtr(pixels), width * height * sizeof(PixelColor));
+				General.ZeroPixels(pixels, width * height);
 			}
 			catch(Exception e)
 			{

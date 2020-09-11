@@ -47,25 +47,30 @@ namespace CodeImp.DoomBuilder
 {
 	public static class General
 	{
-        #region ================== API Declarations
+		#region ================== API Declarations
 
 #if NO_WIN32
 
 	internal static bool LockWindowUpdate(IntPtr hwnd) { return true; }
 	internal static bool MessageBeep(MessageBeepType type) { return true; }
-	internal static void ZeroMemory(IntPtr dest, int size) { }
 	internal static int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam) { return 0; }
     internal static int PostMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam) { return 0; }
 
+	internal unsafe static void ZeroPixels(PixelColor* pixels, int size)
+	{
+		var transparent = new PixelColor(0,0,0,0);
+		for (int i = 0; i < size; i++)
+			pixels[i] = transparent;
+	}
+
 #else
-        [DllImport("user32.dll")]
+		[DllImport("user32.dll")]
 		internal static extern bool LockWindowUpdate(IntPtr hwnd);
 
 		[DllImport("kernel32.dll", EntryPoint = "RtlZeroMemory", SetLastError = false)]
-		internal static extern void ZeroMemory(IntPtr dest, int size);
+		static extern void ZeroMemory(IntPtr dest, int size);
 
-		//[DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
-		//internal static extern unsafe void CopyMemory(void* dst, void* src, uint length);
+		internal unsafe static void ZeroPixels(PixelColor* pixels, int size) { ZeroMemory(new IntPtr(pixels), size * sizeof(PixelColor)); }
 
 		[DllImport("user32.dll", EntryPoint = "SendMessage", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
 		internal static extern int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
@@ -76,31 +81,8 @@ namespace CodeImp.DoomBuilder
         [DllImport("user32.dll", SetLastError = true)]
 		internal static extern bool MessageBeep(MessageBeepType type);
 
-		//[DllImport("kernel32.dll")]
-		//internal extern static IntPtr LoadLibrary(string filename);
-
-		//[DllImport("kernel32.dll")]
-		//internal extern static bool FreeLibrary(IntPtr moduleptr);
-
-		//[DllImport("user32.dll")]
-		/*internal static extern IntPtr CreateWindowEx(uint exstyle, string classname, string windowname, uint style,
-												   int x, int y, int width, int height, IntPtr parentptr, int menu,
-												   IntPtr instanceptr, string param);*/
-
-		//[DllImport("user32.dll")]
-		//internal static extern bool DestroyWindow(IntPtr windowptr);
-
-		//[DllImport("user32.dll")]
-		//internal static extern int SetWindowPos(IntPtr windowptr, int insertafterptr, int x, int y, int cx, int cy, int flags);
-		
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		private static extern uint GetShortPathName([MarshalAs(UnmanagedType.LPTStr)] string longpath, [MarshalAs(UnmanagedType.LPTStr)]StringBuilder shortpath, uint buffersize);
-
-		//[DllImport("user32.dll")]
-		//internal static extern int SetScrollInfo(IntPtr windowptr, int bar, IntPtr scrollinfo, bool redraw);
-
-		//[DllImport("user32.dll")]
-		//internal static extern int GetScrollInfo(IntPtr windowptr, int bar, IntPtr scrollinfo);
 #endif
 
 		#endregion
