@@ -52,6 +52,7 @@ namespace CodeImp.DoomBuilder.Windows
 			
 			// Initialize
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyMonoListViewFix(listtextures);
 			
 			// Make list column header full width
 			columnname.Width = listconfigs.ClientRectangle.Width - SystemInformation.VerticalScrollBarWidth - 2;

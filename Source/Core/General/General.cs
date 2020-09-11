@@ -47,7 +47,19 @@ namespace CodeImp.DoomBuilder
 {
 	public static class General
 	{
-		#region ================== API Declarations
+		#region ================== API Declarations and Mono compatibility
+
+#if MONO_WINFORMS
+		public static void ApplyMonoListViewFix(System.Windows.Forms.ListView listview)
+		{
+			if (listview.View == System.Windows.Forms.View.List)
+			{
+				listview.View = System.Windows.Forms.View.SmallIcon;
+			}
+		}
+#else
+		public static void ApplyMonoListViewFix(System.Windows.Forms.ListView listview) {}
+#endif
 
 #if NO_WIN32
 

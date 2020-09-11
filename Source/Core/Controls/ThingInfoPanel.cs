@@ -42,6 +42,7 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			// Initialize
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyMonoListViewFix(flags);
 
 			// Hide stuff when in Doom format
 			hexenformatwidth = infopanel.Width;

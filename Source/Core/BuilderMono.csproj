@@ -42,7 +42,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Build\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;MONO_WINFORMS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -63,7 +63,7 @@
     <ErrorReport>prompt</ErrorReport>
     <DocumentationFile>
     </DocumentationFile>
-    <DefineConstants>NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
+    <DefineConstants>NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;MONO_WINFORMS</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591</NoWarn>
@@ -72,7 +72,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug + Profiler|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Build\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;MONO_WINFORMS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>
     </DocumentationFile>
@@ -94,7 +94,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <DefineConstants>TRACE;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
+    <DefineConstants>TRACE;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;MONO_WINFORMS</DefineConstants>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -104,7 +104,7 @@
     </DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;MONO_WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -112,14 +112,14 @@
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
+    <DefineConstants>TRACE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;MONO_WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug + Profiler|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>..\..\Build\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;NO_DEVIL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PROFILE;NO_SCINTILLA;NO_FORMS_DESIGN;NO_WIN32;NO_UPDATER;MONO_WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release + Profiler|x64'">
     <PlatformTarget>x64</PlatformTarget>

@@ -48,6 +48,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			// Initialize
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyMonoListViewFix(mapslist);
 			this.Text = "Open Map from " + Path.GetFileName(filepathname);
 			this.filepathname = filepathname;
 			datalocations.StartPath = filepathname; //mxd
@@ -59,6 +60,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			// Initialize
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyMonoListViewFix(mapslist);
 			this.Text = "Open Map from " + Path.GetFileName(filepathname);
 			this.filepathname = filepathname;
 			this.options = options;

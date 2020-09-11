@@ -42,6 +42,7 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			// Initialize
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyMonoListViewFix(flags);
 
 			//mxd
 			labelFloorTextureSize.BackColor = Color.FromArgb(128, labelFloorTextureSize.BackColor);

@@ -20,6 +20,7 @@ namespace CodeImp.DoomBuilder.Windows
 		public ChangeMapForm(string filepathname, MapOptions options) 
 		{
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyMonoListViewFix(mapslist);
 			this.options = options;
 			this.filepathname = filepathname;
 		}
