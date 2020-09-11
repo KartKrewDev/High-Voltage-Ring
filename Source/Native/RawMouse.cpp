@@ -172,7 +172,8 @@ extern "C"
 
 RawMouse* RawMouse_New(void* hwnd)
 {
-	return new RawMouse(hwnd);
+	//return new RawMouse(hwnd);
+	return nullptr;
 }
 
 void RawMouse_Delete(RawMouse* mouse)

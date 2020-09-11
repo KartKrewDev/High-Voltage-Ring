@@ -20,6 +20,7 @@ using System;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Geometry;
 using System.Runtime.InteropServices;
+using System.Drawing;
 
 #endregion
 
@@ -31,6 +32,8 @@ namespace CodeImp.DoomBuilder.Actions
 
 		// Mouse input
 		private RawMouse mouse;
+		private bool firstProcess = true;
+		private Point lastPos = new Point();
 		
 		#endregion
 
@@ -40,7 +43,14 @@ namespace CodeImp.DoomBuilder.Actions
 		public MouseInput(Control source)
 		{
 			// Start mouse input
-			mouse = new RawMouse(source);
+			try
+			{
+				mouse = new RawMouse(source);
+			}
+			catch
+			{
+				mouse = null;
+			}
 
 			// We have no destructor
 			GC.SuppressFinalize(this);
@@ -67,11 +77,34 @@ namespace CodeImp.DoomBuilder.Actions
 		// This processes the input
 		public Vector2D Process()
 		{
-			MouseState ms = mouse.Poll();
+			float msX, msY;
+			if (mouse != null) // Windows version where RawInput is available
+			{
+				MouseState ms = mouse.Poll();
+				msX = ms.X;
+				msY = ms.Y;
+			}
+			else // Fallback implementation for unix
+			{
+				Point pos = Cursor.Position;
+
+				Rectangle clipBox = Cursor.Clip;
+				Cursor.Position = new Point(clipBox.X + clipBox.Width / 2, clipBox.Y + clipBox.Height / 2);
+
+				if (firstProcess)
+				{
+					lastPos = Cursor.Position;
+					firstProcess = false;
+				}
+
+				msX = (float)(pos.X - lastPos.X);
+				msY = (float)(pos.Y - lastPos.Y);
+				lastPos = Cursor.Position;
+			}
 
 			// Calculate changes depending on sensitivity
-			float changex = ms.X * General.Settings.VisualMouseSensX * General.Settings.MouseSpeed * 0.01f;
-			float changey = ms.Y * General.Settings.VisualMouseSensY * General.Settings.MouseSpeed * 0.01f;
+			float changex = msX * General.Settings.VisualMouseSensX * General.Settings.MouseSpeed * 0.01f;
+			float changey = msY * General.Settings.VisualMouseSensY * General.Settings.MouseSpeed * 0.01f;
 
 			return new Vector2D(changex, changey);
 		}
@@ -79,55 +112,55 @@ namespace CodeImp.DoomBuilder.Actions
 		#endregion
 	}
 
-    public struct MouseState
-    {
-        public MouseState(float x, float y) { X = x; Y = y; }
-        public float X { get; }
-        public float Y { get; }
-    }
+	public struct MouseState
+	{
+		public MouseState(float x, float y) { X = x; Y = y; }
+		public float X { get; }
+		public float Y { get; }
+	}
 
-    public class RawMouse
-    {
-        public RawMouse(System.Windows.Forms.Control control)
-        {
-            Handle = RawMouse_New(control.Handle);
-            if (Handle == IntPtr.Zero)
-                throw new Exception("RawMouse_New failed");
-        }
+	public class RawMouse
+	{
+		public RawMouse(System.Windows.Forms.Control control)
+		{
+			Handle = RawMouse_New(control.Handle);
+			if (Handle == IntPtr.Zero)
+				throw new Exception("RawMouse_New failed");
+		}
 
-        ~RawMouse()
-        {
-            Dispose();
-        }
+		~RawMouse()
+		{
+			Dispose();
+		}
 
-        public MouseState Poll()
-        {
-            return new MouseState(RawMouse_GetX(Handle), RawMouse_GetY(Handle));
-        }
+		public MouseState Poll()
+		{
+			return new MouseState(RawMouse_GetX(Handle), RawMouse_GetY(Handle));
+		}
 
-        public bool Disposed { get { return Handle == IntPtr.Zero; } }
+		public bool Disposed { get { return Handle == IntPtr.Zero; } }
 
-        public void Dispose()
-        {
-            if (!Disposed)
-            {
-                RawMouse_Delete(Handle);
-                Handle = IntPtr.Zero;
-            }
-        }
+		public void Dispose()
+		{
+			if (!Disposed)
+			{
+				RawMouse_Delete(Handle);
+				Handle = IntPtr.Zero;
+			}
+		}
 
-        internal IntPtr Handle;
+		internal IntPtr Handle;
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr RawMouse_New(IntPtr windowHandle);
+		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr RawMouse_New(IntPtr windowHandle);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RawMouse_Delete(IntPtr handle);
+		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern void RawMouse_Delete(IntPtr handle);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern float RawMouse_GetX(IntPtr handle);
+		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern float RawMouse_GetX(IntPtr handle);
 
-        [DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern float RawMouse_GetY(IntPtr handle);
-    }
+		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern float RawMouse_GetY(IntPtr handle);
+	}
 }
