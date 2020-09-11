@@ -1,6 +1,9 @@
 
 all: linux
 
+run:
+	cd Build && mono Builder.exe
+
 linux: builder native
 
 mac: builder nativemac
