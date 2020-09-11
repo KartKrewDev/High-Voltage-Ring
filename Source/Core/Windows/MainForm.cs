@@ -4144,7 +4144,7 @@ namespace CodeImp.DoomBuilder.Windows
         object syncobject = new object();
         List<System.Action> queuedActions = new List<System.Action>();
 
-        void ProcessQueuedUIActions()
+        internal void ProcessQueuedUIActions()
         {
             List<System.Action> queue;
             lock (syncobject)
@@ -4175,7 +4175,7 @@ namespace CodeImp.DoomBuilder.Windows
                 }
 
                 if (notify)
-                    General.PostMessage(Handle, General.WM_UIACTION, IntPtr.Zero, IntPtr.Zero);
+                    General.InvokeUIActions(this);
             }
         }
 

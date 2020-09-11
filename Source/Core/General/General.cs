@@ -51,16 +51,35 @@ namespace CodeImp.DoomBuilder
 
 #if NO_WIN32
 
-	internal static bool LockWindowUpdate(IntPtr hwnd) { return true; }
-	internal static bool MessageBeep(MessageBeepType type) { return true; }
-	internal static int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam) { return 0; }
-    internal static int PostMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam) { return 0; }
+	internal static void InvokeUIActions(MainForm mainform)
+    {
+		// This implementation really should work universally, but it seemed to hang sometimes on Windows.
+		// Let's hope the mono implementation of Winforms works better.
+		mainform.Invoke(new System.Action(() => { mainform.ProcessQueuedUIActions(); }));
+	}
+
+	internal static bool MessageBeep(MessageBeepType type)
+	{
+		System.Media.SystemSounds.Beep.Play();
+		return true;
+	}
+
+	internal static bool LockWindowUpdate(IntPtr hwnd)
+	{
+		// This can be safely ignored. It is a performance/flicker optimization. It might not even be needed on Windows anymore.
+		return true;
+	}
 
 	internal unsafe static void ZeroPixels(PixelColor* pixels, int size)
 	{
 		var transparent = new PixelColor(0,0,0,0);
 		for (int i = 0; i < size; i++)
 			pixels[i] = transparent;
+	}
+
+	internal static void SetComboBoxItemHeight(ComboBox combobox, int height)
+	{
+		// Only used by FieldsEditorControl. Not sure what its purpose is, might only be visual adjustment that isn't strictly needed?
 	}
 
 #else
@@ -73,12 +92,22 @@ namespace CodeImp.DoomBuilder
 		internal unsafe static void ZeroPixels(PixelColor* pixels, int size) { ZeroMemory(new IntPtr(pixels), size * sizeof(PixelColor)); }
 
 		[DllImport("user32.dll", EntryPoint = "SendMessage", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-		internal static extern int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
+		static extern int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll", EntryPoint = "PostMessage", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-        internal static extern int PostMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
+		internal static void SetComboBoxItemHeight(ComboBox combobox, int height)
+		{
+			SendMessage(combobox.Handle, General.CB_SETITEMHEIGHT, new IntPtr(-1), new IntPtr(height));
+		}
 
-        [DllImport("user32.dll", SetLastError = true)]
+		[DllImport("user32.dll", EntryPoint = "PostMessage", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        static extern int PostMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+		internal static void InvokeUIActions(MainForm mainform)
+        {
+			PostMessage(mainform.Handle, General.WM_UIACTION, IntPtr.Zero, IntPtr.Zero);
+		}
+
+		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern bool MessageBeep(MessageBeepType type);
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
