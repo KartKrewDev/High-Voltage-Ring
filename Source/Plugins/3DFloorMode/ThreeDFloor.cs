@@ -262,6 +262,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			sector.CeilHeight = topheight;
 			sector.SetFloorTexture(bottomflat);
 			sector.SetCeilTexture(topflat);
+			sector.Brightness = brightness;
 			sector.FloorSlope = floorslope;
 			sector.FloorSlopeOffset = floorslopeoffset;
 			sector.CeilSlope = ceilingslope;
