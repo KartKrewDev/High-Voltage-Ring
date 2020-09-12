@@ -501,17 +501,7 @@ namespace CodeImp.DoomBuilder.Data
 			
 			if(filename.IndexOf('.') > -1)
 			{
-				string fullname = Path.Combine(pathname, filename);
-				if(FileExists(fullname)) 
-				{
-					allfilenames = new string[1];
-					allfilenames[0] = Path.Combine(pathname, filename);
-				} 
-				else 
-				{
-					allfilenames = new string[0];
-					General.ErrorLogger.Add(ErrorType.Warning, "Unable to load DECORATE file \"" + fullname + "\"");
-				}
+                allfilenames = GetFileAtPath(filename, pathname, "DECORATE");
 			}
 			else
 				allfilenames = GetAllFilesWithTitle(pathname, filename, false);
@@ -545,17 +535,7 @@ namespace CodeImp.DoomBuilder.Data
 
             if (filename.IndexOf('.') > -1)
             {
-                string fullname = Path.Combine(pathname, filename);
-                if (FileExists(fullname))
-                {
-                    allfilenames = new string[1];
-                    allfilenames[0] = Path.Combine(pathname, filename);
-                }
-                else
-                {
-                    allfilenames = new string[0];
-                    General.ErrorLogger.Add(ErrorType.Warning, "Unable to load ZSCRIPT file \"" + fullname + "\"");
-                }
+                allfilenames = GetFileAtPath(filename, pathname, "ZSCRIPT");
             }
             else
                 allfilenames = GetAllFilesWithTitle(pathname, filename, false);
@@ -589,17 +569,7 @@ namespace CodeImp.DoomBuilder.Data
 
             if (filename.IndexOf('.') > -1)
             {
-                string fullname = Path.Combine(pathname, filename);
-                if (FileExists(fullname))
-                {
-                    allfilenames = new string[1];
-                    allfilenames[0] = Path.Combine(pathname, filename);
-                }
-                else
-                {
-                    allfilenames = new string[0];
-                    General.ErrorLogger.Add(ErrorType.Warning, "Unable to load MODELDEF file \"" + fullname + "\"");
-                }
+                allfilenames = GetFileAtPath(filename, pathname, "MODELDEF");
             }
             else
                 allfilenames = GetAllFilesWithTitle(pathname, filename, false);
@@ -770,7 +740,29 @@ namespace CodeImp.DoomBuilder.Data
 			// Return result
 			return images;
 		}
-		
+
+		/// <summary>
+		/// Gets a correctly cased file from a path/file. This is required for case sensitive file systems.
+		/// </summary>
+		/// <param name="filename">File name without path</param>
+		/// <param name="pathname">Path to the file</param>
+		/// <param name="type">Type of file (i.e. everything before the first dot)</param>
+		/// <returns>Array with one element on success, array with no elements on failure</returns>
+		protected string[] GetFileAtPath(string filename, string pathname, string type)
+		{
+			string fullname = Path.Combine(pathname, filename);
+
+			if (FileExists(fullname))
+			{
+				return new string[1] { fullname };
+			}
+			else
+			{
+				General.ErrorLogger.Add(ErrorType.Warning, "Unable to load " + type + " file \"" + fullname + "\"");
+				return new string[0];
+			}
+		}
+
 		// This copies images from a collection unless they already exist in the list
 		private static void AddImagesToList(Dictionary<long, ImageData> targetlist, IEnumerable<ImageData> sourcelist)
 		{
@@ -832,6 +824,16 @@ namespace CodeImp.DoomBuilder.Data
 				// Path is already relative
 				return anypath;
 			}
+		}
+
+		/// <summary>
+		/// Returns the correctly cased file from a path/file. This is required for case sensitive file systems. For PK3s the input will already have the correct case.
+		/// </summary>
+		/// <param name="filepathname">File name get the the correctly cased name from</param>
+		/// <returns></returns>
+		protected virtual string GetCorrectCaseForFile(string filepathname)
+		{
+			return filepathname;
 		}
 
 		//mxd. Archives and Folders don't have lump indices

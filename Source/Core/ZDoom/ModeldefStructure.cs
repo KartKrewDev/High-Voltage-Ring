@@ -102,7 +102,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 				{
 					case "path":
 						parser.SkipWhitespace(true);
-						path = parser.StripTokenQuotes(parser.ReadToken(false)).Replace("/", "\\"); // Don't skip newline
+						path = parser.StripTokenQuotes(parser.ReadToken(false)).Replace("\\", "/"); // Don't skip newline
 						if(string.IsNullOrEmpty(path))
 						{
 							parser.ReportError("Expected model path");
