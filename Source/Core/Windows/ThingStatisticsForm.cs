@@ -18,6 +18,7 @@ namespace CodeImp.DoomBuilder.Windows
         public ThingStatisticsForm() 
 		{
             InitializeComponent();
+            CodeImp.DoomBuilder.General.ApplyDataGridViewFix(dataGridView);
 
             //apply window size and location
             if(!size.IsEmpty && !location.IsEmpty) 

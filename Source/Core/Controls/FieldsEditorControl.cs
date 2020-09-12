@@ -83,6 +83,7 @@ namespace CodeImp.DoomBuilder.Controls
 		public FieldsEditorControl()
 		{
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyDataGridViewFix(fieldslist);
 			autoinsertuserprefix = true;
 			enumscombo.Location = new Point(-1000, 1);
 		}

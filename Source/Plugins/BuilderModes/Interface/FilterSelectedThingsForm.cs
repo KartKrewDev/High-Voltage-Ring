@@ -19,6 +19,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public FilterSelectedThingsForm(ICollection<Thing> selection, ThingsMode mode) 
 		{
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyDataGridViewFix(dataGridView);
 			this.mode = mode;
 
 			//apply window size and location

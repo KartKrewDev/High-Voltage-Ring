@@ -57,8 +57,17 @@ namespace CodeImp.DoomBuilder
 				listview.View = System.Windows.Forms.View.SmallIcon;
 			}
 		}
+		
+		public static void ApplyDataGridViewFix(System.Windows.Forms.DataGridView gridview)
+		{
+			if (gridview.RowsDefaultCellStyle != null && gridview.RowsDefaultCellStyle.Padding != new System.Windows.Forms.Padding(0,0,0,0))
+			{
+				gridview.RowsDefaultCellStyle.Padding = new System.Windows.Forms.Padding(0,0,0,0);
+			}
+		}
 #else
 		public static void ApplyMonoListViewFix(System.Windows.Forms.ListView listview) {}
+		public static void ApplyDataGridViewFix(System.Windows.Form.DataGridView gridview) {}
 #endif
 
 #if NO_WIN32

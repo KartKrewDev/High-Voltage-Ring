@@ -47,6 +47,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 		public CommentsDocker()
 		{
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyDataGridViewFix(grid);
 
 			filtermode.Checked = General.Settings.ReadPluginSetting("filtermode", false);
 			clickselects.Checked = General.Settings.ReadPluginSetting("clickselects", false);

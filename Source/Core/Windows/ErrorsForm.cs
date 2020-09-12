@@ -39,6 +39,7 @@ namespace CodeImp.DoomBuilder.Windows
 		public ErrorsForm()
 		{
 			InitializeComponent();
+			CodeImp.DoomBuilder.General.ApplyDataGridViewFix(grid);
 
 			FillList();
 			checkerrors.Start();
