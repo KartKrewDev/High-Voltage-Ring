@@ -77,7 +77,7 @@ namespace CodeImp.DoomBuilder.IO
 				}
 				if(skipfolder) continue;
 
-				entries.Add(e.filepathname, e);
+				AddOrReplaceEntry(e);
 			}
 		}
 
@@ -113,13 +113,38 @@ namespace CodeImp.DoomBuilder.IO
 					continue;
 				}
 
-				entries.Add(e.filepathname, e);
+				AddOrReplaceEntry(e);
 			}
 		}
 
 		#endregion
 
 		#region ================== Methods
+
+		// This checks whether a file is in the entry dictionary, adds it if it
+		// isn't, and replaces the existing entry if the new entry is lowercase
+		private void AddOrReplaceEntry(DirectoryFileEntry e)
+		{
+			// If the entry is already in the dictionary, add the one with
+			// greater ordinal value (prefer lowercase)
+			if(entries.ContainsKey(e.filepathname))
+			{
+				// Get the key for the existing entry. It may have a
+				// different case, since the dictionary is set up to be
+				// case insensitive.
+				string existingEntryPath = entries[e.filepathname].filepathname;
+				if(e.filepathname.CompareTo(existingEntryPath) == -1)
+				{
+					entries.Remove(e.filepathname);
+					entries.Add(e.filepathname, e);
+				}
+			}
+			else
+			{
+				// Just add the entry, since it's not in the dictionary yet.
+				entries.Add(e.filepathname, e);
+			}
+		}
 
 		// This checks if a given file exists
 		// The given file path must not be absolute
