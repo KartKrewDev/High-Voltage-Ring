@@ -26,7 +26,9 @@ jobs:
           '-verbosity:minimal' `
         )
         & $msbuild Builder.sln $options
+        if (-not $?) { throw "Build failed" }
         & $msbuild Source\Tools\Updater\Updater.csproj $options
+        if (-not $?) { throw "Build failed" }
 
     - name: Test Files Presence
       run: |
