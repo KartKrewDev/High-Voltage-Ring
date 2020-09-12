@@ -135,6 +135,9 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			// Initialize
 			InitializeComponent();
+			#if MONO_WINFORMS
+			frontgroup.Enabled = true;
+			#endif
 
 			// Widow setup
 			if(General.Settings.StoreSelectedEditTab)

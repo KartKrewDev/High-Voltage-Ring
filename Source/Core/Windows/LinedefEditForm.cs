@@ -87,6 +87,9 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			// Initialize
 			InitializeComponent();
+			#if MONO_WINFORMS
+			frontgroup.Enabled = true;
+			#endif
 			
 			// Fill flags lists
 			foreach(KeyValuePair<string, string> lf in General.Map.Config.LinedefFlags)
