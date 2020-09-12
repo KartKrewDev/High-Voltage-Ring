@@ -67,7 +67,7 @@ namespace CodeImp.DoomBuilder
 		}
 #else
 		public static void ApplyMonoListViewFix(System.Windows.Forms.ListView listview) {}
-		public static void ApplyDataGridViewFix(System.Windows.Form.DataGridView gridview) {}
+		public static void ApplyDataGridViewFix(System.Windows.Forms.DataGridView gridview) {}
 #endif
 
 #if NO_WIN32
