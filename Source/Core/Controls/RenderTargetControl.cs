@@ -71,6 +71,14 @@ namespace CodeImp.DoomBuilder.Controls
 
 		#region ================== Overrides
 		
+		#if MONO_WINFORMS
+		// This workarounds menubar getting the focus all the time
+		protected override bool IsInputChar(char charCode)
+		{
+			return true;
+		}
+		#endif
+		
 		//mxd
 		protected override void OnKeyUp(KeyEventArgs e) 
 		{
