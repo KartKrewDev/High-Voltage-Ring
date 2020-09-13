@@ -34,6 +34,7 @@ namespace CodeImp.DoomBuilder.Actions
 		private RawMouse mouse;
 		private bool firstProcess = true;
 		private Point lastPos = new Point();
+		private Control source;
 		
 		#endregion
 
@@ -42,6 +43,8 @@ namespace CodeImp.DoomBuilder.Actions
 		// Constructor
 		public MouseInput(Control source)
 		{
+			this.source = source;
+
 			// Start mouse input
 			try
 			{
@@ -88,7 +91,7 @@ namespace CodeImp.DoomBuilder.Actions
 			{
 				Point pos = Cursor.Position;
 
-				Rectangle clipBox = Cursor.Clip;
+				Rectangle clipBox = source.RectangleToScreen(source.ClientRectangle); //Cursor.Clip;
 				Cursor.Position = new Point(clipBox.X + clipBox.Width / 2, clipBox.Y + clipBox.Height / 2);
 
 				if (firstProcess)

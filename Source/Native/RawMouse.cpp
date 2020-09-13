@@ -172,8 +172,11 @@ extern "C"
 
 RawMouse* RawMouse_New(void* hwnd)
 {
-	//return new RawMouse(hwnd);
+#ifdef WIN32
+	return new RawMouse(hwnd);
+#else
 	return nullptr;
+#endif
 }
 
 void RawMouse_Delete(RawMouse* mouse)

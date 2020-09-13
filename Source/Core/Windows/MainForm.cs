@@ -1230,7 +1230,21 @@ namespace CodeImp.DoomBuilder.Windows
 				Cursor.Position = display.PointToScreen(new Point(display.ClientSize.Width / 2, display.ClientSize.Height / 2)); //mxd
 				Cursor.Clip = display.RectangleToScreen(display.ClientRectangle);
 				Cursor.Hide();
-				this.menumain.Enabled = false;
+				
+				#if MONO_WINFORMS
+				// A beautiful transparent cursor, just for you mono!
+				string emptycursor =
+					"AAACAAEAICACAAAAAAAwAQAAFgAAACgAAAAgAAAAQAAAAAEAAQAAAAAAgAAAAAAAAAAAAAAAAgAA" +
+					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////" +
+					"////////////////////////////////////////////////////////////////////////////" +
+					"//////////////////////////////////////////////////////8=";
+				using (var stream = new MemoryStream(System.Convert.FromBase64String(emptycursor)))
+				{
+					Cursor.Current = new Cursor(stream);
+				}
+				#endif
 			}
 		}
 
@@ -1248,7 +1262,9 @@ namespace CodeImp.DoomBuilder.Windows
 				Cursor.Clip = Rectangle.Empty;
 				Cursor.Position = display.PointToScreen(new Point(display.ClientSize.Width / 2, display.ClientSize.Height / 2));
 				Cursor.Show();
-				this.menumain.Enabled = true;
+				#if MONO_WINFORMS
+				Cursor.Current = Cursors.Default;
+				#endif
 			}
 		}
 		
