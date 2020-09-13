@@ -469,6 +469,12 @@ namespace CodeImp.DoomBuilder.Data
 			MemoryStream s = null;
 			string casecorrectfilename = GetCorrectCaseForFile(filename);
 
+			if(casecorrectfilename == null)
+			{
+				General.ErrorLogger.Add(ErrorType.Error, "Unable to load file " + filename + ": file doesn't exist");
+				return null;
+			}
+
 			try
 			{
 				lock(this)
@@ -522,7 +528,14 @@ namespace CodeImp.DoomBuilder.Data
 		/// <returns></returns>
 		protected override string GetCorrectCaseForFile(string filepathname)
 		{
-			return files.GetFileInfo(filepathname).filepathname;
+			try
+			{
+				return files.GetFileInfo(filepathname).filepathname;
+			}
+			catch(KeyNotFoundException e)
+			{
+				return null;
+			}
 		}
 
 		#endregion
