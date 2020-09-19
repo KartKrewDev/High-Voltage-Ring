@@ -233,8 +233,6 @@ OpenGLCreationHelper::OpenGLCreationHelper(HWND window) : window(window)
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.cColorBits = 32;
-	//pfd.cDepthBits = 16;
-	//pfd.cStencilBits = 8;
 
 	int pixelformat = ChoosePixelFormat(query_dc, &pfd);
 	SetPixelFormat(query_dc, pixelformat, &pfd);
@@ -268,8 +266,6 @@ HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, HGLRC share_context)
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.cColorBits = 32;
-	//pfd.cDepthBits = 16;
-	//pfd.cStencilBits = 8;
 
 	int pixelformat = ChoosePixelFormat(hdc, &pfd);
 	SetPixelFormat(hdc, pixelformat, &pfd);

@@ -30,15 +30,18 @@
 #include <algorithm>
 #include <cmath>
 
-static bool GLLogStarted = false;
 static void APIENTRY GLLogCallback(GLenum source, GLenum type, GLuint id,
 	GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
-	FILE* f = fopen("OpenGLDebug.log", GLLogStarted ? "a" : "w");
+	FILE* f = fopen("OpenGLDebug.log", "ab");
 	if (!f) return;
-	GLLogStarted = true;
 	fprintf(f, "%s\r\n", message);
 	fclose(f);
+}
+
+static const char* GLLogCheckNull(const GLubyte* str)
+{
+	return str ? (const char*)str : "null";
 }
 
 GLRenderDevice::GLRenderDevice(void* disp, void* window)
@@ -49,8 +52,18 @@ GLRenderDevice::GLRenderDevice(void* disp, void* window)
 		Context->MakeCurrent();
 
 #ifdef _DEBUG
-		glEnable(GL_DEBUG_OUTPUT);
-		glDebugMessageCallback(&GLLogCallback, nullptr);
+		FILE* f = fopen("OpenGLDebug.log", "wb");
+		if (f)
+		{
+			fprintf(f, "GL_VENDOR = %s\r\n", GLLogCheckNull(glGetString(GL_VENDOR)));
+			fprintf(f, "GL_RENDERER = %s\r\n", GLLogCheckNull(glGetString(GL_RENDERER)));
+			fprintf(f, "GL_VERSION = %s\r\n", GLLogCheckNull(glGetString(GL_VERSION)));
+			fprintf(f, "GL_SHADING_LANGUAGE_VERSION = %s\r\n", GLLogCheckNull(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+			fclose(f);
+
+			glEnable(GL_DEBUG_OUTPUT);
+			glDebugMessageCallback(&GLLogCallback, nullptr);
+		}
 #endif
 
 		glGenVertexArrays(1, &mStreamVAO);
