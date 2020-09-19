@@ -25,6 +25,27 @@ using CodeImp.DoomBuilder.Data;
 
 namespace CodeImp.DoomBuilder.IO
 {
+	/// <summary>
+	/// Compares two paths, ignoring case and converting the secondary string to the system's directory separator
+	/// </summary>
+	internal sealed class PathEqualityComparer : IEqualityComparer<string>
+	{
+		public bool Equals(string s1, string s2)
+		{
+			return s1.ToLowerInvariant() == ConvertPath(s2);
+		}
+
+		public int GetHashCode(string s)
+		{
+			return ConvertPath(s).GetHashCode();
+		}
+
+		private string ConvertPath(string s)
+		{
+			return s.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).ToLowerInvariant();
+		}
+	}
+
 	internal sealed class DirectoryFilesList
 	{
 		#region ================== Constants (mxd)
@@ -52,7 +73,7 @@ namespace CodeImp.DoomBuilder.IO
 			path = Path.GetFullPath(path);
 			string[] files = Directory.GetFiles(path, "*", subdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 			Array.Sort(files); //mxd
-			entries = new Dictionary<string, DirectoryFileEntry>(files.Length, StringComparer.OrdinalIgnoreCase);
+			entries = new Dictionary<string, DirectoryFileEntry>(files.Length, new PathEqualityComparer());
 			wadentries = new List<string>();
 			
 			foreach(string file in files) //mxd
@@ -84,7 +105,7 @@ namespace CodeImp.DoomBuilder.IO
 		// Constructor for custom list
 		public DirectoryFilesList(string resourcename, ICollection<DirectoryFileEntry> sourceentries)
 		{
-			entries = new Dictionary<string, DirectoryFileEntry>(sourceentries.Count, StringComparer.OrdinalIgnoreCase);
+			entries = new Dictionary<string, DirectoryFileEntry>(sourceentries.Count, new PathEqualityComparer());
 			wadentries = new List<string>();
 			foreach(DirectoryFileEntry e in sourceentries)
 			{
@@ -157,7 +178,7 @@ namespace CodeImp.DoomBuilder.IO
 		// The given file path must not be absolute
 		public DirectoryFileEntry GetFileInfo(string filepathname)
 		{
-			return entries[filepathname.ToLowerInvariant()];
+			return entries[filepathname];
 		}
 
 		//mxd. This returns a list of all wad files (filepathname)
