@@ -112,38 +112,32 @@ private:
 	HWND window;
 	HDC dc;
 	HGLRC context;
-};
-
-class OpenGLCreationHelper
-{
-public:
-	OpenGLCreationHelper(HWND window);
-	~OpenGLCreationHelper();
-
-	HGLRC CreateContext(HDC hdc, HGLRC share_context = 0);
-
-private:
-	HWND window;
-	HDC hdc;
-	HWND query_window = 0;
-	HDC query_dc = 0;
-	HGLRC query_context = 0;
 
 	typedef HGLRC(WINAPI* ptr_wglCreateContextAttribsARB)(HDC, HGLRC, const int*);
-
 	typedef BOOL(WINAPI* ptr_wglGetPixelFormatAttribivEXT)(HDC, int, int, UINT, int*, int*);
 	typedef BOOL(WINAPI* ptr_wglGetPixelFormatAttribfvEXT)(HDC, int, int, UINT, int*, FLOAT*);
 	typedef BOOL(WINAPI* ptr_wglChoosePixelFormatEXT)(HDC, const int*, const FLOAT*, UINT, int*, UINT*);
-};
+	typedef GLenum(WINAPI* ptr_glError)();
 
+	struct CreateFunctions
+	{
+		ptr_wglCreateContextAttribsARB wglCreateContextAttribsARB = nullptr;
+		ptr_wglGetPixelFormatAttribivEXT wglGetPixelFormatAttribivEXT = nullptr;
+		ptr_wglGetPixelFormatAttribfvEXT wglGetPixelFormatAttribfvEXT = nullptr;
+		ptr_wglChoosePixelFormatEXT wglChoosePixelFormatEXT = nullptr;
+		ptr_glError error = nullptr;
+	};
+
+	static CreateFunctions GetCreateFunctions(HWND window);
+	static HGLRC CreateGL3Context(HWND window, HDC hdc, HGLRC share_context);
+};
 
 /////////////////////////////////////////////////////////////////////////////
 
 OpenGLContext::OpenGLContext(void* windowptr) : window((HWND)windowptr)
 {
 	dc = GetDC(window);
-	OpenGLCreationHelper helper(window);
-	context = helper.CreateContext(dc);
+	context = CreateGL3Context(window, dc, 0);
 	if (context)
 	{
 		MakeCurrent();
@@ -196,127 +190,151 @@ int OpenGLContext::GetHeight() const
 	return box.bottom - box.top;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-
-OpenGLCreationHelper::OpenGLCreationHelper(HWND window) : window(window)
+OpenGLContext::CreateFunctions OpenGLContext::GetCreateFunctions(HWND window)
 {
-	WINDOWINFO window_info;
-	memset(&window_info, 0, sizeof(WINDOWINFO));
-	window_info.cbSize = sizeof(WINDOWINFO);
-	GetWindowInfo(window, &window_info);
+	CreateFunctions functions;
 
-	query_window = CreateWindowEx(
-		0,
-		WC_STATIC,
-		TEXT(""),
-		WS_CHILD,
-		window_info.rcWindow.left,
-		window_info.rcWindow.top,
-		window_info.rcWindow.right - window_info.rcWindow.left,
-		window_info.rcWindow.bottom - window_info.rcWindow.top,
-		window, 0, GetModuleHandle(0), 0);
-	if (query_window == 0)
-		return;
-
-	query_dc = GetDC(query_window);
-	if (query_dc == 0)
+	HWND queryWindow = CreateWindowEx(0, WC_STATIC, TEXT(""), WS_CHILD, 0, 0, 256, 256, window, 0, GetModuleHandle(0), 0);
+	if (queryWindow)
 	{
-		DestroyWindow(query_window);
-		query_window = 0;
-		return;
-	}
-
-	PIXELFORMATDESCRIPTOR pfd;
-	memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-	pfd.nVersion = 1;
-	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = 32;
-
-	int pixelformat = ChoosePixelFormat(query_dc, &pfd);
-	SetPixelFormat(query_dc, pixelformat, &pfd);
-
-	query_context = wglCreateContext(query_dc);
-	if (query_context == 0)
-	{
-		DeleteDC(query_dc);
-		DestroyWindow(query_window);
-		query_dc = 0;
-		query_window = 0;
-	}
-}
-
-OpenGLCreationHelper::~OpenGLCreationHelper()
-{
-	wglDeleteContext(query_context);
-	DeleteDC(query_dc);
-	DestroyWindow(query_window);
-}
-
-HGLRC OpenGLCreationHelper::CreateContext(HDC hdc, HGLRC share_context)
-{
-	if (query_context == 0)
-		return 0;
-
-	PIXELFORMATDESCRIPTOR pfd;
-	memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-	pfd.nVersion = 1;
-	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = 32;
-
-	int pixelformat = ChoosePixelFormat(hdc, &pfd);
-	SetPixelFormat(hdc, pixelformat, &pfd);
-
-	wglMakeCurrent(query_dc, query_context);
-
-	ptr_wglCreateContextAttribsARB wglCreateContextAttribsARB = (ptr_wglCreateContextAttribsARB)wglGetProcAddress("wglCreateContextAttribsARB");
-
-	typedef GLenum(WINAPI* glErrorPtr)();
-	glErrorPtr error = reinterpret_cast<glErrorPtr>(GetProcAddress(LoadLibrary("opengl32.dll"), "glGetError"));
-
-	HGLRC opengl3_context = 0;
-	if (wglCreateContextAttribsARB)
-	{
-		for (int profile : { 1/*WGL_CONTEXT_CORE_PROFILE_BIT_ARB*/, 2 /*WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB*/ })
+		HDC queryDC = GetDC(queryWindow);
+		if (queryDC)
 		{
-			for (int version : { 46, 45, 44, 43, 42, 41, 40, 33, 32 })
-			{
-				std::vector<int> int_attributes;
-				int_attributes.push_back(WGL_CONTEXT_MAJOR_VERSION_ARB);
-				int_attributes.push_back(version / 10);
-				int_attributes.push_back(WGL_CONTEXT_MINOR_VERSION_ARB);
-				int_attributes.push_back(version % 10);
-				int_attributes.push_back(0x9126); // WGL_CONTEXT_PROFILE_MASK_ARB
-				int_attributes.push_back(profile);
-				int_attributes.push_back(0);
-				opengl3_context = wglCreateContextAttribsARB(hdc, share_context, int_attributes.data());
+			PIXELFORMATDESCRIPTOR pfd;
+			memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+			pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+			pfd.nVersion = 1;
+			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+			pfd.iPixelType = PFD_TYPE_RGBA;
+			pfd.cColorBits = 32;
+			int pixelformat = ChoosePixelFormat(queryDC, &pfd);
+			SetPixelFormat(queryDC, pixelformat, &pfd);
 
-				if (opengl3_context)
-					break;
+			HGLRC queryContext = wglCreateContext(queryDC);
+			if (queryContext)
+			{
+				wglMakeCurrent(queryDC, queryContext);
+
+				functions.wglCreateContextAttribsARB = (ptr_wglCreateContextAttribsARB)wglGetProcAddress("wglCreateContextAttribsARB");
+				functions.wglGetPixelFormatAttribivEXT = (ptr_wglGetPixelFormatAttribivEXT)wglGetProcAddress("wglGetPixelFormatAttribivEXT");
+				functions.wglGetPixelFormatAttribfvEXT = (ptr_wglGetPixelFormatAttribfvEXT)wglGetProcAddress("wglGetPixelFormatAttribfvEXT");
+				functions.wglChoosePixelFormatEXT = (ptr_wglChoosePixelFormatEXT)wglGetProcAddress("wglChoosePixelFormatEXT");
+
+				HMODULE opengl32 = LoadLibrary("opengl32.dll");
+				if (opengl32)
+				{
+					functions.error = reinterpret_cast<ptr_glError>(GetProcAddress(opengl32, "glGetError"));
+					FreeLibrary(opengl32);
+				}
+
+				wglMakeCurrent(0, 0);
 			}
 
-			if (opengl3_context)
-				break;
+			// Clean up query window
+			ReleaseDC(queryWindow, queryDC);
 		}
-
-		// Grab the error from the last create attempt
-		if (!opengl3_context)
-		{
-			SetError("No OpenGL 3.2 support found (error code %d)", (int)error());
-		}
+		DestroyWindow(queryWindow);
 	}
-	else
+
+	return functions;
+}
+
+HGLRC OpenGLContext::CreateGL3Context(HWND window, HDC hdc, HGLRC share_context)
+{
+	CreateFunctions functions = GetCreateFunctions(window);
+	if (!functions.wglCreateContextAttribsARB)
 	{
 		SetError("No OpenGL driver supporting OpenGL 3 found");
+		return 0;
 	}
 
-	wglMakeCurrent(0, 0);
+	PIXELFORMATDESCRIPTOR pfd;
+	memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+	pfd.nVersion = 1;
+	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+	pfd.iPixelType = PFD_TYPE_RGBA;
+	pfd.cColorBits = 32;
 
-	return opengl3_context;
+	int pixelformat = 0;
+	if (functions.wglChoosePixelFormatEXT)
+	{
+		const int WGL_DRAW_TO_WINDOW_ARB = 0x2001;
+		const int WGL_SUPPORT_OPENGL_ARB = 0x2010;
+		const int WGL_DOUBLE_BUFFER_ARB = 0x2011;
+		const int WGL_ACCELERATION_ARB = 0x2003;
+		const int WGL_FULL_ACCELERATION_ARB = 0x2027;
+		const int WGL_RED_BITS_ARB = 0x2015;
+		const int WGL_GREEN_BITS_ARB = 0x2017;
+		const int WGL_BLUE_BITS_ARB = 0x2019;
+		const int WGL_ALPHA_BITS_ARB = 0x201B;
+
+		std::vector<float> floatattributes = { 0.0f, 0.0f };
+		std::vector<int> attributes =
+		{
+			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+			WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+			WGL_RED_BITS_ARB, 8,
+			WGL_GREEN_BITS_ARB, 8,
+			WGL_BLUE_BITS_ARB, 8,
+			WGL_ALPHA_BITS_ARB, 8,
+			0, 0
+		};
+
+		unsigned int numFormats = 0;
+		BOOL result = functions.wglChoosePixelFormatEXT(hdc, attributes.data(), floatattributes.data(), 1, &pixelformat, &numFormats);
+		if (!result)
+			pixelformat = 0;
+	}
+
+	if (pixelformat == 0)
+		pixelformat = ChoosePixelFormat(hdc, &pfd);
+
+	if (pixelformat == 0)
+	{
+		SetError("No compatible OpenGL pixel format found!");
+		return 0;
+	}
+
+	BOOL result = SetPixelFormat(hdc, pixelformat, &pfd);
+	if (!result)
+	{
+		SetError("OpenGL pixel format could not be set: SetPixelFormat failed!");
+		return 0;
+	}
+
+	const int WGL_CONTEXT_CORE_PROFILE_BIT_ARB = 1;
+	const int WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB = 2;
+	const int WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126;
+
+	for (int profile : { WGL_CONTEXT_CORE_PROFILE_BIT_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB })
+	{
+		for (int version : { 46, 45, 44, 43, 42, 41, 40, 33, 32 })
+		{
+			std::vector<int> int_attributes =
+			{
+				WGL_CONTEXT_MAJOR_VERSION_ARB, version / 10,
+				WGL_CONTEXT_MINOR_VERSION_ARB, version % 10,
+				WGL_CONTEXT_PROFILE_MASK_ARB, profile,
+				0, 0
+			};
+			HGLRC opengl3_context = functions.wglCreateContextAttribsARB(hdc, share_context, int_attributes.data());
+			if (opengl3_context)
+				return opengl3_context;
+		}
+	}
+
+	// Grab the error from the last create attempt
+	if (functions.error)
+		SetError("No OpenGL 3.2 support found (error code %d)", (int)functions.error());
+	else
+		SetError("No OpenGL 3.2 support found");
+	return 0;
 }
+
+/////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<IOpenGLContext> IOpenGLContext::Create(void* disp, void* window)
 {
