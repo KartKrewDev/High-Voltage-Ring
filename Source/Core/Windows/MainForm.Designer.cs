@@ -2762,6 +2762,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// flowLayoutPanel
 			// 
+			this.flowLayoutPanel.Controls.Add(this.menumain);
 			this.flowLayoutPanel.Controls.Add(this.modecontrolsloolbar);
 			this.flowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
 			this.flowLayoutPanel.Location = new System.Drawing.Point(0, 0);
@@ -2822,7 +2823,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.ClientSize = new System.Drawing.Size(1012, 693);
 			this.Controls.Add(this.dockerspanel);
-			this.Controls.Add(this.menumain);
 			this.Controls.Add(this.display);
 			this.Controls.Add(this.dockersspace);
 			this.Controls.Add(this.modestoolbar);
