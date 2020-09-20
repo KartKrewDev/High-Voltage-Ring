@@ -7,7 +7,7 @@
 - [Microsoft .Net Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472)
 
 **Building on Linux:**
-- Install mono. On debian based distros `apt-get install mono` should do the trick
+- Install mono. On debian based distros `apt-get install mono-complete` should do the trick
 - Install gcc
 - Type `make`. If you get an error about it not finding `msbuild` then you are most likely missing a package, or your version of mono may be too old
 - Run it by launching `builder` from inside the Build folder
