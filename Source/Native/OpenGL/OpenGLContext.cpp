@@ -207,6 +207,8 @@ OpenGLContext::CreateFunctions OpenGLContext::GetCreateFunctions(HWND window)
 			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 			pfd.iPixelType = PFD_TYPE_RGBA;
 			pfd.cColorBits = 32;
+			pfd.cStencilBits = 8;
+			pfd.cDepthBits = 16;
 			int pixelformat = ChoosePixelFormat(queryDC, &pfd);
 			SetPixelFormat(queryDC, pixelformat, &pfd);
 
@@ -255,6 +257,8 @@ HGLRC OpenGLContext::CreateGL3Context(HWND window, HDC hdc, HGLRC share_context)
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.cColorBits = 32;
+	pfd.cStencilBits = 8;
+	pfd.cDepthBits = 16;
 
 	int pixelformat = 0;
 	if (functions.wglChoosePixelFormatEXT)
@@ -268,6 +272,8 @@ HGLRC OpenGLContext::CreateGL3Context(HWND window, HDC hdc, HGLRC share_context)
 		const int WGL_GREEN_BITS_ARB = 0x2017;
 		const int WGL_BLUE_BITS_ARB = 0x2019;
 		const int WGL_ALPHA_BITS_ARB = 0x201B;
+		const int WGL_DEPTH_BITS_ARB = 0x2022;
+		const int WGL_STENCIL_BITS_ARB = 0x2023;
 
 		std::vector<float> floatattributes = { 0.0f, 0.0f };
 		std::vector<int> attributes =
@@ -280,6 +286,8 @@ HGLRC OpenGLContext::CreateGL3Context(HWND window, HDC hdc, HGLRC share_context)
 			WGL_GREEN_BITS_ARB, 8,
 			WGL_BLUE_BITS_ARB, 8,
 			WGL_ALPHA_BITS_ARB, 8,
+			WGL_DEPTH_BITS_ARB, 16,
+			WGL_STENCIL_BITS_ARB, 8,
 			0, 0
 		};
 
