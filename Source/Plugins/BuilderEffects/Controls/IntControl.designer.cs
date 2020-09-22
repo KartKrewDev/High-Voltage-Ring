@@ -33,6 +33,10 @@
 			this.numericUpDown1 = new CodeImp.DoomBuilder.BuilderEffects.NumericUpDownEx();
 			#else
 			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDown1.MouseWheel += (object sender, System.Windows.Forms.MouseEventArgs e) => {
+				System.Windows.Forms.NumericUpDown control = (System.Windows.Forms.NumericUpDown) sender;
+				control.Value += e.Delta;
+			};
 			#endif
 			this.labelMaximum = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
