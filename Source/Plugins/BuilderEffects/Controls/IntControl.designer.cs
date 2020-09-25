@@ -29,7 +29,15 @@
 		{
 			this.trackBar1 = new System.Windows.Forms.TrackBar();
 			this.label1 = new System.Windows.Forms.Label();
+			#if !MONO_WINFORMS
 			this.numericUpDown1 = new CodeImp.DoomBuilder.BuilderEffects.NumericUpDownEx();
+			#else
+			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDown1.MouseWheel += (object sender, System.Windows.Forms.MouseEventArgs e) => {
+				System.Windows.Forms.NumericUpDown control = (System.Windows.Forms.NumericUpDown) sender;
+				control.Value += e.Delta;
+			};
+			#endif
 			this.labelMaximum = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -99,7 +107,11 @@
 
 		private System.Windows.Forms.TrackBar trackBar1;
 		private System.Windows.Forms.Label label1;
+		#if !MONO_WINFORMS
 		private NumericUpDownEx numericUpDown1;
+		#else
+		private System.Windows.Forms.NumericUpDown numericUpDown1;
+		#endif
 		private System.Windows.Forms.Label labelMaximum;
 	}
 }
