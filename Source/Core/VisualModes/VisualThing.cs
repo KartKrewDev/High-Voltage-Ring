@@ -104,7 +104,17 @@ namespace CodeImp.DoomBuilder.VisualModes
 		
 		#region ================== Properties
 		
-		internal VertexBuffer GeometryBuffer { get { return geobuffers[spriteframe]; } }
+		internal VertexBuffer GeometryBuffer { get {
+				if (geobuffers != null)
+				{
+					return geobuffers[spriteframe];
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
 		internal VertexBuffer CageBuffer { get { return cagebuffer; } } //mxd
 		internal int CageLength { get { return cagelength; } } //mxd
 		internal bool NeedsUpdateGeo { get { return updategeo; } }
