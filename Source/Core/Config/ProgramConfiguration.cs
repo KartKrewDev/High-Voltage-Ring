@@ -93,6 +93,7 @@ namespace CodeImp.DoomBuilder.Config
 		private bool splitjoinedsectors; //mxd
 		private bool usehighlight; //mxd
 		private bool switchviewmodes; //mxd
+		private bool showfps;
 
 		//mxd. Script editor settings
 		private string scriptfontname;
@@ -201,6 +202,7 @@ namespace CodeImp.DoomBuilder.Config
 		public SplitLineBehavior SplitLineBehavior { get { return splitlinebehavior; } set { splitlinebehavior = value; } } //mxd
 		public MergeGeometryMode MergeGeometryMode { get { return mergegeomode; } internal set { mergegeomode = value; } } //mxd
 		public bool SplitJoinedSectors { get { return splitjoinedsectors; } internal set { splitjoinedsectors = value; } } //mxd
+		public bool ShowFPS { get { return showfps; } internal set { showfps = value; } }
 
 		//mxd. Highlight mode
 		public bool UseHighlight
@@ -347,6 +349,7 @@ namespace CodeImp.DoomBuilder.Config
 				splitjoinedsectors = cfg.ReadSetting("splitjoinedsectors", true); //mxd
 				usehighlight = cfg.ReadSetting("usehighlight", true); //mxd
 				switchviewmodes = cfg.ReadSetting("switchviewmodes", false); //mxd
+				showfps = cfg.ReadSetting("showfps", false);
 
 				//mxd. Script editor
 				scriptfontname = cfg.ReadSetting("scriptfontname", "Courier New");
@@ -460,6 +463,7 @@ namespace CodeImp.DoomBuilder.Config
 			cfg.WriteSetting("splitjoinedsectors", splitjoinedsectors); //mxd
 			cfg.WriteSetting("usehighlight", usehighlight); //mxd
 			cfg.WriteSetting("switchviewmodes", switchviewmodes); //mxd
+			cfg.WriteSetting("showfps", showfps);
 
 			//mxd. Script editor
 			cfg.WriteSetting("scriptfontname", scriptfontname);

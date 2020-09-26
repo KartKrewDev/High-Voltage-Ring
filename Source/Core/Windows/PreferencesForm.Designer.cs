@@ -210,6 +210,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.tabpasting = new System.Windows.Forms.TabPage();
 			this.label16 = new System.Windows.Forms.Label();
 			this.pasteoptions = new CodeImp.DoomBuilder.Controls.PasteOptionsControl();
+			this.cbShowFPS = new System.Windows.Forms.CheckBox();
 			groupBox1 = new System.Windows.Forms.GroupBox();
 			label7 = new System.Windows.Forms.Label();
 			label5 = new System.Windows.Forms.Label();
@@ -1436,6 +1437,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.appearancegroup1.Controls.Add(label27);
 			this.appearancegroup1.Controls.Add(this.labelanisotropicfiltering);
 			this.appearancegroup1.Controls.Add(this.anisotropicfiltering);
+			this.appearancegroup1.Controls.Add(this.cbShowFPS);
 			this.appearancegroup1.Controls.Add(this.cbOldHighlightMode);
 			this.appearancegroup1.Controls.Add(this.cbStretchView);
 			this.appearancegroup1.Controls.Add(this.doublesidedalphalabel);
@@ -2363,6 +2365,16 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pasteoptions.Size = new System.Drawing.Size(666, 427);
 			this.pasteoptions.TabIndex = 0;
 			// 
+			// cbShowFPS
+			// 
+			this.cbShowFPS.AutoSize = true;
+			this.cbShowFPS.Location = new System.Drawing.Point(229, 466);
+			this.cbShowFPS.Name = "cbShowFPS";
+			this.cbShowFPS.Size = new System.Drawing.Size(148, 17);
+			this.cbShowFPS.TabIndex = 15;
+			this.cbShowFPS.Text = "Show FPS in Visual Mode";
+			this.cbShowFPS.UseVisualStyleBackColor = true;
+			// 
 			// PreferencesForm
 			// 
 			this.AcceptButton = this.apply;
@@ -2612,5 +2624,6 @@ namespace CodeImp.DoomBuilder.Windows
 		private System.Windows.Forms.ComboBox textlabelfontsize;
 		private CodeImp.DoomBuilder.Controls.ColorControl colorguidelines;
         private System.Windows.Forms.CheckBox texturesizesbelow;
-    }
+		private System.Windows.Forms.CheckBox cbShowFPS;
+	}
 }

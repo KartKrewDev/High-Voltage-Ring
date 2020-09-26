@@ -310,7 +310,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		// This starts rendering
 		public bool Start()
 		{
-            if (!fpsWatch.IsRunning)
+            if (General.Settings.ShowFPS && !fpsWatch.IsRunning)
                 fpsWatch.Start();
 
             // Start drawing
@@ -493,14 +493,16 @@ namespace CodeImp.DoomBuilder.Rendering
 
 			visualvertices = null;
 
-            //
-            fps++;
-            if (fpsWatch.ElapsedMilliseconds > 1000)
-            {
-                fpsLabel.Text = string.Format("{0} FPS", fps);
-                fps = 0;
-                fpsWatch.Restart();
-            }
+			if (General.Settings.ShowFPS)
+			{
+				fps++;
+				if (fpsWatch.ElapsedMilliseconds > 1000)
+				{
+					fpsLabel.Text = string.Format("{0} FPS", fps);
+					fps = 0;
+					fpsWatch.Restart();
+				}
+			}
         }
 
         // [ZZ] black renderer magic here.
@@ -1866,7 +1868,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Draw
             graphics.Draw(PrimitiveType.TriangleStrip, 0, 2, crosshairverts);
 
-            General.Map.Renderer2D.RenderText(fpsLabel);
+			if (General.Settings.ShowFPS)
+				General.Map.Renderer2D.RenderText(fpsLabel);
         }
 
         // This switches fog on and off
