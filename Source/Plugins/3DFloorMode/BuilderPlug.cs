@@ -984,7 +984,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					try
 					{
 						foreach (ThreeDFloor tdf in sectorsToThreeDFloors[sectors.First()])
-							tdf.BindTag(newtag);
+							tdf.BindTag(newtag, null);
 					}
 					catch (Exception e)
 					{
