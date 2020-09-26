@@ -3,6 +3,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Actions;
+using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.ColorPicker.Windows;
 using CodeImp.DoomBuilder.Plugins;
 using CodeImp.DoomBuilder.VisualModes;
@@ -80,16 +81,27 @@ namespace CodeImp.DoomBuilder.ColorPicker
 		[BeginAction("togglelightpannel")]
 		private void ToggleLightPannel() 
 		{
+			SelectableElement deselectelement = null;
+
 			if(General.Editing.Mode == null || General.Map.DOOM) return;
 			string currentModeName = General.Editing.Mode.GetType().Name;
 
 			//display one of colorPickers or tell the user why we can't do that
-			if(currentModeName == "ThingsMode") 
+			if(currentModeName == "ThingsMode")
 			{
 				if(General.Map.Map.SelectedThingsCount == 0)
 				{
-					General.Interface.DisplayStatus(StatusType.Warning, "Select some lights first!");
-					return;
+					// If nothing is selected try to use a highlighted object
+					if (General.Editing.Mode.HighlightedObject != null)
+					{
+						((Thing)General.Editing.Mode.HighlightedObject).Selected = true;
+						deselectelement = (Thing)General.Editing.Mode.HighlightedObject;
+					}
+					else
+					{
+						General.Interface.DisplayStatus(StatusType.Warning, "Select or highlight some lights first!");
+						return;
+					}
 				}
 				form = new LightColorPicker();
 			} 
@@ -99,8 +111,13 @@ namespace CodeImp.DoomBuilder.ColorPicker
 				{
 					if(General.Map.Map.SelectedSectorsCount == 0) 
 					{
-						General.Interface.DisplayStatus(StatusType.Warning, "Select some sectors first!");
-						return;
+						if (General.Editing.Mode.HighlightedObject != null)
+							((Sector)General.Editing.Mode.HighlightedObject).Selected = true;
+						else
+						{
+							General.Interface.DisplayStatus(StatusType.Warning, "Select or highlight some sectors first!");
+							return;
+						}
 					}
 					form = new SectorColorPicker();
 				} 
@@ -149,12 +166,19 @@ namespace CodeImp.DoomBuilder.ColorPicker
 				form.Location = formLocation;
 				form.FormClosed += form_FormClosed;
 				form.ShowDialog(General.Interface);
+
+				if(deselectelement != null)
+				{
+					deselectelement.Selected = false;						
+				}
 			} 
 			else 
 			{
 				form.Dispose();
 				form = null;
 			}
+
+			General.Interface.RedrawDisplay();
 		}
 
 		private void form_FormClosed(object sender, FormClosedEventArgs e) 

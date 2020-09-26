@@ -143,6 +143,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				
 				colorPickerSlider3.Label = "Interval:";
 				colorPickerSlider3.OnValueChanged += OnSliderValueChanged;
+				colorPickerSlider3.UseSlider(true);
 			} 
 			else 
 			{
@@ -177,7 +178,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 			lightProps.PrimaryRadius = referenceThing.Args[firstArg];
 
 			//either both of them or none are used
-			if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, referenceThing.DynamicLightType) != -1) 
+			if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, referenceThing.DynamicLightType.LightNum) != -1) 
 			{
 				lightProps.SecondaryRadius = referenceThing.Args[4];
 				lightProps.Interval = referenceThing.AngleDoom;
@@ -248,7 +249,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 					t.Args[firstArg] = fixedVal.PrimaryRadius + lightProps.PrimaryRadius;
 					if(t.Args[firstArg] < 0) t.Args[firstArg] = 0;
 
-					if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType) != -1) 
+					if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType.LightNum) != -1) 
 					{
 						t.Args[4] = fixedVal.SecondaryRadius + lightProps.SecondaryRadius;
 						if(t.Args[4] < 0) t.Args[4] = 0;
@@ -261,7 +262,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 					if(lightProps.PrimaryRadius != -1)
 						t.Args[firstArg] = lightProps.PrimaryRadius;
 
-					if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType) != -1) 
+					if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType.LightNum) != -1) 
 					{
 						t.Args[4] = lightProps.SecondaryRadius;
 						t.Rotate(General.ClampAngle(lightProps.Interval));
@@ -359,7 +360,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				lp.PrimaryRadius = t.Args[firstArg];
 
 				//either both of them or none are used
-				if(showAllControls &&  Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType) != -1) 
+				if(showAllControls &&  Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType.LightNum) != -1) 
 				{
 					lp.SecondaryRadius = t.Args[4];
 					lp.Interval = t.AngleDoom;
