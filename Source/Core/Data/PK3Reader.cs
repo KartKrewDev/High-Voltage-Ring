@@ -40,6 +40,7 @@ namespace CodeImp.DoomBuilder.Data
 		private /*readonly*/ ArchiveType archivetype; //mxd
 		private /*readonly*/ Dictionary<string, byte[]> sevenzipentries; //mxd
 		private bool batchmode = true; //mxd
+		private FileStream filestream;
 
 		#endregion
 
@@ -74,7 +75,26 @@ namespace CodeImp.DoomBuilder.Data
 
         private void LoadFrom(DataLocation dl, bool asreadonly)
         {
-            General.WriteLogLine("Opening " + Path.GetExtension(location.location).ToUpper().Replace(".", "") + " resource \"" + location.location + "\"");
+			FileAccess access;
+			FileShare share;
+
+			isreadonly = asreadonly;
+
+			// Determine if opening for read only
+			if (isreadonly)
+			{
+				// Read only
+				access = FileAccess.Read;
+				share = FileShare.ReadWrite;
+			}
+			else
+			{
+				// Private access
+				access = FileAccess.ReadWrite;
+				share = FileShare.Read;
+			}
+
+			General.WriteLogLine("Opening " + Path.GetExtension(location.location).ToUpper().Replace(".", "") + " resource \"" + location.location + "\"");
 
             if (!File.Exists(location.location))
                 throw new FileNotFoundException("Could not find the file \"" + location.location + "\"", location.location);
@@ -82,8 +102,11 @@ namespace CodeImp.DoomBuilder.Data
             // Make list of all files
             List<DirectoryFileEntry> fileentries = new List<DirectoryFileEntry>();
 
-            // Create archive
-            archive = ArchiveFactory.Open(location.location);
+			// Take the detour with a FileStream because SharpCompress doesn't directly support opening files as read-only
+			filestream = File.Open(location.location, FileMode.OpenOrCreate, access, share);
+
+			// Create archive
+			archive = ArchiveFactory.Open(filestream);
             archivetype = archive.Type;
 
             // Random access of 7z archives works TERRIBLY slow in SharpCompress
@@ -115,6 +138,9 @@ namespace CodeImp.DoomBuilder.Data
             // Get rid of archive
             archive.Dispose();
             archive = null;
+
+			filestream.Dispose();
+			filestream = null;
 
             // Make files list
             files = new DirectoryFilesList(dl.GetDisplayName(), fileentries);
@@ -148,6 +174,12 @@ namespace CodeImp.DoomBuilder.Data
 					archive = null;
 				}
 
+				if(filestream != null)
+				{
+					filestream.Dispose();
+					filestream = null;
+				}
+
 				// Done
 				base.Dispose();
 			}
@@ -162,12 +194,39 @@ namespace CodeImp.DoomBuilder.Data
 
 				if (enable && archive == null)
 				{
-					archive = ArchiveFactory.Open(location.location);
+					FileAccess access;
+					FileShare share;
+
+					// Determine if opening for read only
+					if (isreadonly)
+					{
+						// Read only
+						access = FileAccess.Read;
+						share = FileShare.ReadWrite;
+					}
+					else
+					{
+						// Private access
+						access = FileAccess.ReadWrite;
+						share = FileShare.Read;
+					}
+
+					// The file might have vanished in the meantime
+					if (!File.Exists(location.location))
+						throw new FileNotFoundException("Could not find the file \"" + location.location + "\"", location.location);
+
+					// Take the detour with a FileStream because SharpCompress doesn't directly support opening files as read-only
+					filestream = File.Open(location.location, FileMode.OpenOrCreate, access, share);
+
+					archive = ArchiveFactory.Open(filestream);
 				}
 				else if (!enable && !batchmode && archive != null)
 				{
 					archive.Dispose();
 					archive = null;
+
+					filestream.Dispose();
+					filestream = null;
 				}
 			}
 		}
@@ -522,7 +581,22 @@ namespace CodeImp.DoomBuilder.Data
 						if (string.Compare(entry.Key, fn, true) == 0)
 						{
 							filedata = new MemoryStream();
-							entry.WriteTo(filedata);
+
+							try
+							{
+								entry.WriteTo(filedata);
+							}
+							catch(SharpCompress.Compressors.Deflate.ZlibException e)
+							{
+								// This happens when the PK3 was modified externally and the resources were not reloaded
+								General.ErrorLogger.Add(ErrorType.Error, "Cannot load the file \"" + filename + "\" from archive \"" + location.GetDisplayName() + "\". Did you modify the archive without reloading the resouces?");
+
+								filedata.Dispose();
+								filedata = null;
+
+								return null;
+							}
+
 							break;
 						}
 					}
