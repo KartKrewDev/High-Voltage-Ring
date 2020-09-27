@@ -4318,6 +4318,29 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		/// <summary>
+		/// Applies the Visual Mode's current camera pitch and yaw to the selected things
+		/// </summary>
+		[BeginAction("applycamerarotationtothings")]
+		public void ApplyCameraRotationToThings()
+		{
+			List<Thing> things = GetSelectedThings();
+
+			if(things.Count == 0)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Can't apply camera rotation to things: no things selected.");
+				return;
+			}
+
+			General.Map.UndoRedo.CreateUndo("Apply camera rotation to things");
+
+			foreach (Thing t in things)
+			{
+				t.Rotate(General.Map.VisualCamera.AngleXY);
+				t.SetPitch((int)Angle2D.RadToDeg(-General.Map.VisualCamera.AngleZ));
+			}
+		}
+
 		#endregion
 
 		#region ================== Texture Alignment
