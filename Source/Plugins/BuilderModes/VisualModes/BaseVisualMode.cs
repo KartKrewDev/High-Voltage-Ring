@@ -4336,8 +4336,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			foreach (Thing t in things)
 			{
-				t.Rotate(General.Map.VisualCamera.AngleXY);
-				t.SetPitch((int)Angle2D.RadToDeg(-General.Map.VisualCamera.AngleZ));
+				t.Rotate(General.Map.VisualCamera.AngleXY - Angle2D.PI);
+				t.SetPitch((int)Angle2D.RadToDeg(General.Map.VisualCamera.AngleZ - Angle2D.PI));
 			}
 		}
 
