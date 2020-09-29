@@ -267,7 +267,9 @@ namespace CodeImp.DoomBuilder.Editing
 						}
 
 						// Done
+						#if !MONO_WINFORMS // seems mono claimed ownership of the memory stream...
 						memstream.Dispose();
+						#endif
 						General.Editing.Mode.OnCopyEnd();
 						General.Plugins.OnCopyEnd();
 						return true;
@@ -317,6 +319,8 @@ namespace CodeImp.DoomBuilder.Editing
 							{
 								using(Stream memstream = (Stream)Clipboard.GetData(CLIPBOARD_DATA_FORMAT))
 								{
+									if (memstream == null) return;
+									
 									// Rewind before use
 									memstream.Seek(0, SeekOrigin.Begin);
 
@@ -337,6 +341,8 @@ namespace CodeImp.DoomBuilder.Editing
 							{
 								using(Stream memstream = (Stream)Clipboard.GetData(CLIPBOARD_DATA_FORMAT_DB2))
 								{
+									if (memstream == null) return;
+								
 									// Read data stream
 									UniversalStreamReader reader = new UniversalStreamReader(new Dictionary<MapElementType, Dictionary<string, UniversalType>>());
 									reader.StrictChecking = false;
