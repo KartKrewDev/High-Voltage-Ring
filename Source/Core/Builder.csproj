@@ -179,6 +179,7 @@
       <DependentUpon>ArgumentBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\FolderSelectDialog.cs" />
+    <Compile Include="Controls\Scripting\TextEditorControl.cs" />
     <Compile Include="Controls\TransparentTrackBar.cs">
       <SubType>Component</SubType>
     </Compile>

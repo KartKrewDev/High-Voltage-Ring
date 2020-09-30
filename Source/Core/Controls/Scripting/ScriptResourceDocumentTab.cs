@@ -10,68 +10,6 @@ using CodeImp.DoomBuilder.Data.Scripting;
 
 #endregion
 
-#if NO_SCINTILLA
-
-namespace CodeImp.DoomBuilder.Controls
-{
-	//mxd. Document tab bound to a resource entry. Script type can't be changed. Can be readonly.
-	//Must be replaced with ScriptFileDocumentTab when unable to locate target resource entry to save to.
-	internal sealed class ScriptResourceDocumentTab : ScriptDocumentTab
-	{
-		private ScriptResource source;
-		private string hash;
-		private string filepathname;
-	
-		public override bool IsReconfigurable { get { return false; } }
-		public override bool IsSaveAsRequired { get { return false; } }
-		public override bool IsReadOnly { get { return source.IsReadOnly; } }
-		public override string Filename { get { return filepathname; } }
-		internal ScriptResource Resource { get { return source; } }
-		
-		internal ScriptResourceDocumentTab(ScriptEditorPanel panel, ScriptResource resource, ScriptConfiguration config) : base(panel, config)
-		{
-			source = resource;
-			filepathname = source.FilePathName;
-			this.ToolTipText = filepathname;
-		}
-		
-		public override void Compile()
-		{
-		}
-
-		// This checks if a script error applies to this script
-		public override bool VerifyErrorForScript(CompilerError e)
-		{
-			return (string.Compare(e.filename, source.Filename, true) == 0);
-		}
-
-		public override bool Save()
-		{
-			if(source.IsReadOnly) return false;
-			return false;
-                }
-
-		internal override ScriptDocumentSettings GetViewSettings()
-		{
-			// Store resource location
-			var settings = base.GetViewSettings();
-			DataReader reader = source.Resource;
-			if(reader != null)
-			{
-				settings.ResourceLocation = reader.Location.location;
-				settings.Filename = Path.Combine(reader.Location.location, filepathname); // Make unique location
-			}
-			return settings;
-		}
-
-		internal void OnReloadResources()
-		{
-		}
-	}
-}
-
-#else
-
 namespace CodeImp.DoomBuilder.Controls
 {
 	//mxd. Document tab bound to a resource entry. Script type can't be changed. Can be readonly.
@@ -227,5 +165,3 @@ namespace CodeImp.DoomBuilder.Controls
 		#endregion
 	}
 }
-
-#endif

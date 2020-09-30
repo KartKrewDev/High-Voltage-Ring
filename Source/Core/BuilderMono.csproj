@@ -176,11 +176,18 @@
       <DependentUpon>ArgumentBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\FolderSelectDialog.cs" />
+    <Compile Include="Controls\Scripting\TextEditorControl.cs" />
     <Compile Include="Controls\TransparentTrackBar.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\Scripting\ScriptDocumentTab.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Scripting\ScriptEditorPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Scripting\ScriptEditorPanel.Designer.cs">
+      <DependentUpon>ScriptEditorPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\Scripting\ScriptFileDocumentTab.cs">
       <SubType>Component</SubType>
@@ -869,6 +876,18 @@
     </Compile>
     <Compile Include="Controls\PasteOptionsControl.Designer.cs">
       <DependentUpon>PasteOptionsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Scripting\ScriptEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Scripting\ScriptEditorControl.designer.cs">
+      <DependentUpon>ScriptEditorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Scripting\ScriptEditorPreviewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Scripting\ScriptEditorPreviewControl.Designer.cs">
+      <DependentUpon>ScriptEditorPreviewControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\SectorSlopeControl.cs">
       <SubType>UserControl</SubType>
