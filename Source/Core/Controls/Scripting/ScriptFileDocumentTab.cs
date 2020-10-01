@@ -68,9 +68,7 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			// Set text and view settings
 			tabtype = ScriptDocumentTabType.FILE;
-#if !NO_SCINTILLA
 			editor.Scintilla.Text = sourcetab.Editor.Scintilla.Text;
-#endif
 			SetViewSettings(sourcetab.GetViewSettings());
 
 			// Set title

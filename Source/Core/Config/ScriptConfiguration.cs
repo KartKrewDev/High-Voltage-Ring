@@ -21,9 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using CodeImp.DoomBuilder.IO;
-#if !NO_SCINTILLA
 using ScintillaNET;
-#endif
 
 #endregion
 
@@ -77,9 +75,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly string[] extensions;
 		private readonly bool casesensitive;
 		private readonly int insertcase;
-#if !NO_SCINTILLA
 		private readonly Lexer lexer;
-#endif
 		private readonly string keywordhelp;
 		private readonly string functionopen;
 		private readonly string functionclose;
@@ -118,9 +114,7 @@ namespace CodeImp.DoomBuilder.Config
 		public string[] Extensions { get { return extensions; } }
 		public bool CaseSensitive { get { return casesensitive; } }
 		public int InsertCase { get { return insertcase; } }
-#if !NO_SCINTILLA
 		public Lexer Lexer { get { return lexer; } }
-#endif
 		public string KeywordHelp { get { return keywordhelp; } }
 		public string FunctionOpen { get { return functionopen; } }
 		public string FunctionClose { get { return functionclose; } }
@@ -161,9 +155,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.braces = new HashSet<char>(); //mxd
 
 			// Settings
-			#if !NO_SCINTILLA
 			lexer = Lexer.Null;
-			#endif
 			casesensitive = false;
 			codepage = 65001;
 			parameters = "";
@@ -208,9 +200,7 @@ namespace CodeImp.DoomBuilder.Config
 			resultlump = cfg.ReadSetting("resultlump", "");
 			casesensitive = cfg.ReadSetting("casesensitive", true);
 			insertcase = cfg.ReadSetting("insertcase", 0);
-			#if !NO_SCINTILLA
 			lexer = (Lexer)cfg.ReadSetting("lexer", (int)Lexer.Container);
-			#endif
 			keywordhelp = cfg.ReadSetting("keywordhelp", "");
 			functionopen = cfg.ReadSetting("functionopen", "");
 			functionclose = cfg.ReadSetting("functionclose", "");
