@@ -880,7 +880,7 @@
     <Compile Include="Controls\Scripting\ScriptEditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Scripting\ScriptEditorControl.designer.cs">
+    <Compile Include="Controls\Scripting\ScriptEditorControl.Designer.cs">
       <DependentUpon>ScriptEditorControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\Scripting\ScriptEditorPreviewControl.cs">
