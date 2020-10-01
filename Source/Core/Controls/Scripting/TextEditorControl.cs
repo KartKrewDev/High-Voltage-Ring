@@ -94,8 +94,15 @@ namespace ScintillaNET
 
 	public class LineCollection // : IEnumerable<Line>
     {
-		public int Count { get { return 0; } }
-		public Line this[int index] { get { return null; } }
+		public LineCollection()
+        {
+			lines.Add(new Line());
+        }
+
+		public int Count { get { return lines.Count; } }
+		public Line this[int index] { get { return lines[index]; } }
+
+		internal List<Line> lines = new List<Line>();
 	}
 
 	public enum StyleCase
@@ -125,7 +132,14 @@ namespace ScintillaNET
 
 	public class StyleCollection // : IEnumerable<Style>
     {
-		public Style this[int index] { get { return null; } }
+		public StyleCollection()
+        {
+			for (int i = 0; i < styles.Length; i++) styles[i] = new Style();
+        }
+
+		public Style this[int index] { get { return styles[index]; } }
+
+		Style[] styles = new Style[256];
 	}
 
 	public enum MarginType
@@ -150,8 +164,15 @@ namespace ScintillaNET
 
 	public class MarginCollection // : IEnumerable<Margin>
 	{
-		public int Count { get { return 0; } }
-		public Margin this[int index] { get { return null; } }
+		public MarginCollection()
+        {
+			for (int i = 0; i < margins.Length; i++) margins[i] = new Margin();
+        }
+
+		public int Count { get { return margins.Length; } }
+		public Margin this[int index] { get { return margins[index]; } }
+
+		Margin[] margins = new Margin[4];
 	}
 
 	public enum MarkerSymbol
@@ -168,14 +189,14 @@ namespace ScintillaNET
 
 	public class Marker
     {
-		public const uint MaskFolders = 127;
-		public const int FolderEnd = 1;
-		public const int FolderOpenMid = 2;
-		public const int FolderMidTail = 4;
-		public const int FolderTail = 8;
-		public const int FolderSub = 16;
-		public const int Folder = 32;
-		public const int FolderOpen = 64;
+		public const uint MaskFolders = 0xfe000000;
+		public const int FolderEnd = 25;
+		public const int FolderOpenMid = 26;
+		public const int FolderMidTail = 27;
+		public const int FolderTail = 28;
+		public const int FolderSub = 29;
+		public const int Folder = 30;
+		public const int FolderOpen = 31;
 
 		public MarkerSymbol Symbol { get; set; }
 
@@ -186,8 +207,15 @@ namespace ScintillaNET
 
 	public class MarkerCollection // : IEnumerable<Marker>
 	{
-		public int Count { get { return 32; } }
-		public Marker this[int index] { get { return null; } }
+		public MarkerCollection()
+        {
+			for (int i = 0; i < marker.Length; i++) marker[i] = new Marker();
+        }
+
+		public int Count { get { return marker.Length; } }
+		public Marker this[int index] { get { return marker[index]; } }
+
+		Marker[] marker = new Marker[32];
 	}
 
 	public enum IndicatorStyle
@@ -206,7 +234,14 @@ namespace ScintillaNET
 
 	public class IndicatorCollection // : IEnumerable<Indicator>
     {
-		public Indicator this[int index] { get { return null; } }
+		public IndicatorCollection()
+        {
+			for (int i = 0; i < indicators.Length; i++) indicators[i] = new Indicator();
+        }
+
+		public Indicator this[int index] { get { return indicators[index]; } }
+
+		Indicator[] indicators = new Indicator[32];
 	}
 
 	[Flags]
@@ -239,14 +274,39 @@ namespace ScintillaNET
 		Custom
 	}
 
-	public class Scintilla : Control
+	public class Scintilla : UserControl
 	{
+		TextBox textbox;
+
+		public Scintilla()
+		{
+			Lines = new LineCollection();
+			Styles = new StyleCollection();
+			Margins = new MarginCollection();
+			Markers = new MarkerCollection();
+			Indicators = new IndicatorCollection();
+
+			textbox = new TextBox();
+			textbox.Location = new Point(0, 0);
+			textbox.Multiline = true;
+			textbox.Font = new Font(FontFamily.GenericMonospace, 10.0f);
+
+			Controls.Add(textbox);
+			Size = textbox.PreferredSize;
+		}
+
+		protected override void OnResize(EventArgs e)
+        {
+			base.OnResize(e);
+			textbox.Size = Size;
+        }
+
 		public const int InvalidPosition = -1;
 
 		[DefaultValue(BorderStyle.Fixed3D)]
 		[Category("Appearance")]
 		[Description("Indicates whether the control should have a border.")]
-		public BorderStyle BorderStyle { get; set; }
+		public new BorderStyle BorderStyle { get { return textbox.BorderStyle; } set { textbox.BorderStyle = value; } }
 
 		[DefaultValue(1)]
 		[Category("Caret")]
@@ -293,8 +353,9 @@ namespace ScintillaNET
 		[Description("The order of words in an autocompletion list.")]
 		public Order AutoCOrder { get; set; }
 
-		public int TextLength { get; private set; }
-		public int GetCharAt(int position) { return 0; }
+		public override string Text { get { return textbox.Text; } set { textbox.Text = value.Replace("\r\n", "\n").Replace("\n", "\r\n"); } }
+		public int TextLength { get { return textbox.TextLength; } }
+		public int GetCharAt(int position) { return textbox.Text[position]; }
 		public int CurrentPosition { get; set; }
 		public int CurrentLine { get; private set; }
 		public int IndicatorCurrent { get; set; }
@@ -305,15 +366,15 @@ namespace ScintillaNET
 		public bool AutoCActive { get; private set; }
 		public bool CallTipActive { get; private set; }
 		public Lexer Lexer { get; set; }
-		public int SelectionStart { get; set; }
-		public int SelectionEnd { get; set; }
-		public string SelectedText { get { return ""; } }
+		public int SelectionStart { get { return textbox.SelectionStart; } set { textbox.SelectionStart = value; } }
+		public int SelectionEnd { get { return textbox.SelectionStart + textbox.SelectionLength; } set { textbox.SelectionLength = SelectionStart - value; } }
+		public string SelectedText { get { return textbox.SelectedText; } }
 		public int TabWidth { get; set; }
-		public bool ReadOnly { get; set; }
-		public bool CanUndo { get; private set; }
-		public bool CanRedo { get; private set; }
-		public bool CanPaste { get; private set; }
-		public bool Modified { get; private set; }
+		public bool ReadOnly { get { return textbox.ReadOnly; } set { textbox.ReadOnly = value; } }
+		public bool CanUndo { get { return textbox.CanUndo; } }
+		public bool CanRedo { get { return false; } }
+		public bool CanPaste { get { return true; } }
+		public bool Modified { get { return textbox.Modified; } }
 		public Color CaretForeColor { get; set; }
 		public int CaretPeriod { get; set; }
 		public bool UseTabs { get; set; }
@@ -328,22 +389,13 @@ namespace ScintillaNET
 		public MarkerCollection Markers { get; private set; }
 		public IndicatorCollection Indicators { get; private set; }
 
-		public Scintilla()
-		{
-			Lines = new LineCollection();
-			Styles = new StyleCollection();
-			Margins = new MarginCollection();
-			Markers = new MarkerCollection();
-			Indicators = new IndicatorCollection();
-		}
-
 		public int WordStartPosition(int position, bool onlyWordCharacters) { return 0; }
 		public int WordEndPosition(int position, bool onlyWordCharacters) { return 0; }
 		public int LineFromPosition(int position) { return 0; }
 		public string GetWordFromPosition(int position) { return ""; }
-		public string GetTextRange(int position, int length) { return ""; }
-		public void SetEmptySelection(int pos) { }
-		public void ReplaceSelection(string text) { }
+		public string GetTextRange(int position, int length) { return textbox.Text.Substring(position, length); }
+		public void SetEmptySelection(int pos) { textbox.DeselectAll(); }
+		public void ReplaceSelection(string text) { textbox.Text = textbox.Text.Substring(0, textbox.SelectionStart) + text + textbox.Text.Substring(textbox.SelectionStart + textbox.SelectionLength); }
 		public int PointXFromPosition(int pos) { return 0; }
 		public int PointYFromPosition(int pos) { return 0; }
 		public int CharPositionFromPointClose(int x, int y) { return 0; }
@@ -352,17 +404,17 @@ namespace ScintillaNET
 		public void MarkerDeleteAll(int marker) { }
 		public void IndicatorClearRange(int position, int length) { }
 		public void IndicatorFillRange(int position, int length) { }
-		public void EmptyUndoBuffer() { }
-		public void Undo() { }
+		public void EmptyUndoBuffer() { textbox.ClearUndo(); }
+		public void Undo() { textbox.Undo(); }
 		public void Redo() { }
-		public void Cut() { }
-		public void Copy() { }
-		public void Paste() { }
-		public void SelectAll() { }
+		public void Cut() { textbox.Cut(); }
+		public void Copy() { textbox.Copy(); }
+		public void Paste() { textbox.Paste(); }
+		public void SelectAll() { textbox.SelectAll(); }
 		public void DeleteRange(int position, int length) { }
 		public int SearchInTarget(string text) { return 0; }
-		public void InsertText(int position, string text) { }
-		public void SetSavePoint() { }
+		public void InsertText(int position, string text) { textbox.Text = textbox.Text.Substring(0, position) + text + textbox.Text.Substring(position); }
+		public void SetSavePoint() { textbox.Modified = false; }
 
 		public void RegisterRgbaImage(int type, Bitmap image) { }
 		public int TextWidth(int style, string text) { return 0; }
