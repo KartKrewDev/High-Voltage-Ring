@@ -79,6 +79,11 @@ namespace ScintillaNET
 
 	public class Line
     {
+    		public Line()
+    		{
+    			Text = "";
+    		}
+    		
 		public int Position { get; private set; }
 		public int EndPosition { get; private set; }
 		public string Text { get; private set; }
