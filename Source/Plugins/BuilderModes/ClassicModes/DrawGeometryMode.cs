@@ -901,7 +901,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public override void OnKeyUp(KeyEventArgs e)
 		{
 			base.OnKeyUp(e);
-			if((snaptogrid != (General.Interface.ShiftState ^ General.Interface.SnapToGrid)) ||
+			if((snaptogrid != (snaptocardinaldirection || (General.Interface.ShiftState ^ General.Interface.SnapToGrid))) ||
 			   (snaptonearest != (General.Interface.CtrlState ^ General.Interface.AutoMerge)) ||
 			   (snaptocardinaldirection != (General.Interface.AltState && General.Interface.ShiftState))) Update();
 		}
@@ -910,7 +910,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			if((snaptogrid != (General.Interface.ShiftState ^ General.Interface.SnapToGrid)) ||
+			if ((snaptogrid != (snaptocardinaldirection || (General.Interface.ShiftState ^ General.Interface.SnapToGrid))) ||
 			   (snaptonearest != (General.Interface.CtrlState ^ General.Interface.AutoMerge)) ||
 			   (snaptocardinaldirection != (General.Interface.AltState && General.Interface.ShiftState))) Update();
 		}
