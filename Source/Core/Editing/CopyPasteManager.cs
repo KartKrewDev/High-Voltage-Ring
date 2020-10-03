@@ -323,7 +323,7 @@ namespace CodeImp.DoomBuilder.Editing
 							// Read from clipboard
 							if(havepastedata)
 							{
-								#if MONO_WINFORMS
+								#if !MONO_WINFORMS
 								using(Stream memstream = (Stream)Clipboard.GetData(CLIPBOARD_DATA_FORMAT))
 								#else
 								using(Stream memstream = new MemoryStream(Convert.FromBase64String(((string)Clipboard.GetData(DataFormats.Text)).Substring(CLIPBOARD_DATA_FORMAT.Length))))
