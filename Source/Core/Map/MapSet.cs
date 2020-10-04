@@ -1859,112 +1859,118 @@ namespace CodeImp.DoomBuilder.Map
 		/// <summary>This creates an area from vertices.</summary>
 		public static RectangleF CreateArea(ICollection<Vertex> verts)
 		{
-			double l = double.MaxValue;
-			double t = double.MaxValue;
-			double r = double.MinValue;
-			double b = double.MinValue;
+			// Do NOT use double here, otherwise the width and height of the RectangleF will become NaN
+			float l = float.MaxValue;
+			float t = float.MaxValue;
+			float r = float.MinValue;
+			float b = float.MinValue;
 
 			// Go for all vertices
 			foreach(Vertex v in verts)
 			{
 				// Adjust boundaries by vertices
-				if(v.Position.x < l) l = v.Position.x;
-				if(v.Position.x > r) r = v.Position.x;
-				if(v.Position.y < t) t = v.Position.y;
-				if(v.Position.y > b) b = v.Position.y;
+				if(v.Position.x < l) l = (float)v.Position.x;
+				if(v.Position.x > r) r = (float)v.Position.x;
+				if(v.Position.y < t) t = (float)v.Position.y;
+				if(v.Position.y > b) b = (float)v.Position.y;
 			}
 
 			// Return a rect
-			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
+			return new RectangleF(l, t, r - l, b - t);
 		}
 
 		/// <summary>This increases and existing area with the given vertices.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, ICollection<Vertex> verts)
 		{
-			double l = area.Left;
-			double t = area.Top;
-			double r = area.Right;
-			double b = area.Bottom;
+			// Do NOT use double here, otherwise the width and height of the RectangleF will become NaN
+			float l = area.Left;
+			float t = area.Top;
+			float r = area.Right;
+			float b = area.Bottom;
 			
 			// Go for all vertices
 			foreach(Vertex v in verts)
 			{
 				// Adjust boundaries by vertices
-				if(v.Position.x < l) l = v.Position.x;
-				if(v.Position.x > r) r = v.Position.x;
-				if(v.Position.y < t) t = v.Position.y;
-				if(v.Position.y > b) b = v.Position.y;
+				if(v.Position.x < l) l = (float)v.Position.x;
+				if(v.Position.x > r) r = (float)v.Position.x;
+				if(v.Position.y < t) t = (float)v.Position.y;
+				if(v.Position.y > b) b = (float)v.Position.y;
 			}
 			
 			// Return a rect
-			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
+			return new RectangleF(l, t, r - l, b - t);
 		}
 
 		/// <summary>This increases and existing area with the given things.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, ICollection<Thing> things)
 		{
-			double l = area.Left;
-			double t = area.Top;
-			double r = area.Right;
-			double b = area.Bottom;
+			// Do NOT use double here, otherwise the width and height of the RectangleF will become NaN
+			float l = area.Left;
+			float t = area.Top;
+			float r = area.Right;
+			float b = area.Bottom;
 			
 			// Go for all vertices
 			foreach(Thing th in things)
 			{
 				// Adjust boundaries by vertices
-				if(th.Position.x < l) l = th.Position.x;
-				if(th.Position.x > r) r = th.Position.x;
-				if(th.Position.y < t) t = th.Position.y;
-				if(th.Position.y > b) b = th.Position.y;
+				if(th.Position.x < l) l = (float)th.Position.x;
+				if(th.Position.x > r) r = (float)th.Position.x;
+				if(th.Position.y < t) t = (float)th.Position.y;
+				if(th.Position.y > b) b = (float)th.Position.y;
 			}
 			
 			// Return a rect
-			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
+			return new RectangleF(l, t, r - l, b - t);
 		}
 
 		/// <summary>This increases and existing area with the given vertices.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, ICollection<Vector2D> verts)
 		{
-			double l = area.Left;
-			double t = area.Top;
-			double r = area.Right;
-			double b = area.Bottom;
+			// Do NOT use double here, otherwise the width and height of the RectangleF will become NaN
+			float l = area.Left;
+			float t = area.Top;
+			float r = area.Right;
+			float b = area.Bottom;
 			
 			// Go for all vertices
 			foreach(Vector2D v in verts)
 			{
 				// Adjust boundaries by vertices
-				if(v.x < l) l = v.x;
-				if(v.x > r) r = v.x;
-				if(v.y < t) t = v.y;
-				if(v.y > b) b = v.y;
+				if(v.x < l) l = (float)v.x;
+				if(v.x > r) r = (float)v.x;
+				if(v.y < t) t = (float)v.y;
+				if(v.y > b) b = (float)v.y;
 			}
 			
 			// Return a rect
-			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
+			return new RectangleF(l, t, r - l, b - t);
 		}
 
 		/// <summary>This increases and existing area with the given vertex.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, Vector2D vert)
 		{
-			double l = area.Left;
-			double t = area.Top;
-			double r = area.Right;
-			double b = area.Bottom;
+			// Do NOT use double here, otherwise the width and height of the RectangleF will become NaN
+			float l = area.Left;
+			float t = area.Top;
+			float r = area.Right;
+			float b = area.Bottom;
 			
 			// Adjust boundaries by vertices
-			if(vert.x < l) l = vert.x;
-			if(vert.x > r) r = vert.x;
-			if(vert.y < t) t = vert.y;
-			if(vert.y > b) b = vert.y;
+			if(vert.x < l) l = (float)vert.x;
+			if(vert.x > r) r = (float)vert.x;
+			if(vert.y < t) t = (float)vert.y;
+			if(vert.y > b) b = (float)vert.y;
 
 			// Return a rect
-			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
+			return new RectangleF(l, t, r - l, b - t);
 		}
 
 		/// <summary>This creates an area from linedefs.</summary>
 		public static RectangleF CreateArea(ICollection<Linedef> lines)
 		{
+			// Do NOT use double here, otherwise the width and height of the RectangleF will become NaN
 			float l = float.MaxValue;
 			float t = float.MaxValue;
 			float r = float.MinValue;
@@ -1985,33 +1991,34 @@ namespace CodeImp.DoomBuilder.Map
 			}
 
 			// Return a rect
-			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
+			return new RectangleF(l, t, r - l, b - t);
 		}
 
 		/// <summary>This increases and existing area with the given linedefs.</summary>
 		public static RectangleF IncreaseArea(RectangleF area, ICollection<Linedef> lines) //mxd
 		{
-			double l = area.Left;
-			double t = area.Top;
-			double r = area.Right;
-			double b = area.Bottom;
+			// Do NOT use double here, otherwise the width and height of the RectangleF will become NaN
+			float l = area.Left;
+			float t = area.Top;
+			float r = area.Right;
+			float b = area.Bottom;
 
 			// Go for all vertices
 			foreach(Linedef ld in lines)
 			{
 				// Adjust boundaries by vertices
-				if(ld.Start.Position.x < l) l = ld.Start.Position.x;
-				if(ld.Start.Position.x > r) r = ld.Start.Position.x;
-				if(ld.Start.Position.y < t) t = ld.Start.Position.y;
-				if(ld.Start.Position.y > b) b = ld.Start.Position.y;
-				if(ld.End.Position.x < l) l = ld.End.Position.x;
-				if(ld.End.Position.x > r) r = ld.End.Position.x;
-				if(ld.End.Position.y < t) t = ld.End.Position.y;
-				if(ld.End.Position.y > b) b = ld.End.Position.y;
+				if(ld.Start.Position.x < l) l = (float)ld.Start.Position.x;
+				if(ld.Start.Position.x > r) r = (float)ld.Start.Position.x;
+				if(ld.Start.Position.y < t) t = (float)ld.Start.Position.y;
+				if(ld.Start.Position.y > b) b = (float)ld.Start.Position.y;
+				if(ld.End.Position.x < l) l = (float)ld.End.Position.x;
+				if(ld.End.Position.x > r) r = (float)ld.End.Position.x;
+				if(ld.End.Position.y < t) t = (float)ld.End.Position.y;
+				if(ld.End.Position.y > b) b = (float)ld.End.Position.y;
 			}
 
 			// Return a rect
-			return new RectangleF((float)l, (float)t, (float)(r - l), (float)(b - t));
+			return new RectangleF(l, t, r - l, b - t);
 		}
 
 		/// <summary>This filters lines by a rectangular area.</summary>
