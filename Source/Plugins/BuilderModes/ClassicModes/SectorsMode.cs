@@ -1420,6 +1420,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Recreate the blockmap to not include the potentially un-done sectors and things anymore
 			CreateBlockmap();
 
+			// If something is highlighted make sure to update the association so that it contains valid data
+			if (highlighted != null && !highlighted.IsDisposed)
+				highlightasso.Set(highlighted);
+
 			// Clear labels
 			SetupLabels();
 			UpdateEffectLabels(); //mxd
@@ -1441,6 +1445,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			// Recreate the blockmap to include the potentially re-done sectors and things again
 			CreateBlockmap();
+
+			// If something is highlighted make sure to update the association so that it contains valid data
+			if (highlighted != null && !highlighted.IsDisposed)
+				highlightasso.Set(highlighted);
 
 			// Clear labels
 			SetupLabels();

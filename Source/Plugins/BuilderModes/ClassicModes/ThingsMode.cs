@@ -565,6 +565,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			base.OnUndoEnd();
 
+			// If something is highlighted make sure to update the association so that it contains valid data
+			if (highlighted != null && !highlighted.IsDisposed)
+				highlightasso.Set(highlighted);
+
 			UpdateSelectionInfo(); // Update selection info and labels
 			UpdateHelperObjects(); // Update helper lines
 			SetupSectorLabels(); // And sector labels
@@ -574,6 +578,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public override void OnRedoEnd()
 		{
 			base.OnRedoEnd();
+
+			// If something is highlighted make sure to update the association so that it contains valid data
+			if (highlighted != null && !highlighted.IsDisposed)
+				highlightasso.Set(highlighted);
 
 			UpdateSelectionInfo(); // Update selection info and labels
 			UpdateHelperObjects(); // Update helper lines
