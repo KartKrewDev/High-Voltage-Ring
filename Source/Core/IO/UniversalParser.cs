@@ -60,6 +60,9 @@ namespace CodeImp.DoomBuilder.IO
 		private int cpErrorResult;
 		private string cpErrorDescription = "";
 		private int cpErrorLine;
+
+		// Warnings
+		private List<string> warnings = new List<string>();
 		
 		// Configuration root
 		private UniversalCollection root;
@@ -82,6 +85,8 @@ namespace CodeImp.DoomBuilder.IO
 		public int ErrorLine { get { return cpErrorLine; } }
 		public UniversalCollection Root { get { return root; } }
 		public bool StrictChecking { get { return strictchecking; } set { strictchecking = value; } }
+		public bool HasWarnings { get { return warnings.Count != 0; } }
+		public List<string> Warnings { get { return warnings; } }
 		
 		#endregion
 		
@@ -623,8 +628,10 @@ namespace CodeImp.DoomBuilder.IO
 
                             case "nan":
                                 // Add float value
-                                UniversalEntry nan = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), float.NaN);
-                                cs.Add(nan);
+                                UniversalEntry nan = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), double.NaN);
+								// Do not add NaN, just drop it with a warning
+								// cs.Add(nan);
+								warnings.Add("UDMF map data line " + (line+1) + ": value of field " + key.ToString().Trim().ToLowerInvariant() + " has a value of NaN (not a number). Field is being dropped permanentely.");
                                 if (!matches.ContainsKey(data[line])) matches.Add(data[line], nan);
                                 break;
 

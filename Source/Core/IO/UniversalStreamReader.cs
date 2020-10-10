@@ -152,6 +152,12 @@ namespace CodeImp.DoomBuilder.IO
 				throw new Exception("Error on line " + textmap.ErrorLine + " while parsing UDMF map data:\n" + textmap.ErrorDescription);
 			}
 
+			if(textmap.HasWarnings)
+			{
+				foreach (string warning in textmap.Warnings)
+					General.ErrorLogger.Add(ErrorType.Warning, warning);
+			}
+
 			// Read the map
 			Dictionary<int, Vertex> vertexlink = ReadVertices(map, textmap);
 			Dictionary<int, Sector> sectorlink = ReadSectors(map, textmap);
