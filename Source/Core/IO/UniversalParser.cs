@@ -631,7 +631,7 @@ namespace CodeImp.DoomBuilder.IO
                                 UniversalEntry nan = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), double.NaN);
 								// Do not add NaN, just drop it with a warning
 								// cs.Add(nan);
-								warnings.Add("UDMF map data line " + (line+1) + ": value of field " + key.ToString().Trim().ToLowerInvariant() + " has a value of NaN (not a number). Field is being dropped permanentely.");
+								warnings.Add("UDMF map data line " + (line+1) + ": value of field " + key.ToString().Trim().ToLowerInvariant() + " has a value of NaN (not a number). Field is being dropped permanently.");
                                 if (!matches.ContainsKey(data[line])) matches.Add(data[line], nan);
                                 break;
 
