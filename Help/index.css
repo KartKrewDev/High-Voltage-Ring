@@ -1,0 +1,52 @@
+
+/***************************************************************************/
+/* reset css styling */
+
+body, header, footer, section, h1, h2, h3, h4, h5, p, ul, ol, li, menu, menuitem, iframe { margin: 0; border: none; padding: 0; }
+h1, h2, h3, h4, h5 { font-family: inherit; font-weight: inherit; font-weight: inherit; text-decoration: inherit; font-style: inherit; font-size: inherit; line-height: inherit; }
+
+/***************************************************************************/
+/* base page style */
+
+body { background: white; font: 12px/16px "Segoe UI", "Tahoma", sans-serif; color: black; }
+a, a:hover, a:visited { color: #157f8d; text-decoration: none; }
+a:hover { color: #0b434a; }
+
+/***************************************************************************/
+/* controls */
+
+.vbox { display: flex; flex-direction: column; overflow: hidden; }
+.hbox { display: flex; flex-direction: row; }
+.view { position: relative; flex: 0 0 auto; }
+.expanding { flex: 1 1 0; }
+.modallayer { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; }
+
+body { width: 100vw; height: 100vh; }
+
+.listview {
+	width: 300px;
+	background: rgb(240, 240, 240);
+	border-right: 1px solid rgb(200,200,200);
+	overflow-y: scroll;
+	padding: 5px 0;
+}
+
+.listviewitem {
+}
+
+.listviewitem-text {
+	padding: 5px 15px;
+	cursor: pointer;
+}
+
+.listviewitem.selected > .listviewitem-text {
+	font-weight: bold;
+}
+
+.listviewitem-text:hover {
+	background: rgb(200,200,255);
+}
+
+.content {
+	border-left: 1px solid rgb(255,255,255);
+}
