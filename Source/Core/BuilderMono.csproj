@@ -589,6 +589,8 @@
     <Compile Include="Rendering\Renderer3D.cs" />
     <Compile Include="VisualModes\VisualSector.cs" />
     <Compile Include="Rendering\WorldVertex.cs" />
+    <Compile Include="ZDoom\DecalDefsParser.cs" />
+    <Compile Include="ZDoom\DecalInfo.cs" />
     <Compile Include="ZDoom\DecorateActorStructure.cs" />
     <Compile Include="ZDoom\DecorateStateGoto.cs" />
     <Compile Include="ZDoom\DecorateStateStructure.cs" />

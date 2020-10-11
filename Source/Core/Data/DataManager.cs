@@ -437,6 +437,9 @@ namespace CodeImp.DoomBuilder.Data
 			LoadCvarInfo();
 			LoadLockDefs();
 
+			// Load DECALDEF
+			LoadDecalDefs();
+
 			//mxd. Load Script Editor-only stuff...
 			LoadExtraTextLumps();
 
@@ -2815,6 +2818,65 @@ namespace CodeImp.DoomBuilder.Data
 			else
 			{
 				lockcolors = new Dictionary<int, PixelColor>();
+			}
+		}
+
+		/// <summary>
+		/// Load DECALDEF decal definitions
+		/// </summary>
+		private void LoadDecalDefs()
+		{
+			// Bail out when not supported by current game configuration
+			if (string.IsNullOrEmpty(General.Map.Config.DecorateGames)) return;
+
+			DecalDefsParser parser = new DecalDefsParser();
+
+			foreach(DataReader dr in containers)
+			{
+				currentreader = dr; // Why?
+				IEnumerable<TextResourceData> streams = dr.GetTextLumpData(ScriptType.DECALDEF, false, false);
+
+				// Parse the data
+				foreach(TextResourceData data in streams)
+				{
+					parser.Parse(data, true);
+
+					// Report errors?
+					if (parser.HasError) parser.LogError();
+				}
+			}
+
+			currentreader = null; // Why?
+
+			if(parser.Decals.Count > 0)
+			{
+				// Update or create the main enums list
+				Dictionary<int, EnumItem> configenums = new Dictionary<int, EnumItem>();
+				if (General.Map.Config.Enums.ContainsKey("decals"))
+				{
+					foreach (EnumItem item in General.Map.Config.Enums["decals"])
+						configenums.Add(item.GetIntValue(), item);
+				}
+				if (configenums.ContainsKey(0)) configenums.Remove(0);
+
+				foreach (KeyValuePair<int, DecalInfo> group in parser.GetDecalDefsById())
+				{
+					configenums[group.Key] = new EnumItem(group.Key.ToString(), group.Value.Description);
+				}
+
+				// Store results in "decals" enum
+				EnumList newenums = new EnumList();
+				newenums.AddRange(configenums.Values);
+				newenums.Sort();
+				newenums.Insert(0, new EnumItem("0", "None"));
+				General.Map.Config.Enums["decals"] = newenums;
+
+				// Update all ArgumentInfos...
+				foreach (ThingTypeInfo info in thingtypes.Values)
+				{
+					foreach (ArgumentInfo ai in info.Args)
+						if (ai.Enum.Name == "decals") ai.Enum = newenums;
+				}
 			}
 		}
 
