@@ -99,11 +99,10 @@ namespace CodeImp.DoomBuilder.Data
                 scale.x = 1.0f;
                 scale.y = 1.0f;
 
-                // Make offset corrections if the offset was not given
+                // Set the offset if the offset was not given
                 if ((offsetx == int.MinValue) || (offsety == int.MinValue))
                 {
-                    offsetx = (int)((width * scale.x) * 0.5f);
-                    offsety = (int)(height * scale.y);
+					offsetx = offsety = 0;
                 }
             });
         }
