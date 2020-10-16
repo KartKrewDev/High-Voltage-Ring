@@ -350,7 +350,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// No shape
 			if(s == e) return new List<Vector2D[]>();
 
-			// Setup slices
+			// Setup slices. Need to do some extra mathy stuff the make sure the rotated grid is taken into account
 			switch(gridlockmode)
 			{
 				case GridLockMode.NONE:
@@ -359,18 +359,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					break;
 
 				case GridLockMode.HORIZONTAL:
-					slicesH = width / General.Map.Grid.GridSize;
+					slicesH = Convert.ToInt32(Math.Ceiling(Math.Abs(width) / (double)General.Map.Grid.GridSize));
 					slicesV = verticalslices;
 					break;
 
 				case GridLockMode.VERTICAL:
 					slicesH = horizontalslices;
-					slicesV = Math.Abs(height / General.Map.Grid.GridSize);
+					slicesV = Convert.ToInt32(Math.Ceiling(Math.Abs(height) / (double)General.Map.Grid.GridSize));
 					break;
 
 				case GridLockMode.BOTH:
-					slicesH = Math.Abs(width / General.Map.Grid.GridSize);
-					slicesV = Math.Abs(height / General.Map.Grid.GridSize);
+					slicesH = Convert.ToInt32(Math.Ceiling(Math.Abs(width) / (double)General.Map.Grid.GridSize));
+					slicesV = Convert.ToInt32(Math.Ceiling(Math.Abs(height) / (double)General.Map.Grid.GridSize));
 					break;
 			}
 
