@@ -120,7 +120,15 @@ namespace CodeImp.DoomBuilder.ZDoom
 						if (!di.Parse(this))
 							return false;
 
-						decals.Add(decalname, di);
+						if(decals.ContainsKey(decalname))
+						{
+							// TODO: report problem
+
+							// Overwrite existing decal with new one (who knows if that's the correct way do handle duplicate entries?)
+							decals[decalname] = di;
+						}
+						else
+							decals.Add(decalname, di);
 
 						break;
 				}
