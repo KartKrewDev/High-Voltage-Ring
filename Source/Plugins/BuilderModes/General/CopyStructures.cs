@@ -781,6 +781,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			foreach(Thing t in things)
 			{
 				if(settings.Type) t.Type = type;
+
+				// Update the setting from the configuration after changing the type. This makes sure all the following
+				// actions work, since there can be problems when changing the type from or to thing that has a model defined
+				t.UpdateConfiguration();
+
 				if(settings.Angle) t.Rotate(angle);
 				if(settings.ZHeight) t.Move(t.Position.x, t.Position.y, zheight);
 				if(settings.Pitch) t.SetPitch(pitch);
