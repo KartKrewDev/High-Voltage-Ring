@@ -7,10 +7,13 @@
 - [Microsoft .Net Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472)
 
 **Building on Linux:**
-- Install mono. On debian based distros `apt-get install mono-complete` should do the trick
-- Install gcc
-- Type `make`. If you get an error about it not finding `msbuild` then you are most likely missing a package, or your version of mono may be too old
-- Run it by launching `builder` from inside the Build folder
+
+These instructions are for Debian-based distros and were tested with Debian 10 and Ubuntu 18.04. For others it should be similar.
+- Install Mono. The `mono-complete` package from the Debian repo doesn't include `msbuild`, so you have to install `mono-complete` by following the instructions on the Mono project's website: https://www.mono-project.com/download/stable/#download-lin
+- Install additional required packages: `sudo apt install make g++ git libx11-dev mesa-common-dev`
+- Go to a directory of your choice and clone the repository (it'll automatically create an `UltimateDoomBuilder` directory in the current directory): `git clone https://github.com/jewalky/UltimateDoomBuilder.git`
+- Compile UDB: `cd UltimateDoomBuilder && make`
+- Run UDB: `cd Build && ./builder`
 
 **Links:**
 - [Official thread link](https://forum.zdoom.org/viewtopic.php?f=232&t=66745)
