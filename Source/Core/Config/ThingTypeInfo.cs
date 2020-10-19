@@ -65,7 +65,7 @@ namespace CodeImp.DoomBuilder.Config
 		private string classname; //mxd
 		private string lightname; //mxd. Dynamic light name defined using Light() state expression
 		private int color;
-		private float alpha; //mxd
+		private double alpha; //mxd
 		private byte alphabyte; //mxd
 		private string renderstyle; //mxd
 		private bool bright; //mxd
@@ -115,7 +115,7 @@ namespace CodeImp.DoomBuilder.Config
 		public SpriteFrameInfo[] SpriteFrame { get { return spriteframe; } }
 		public ActorStructure Actor { get { return actor; } }
 		public int Color { get { return color; } }
-		public float Alpha { get { return alpha; } } //mxd
+		public double Alpha { get { return alpha; } } //mxd
 		public byte AlphaByte { get { return alphabyte; } } //mxd
 		public string RenderStyle { get { return renderstyle; } } //mxd
 		public bool Bright { get { return bright; } } //mxd

@@ -124,18 +124,29 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						renderstyle = Thing.Fields.GetValue("renderstyle", renderstyle).ToLowerInvariant();
 					}
 
-					if((renderstyle == "add" || renderstyle == "translucent" || renderstyle == "subtract" || renderstyle.EndsWith("stencil")) 
+					if((renderstyle == "add" || renderstyle == "translucent" || renderstyle == "subtract" || renderstyle == "translucentstencil") 
 						&& Thing.Fields.ContainsKey("alpha"))
 					{
 						alpha = (byte)(General.Clamp(Thing.Fields.GetValue("alpha", info.Alpha), 0.0, 1.0) * 255.0);
 					}
+					else if(renderstyle == "soultrans")
+					{
+						// Lost Soul trasparency is controlled by a CVAR (see https://zdoom.org/wiki/CVARs:Display#transsouls), let's use the default 0.75 here
+						alpha = 192;
+					}
+					else if(renderstyle == "shadow")
+					{
+						alpha = 76; // about 0.3
+						stencilColor = PixelColor.FromInt(PixelColor.INT_BLACK);
+					}
 
-                    if (renderstyle.EndsWith("stencil"))
+					if (renderstyle.EndsWith("stencil"))
                     {
                         stencilColor = PixelColor.FromInt(UniFields.GetInteger(Thing.Fields, "fillcolor", 0));
                         stencilColor.a = 255; // 0xFF alpha means nothing was read. 0x00 alpha means there was a valid fillcolor.
                     }
-                    else stencilColor.a = 0;
+					else if(renderstyle != "shadow")
+						stencilColor.a = 0;
                 }
 				else if(General.Map.HEXEN)
 				{
@@ -156,7 +167,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					case "translucent":
 					case "subtract":
-					case "stencil":
+					case "soultrans":
+					case "translucentstencil":
+					case "shadow":
 						RenderPass = RenderPass.Alpha;
 						break;
 
