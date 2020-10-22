@@ -1094,15 +1094,24 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					case 9500:
 						if(linetags.ContainsKey(t.Args[0]))
 						{
+							// Only slope each sector once, even when multiple lines of the same sector are tagged. See https://github.com/jewalky/UltimateDoomBuilder/issues/491
+							List<Sector> slopedsectors = new List<Sector>();
+
 							foreach(Linedef ld in linetags[t.Args[0]])
 							{
 								if (ld.Line.GetSideOfLine(t.Position) < 0.0f)
 								{
-									if(ld.Front != null)
+									if (ld.Front != null && !slopedsectors.Contains(ld.Front.Sector))
+									{
 										GetSectorData(ld.Front.Sector).AddEffectThingLineSlope(t, ld.Front);
+										slopedsectors.Add(ld.Front.Sector);
+									}
 								}
-								else if (ld.Back != null)
+								else if (ld.Back != null && !slopedsectors.Contains(ld.Back.Sector))
+								{
 									GetSectorData(ld.Back.Sector).AddEffectThingLineSlope(t, ld.Back);
+									slopedsectors.Add(ld.Back.Sector);
+								}
 							}
 						}
 						break;
