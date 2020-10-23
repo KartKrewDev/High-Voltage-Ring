@@ -427,9 +427,17 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			// Not when selecting is prevented
 			if(preventselection) return;
-			
-			// Select first
-			if(list.Items.Count > 0) list.SetSelectedItem(list.Items[0]);
+
+			// Select first texture
+			if (list.Items.Count > 0)
+			{
+				foreach (ImageBrowserItem item in list.Items)
+					if (item.ItemType == ImageBrowserItemType.IMAGE)
+					{
+						list.SetSelectedItem(item);
+						break;
+					}
+			}
 		}
 		
 		// This begins adding items
@@ -493,13 +501,6 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			visibleitems = new List<ImageBrowserItem>();
 
-			//mxd. Store info about currently selected item
-			string selectedname = string.Empty;
-			if(!selectfirst && keepselected == -1 && list.SelectedItems.Count > 0)
-			{
-				selectedname = list.SelectedItems[0].Icon.Name;
-			}
-
 			// Clear list first
 			list.Clear();
 			list.Title = (usedtexturesfirst.Checked ? usedfirstgroup : availgroup);
@@ -562,23 +563,26 @@ namespace CodeImp.DoomBuilder.Controls
 					SelectFirstItem();
 				}
 				//mxd. Try reselecting the same/next closest item
-				else if(!string.IsNullOrEmpty(selectedname))
+				else if(!string.IsNullOrEmpty(objectname.Text))
 				{
 					ImageBrowserItem bestmatch = null;
 					int charsmatched = 1;
 					foreach(ImageBrowserItem item in list.Items)
 					{
-						if(item.ItemType == ImageBrowserItemType.IMAGE && item.Icon.Name[0] == selectedname[0])
+						if(item.ItemType == ImageBrowserItemType.IMAGE && item.Icon.Name[0] == objectname.Text[0])
 						{
-							if(item.Icon.Name == selectedname)
+							if (bestmatch == null)
+								bestmatch = item;
+
+							if(item.Icon.Name == objectname.Text)
 							{
 								bestmatch = item;
 								break;
 							}
 
-							for(int i = 1; i < Math.Min(item.Icon.Name.Length, selectedname.Length); i++)
+							for(int i = 1; i < Math.Min(item.Icon.Name.Length, objectname.Text.Length); i++)
 							{
-								if(item.Icon.Name[i] != selectedname[i])
+								if(item.Icon.Name[i] == objectname.Text[i])
 								{
 									if(i > charsmatched)
 									{
@@ -590,9 +594,9 @@ namespace CodeImp.DoomBuilder.Controls
 							}
 						}
 					}
-
+					
 					// Select found item
-					if(bestmatch != null)
+					if (bestmatch != null)
 					{
 						list.SetSelectedItem(bestmatch);
 					}
