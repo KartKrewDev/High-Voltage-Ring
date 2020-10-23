@@ -180,7 +180,7 @@
 			this.uncheckAllButton.Name = "uncheckAllButton";
 			this.uncheckAllButton.Size = new System.Drawing.Size(75, 23);
 			this.uncheckAllButton.TabIndex = 8;
-			this.uncheckAllButton.Text = "Unheck all";
+			this.uncheckAllButton.Text = "Uncheck all";
 			this.uncheckAllButton.UseVisualStyleBackColor = true;
 			this.uncheckAllButton.Click += new System.EventHandler(this.uncheckAllButton_Click);
 			// 
