@@ -197,7 +197,15 @@ namespace CodeImp.DoomBuilder.ZDoom
 				}
 
 				// Add name of child to the list of children
-				childdecals.Add(token, null);
+				if (childdecals.ContainsKey(token))
+				{
+					// TODO: report problem
+
+					// Overwrite existing decal with new one (who knows if that's the correct way do handle duplicate entries?)
+					childdecals[token] = null;
+				}
+				else
+					childdecals.Add(token, null);
 
 				// Read the probability wheight. We don't use it, though
 				int weight = 0;
