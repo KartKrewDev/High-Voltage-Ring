@@ -362,7 +362,26 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					BaseVisualSector bvs = (BaseVisualSector)vs.Value;
 					if((bvs.Floor != null) && bvs.Floor.Selected) selectedobjects.Add(bvs.Floor);
 					if((bvs.Ceiling != null) && bvs.Ceiling.Selected) selectedobjects.Add(bvs.Ceiling);
-					foreach(Sidedef sd in vs.Key.Sidedefs)
+					
+					// Also check extra floors
+					if (bvs.ExtraFloors.Count > 0)
+						foreach (VisualFloor vf in bvs.ExtraFloors)
+							if (vf.Selected) selectedobjects.Add(vf);
+
+					if (bvs.ExtraBackFloors.Count > 0)
+						foreach (VisualFloor vf in bvs.ExtraBackFloors)
+							if (vf.Selected) selectedobjects.Add(vf);
+
+					// Also check extra ceilings
+					if (bvs.ExtraCeilings.Count > 0)
+						foreach (VisualCeiling vc in bvs.ExtraCeilings)
+							if (vc.Selected) selectedobjects.Add(vc);
+
+					if (bvs.ExtraBackCeilings.Count > 0)
+						foreach (VisualCeiling vc in bvs.ExtraBackCeilings)
+							if (vc.Selected) selectedobjects.Add(vc);
+
+					foreach (Sidedef sd in vs.Key.Sidedefs)
 					{
 						List<VisualGeometry> sidedefgeos = bvs.GetSidedefGeometry(sd);
 						foreach(VisualGeometry sdg in sidedefgeos)
