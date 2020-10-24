@@ -251,7 +251,7 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 			if(e.KeyCode == Keys.Up) 
 			{
-				if(list.SelectedIndex < list.Items.Count)
+				if(list.SelectedIndex < list.Items.Count - 1)
 				{
 					list.SelectedIndex++;
 					list_SelectionChangeCommitted(list, EventArgs.Empty);
