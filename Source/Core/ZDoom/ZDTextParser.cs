@@ -252,7 +252,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 						if(skipeditorcomments || c3 != '$') //mxd. Added skipeditorcomments
 						{
 							// Skip entire line
-							char c4 = ' ';
+							char c4 = c3;
 							while((c4 != '\n') && (datastream.Position < datastream.Length)) { c4 = (char)datareader.ReadByte(); }
 							c = c4;
 						}
