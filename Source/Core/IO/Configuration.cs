@@ -706,7 +706,7 @@ namespace CodeImp.DoomBuilder.IO
 					// is also the end of the assignment
 					pos--;
 					
-					// Floating point?
+					// Floating point of single precision?
 					if(val.IndexOf("f", StringComparison.Ordinal) > -1)
 					{
 						float fval;
@@ -720,6 +720,19 @@ namespace CodeImp.DoomBuilder.IO
 							return null;
 						}
 						return fval;
+					}
+					else if(val.IndexOf(".", StringComparison.Ordinal) > -1) // Floating point of double precision?
+					{
+						double dval;
+
+						try { dval = Convert.ToDouble(val.Trim(), CultureInfo.InvariantCulture); }
+						catch(FormatException)
+						{
+							// ERROR: Invalid value in assignment
+							RaiseError(file, line, ERROR_VALUEINVALID);
+							return null;
+						}
+						return dval;
 					}
 					else
 					{
