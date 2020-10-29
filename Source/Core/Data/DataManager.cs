@@ -3148,14 +3148,36 @@ namespace CodeImp.DoomBuilder.Data
 					Bitmap sky1 = GetTextureBitmap(skytex, out scale);
 					if(sky1 != null)
 					{
+						// Special handling for wide skies. They are drawn from the east, but normal skyboxes are not,
+						// to we have to rearrange the texture a bit (paste the right half to the left and vice versa)
+						if(sky1.Width == 1024)
+						{
+							Bitmap tmpbmp = new Bitmap(sky1);
+							Graphics g = Graphics.FromImage(tmpbmp);
+							g.DrawImage(sky1, 512, 0, new Rectangle(0, 0, 512, sky1.Height), GraphicsUnit.Pixel);
+							g.DrawImage(sky1, 0, 0, new Rectangle(512, 0, 512, sky1.Height), GraphicsUnit.Pixel);
+							sky1 = tmpbmp;
+						}
+
 						// Double skies?
 						if(mapinfo.DoubleSky)
 						{
 							Bitmap sky2 = GetTextureBitmap(mapinfo.Sky2);
 							if(sky2 != null)
 							{
+								// Special handling for wide skies. They are drawn from the east, but normal skyboxes are not,
+								// to we have to rearrange the texture a bit (paste the right half to the left and vice versa)
+								if (sky2.Width == 1024)
+								{
+									Bitmap tmpbmp = new Bitmap(sky2);
+									Graphics g = Graphics.FromImage(tmpbmp);
+									g.DrawImage(sky2, 512, 0, new Rectangle(0, 0, 512, sky2.Height), GraphicsUnit.Pixel);
+									g.DrawImage(sky2, 0, 0, new Rectangle(512, 0, 512, sky2.Height), GraphicsUnit.Pixel);
+									sky2 = tmpbmp;
+								}
+
 								// Resize if needed
-								if(sky2.Width != sky1.Width || sky2.Height != sky1.Height)
+								if (sky2.Width != sky1.Width || sky2.Height != sky1.Height)
 									ResizeImage(sky2, sky1.Width, sky1.Height);
 
 								// Combine both textures. Sky2 is below Sky1
