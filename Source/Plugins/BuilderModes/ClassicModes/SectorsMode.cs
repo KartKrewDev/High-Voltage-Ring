@@ -75,6 +75,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		BlockMap<BlockEntry> blockmap;
 		bool addedlinedefstoblockmap;
 
+		// Stores sizes of the text for text labels so that they only have to be computed once
+		private Dictionary<string, float> textlabelsizecache;
+
 		#endregion
 
 		#region ================== Properties
@@ -89,6 +92,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorsMode()
 		{
 			highlightasso = new Association(renderer);
+
+			textlabelsizecache = new Dictionary<string, float>();
 
 			//mxd
 			effects = new Dictionary<int, string[]>();
@@ -243,18 +248,32 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					l.Color = General.Colors.InfoLine;
 
 					// Render only when enough space for the label to see
-					float requiredsize = (General.Interface.MeasureString(group.Value[0], l.Font).Width / 2) / renderer.Scale;
-					if(requiredsize > group.Key.Labels[i].radius) 
+					if (!textlabelsizecache.ContainsKey(group.Value[0]))
+						textlabelsizecache[group.Value[0]] = General.Interface.MeasureString(group.Value[0], l.Font).Width;
+
+					float requiredsize = textlabelsizecache[group.Value[0]] / 2 / renderer.Scale;
+
+					if (requiredsize > group.Key.Labels[i].radius) 
 					{
-						requiredsize = (General.Interface.MeasureString(group.Value[1], l.Font).Width / 2) / renderer.Scale;
-						if(requiredsize > group.Key.Labels[i].radius)
-							l.Text = (requiredsize > group.Key.Labels[i].radius * 4 ? string.Empty : "+");
+						if (!textlabelsizecache.ContainsKey(group.Value[1]))
+							textlabelsizecache[group.Value[1]] = General.Interface.MeasureString(group.Value[1], l.Font).Width;
+
+						requiredsize = textlabelsizecache[group.Value[1]] / 2 / renderer.Scale;
+
+						string newtext;
+
+						if (requiredsize > group.Key.Labels[i].radius)
+							newtext = (requiredsize > group.Key.Labels[i].radius * 4 ? string.Empty : "+");
 						else
-							l.Text = group.Value[1];
+							newtext = group.Value[1];
+
+						if (l.Text != newtext)
+							l.Text = newtext;
 					} 
 					else 
 					{
-						l.Text = group.Value[0];
+						if(group.Value[0] != l.Text)
+							l.Text = group.Value[0];
 					}
 
 					if(!string.IsNullOrEmpty(l.Text)) torender.Add(l);
