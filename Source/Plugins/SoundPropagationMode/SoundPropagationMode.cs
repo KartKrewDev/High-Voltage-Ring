@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
@@ -51,6 +52,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		private List<Thing> huntingThings;
 		private List<SoundPropagationDomain> propagationdomains;
 		private Dictionary<Sector, SoundPropagationDomain> sector2domain;
+
+		// The blockmap makes is used to make finding lines faster
+		BlockMap<BlockEntry> blockmap;
 
 		#endregion
 
@@ -161,8 +165,19 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			}
 		}
 
+		/// <summary>
+		/// Create a blockmap containing linedefs. This is used to speed up determining the closest line
+		/// to the mouse cursor
+		/// </summary>
+		private void CreateBlockmap()
+		{
+			RectangleF area = MapSet.CreateArea(General.Map.Map.Vertices);
+			blockmap = new BlockMap<BlockEntry>(area);
+			blockmap.AddLinedefsSet(General.Map.Map.Linedefs);
+		}
+
 		#endregion
-		
+
 		#region ================== Events
 
 		public override void OnHelp()
@@ -201,6 +216,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			presentation.AddLayer(new PresentLayer(RendererLayer.Things, BlendingMode.Alpha, 1.0f));
 			presentation.AddLayer(new PresentLayer(RendererLayer.Geometry, BlendingMode.Alpha, 1.0f, true));
 			renderer.SetPresentation(presentation);
+
+			// Create the blockmap
+			CreateBlockmap();
 
 			// Convert geometry selection to sectors only
 			General.Map.Map.ConvertSelection(SelectionType.Sectors);
@@ -320,6 +338,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		{
 			base.OnUndoEnd();
 
+			// Recreate the blockmap
+			CreateBlockmap();
+
 			// Update
 			ResetSoundPropagation();
 			General.Interface.RedrawDisplay();
@@ -329,6 +350,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		public override void OnRedoEnd()
 		{
 			base.OnRedoEnd();
+
+			// Recreate the blockmap
+			CreateBlockmap();
 
 			// Update
 			ResetSoundPropagation();
@@ -346,7 +370,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 				General.Interface.SetCursor(Cursors.Default);
 
 				//mxd. Find the nearest linedef within default highlight range
-				Linedef nl = General.Map.Map.NearestLinedefRange(mousemappos, 20 / renderer.Scale);
+				Linedef nl = MapSet.NearestLinedefRange(blockmap, mousemappos, 20 / renderer.Scale);
 				//mxd. We are not interested in single-sided lines (unless they have "blocksound" flag set)...
 				if(nl != null && (nl.Front == null || nl.Back == null) && !nl.IsFlagSet(BlockSoundFlag)) nl = null;
 
@@ -355,7 +379,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 				highlightedline = nl;
 				
 				// Find the nearest linedef within highlight range
-				Linedef l = General.Map.Map.NearestLinedef(mousemappos);
+				Linedef l = MapSet.NearestLinedef(blockmap, mousemappos);
 				if(l != null)
 				{
 					// Check on which side of the linedef the mouse is

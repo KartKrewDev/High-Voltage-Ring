@@ -67,7 +67,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Interface
 		new private bool editpressed;
 		private bool selectionfromhighlight; //mxd
-		
+
+		// The blockmap makes is used to make finding lines faster
+		BlockMap<BlockEntry> blockmap;
+
 		#endregion
 
 		#region ================== Properties
@@ -446,9 +449,20 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				labels.Add(linedef, l);
 			}
 		}
-		
+
+		/// <summary>
+		/// Create a blockmap containing linedefs. This is used to speed up determining the closest line
+		/// to the mouse cursor
+		/// </summary>
+		private void CreateBlockmap()
+		{
+			RectangleF area = MapSet.CreateArea(General.Map.Map.Vertices);
+			blockmap = new BlockMap<BlockEntry>(area);
+			blockmap.AddLinedefsSet(General.Map.Map.Linedefs);
+		}
+
 		#endregion
-		
+
 		#region ================== Events
 
 		public override void OnHelp()
@@ -498,6 +512,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//mxd. Update the tooltip
 			BuilderPlug.Me.MenusForm.SyncronizeThingEditButton.ToolTipText = "Synchronized Things Editing" + Environment.NewLine + BuilderPlug.Me.MenusForm.SyncronizeThingEditLinedefsItem.ToolTipText;
 			General.Interface.EndToolbarUpdate(); //mxd
+
+			// Create the blockmap
+			CreateBlockmap();
 
 			// Convert geometry selection to linedefs selection
 			General.Map.Map.ConvertSelection(SelectionType.Linedefs);
@@ -824,6 +841,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			base.OnUndoEnd();
 
+			// Recreate the blockmap to not include the potentially un-done lines anymore
+			CreateBlockmap();
+
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)
 				highlightasso.Set(highlighted);
@@ -837,6 +857,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public override void OnRedoEnd()
 		{
 			base.OnRedoEnd();
+
+			// Recreate the blockmap to include the potentially re-done linedefs again
+			CreateBlockmap();
 
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)
@@ -868,7 +891,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else if(paintselectpressed && !editpressed && !selecting)  //mxd. Drag-select
 			{
 				// Find the nearest thing within highlight range
-				Linedef l = General.Map.Map.NearestLinedefRange(mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
+				Linedef l = MapSet.NearestLinedefRange(blockmap, mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
 
 				if(l != null) 
 				{
@@ -900,11 +923,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else if(e.Button == MouseButtons.None) // Not holding any buttons?
 			{
 				// Find the nearest linedef within highlight range
-				Linedef l = General.Map.Map.NearestLinedefRange(mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
+				Linedef l = MapSet.NearestLinedefRange(blockmap, mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
 
 				//mxd. Render insert vertex preview
-				Linedef sl = General.Map.Map.NearestLinedefRange(mousemappos, BuilderPlug.Me.StitchRange / renderer.Scale);
-				if(sl != null)
+				Linedef sl = MapSet.NearestLinedefRange(blockmap, mousemappos, BuilderPlug.Me.StitchRange / renderer.Scale);
+				if (sl != null)
 				{
 					bool snaptogrid = General.Interface.ShiftState ^ General.Interface.SnapToGrid;
 					bool snaptonearest = General.Interface.CtrlState ^ General.Interface.AutoMerge;
@@ -1371,6 +1394,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Map.IsChanged = true;
 			General.Map.Map.Update();
 
+			// Recreate the blockmap since it shouldn't include the deleted linedefs anymore
+			CreateBlockmap();
+
 			// Redraw screen
 			SetupSectorLabels(); //mxd
 			UpdateSelectionInfo(); //mxd
@@ -1440,7 +1466,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Update cache values
 				General.Map.IsChanged = true;
 				General.Map.Map.Update();
-				
+
+				// Recreate the blockmap since it shouldn't include the dissolved linedefs anymore
+				CreateBlockmap();
+
 				// Redraw screen
 				SetupSectorLabels(); //mxd
 				UpdateSelectionInfo(); //mxd

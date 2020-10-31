@@ -73,6 +73,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// The blockmap makes synchronized editing faster
 		BlockMap<BlockEntry> blockmap;
+		bool addedlinedefstoblockmap;
 
 		#endregion
 
@@ -693,6 +694,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			blockmap = new BlockMap<BlockEntry>(area);
 			blockmap.AddSectorsSet(General.Map.Map.Sectors);
 			blockmap.AddThingsSet(General.Map.Map.Things);
+
+			// Don't add linedefs here. They are only needed for paint select, so let's save some
+			// time (and add them when paint select is used t he first time)
+			addedlinedefstoblockmap = false;
 		}
 
 		#endregion
@@ -1087,8 +1092,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			else if(paintselectpressed && !editpressed && !selecting) //mxd. Drag-select
 			{
+				// If linedefs were not added to the blockmap yet add them here
+				if (!addedlinedefstoblockmap)
+				{
+					blockmap.AddLinedefsSet(General.Map.Map.Linedefs);
+					addedlinedefstoblockmap = true;
+				}
+
 				// Find the nearest linedef within highlight range
-				Linedef l = General.Map.Map.NearestLinedefRange(mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
+				Linedef l = MapSet.NearestLinedefRange(blockmap, mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
 				Sector s = null;
 
 				if(l != null) 

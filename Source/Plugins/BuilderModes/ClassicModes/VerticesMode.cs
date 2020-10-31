@@ -57,6 +57,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		new private bool editpressed;
 		private bool selectionfromhighlight; //mxd
 
+		// The blockmap makes is used to make finding lines faster
+		BlockMap<BlockEntry> blockmap;
+
 		#endregion
 
 		#region ================== Properties
@@ -70,6 +73,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#endregion
 
 		#region ================== Methods
+
+		/// <summary>
+		/// Create a blockmap containing linedefs. This is used to speed up determining the closest line
+		/// to the mouse cursor
+		/// </summary>
+		private void CreateBlockmap()
+		{
+			RectangleF area = MapSet.CreateArea(General.Map.Map.Vertices);
+			blockmap = new BlockMap<BlockEntry>(area);
+			blockmap.AddLinedefsSet(General.Map.Map.Linedefs);
+		}
 
 		public override void OnHelp()
 		{
@@ -102,6 +116,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				General.Interface.AddButton(BuilderPlug.Me.MenusForm.TextureOffset3DFloorLock, ToolbarSection.Geometry);
 				General.Interface.EndToolbarUpdate(); //mxd
 			}
+
+			// Create the blockmap
+			CreateBlockmap();
 
 			// Convert geometry selection to vertices only
 			General.Map.Map.ConvertSelection(SelectionType.Vertices);
@@ -291,7 +308,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else if(!selecting) //mxd. We don't want to do this stuff while multiselecting
 			{
 				// Find the nearest linedef within highlight range
-				Linedef l = General.Map.Map.NearestLinedefRange(mousemappos, BuilderPlug.Me.SplitLinedefsRange / renderer.Scale);
+				Linedef l = MapSet.NearestLinedefRange(blockmap, mousemappos, BuilderPlug.Me.SplitLinedefsRange / renderer.Scale);
 				if(l != null)
 				{
 					// Create undo
@@ -468,7 +485,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else if(e.Button == MouseButtons.None) // Not holding any buttons?
 			{
 				//mxd. Render insert vertex preview
-				Linedef l = General.Map.Map.NearestLinedefRange(mousemappos, BuilderPlug.Me.SplitLinedefsRange / renderer.Scale);
+				Linedef l = MapSet.NearestLinedefRange(blockmap, mousemappos, BuilderPlug.Me.SplitLinedefsRange / renderer.Scale);
 
 				if(l != null) 
 				{
@@ -541,6 +558,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			// Highlight nothing
 			Highlight(null);
+		}
+
+		public override void OnUndoEnd()
+		{
+			base.OnUndoEnd();
+
+			// Recreate the blockmap
+			CreateBlockmap();
+		}
+
+		public override void OnRedoEnd()
+		{
+			base.OnRedoEnd();
+
+			// Recreate the blockmap
+			CreateBlockmap();
 		}
 
 		//mxd
@@ -833,7 +866,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				General.Map.UndoRedo.CreateUndo("Insert vertex");
 
 				// Snap to geometry?
-				Linedef l = General.Map.Map.NearestLinedefRange(mousemappos, BuilderPlug.Me.SplitLinedefsRange / renderer.Scale);
+				Linedef l = MapSet.NearestLinedefRange(blockmap, mousemappos, BuilderPlug.Me.SplitLinedefsRange / renderer.Scale);
 				if(snaptonearest && (l != null))
 				{
 					// Snip to grid also?
@@ -894,7 +927,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(snaptonearest)
 				{
 					//mxd. Check if snapped vertex is still on top of a linedef
-					l = General.Map.Map.NearestLinedefRange(v.Position, BuilderPlug.Me.SplitLinedefsRange / renderer.Scale);
+					l = MapSet.NearestLinedefRange(blockmap, v.Position, BuilderPlug.Me.SplitLinedefsRange / renderer.Scale);
 					
 					if(l != null) 
 					{

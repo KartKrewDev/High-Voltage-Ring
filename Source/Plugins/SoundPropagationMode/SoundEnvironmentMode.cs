@@ -19,6 +19,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Actions;
 using CodeImp.DoomBuilder.Controls;
@@ -57,6 +58,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		private Docker docker;
 
 		private BackgroundWorker worker;
+
+		// The blockmap makes is used to make finding lines faster
+		BlockMap<BlockEntry> blockmap;
 
 		#endregion
 
@@ -130,6 +134,17 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			}
 		}
 
+		/// <summary>
+		/// Create a blockmap containing linedefs. This is used to speed up determining the closest line
+		/// to the mouse cursor
+		/// </summary>
+		private void CreateBlockmap()
+		{
+			RectangleF area = MapSet.CreateArea(General.Map.Map.Vertices);
+			blockmap = new BlockMap<BlockEntry>(area);
+			blockmap.AddLinedefsSet(General.Map.Map.Linedefs);
+		}
+
 		#endregion
 
 		#region ================== Events
@@ -168,6 +183,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			worker.DoWork += BuilderPlug.Me.UpdateSoundEnvironments;
 			worker.ProgressChanged += worker_ProgressChanged;
 			worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+
+			// Create the blockmap
+			CreateBlockmap();
 
 			UpdateData();
 
@@ -231,6 +249,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		{
 			base.OnUndoEnd();
 
+			// Recreate the blockmap
+			CreateBlockmap();
+
 			// Update
 			UpdateData();
 			General.Interface.RedrawDisplay();
@@ -240,6 +261,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		public override void OnRedoEnd()
 		{
 			base.OnRedoEnd();
+
+			// Recreate the blockmap
+			CreateBlockmap();
 
 			// Update
 			UpdateData();
