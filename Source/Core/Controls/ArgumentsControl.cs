@@ -371,26 +371,35 @@ namespace CodeImp.DoomBuilder.Controls
 				else if (isacs)
 				{
                     Arg0Mode = ArgZeroMode.INT;
-					int a0 = arg0.GetResult(0);
-					if(General.Map.NumberedScripts.ContainsKey(a0))
-					{
-						int i = 0;
-						foreach(ScriptItem item in General.Map.NumberedScripts.Values)
-						{
-							if(item.Index == a0)
-							{
-								arg0int.SelectedIndex = i;
-								UpdateScriptArguments(item);
-								break;
-							}
 
-							i++;
-						}
+					// Special handling when there are multiple lines selected with different values for arg0 (so that it's left empty)
+					if (string.IsNullOrEmpty(arg0.Text))
+					{
+						arg0int.Text = string.Empty;
 					}
 					else
 					{
-						// Unknown script number...
-						arg0int.Text = a0.ToString();
+						int a0 = arg0.GetResult(0);
+						if (General.Map.NumberedScripts.ContainsKey(a0))
+						{
+							int i = 0;
+							foreach (ScriptItem item in General.Map.NumberedScripts.Values)
+							{
+								if (item.Index == a0)
+								{
+									arg0int.SelectedIndex = i;
+									UpdateScriptArguments(item);
+									break;
+								}
+
+								i++;
+							}
+						}
+						else
+						{
+							// Unknown script number...
+							arg0int.Text = a0.ToString();
+						}
 					}
 				}
 			}
