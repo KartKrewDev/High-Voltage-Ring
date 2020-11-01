@@ -51,6 +51,9 @@ namespace CodeImp.DoomBuilder.Controls
         // Selection
         private bool allowselection;
 		private bool allowmultipleselection;
+		private bool centeritem;
+
+		private List<ImageBrowserItemGroup> itemgroups = new List<ImageBrowserItemGroup>();
 
 		#endregion
 
@@ -144,6 +147,8 @@ namespace CodeImp.DoomBuilder.Controls
             }
         }
 
+		public bool CenterItem { get { return centeritem; } set { centeritem = value; } }
+
 		public List<ImageBrowserItem> Items { get { return items; } }
 		public List<ImageBrowserItem> SelectedItems { get { return selection; } }
 		public string Title { get { return title; } set { title = value; } }
@@ -200,6 +205,24 @@ namespace CodeImp.DoomBuilder.Controls
 			Refresh();
 		}
 
+		public void SetItems(IEnumerable<ImageBrowserItemGroup> itemgroups)
+		{
+			this.items.Clear();
+			lastselecteditem = null;
+			selection.Clear();
+			this.itemgroups.Clear();
+
+			foreach (ImageBrowserItemGroup ibig in itemgroups)
+			{
+				this.items.AddRange(ibig.Items);
+				this.itemgroups.Add(ibig);
+			}
+
+			OnSelectionChanged(selection);
+			UpdateRectangles();
+
+		}
+
 		public void SetItems(IEnumerable<ImageBrowserItem> items)
 		{
 			this.items.Clear();
@@ -213,7 +236,7 @@ namespace CodeImp.DoomBuilder.Controls
 
 		public void SetSelectedItem(ImageBrowserItem item)
 		{
-			SetSelectedItems(new List<ImageBrowserItem> { item } );
+			SetSelectedItems(new List<ImageBrowserItem> { item });
 		}
 
 		public void SetSelectedItems(List<ImageBrowserItem> items)
@@ -230,6 +253,11 @@ namespace CodeImp.DoomBuilder.Controls
 
 		public void ScrollToItem(ImageBrowserItem item)
 		{
+			ScrollToItem(item, centeritem);
+		}
+
+		public void ScrollToItem(ImageBrowserItem item, bool centeritem)
+		{
 			int index = items.IndexOf(item);
 			if(index < 0) return;
 
@@ -240,8 +268,49 @@ namespace CodeImp.DoomBuilder.Controls
 			int ymax = ymin + this.ClientRectangle.Height + titleheight;
 			if(rec.Top - 3 >= ymin && rec.Bottom + 3 <= ymax) return;
 
-			int yscroll = Math.Max(0, Math.Min(rec.Top - titleheight - 3, scrollbar.Maximum - ClientRectangle.Height));
-			scrollbar.Value = yscroll;
+			int yscroll;
+
+			if (centeritem)
+				yscroll = rec.Top + rec.Height / 2 - ClientRectangle.Height / 2;
+			else
+				yscroll = rec.Top - titleheight - 3;
+
+			scrollbar.Value = Math.Max(0, Math.Min(yscroll, scrollbar.Maximum - ClientRectangle.Height)); ;
+			Refresh();
+		}
+
+		/// <summary>
+		/// Jumps back and forth between the currently selected texture at the top and in the pile of all textures
+		/// </summary>
+		/// <param name="item">The item to jump back and forth between</param>
+		public void JumpBetweenItems(ImageBrowserItem item)
+		{
+			// The item has to exist twice, once in the used textures at the top and in the pile, so get the indexes
+			int index1 = items.IndexOf(item);
+			int index2 = items.LastIndexOf(item);
+			
+			// Item only exists once, so stop here
+			if (index1 == index2)
+				return;
+
+			Rectangle rect1 = rectangles[index1];
+			Rectangle rect2 = rectangles[index2];
+
+			// Get the distance to the two images. Count from the center of the currently scrolled to position and take the bottom
+			// of the first image and the top of the second image
+			int distance1 = Math.Abs(rect1.Bottom - (scrollbar.Value + ClientRectangle.Height / 2));
+			int distance2 = Math.Abs(rect2.Top - (scrollbar.Value + ClientRectangle.Height / 2));
+
+			int yscroll;
+
+			// Get the y position we want to scroll to
+			if(centeritem)
+				yscroll = (distance1 > distance2 ? (rect1.Top + rect1.Height / 2) : (rect2.Top + rect2.Height / 2)) - ClientRectangle.Height / 2;
+			else
+				yscroll = distance1 > distance2 ? rect1.Top : rect2.Top;
+
+			// The desired y position might be outside of the range we can scroll to, so clamp the value
+			scrollbar.Value = Math.Max(0, Math.Min(yscroll, scrollbar.Maximum - ClientRectangle.Height));
 			Refresh();
 		}
 
@@ -503,43 +572,42 @@ namespace CodeImp.DoomBuilder.Controls
 			int my = 0;
 			rectangles.Clear();
 
-            //
-            ImageBrowserItemType currentType = ImageBrowserItemType.IMAGE; // initialized to random value
-            bool currentUsedInMap = false;
             var firstItem = (items.Count > 0) ? items[0] : null;
 
-            foreach (var ti in items)
+			foreach (ImageBrowserItemGroup ibig in itemgroups)
 			{
-				Image preview = GetPreview(ti, imagesize);
-                if (classicview && (ti == firstItem || ((currentType == ImageBrowserItemType.IMAGE) != (ti.ItemType == ImageBrowserItemType.IMAGE)) || (usedtexturesfirst && currentUsedInMap != ti.Icon.UsedInMap)))
-                {
-                    // new row, also provide space for category name.
-                    cx = 0;
-                    cy += SystemFonts.MessageBoxFont.Height + 6 + my + ((ti != firstItem) ? 16 : 0);
-                    my = 0;
-                    currentType = ti.ItemType;
-                    currentUsedInMap = ti.Icon.UsedInMap;
-                }
-				
-				int rw = w - cx;
-				int wid = Math.Max((imagesize > 0 ? imagesize : preview.Width), ti.TextureNameWidth) + padhorz + padhorz;
-				int hei = (imagesize > 0 ? imagesize : preview.Height) + padvert + padvert + font;
-                // if we draw height below, add another font
-                if (General.Settings.ShowTextureSizes && General.Settings.TextureSizesBelow && ti.ItemType == ImageBrowserItemType.IMAGE)
-                    hei += font;
-				
-				if(rw < wid)
+				if (classicview)
 				{
-					// New row
+					// new row, also provide space for category name.
 					cx = 0;
-					cy += my;
+					cy += SystemFonts.MessageBoxFont.Height + 6 + my + 16 /* ((ti != firstItem) ? 16 : 0) */;
 					my = 0;
 				}
 
-				my = Math.Max(my, hei);
-				var rect = new Rectangle(cx + padhorz, cy + padvert, wid - padhorz - padhorz, hei - padvert - padvert - font);
-				rectangles.Add(rect);
-				cx += wid;
+				foreach (var ti in ibig.Items)
+				{
+					Image preview = GetPreview(ti, imagesize);
+
+					int rw = w - cx;
+					int wid = Math.Max((imagesize > 0 ? imagesize : preview.Width), ti.TextureNameWidth) + padhorz + padhorz;
+					int hei = (imagesize > 0 ? imagesize : preview.Height) + padvert + padvert + font;
+					// if we draw height below, add another font
+					if (General.Settings.ShowTextureSizes && General.Settings.TextureSizesBelow && ti.ItemType == ImageBrowserItemType.IMAGE)
+						hei += font;
+
+					if (rw < wid)
+					{
+						// New row
+						cx = 0;
+						cy += my;
+						my = 0;
+					}
+
+					my = Math.Max(my, hei);
+					var rect = new Rectangle(cx + padhorz, cy + padvert, wid - padhorz - padhorz, hei - padvert - padvert - font);
+					rectangles.Add(rect);
+					cx += wid;
+				}
 			}
 
 			if(rectangles.Count > 0)
@@ -607,34 +675,33 @@ namespace CodeImp.DoomBuilder.Controls
 			{
 				int y = scrollbar.Value;
 				int height = ClientRectangle.Height;
+				int i = 0;
 
                 ImageBrowserItemType currentType = ImageBrowserItemType.IMAGE; // initialized to random value
                 bool currentUsedInMap = false;
 
                 ImageBrowserItem.SetBrushes(classicview, rectangles[0].X, rectangles[0].Y - y, rectangles[0].Width, rectangles[0].Height);
-                for (var i = 0; i < items.Count; i++)
+
+				foreach (ImageBrowserItemGroup ibig in itemgroups)
 				{
-                    if (classicview && (i == 0 || ((currentType == ImageBrowserItemType.IMAGE) != (items[i].ItemType == ImageBrowserItemType.IMAGE)) || (usedtexturesfirst && currentUsedInMap != items[i].Icon.UsedInMap)))
-                    {
-                        // draw corresponding title right above this item.
-                        string hdrname;
-                        if (items[i].ItemType == ImageBrowserItemType.IMAGE)
-                        {
-                            if (usedtexturesfirst && items[i].Icon.UsedInMap) hdrname = "Used " + contenttype + ":";
-                            else hdrname = "All " + contenttype + ":";
-                        }
-                        else hdrname = "Directories:";
-                        DrawTextureHeader(g, hdrname, new Rectangle(2, rectangles[i].Y - (SystemFonts.MessageBoxFont.Height + 6) - y, ClientRectangle.Width - scrollwidth - 4, SystemFonts.MessageBoxFont.Height), false);
-                        currentType = items[i].ItemType;
-                        currentUsedInMap = items[i].Icon.UsedInMap;
-                    }
+					if (classicview)
+					{
+						// draw corresponding title right above this item.
+						string hdrname = ibig.Title + ":";
+						DrawTextureHeader(g, hdrname, new Rectangle(2, rectangles[i].Y - (SystemFonts.MessageBoxFont.Height + 6) - y, ClientRectangle.Width - scrollwidth - 4, SystemFonts.MessageBoxFont.Height), false);
+						currentType = items[i].ItemType;
+						currentUsedInMap = items[i].Icon.UsedInMap;
+					}
 
-					Rectangle rec = rectangles[i];
-					if(rec.Bottom < y) continue;
-					if(rec.Top > y + height) break;
+					for(int j=0; j < ibig.Items.Count; j++, i++)						
+					{
+						Rectangle rec = rectangles[i];
+						if (rec.Bottom < y) continue;
+						if (rec.Top > y + height) break;
 
-					Image bmp = GetPreview(items[i], imagesize);
-					items[i].Draw(g, bmp, rec.X, rec.Y - y, rec.Width, rec.Height, selection.Contains(items[i]), items[i].Icon.UsedInMap, classicview);
+						Image bmp = GetPreview(items[i], imagesize);
+						items[i].Draw(g, bmp, rec.X, rec.Y - y, rec.Width, rec.Height, selection.Contains(items[i]), items[i].Icon.UsedInMap, classicview);
+					}
 				}
 			}
 

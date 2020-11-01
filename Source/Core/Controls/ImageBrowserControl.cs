@@ -28,6 +28,21 @@ using CodeImp.DoomBuilder.Windows;
 
 namespace CodeImp.DoomBuilder.Controls
 {
+	/// <summary>
+	/// Holds a title of an item group and its items
+	/// </summary>
+	internal struct ImageBrowserItemGroup
+	{
+		public string Title;
+		public List<ImageBrowserItem> Items;
+
+		public ImageBrowserItemGroup(string title)
+		{
+			Title = title;
+			Items = new List<ImageBrowserItem>();
+		}
+	}
+
 	internal partial class ImageBrowserControl : UserControl
 	{
 		#region ================== Constants
@@ -62,9 +77,6 @@ namespace CodeImp.DoomBuilder.Controls
 		private List<ImageBrowserItem> items;
 		private string usedfirstgroup;
 		private string availgroup;
-
-		// Filtered items
-		private List<ImageBrowserItem> visibleitems;
 
 		//mxd
 		private int texturetype;
@@ -130,6 +142,7 @@ namespace CodeImp.DoomBuilder.Controls
             ElementName = (texturetype == 2 || (texturetype == 3 && browseflats)) ? "flats" : "textures";
             list.UsedTexturesFirst = usedtexturesfirst.Checked = General.Settings.ReadSetting(settingpath + ".showusedtexturesfirst", false);
             list.ClassicView = classicview.Checked = General.Settings.ReadSetting(settingpath + ".classicview", false);
+			list.CenterItem = centeritem.Checked = General.Settings.ReadSetting(settingpath + ".verticallycenteritem", true);
 			
 			int _imagesize = General.Settings.ReadSetting(settingpath + ".imagesize", 128);
 			sizecombo.Text = (_imagesize == 0 ? sizecombo.Items[0].ToString() : _imagesize.ToString());
@@ -187,8 +200,10 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			General.Settings.WriteSetting(settingpath + ".showusedtexturesfirst", usedtexturesfirst.Checked);
             General.Settings.WriteSetting(settingpath + ".classicview", classicview.Checked);
+			General.Settings.WriteSetting(settingpath + ".verticallycenteritem", list.CenterItem);
 			General.Settings.WriteSetting(settingpath + ".imagesize", list.ImageSize);
-			if(General.Map.Config.UseLongTextureNames) General.Map.Options.UseLongTextureNames = uselongtexturenames;
+			
+			if (General.Map.Config.UseLongTextureNames) General.Map.Options.UseLongTextureNames = uselongtexturenames;
 
 			CleanUp();
 		}
@@ -278,7 +293,11 @@ namespace CodeImp.DoomBuilder.Controls
 		//mxd
 		protected override bool ProcessTabKey(bool forward)
 		{
-			usedtexturesfirst.Checked = !usedtexturesfirst.Checked;
+			if (list.SelectedItems.Count == 0)
+				return false;
+
+			list.JumpBetweenItems(list.SelectedItems[0]);
+
 			return false;
 		}
 		
@@ -380,6 +399,7 @@ namespace CodeImp.DoomBuilder.Controls
 			{
                 list.UsedTexturesFirst = usedtexturesfirst.Checked;
                 RefillList(false);
+				list.UpdateRectangles();
 				list.Focus();
 			}
 		}
@@ -499,7 +519,9 @@ namespace CodeImp.DoomBuilder.Controls
 		// This fills the list based on the objectname filter
 		private void RefillList(bool selectfirst)
 		{
-			visibleitems = new List<ImageBrowserItem>();
+			ImageBrowserItemGroup directoryitems = new ImageBrowserItemGroup("Directories");
+			ImageBrowserItemGroup useditems = new ImageBrowserItemGroup("Used textures");
+			ImageBrowserItemGroup visibleitems = new ImageBrowserItemGroup("All textures");
 
 			// Clear list first
 			list.Clear();
@@ -523,30 +545,50 @@ namespace CodeImp.DoomBuilder.Controls
 					case ImageBrowserItemType.IMAGE:
 						if(ValidateItem(items[i], previtem) && ValidateItemSize(items[i], w, h))
 						{
-							visibleitems.Add(items[i]);
+							visibleitems.Items.Add(items[i]);
+
+							if (items[i].Icon.UsedInMap)
+								useditems.Items.Add(items[i]);
+
 							previtem = items[i];
 						}
 						break;
 
 					case ImageBrowserItemType.FOLDER_UP: //mxd. "Browse Up" items are always valid
-						visibleitems.Add(items[i]);
+						directoryitems.Items.Add(items[i]);
 						break;
 
 					case ImageBrowserItemType.FOLDER: //mxd. Only apply name filtering to "Folder" items
 						if(items[i].TextureName.ToUpperInvariant().Contains(objectname.Text.ToUpperInvariant()))
-							visibleitems.Add(items[i]);
+							directoryitems.Items.Add(items[i]);
 						break;
 
 					default: throw new NotImplementedException("Unknown ImageBrowserItemType");
 				}
 			}
-			
+
 			// Fill list
-			visibleitems.Sort(SortItems);
-			list.SetItems(visibleitems);
-			
+			directoryitems.Items.Sort();
+			useditems.Items.Sort();
+			visibleitems.Items.Sort();
+
+			List<ImageBrowserItemGroup> itemgroups = new List<ImageBrowserItemGroup>();
+
+			// Always add the directories
+			itemgroups.Add(directoryitems);
+
+			// Add used textures if the user wants to and there are any
+			if (usedtexturesfirst.Checked && useditems.Items.Count > 0)
+				itemgroups.Add(useditems);
+
+			// Finally add all items
+			if (visibleitems.Items.Count > 0)
+				itemgroups.Add(visibleitems);
+
+			list.SetItems(itemgroups);
+
 			// Make selection?
-			if(!preventselection && list.Items.Count > 0)
+			if (!preventselection && list.Items.Count > 0)
 			{
 				// Select specific item?
 				if(keepselected > -1)
@@ -658,6 +700,11 @@ namespace CodeImp.DoomBuilder.Controls
 			list.Focus();
 		}
 
-        #endregion
-    }
+		private void centeritem_CheckedChanged(object sender, EventArgs e)
+		{
+			list.CenterItem = centeritem.Checked;
+		}
+
+		#endregion
+	}
 }
