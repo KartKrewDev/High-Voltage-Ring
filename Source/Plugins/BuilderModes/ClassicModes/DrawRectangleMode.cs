@@ -419,9 +419,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				General.Map.UndoRedo.CreateUndo(undoname);
 
 				// Make an analysis and show info
-				string[] adjectives = { "gloomy", "sad", "unhappy", "lonely", "troubled", "depressed", "heartsick", "glum", "pessimistic", "bitter", "downcast" }; // aaand my english vocabulary ends here :)
+				string[] adjectives = new[]
+				{ "beautiful", "lovely", "romantic", "stylish", "cheerful", "comical",
+				  "awesome", "accurate", "adorable", "adventurous", "attractive", "cute",
+				  "elegant", "glamorous", "gorgeous", "handsome", "magnificent", "unusual",
+				  "outstanding", "mysterious", "amusing", "charming", "fantastic", "jolly" };
 				string word = adjectives[new Random().Next(adjectives.Length - 1)];
-				string a = (word[0] == 'u' ? "an " : "a ");
+				string a = ((word[0] == 'a') || (word[0] == 'e') || (word[0] == 'o') || (word[0] == 'u')) ? "an " : "a ";
 
 				General.Interface.DisplayStatus(StatusType.Action, "Created " + a + word + " " + shapename + ".");
 
