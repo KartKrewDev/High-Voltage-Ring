@@ -172,6 +172,9 @@ namespace CodeImp.DoomBuilder.Map
 			//mxd. Sector drawing options
 			this.custombrightness = 196;
 			this.customceilheight = 128;
+
+			// UDB doesn't have the means to modify files in resources anymore, so load resources as read-only by default
+			this.useresourcesinreadonlymode = true;
 		}
 
 		// Constructor to load from Doom Builder Map Settings Configuration
