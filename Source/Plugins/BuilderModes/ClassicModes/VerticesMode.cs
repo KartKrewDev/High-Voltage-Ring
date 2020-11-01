@@ -1007,6 +1007,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Map.IsChanged = true;
 			General.Map.Map.Update();
 
+			// Create the blockmap
+			CreateBlockmap();
+
 			// Invoke a new mousemove so that the highlighted item updates
 			MouseEventArgs e = new MouseEventArgs(MouseButtons.None, 0, (int)mousepos.x, (int)mousepos.y, 0);
 			OnMouseMove(e);
@@ -1085,6 +1088,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Update cache values
 			General.Map.Map.Update();
 			General.Map.IsChanged = true;
+
+			// Create the blockmap
+			CreateBlockmap();
 
 			// Invoke a new mousemove so that the highlighted item updates
 			MouseEventArgs e = new MouseEventArgs(MouseButtons.None, 0, (int)mousepos.x, (int)mousepos.y, 0);
