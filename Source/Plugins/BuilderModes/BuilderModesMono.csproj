@@ -586,7 +586,6 @@
     <EmbeddedResource Include="Interface\WavefrontSettingsForm.resx">
       <DependentUpon>WavefrontSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\VisualModeGZ.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SelectTouching.png" />
@@ -715,6 +714,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\TextureLock3Dfloor.png" />
+    <EmbeddedResource Include="Resources\VisualMode.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

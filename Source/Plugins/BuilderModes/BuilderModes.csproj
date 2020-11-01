@@ -588,7 +588,6 @@
     <EmbeddedResource Include="Interface\WavefrontSettingsForm.resx">
       <DependentUpon>WavefrontSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\VisualModeGZ.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SelectTouching.png" />
