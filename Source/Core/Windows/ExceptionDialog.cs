@@ -168,7 +168,7 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
             // Get GZDB version
-            result += "GZDB: R" + General.ThisAssembly.GetName().Version.Revision + Environment.NewLine;
+            result += "UDB: R" + General.ThisAssembly.GetName().Version.Revision + Environment.NewLine;
             result += "Platform: " + (Environment.Is64BitProcess ? "x64" : "x86") + Environment.NewLine + Environment.NewLine;
 
 			return result;
