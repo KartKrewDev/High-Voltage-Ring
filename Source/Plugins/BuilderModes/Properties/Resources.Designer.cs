@@ -623,9 +623,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap VisualModeGZ {
+        internal static System.Drawing.Bitmap VisualMode {
             get {
-                object obj = ResourceManager.GetObject("VisualModeGZ", resourceCulture);
+                object obj = ResourceManager.GetObject("VisualMode", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
