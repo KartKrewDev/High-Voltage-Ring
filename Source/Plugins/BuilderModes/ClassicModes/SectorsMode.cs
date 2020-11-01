@@ -1997,6 +1997,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//mxd. Clear selection info
 				General.Interface.DisplayStatus(StatusType.Selection, string.Empty);
 
+				// Recreate the blockmap
+				CreateBlockmap();
+
 				//mxd. Update
 				UpdateOverlaySurfaces();
 				UpdateEffectLabels();
@@ -2035,7 +2038,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				//mxd. Clear selection info
 				General.Interface.DisplayStatus(StatusType.Selection, string.Empty);
-				
+
+				// Recreate the blockmap
+				CreateBlockmap();
+
 				//mxd. Update
 				UpdateOverlaySurfaces();
 				UpdateEffectLabels();
