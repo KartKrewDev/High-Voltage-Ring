@@ -163,7 +163,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 							Bitmap bmp = id.ExportBitmap();
                             lock (bmp)
                             {
-                                bmp.Save(Path.Combine(settings.ObjPath, Path.GetFileNameWithoutExtension(s) + ".PNG"), ImageFormat.Png);
+								string filepath = Path.Combine(settings.ObjPath, Path.GetDirectoryName(s), Path.GetFileNameWithoutExtension(s) + ".png");
+
+								// Make sure the directory is there
+								Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+
+								bmp.Save(filepath, ImageFormat.Png);
                             }
 						} 
 						else 
@@ -232,9 +237,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				foreach(string s in settings.Textures) 
 				{
 					if(s == DEFAULT) continue;
-					mtl.Append("newmtl " + s.ToUpperInvariant() + Environment.NewLine);
+
+					string filepath = Path.Combine(settings.ObjPath, Path.GetDirectoryName(s), Path.GetFileNameWithoutExtension(s) + ".png");
+
+					mtl.Append("newmtl " + s + Environment.NewLine);
 					mtl.Append("Kd 1.0 1.0 1.0" + Environment.NewLine);
-					if(settings.ExportTextures) mtl.Append("map_Kd " + Path.Combine(settings.ObjPath, s.ToUpperInvariant() + ".PNG") + Environment.NewLine);
+					if(settings.ExportTextures) mtl.Append("map_Kd " + filepath + Environment.NewLine);
 					mtl.Append(Environment.NewLine);
 				}
 			}
@@ -244,16 +252,18 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				foreach(string s in settings.Flats) 
 				{
 					if(s == DEFAULT) continue;
-					mtl.Append("newmtl " + s.ToUpperInvariant() + Environment.NewLine);
+					mtl.Append("newmtl " + s + Environment.NewLine);
 					mtl.Append("Kd 1.0 1.0 1.0" + Environment.NewLine);
 					if(settings.ExportTextures) 
 					{
 						// Handle duplicate names
-						string flatname = s;
+						string flatsuffix = string.Empty;
 						if(settings.Textures != null && Array.IndexOf(settings.Textures, s) != -1)
-							flatname += "_FLAT";
+							flatsuffix = "_FLAT";
 
-						mtl.Append("map_Kd " + Path.Combine(settings.ObjPath, flatname.ToUpperInvariant() + ".PNG") + Environment.NewLine);
+						string filepath = Path.Combine(settings.ObjPath, Path.GetDirectoryName(s), Path.GetFileNameWithoutExtension(s) + flatsuffix + ".png");
+
+						mtl.Append("map_Kd " + Path.Combine(settings.ObjPath, filepath) + Environment.NewLine);
 					}
 					mtl.Append(Environment.NewLine);
 				}
