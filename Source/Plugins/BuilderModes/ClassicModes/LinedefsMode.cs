@@ -1559,6 +1559,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					//BuilderPlug.Me.AdjustSplitCoordinates(ld, sld);
 				}
 
+				// Create the blockmap
+				CreateBlockmap();
+
 				// Update cache values
 				General.Map.IsChanged = true;
 				General.Map.Map.Update();

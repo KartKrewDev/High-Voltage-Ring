@@ -358,7 +358,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						return;
 					}
 					//BuilderPlug.Me.AdjustSplitCoordinates(l, sld);
-					
+
+					// Create the blockmap
+					CreateBlockmap();
+
 					// Update
 					General.Map.Map.Update();
 
@@ -953,6 +956,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					General.Interface.DisplayStatus(StatusType.Action, "Inserted a vertex.");
 				}
+
+				// Create the blockmap
+				CreateBlockmap();
 
 				// Update
 				General.Map.Map.Update();
