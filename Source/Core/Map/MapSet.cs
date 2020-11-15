@@ -3405,15 +3405,26 @@ namespace CodeImp.DoomBuilder.Map
 			double distance = double.MaxValue;
 			double maxrangesq = maxrange * maxrange;
 			HashSet<Linedef> processed = new HashSet<Linedef>();
-			
-			HashSet<BlockEntry> blocks = new HashSet<BlockEntry>
+
+			HashSet<BlockEntry> blocks;
+
+			// If the max range is lower or equal to the blockmap's block size we can take a shortcut got the the possible blocks.
+			// Otherwise get an rectangular range of blocks. This happens when maxrange is computed from low zoom levels
+			if (maxrange <= selectionmap.BlockSize)
 			{
-				selectionmap.GetBlockAt(pos), 
-				selectionmap.GetBlockAt(new Vector2D(pos.x + maxrange, pos.y + maxrange)), 
-				selectionmap.GetBlockAt(new Vector2D(pos.x + maxrange, pos.y - maxrange)), 
-				selectionmap.GetBlockAt(new Vector2D(pos.x - maxrange, pos.y + maxrange)), 
-				selectionmap.GetBlockAt(new Vector2D(pos.x - maxrange, pos.y - maxrange))
-			};
+				blocks = new HashSet<BlockEntry>
+				{
+					selectionmap.GetBlockAt(pos),
+					selectionmap.GetBlockAt(new Vector2D(pos.x + maxrange, pos.y + maxrange)),
+					selectionmap.GetBlockAt(new Vector2D(pos.x + maxrange, pos.y - maxrange)),
+					selectionmap.GetBlockAt(new Vector2D(pos.x - maxrange, pos.y + maxrange)),
+					selectionmap.GetBlockAt(new Vector2D(pos.x - maxrange, pos.y - maxrange))
+				};
+			}
+			else
+			{
+				blocks = selectionmap.GetSquareRange(pos.x - maxrange, pos.y - maxrange, maxrange * 2, maxrange * 2);
+			}
 
 			foreach(BlockEntry be in blocks)
 			{

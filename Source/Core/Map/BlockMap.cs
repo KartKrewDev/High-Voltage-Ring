@@ -196,6 +196,32 @@ namespace CodeImp.DoomBuilder.Map
 			return entries;
 		}
 
+		// This returns a range of blocks in a rectangle. Pretty much the same like GetSquareRange(RectangleF rect),
+		// just without the overhead to create a RectangleF first
+		public virtual HashSet<BE> GetSquareRange(double left, double top, double width, double height)
+		{
+			// Calculate block coordinates
+			Point lt = GetBlockCoordinates(new Vector2D(left, top));
+			Point rb = GetBlockCoordinates(new Vector2D(left+width, top+height));
+
+			// Crop coordinates to range
+			lt = CropToRange(lt);
+			rb = CropToRange(rb);
+
+			// Go through the range to make a list
+			int entriescount = ((rb.X - lt.X) + 1) * ((rb.Y - lt.Y) + 1);
+			HashSet<BE> entries = new HashSet<BE>(entriescount);
+			for (int x = lt.X; x <= rb.X; x++)
+			{
+				for (int y = lt.Y; y <= rb.Y; y++)
+				{
+					entries.Add(blockmap[x, y]);
+				}
+			}
+
+			return entries;
+		}
+
 		// This returns all blocks along the given line
 		public virtual List<BE> GetLineBlocks(Vector2D v1, Vector2D v2)
 		{
