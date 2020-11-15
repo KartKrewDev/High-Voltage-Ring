@@ -62,6 +62,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// Labels
 		private Dictionary<Sector, TextLabel[]> labels;
+		private List<ITextLabel> torenderlabels;
 
 		//mxd. Effects
 		private readonly Dictionary<int, string[]> effects;
@@ -202,6 +203,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					foreach(Sector s in General.Map.Map.Sectors) RenderComment(s);
 				}
 
+				// TODO: put this in UpdateToRenderLabels, too?
 				if(BuilderPlug.Me.ViewSelectionNumbers && orderedselection.Count < MAX_SECTOR_LABELS) 
 				{
 					List<ITextLabel> torender = new List<ITextLabel>(orderedselection.Count);
@@ -223,65 +225,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					renderer.RenderText(torender);
 				}
 
-				//mxd. Render effect labels
-				if(BuilderPlug.Me.ViewSelectionEffects) 
-				{
-					if(!BuilderPlug.Me.ViewSelectionNumbers) RenderEffectLabels(selectedEffectLabels);
-					RenderEffectLabels(unselectedEffectLabels);
-				}
+				// Render effect and tag labels
+				renderer.RenderText(torenderlabels);
 				
 				renderer.Finish();
 			}
-		}
-
-		//mxd
-		private void RenderEffectLabels(Dictionary<Sector, string[]> labelsGroup) 
-		{
-			List<ITextLabel> torender = new List<ITextLabel>(labelsGroup.Count);
-			foreach(KeyValuePair<Sector, string[]> group in labelsGroup) 
-			{
-				// Pick which text variant to use
-				TextLabel[] labelarray = labels[group.Key];
-				for(int i = 0; i < group.Key.Labels.Count; i++) 
-				{
-					TextLabel l = labelarray[i];
-					l.Color = General.Colors.InfoLine;
-
-					// Render only when enough space for the label to see
-					if (!textlabelsizecache.ContainsKey(group.Value[0]))
-						textlabelsizecache[group.Value[0]] = General.Interface.MeasureString(group.Value[0], l.Font).Width;
-
-					float requiredsize = textlabelsizecache[group.Value[0]] / 2 / renderer.Scale;
-
-					if (requiredsize > group.Key.Labels[i].radius) 
-					{
-						if (!textlabelsizecache.ContainsKey(group.Value[1]))
-							textlabelsizecache[group.Value[1]] = General.Interface.MeasureString(group.Value[1], l.Font).Width;
-
-						requiredsize = textlabelsizecache[group.Value[1]] / 2 / renderer.Scale;
-
-						string newtext;
-
-						if (requiredsize > group.Key.Labels[i].radius)
-							newtext = (requiredsize > group.Key.Labels[i].radius * 4 ? string.Empty : "+");
-						else
-							newtext = group.Value[1];
-
-						if (l.Text != newtext)
-							l.Text = newtext;
-					} 
-					else 
-					{
-						if(group.Value[0] != l.Text)
-							l.Text = group.Value[0];
-					}
-
-					if(!string.IsNullOrEmpty(l.Text)) torender.Add(l);
-				}
-			}
-
-			// Render labels
-			renderer.RenderText(torender);
 		}
 
 		//mxd
@@ -374,6 +322,69 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(!string.IsNullOrEmpty(labelText[0]))
 					unselectedEffectLabels.Add(s, labelText);
 			}
+
+			UpdateToRenderLabels();
+		}
+
+		private void UpdateToRenderLabels()
+		{
+			UpdateToRenderLabels(renderer.Scale);
+		}
+
+		private void UpdateToRenderLabels(float scale)
+		{
+			torenderlabels = new List<ITextLabel>();
+			List<Dictionary<Sector, string[]>> alllabelsgroups = new List<Dictionary<Sector, string[]>>();
+			if(BuilderPlug.Me.ViewSelectionEffects)
+			{
+				if (!BuilderPlug.Me.ViewSelectionNumbers) alllabelsgroups.Add(selectedEffectLabels);
+				alllabelsgroups.Add(unselectedEffectLabels);
+			}
+
+			foreach (Dictionary<Sector, string[]> labelsGroup in alllabelsgroups)
+			{
+				foreach (KeyValuePair<Sector, string[]> group in labelsGroup)
+				{
+					// Pick which text variant to use
+					TextLabel[] labelarray = labels[group.Key];
+					for (int i = 0; i < group.Key.Labels.Count; i++)
+					{
+						TextLabel l = labelarray[i];
+						l.Color = General.Colors.InfoLine;
+
+						// Render only when enough space for the label to see
+						if (!textlabelsizecache.ContainsKey(group.Value[0]))
+							textlabelsizecache[group.Value[0]] = General.Interface.MeasureString(group.Value[0], l.Font).Width;
+
+						float requiredsize = textlabelsizecache[group.Value[0]] / 2 / scale;
+
+						if (requiredsize > group.Key.Labels[i].radius)
+						{
+							if (!textlabelsizecache.ContainsKey(group.Value[1]))
+								textlabelsizecache[group.Value[1]] = General.Interface.MeasureString(group.Value[1], l.Font).Width;
+
+							requiredsize = textlabelsizecache[group.Value[1]] / 2 / scale;
+
+							string newtext;
+
+							if (requiredsize > group.Key.Labels[i].radius)
+								newtext = (requiredsize > group.Key.Labels[i].radius * 4 ? string.Empty : "+");
+							else
+								newtext = group.Value[1];
+
+							if (l.Text != newtext)
+								l.Text = newtext;
+						}
+						else
+						{
+							if (group.Value[0] != l.Text)
+								l.Text = group.Value[0];
+						}
+
+						if (!string.IsNullOrEmpty(l.Text)) torenderlabels.Add(l);
+					}
+				}
+			}
 		}
 		
 		// Support function for joining and merging sectors
@@ -460,10 +471,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				PixelColor c = (General.Settings.UseHighlight ? General.Colors.Selection : General.Colors.Highlight);
 				foreach(TextLabel l in labelarray) l.Color = c;
 			}
-			
+
+			UpdateToRenderLabels();
+
 			// If we're changing associations, then we
 			// need to redraw the entire display
-			if(completeredraw)
+			if (completeredraw)
 			{
 				// Set new highlight and redraw completely
 				highlighted = s;
@@ -544,7 +557,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(update) 
 					{
 						TextLabel[] labelarray = labels[s];
-						foreach(TextLabel l in labelarray) l.Text = "";
+
+						foreach (TextLabel l in labelarray)
+						{
+							l.Text = "";
+							l.Color = General.Colors.InfoLine;
+						}
 
 						// Update all other labels
 						UpdateSelectedLabels();
@@ -700,6 +718,32 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				UpdateOverlaySurfaces();
 				UpdateSelectionInfo();
 			}
+		}
+
+		/// <summary>
+		/// Update the labels to render with the new scale before actually doing the rendering because zooming
+		/// will redraw the display, and the labels to render must be updated by then
+		/// </summary>
+		public override void ZoomIn()
+		{
+			float z = renderer.Scale * (1.0f + General.Settings.ZoomFactor * 0.1f);
+
+			UpdateToRenderLabels(z);
+
+			base.ZoomIn();
+		}
+
+		/// <summary>
+		/// Update the labels to render with the new scale before actually doing the rendering because zooming
+		/// will redraw the display, and the labels to render must be updated by then
+		/// </summary>
+		public override void ZoomOut()
+		{
+			float z = renderer.Scale * (1.0f / (1.0f + General.Settings.ZoomFactor * 0.1f));
+
+			UpdateToRenderLabels(z);
+
+			base.ZoomOut();
 		}
 
 		/// <summary>
@@ -947,8 +991,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					// Update overlay
 					TextLabel[] labelarray = labels[highlighted];
-					PixelColor c = (General.Settings.UseHighlight ? General.Colors.Selection : General.Colors.Highlight);
-					foreach(TextLabel l in labelarray) l.Color = c;
+					PixelColor c;
+					
+					if(highlighted.Selected)
+						c = General.Settings.UseHighlight ? General.Colors.Selection : General.Colors.Highlight;
+					else
+						c = General.Colors.InfoLine;
+
+					foreach (TextLabel l in labelarray) l.Color = c;
 					UpdateOverlaySurfaces(); //mxd
 					UpdateOverlay();
 					renderer.Present();
