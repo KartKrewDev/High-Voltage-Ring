@@ -639,7 +639,7 @@ namespace CodeImp.DoomBuilder.Data
             loadResult.preview = preview;
         }
 
-        void MakeAlphaTestImage(LocalLoadResult loadResult)
+        unsafe void MakeAlphaTestImage(LocalLoadResult loadResult)
         {
             if (loadResult.bitmap == null)
                 return;
@@ -648,11 +648,16 @@ namespace CodeImp.DoomBuilder.Data
             int height = loadResult.bitmap.Height;
             loadResult.alphatestWidth = width;
             loadResult.alphatestHeight = height;
-            for (int y = 0; y < height; y++)
+
+			BitmapData bmpdata = loadResult.bitmap.LockBits(new Rectangle(0, 0, loadResult.bitmap.Size.Width, loadResult.bitmap.Size.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+			PixelColor* pixels = (PixelColor*)(bmpdata.Scan0.ToPointer());
+
+			for (int y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; x++)
+				PixelColor* line = pixels + y * width;
+				for (int x = 0; x < width; x++)
                 {
-                    if (loadResult.bitmap.GetPixel(x, y).A == 0)
+                    if (line[x].a == 0)
                     {
                         if (loadResult.alphatest == null)
                             loadResult.alphatest = new BitArray(width * height, true);
@@ -660,9 +665,11 @@ namespace CodeImp.DoomBuilder.Data
                     }
                 }
             }
-        }
 
-        Texture GetTexture()
+			loadResult.bitmap.UnlockBits(bmpdata);
+		}
+
+		Texture GetTexture()
 		{
             if (texture != null)
                 return texture;
