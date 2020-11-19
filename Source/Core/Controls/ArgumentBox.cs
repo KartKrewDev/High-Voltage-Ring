@@ -37,6 +37,7 @@ namespace CodeImp.DoomBuilder.Controls
 		
 		private TypeHandler typehandler;
 		private bool ignorebuttonchange;
+		private bool forcevalidate;
 		
 		#endregion
 
@@ -136,6 +137,11 @@ namespace CodeImp.DoomBuilder.Controls
 				combobox_Validating(sender, new CancelEventArgs());
 				button.Image = typehandler.BrowseImage;
 			}
+			else if(forcevalidate)
+			{
+				forcevalidate = false;
+				combobox_Validating(sender, new CancelEventArgs());
+			}
 		}
 
 		// Mouse wheel used
@@ -147,6 +153,10 @@ namespace CodeImp.DoomBuilder.Controls
 					scrollbuttons.Value += 1;
 				else if(e.Delta > 0)
 					scrollbuttons.Value -= 1;
+			}
+			else
+			{
+				forcevalidate = true; // Make sure that the value is validated
 			}
 		}
 		
