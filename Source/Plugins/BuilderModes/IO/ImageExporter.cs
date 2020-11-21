@@ -99,24 +99,27 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		/// </summary>
 		public void Export()
 		{
-			// Do the normally textured image and the brightmap after each other because creating the image requires
-			// consecutively free memory, and creating two big images at the same time has a higher chance to fail.
-			// Because of the GC there's of course no guarantee that the memory is freed in time
+			Vector2D size;
+			Vector2D offset;
 
-			// Normally textures image
-			using (Bitmap image = CreateImage(false))
+			GetSizeAndOffset(out size, out offset);
+
+			// Use the same image for the normal texture and the brightmap because of memory concerns
+			using (Bitmap image = new Bitmap((int)size.x, (int)size.y, settings.PixelFormat))
 			{
+				// Normal texture image
+				CreateImage(image, offset, false);
+
 				if (settings.Tiles)
 					SaveImageAsTiles(image);
 				else
 					image.Save(Path.Combine(settings.Path, settings.Name) + settings.Extension, settings.ImageFormat);
-			}
 
-			// The brightmap
-			if(settings.Brightmap)
-			{
-				using (Bitmap image = CreateImage(true))
+				// The brightmap
+				if (settings.Brightmap)
 				{
+					CreateImage(image, offset, true);
+
 					if (settings.Tiles)
 						SaveImageAsTiles(image, "_brightmap");
 					else
@@ -128,19 +131,15 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		/// <summary>
 		/// Create the image ready to be exported
 		/// </summary>
+		/// <param name="texturebitmap">The image the graphics will be drawn to</param>
+		/// <param name="offset">The offset of the selection in map space</param>
 		/// <param name="asbrightmap">True if the image should be a brightmap, false if normally textured</param>
 		/// <returns>The image to be exported</returns>
-		private Bitmap CreateImage(bool asbrightmap)
+		private void CreateImage(Bitmap texturebitmap, Vector2D offset, bool asbrightmap)
 		{
-			Bitmap texturebitmap = null;
 			Graphics gtexture = null;
-			Vector2D offset;
-			Vector2D size;
-
-			GetSizeAndOffset(out size, out offset);
 
 			// The texture
-			texturebitmap = new Bitmap((int)size.x, (int)size.y, settings.PixelFormat);
 			gtexture = Graphics.FromImage(texturebitmap);
 			gtexture.Clear(Color.Black); // If we don't clear to black we'll see seams where the sectors touch, due to the AA
 			gtexture.InterpolationMode = InterpolationMode.HighQualityBilinear;
@@ -148,9 +147,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			gtexture.PixelOffsetMode = PixelOffsetMode.HighQuality;
 			gtexture.SmoothingMode = SmoothingMode.AntiAlias; // Without AA the sector edges will be quite rough
 
+			GraphicsPath gpath = new GraphicsPath();
+
 			foreach (Sector s in sectors)
 			{
-				GraphicsPath p = new GraphicsPath();
 				float rotation = (float)s.Fields.GetValue("rotationfloor", 0.0);
 
 				// If a sector is rotated any offset is on the rotated axes. But we need to offset by
@@ -165,16 +165,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					Vector2D v2 = s.Triangles.Vertices[i * 3 + 1] - offset; v2.y *= -1.0;
 					Vector2D v3 = s.Triangles.Vertices[i * 3 + 2] - offset; v3.y *= -1.0;
 				
-					p.AddLine((float)v1.x, (float)v1.y, (float)v2.x, (float)v2.y);
-					p.AddLine((float)v2.x, (float)v2.y, (float)v3.x, (float)v3.y);
-					p.CloseFigure();
+					gpath.AddLine((float)v1.x, (float)v1.y, (float)v2.x, (float)v2.y);
+					gpath.AddLine((float)v2.x, (float)v2.y, (float)v3.x, (float)v3.y);
+					gpath.CloseFigure();
 				}
 
 				if (asbrightmap)
 				{
 					// Create the brightmap based on the sector brightness
-					SolidBrush sbrush = new SolidBrush(Color.FromArgb(255, s.Brightness, s.Brightness, s.Brightness));
-					gtexture.FillPath(sbrush, p);
+					using (SolidBrush sbrush = new SolidBrush(Color.FromArgb(255, s.Brightness, s.Brightness, s.Brightness)))
+						gtexture.FillPath(sbrush, gpath);
 				}
 				else
 				{
@@ -224,18 +224,28 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					matrix.Scale((float)texturescale.x, (float)texturescale.y);
 
 					if (!settings.Fullbright)
-						brushtexture = AdjustBrightness(brushtexture, s.Brightness > 0 ? s.Brightness / 255.0f : 0.0f);
+						AdjustBrightness(brushtexture, s.Brightness > 0 ? s.Brightness / 255.0f : 0.0f);
 
 					// Create the texture brush and apply the matrix
 					TextureBrush tbrush = new TextureBrush(brushtexture);
 					tbrush.Transform = matrix;
 
 					// Draw the islands of the sector
-					gtexture.FillPath(tbrush, p);
+					gtexture.FillPath(tbrush, gpath);
+
+					// Dispose unneeded objects
+					brushtexture.Dispose();
+					tbrush.Dispose();
+					matrix.Dispose();
 				}
+
+				// Reset the graphics path
+				gpath.Reset();
 			}
 
-			return texturebitmap;
+			// Dispose unneeded objects
+			gpath.Dispose();
+			gtexture.Dispose();
 		}
 
 		/// <summary>
@@ -264,12 +274,14 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 						height = image.Size.Height - (y * TILE_SIZE);
 
 
-					Bitmap bitmap = new Bitmap(TILE_SIZE, TILE_SIZE);
-					Graphics g = Graphics.FromImage(bitmap);
-					g.Clear(Color.Black);
-					g.DrawImage(image, new Rectangle(0, 0, width, height), new Rectangle(x*TILE_SIZE, y*TILE_SIZE, width, height), GraphicsUnit.Pixel);
+					using (Bitmap bitmap = new Bitmap(TILE_SIZE, TILE_SIZE))
+					using (Graphics g = Graphics.FromImage(bitmap))
+					{
+						g.Clear(Color.Black);
+						g.DrawImage(image, new Rectangle(0, 0, width, height), new Rectangle(x * TILE_SIZE, y * TILE_SIZE, width, height), GraphicsUnit.Pixel);
 
-					bitmap.Save(string.Format("{0}{1}{2}{3}", Path.Combine(settings.Path, settings.Name), suffix, imagenum, settings.Extension));
+						bitmap.Save(string.Format("{0}{1}{2}{3}", Path.Combine(settings.Path, settings.Name), suffix, imagenum, settings.Extension));
+					}
 
 					imagenum++;
 				}
@@ -353,10 +365,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		/// <summary>
 		/// Adjusts the brightness of an image. Code by Rod Stephens http://csharphelper.com/blog/2014/10/use-an-imageattributes-object-to-adjust-an-images-brightness-in-c/
 		/// </summary>
-		/// <param name="image">Base image</param>
+		/// <param name="image">The image to adjust</param>
 		/// <param name="brightness">Brightness between 0.0f and 1.0f</param>
-		/// <returns>The new image with changed brightness</returns>
-		private Bitmap AdjustBrightness(Image image, float brightness)
+		private void AdjustBrightness(Image image, float brightness)
 		{
 			// Make the ColorMatrix.
 			float b = brightness;
@@ -385,8 +396,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				gr.DrawImage(image, points, rect, GraphicsUnit.Pixel, attributes);
 			}
 
-			// Return the result.
-			return bm;
+			// Dispose the original...
+			image.Dispose();
+
+			// ... and set it as the adjusted image
+			image = bm;
 		}
 
 		#endregion
