@@ -53,7 +53,7 @@ namespace CodeImp.DoomBuilder.Map
 		// This contains a character that is invalid in the UDMF standard, but valid
 		// in our parser, so that it can only be used by Doom Builder and will never
 		// conflict with any other valid UDMF field.
-		internal const string VIRTUAL_SECTOR_FIELD = "!virtual_sector";
+		public const string VIRTUAL_SECTOR_FIELD = "!virtual_sector";
 		
 		//mxd
 		private const string SELECTION_GROUPS_PATH = "selectiongroups";
@@ -4015,12 +4015,12 @@ namespace CodeImp.DoomBuilder.Map
 			// Collect unselected sectors, which sidedefs belong to selected lines 
 			foreach(Linedef line in lines)
 			{
-				if(line.Front != null && line.Front.Sector != null)
+				if (line.Front != null && line.Front.Sector != null)
 				{
 					if(!sectorsbysides.ContainsKey(line.Front.Sector)) sectorsbysides.Add(line.Front.Sector, new HashSet<Sidedef>());
 					sectorsbysides[line.Front.Sector].Add(line.Front);
 				}
-				if(line.Back != null && line.Back.Sector != null)
+				if (line.Back != null && line.Back.Sector != null)
 				{
 					if(!sectorsbysides.ContainsKey(line.Back.Sector)) sectorsbysides.Add(line.Back.Sector, new HashSet<Sidedef>());
 					sectorsbysides[line.Back.Sector].Add(line.Back);

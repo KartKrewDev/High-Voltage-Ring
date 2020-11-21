@@ -1325,6 +1325,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if (General.Map.UDMF)
 			{
 				foreach (Sector s in General.Map.Map.GetSectorsFromLinedefs(selectedlines))
+					if(!s.Fields.ContainsKey(MapSet.VIRTUAL_SECTOR_FIELD)) // Ignore sectors that have the VIRTUAL_SECTOR_FIELD UDMF field created when cloning the MapSet when copying
 						selectedsectors.Add(s, new SectorTextureInfo(s));
 			}
 			
