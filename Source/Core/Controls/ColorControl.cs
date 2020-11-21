@@ -44,10 +44,12 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			// Show color dialog
 			dialog.Color = panel.BackColor;
+			dialog.CustomColors = General.Settings.ColorDialogCustomColors;
 			if(dialog.ShowDialog(this.ParentForm) == DialogResult.OK)
 			{
 				// Apply new color
 				panel.BackColor = dialog.Color;
+				General.Settings.ColorDialogCustomColors = dialog.CustomColors;
 
 				// Dispatch Event
 				if(ColorChanged != null) ColorChanged(this, EventArgs.Empty);
