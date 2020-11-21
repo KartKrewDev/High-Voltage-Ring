@@ -50,8 +50,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		public bool Tiles;
 		public PixelFormat PixelFormat;
 		public ImageFormat ImageFormat;
+		public float Scale;
 
-		public ImageExportSettings(string path, string name, string extension, bool floor, bool fullbright, bool brightmap, bool tiles, PixelFormat pformat, ImageFormat iformat)
+		public ImageExportSettings(string path, string name, string extension, bool floor, bool fullbright, bool brightmap, bool tiles, float scale, PixelFormat pformat, ImageFormat iformat)
 		{
 			Path = path;
 			Name = name;
@@ -62,6 +63,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			Fullbright = fullbright;
 			PixelFormat = pformat;
 			ImageFormat = iformat;
+			Scale = scale;
 		}
 	}
 
@@ -105,10 +107,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			GetSizeAndOffset(out size, out offset);
 
 			// Use the same image for the normal texture and the brightmap because of memory concerns
-			using (Bitmap image = new Bitmap((int)size.x, (int)size.y, settings.PixelFormat))
+			using (Bitmap image = new Bitmap((int)(size.x * settings.Scale), (int)(size.y * settings.Scale), settings.PixelFormat))
 			{
 				// Normal texture image
-				CreateImage(image, offset, false);
+				CreateImage(image, offset, settings.Scale, false);
 
 				if (settings.Tiles)
 					SaveImageAsTiles(image);
@@ -118,7 +120,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				// The brightmap
 				if (settings.Brightmap)
 				{
-					CreateImage(image, offset, true);
+					CreateImage(image, offset, settings.Scale, true);
 
 					if (settings.Tiles)
 						SaveImageAsTiles(image, "_brightmap");
@@ -135,7 +137,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		/// <param name="offset">The offset of the selection in map space</param>
 		/// <param name="asbrightmap">True if the image should be a brightmap, false if normally textured</param>
 		/// <returns>The image to be exported</returns>
-		private void CreateImage(Bitmap texturebitmap, Vector2D offset, bool asbrightmap)
+		private void CreateImage(Bitmap texturebitmap, Vector2D offset, float scale, bool asbrightmap)
 		{
 			Graphics gtexture = null;
 
@@ -161,9 +163,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				for (int i = 0; i < s.Triangles.Vertices.Count / 3; i++)
 				{
 					// The GDI image has the 0/0 coordinate in the top left, so invert the y component
-					Vector2D v1 = s.Triangles.Vertices[i * 3] - offset; v1.y *= -1.0;
-					Vector2D v2 = s.Triangles.Vertices[i * 3 + 1] - offset; v2.y *= -1.0;
-					Vector2D v3 = s.Triangles.Vertices[i * 3 + 2] - offset; v3.y *= -1.0;
+					Vector2D v1 = (s.Triangles.Vertices[i * 3] - offset) * scale; v1.y *= -1.0;
+					Vector2D v2 = (s.Triangles.Vertices[i * 3 + 1] - offset) * scale; v2.y *= -1.0;
+					Vector2D v3 = (s.Triangles.Vertices[i * 3 + 2] - offset) * scale; v3.y *= -1.0;
 				
 					gpath.AddLine((float)v1.x, (float)v1.y, (float)v2.x, (float)v2.y);
 					gpath.AddLine((float)v2.x, (float)v2.y, (float)v3.x, (float)v3.y);
@@ -188,11 +190,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 						// but doesn't applie the color correction if we set UseColorCorrection to false first
 						ImageData imagedata = General.Map.Data.GetFlatImage(s.FloorTexture);
 						imagedata.UseColorCorrection = false;
-						brushtexture = imagedata.LocalGetBitmap();
+						brushtexture = new Bitmap(imagedata.LocalGetBitmap());
 						imagedata.UseColorCorrection = true;
 
-						textureoffset.x = s.Fields.GetValue("xpanningfloor", 0.0);
-						textureoffset.y = s.Fields.GetValue("ypanningfloor", 0.0);
+						textureoffset.x = s.Fields.GetValue("xpanningfloor", 0.0) * scale;
+						textureoffset.y = s.Fields.GetValue("ypanningfloor", 0.0) * scale;
 
 						// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
 						texturescale.x = 1.0 / s.Fields.GetValue("xscalefloor", 1.0);
@@ -204,11 +206,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 						// but doesn't applie the color correction if we set UseColorCorrection to false first
 						ImageData imagedata = General.Map.Data.GetFlatImage(s.CeilTexture);
 						imagedata.UseColorCorrection = false;
-						brushtexture = imagedata.LocalGetBitmap();
+						brushtexture = new Bitmap(imagedata.LocalGetBitmap());
 						imagedata.UseColorCorrection = true;
 
-						textureoffset.x = s.Fields.GetValue("xpanningceiling", 0.0);
-						textureoffset.y = s.Fields.GetValue("ypanningceiling", 0.0);
+						textureoffset.x = s.Fields.GetValue("xpanningceiling", 0.0) * scale;
+						textureoffset.y = s.Fields.GetValue("ypanningceiling", 0.0) * scale;
 
 						// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
 						texturescale.x = 1.0 / s.Fields.GetValue("xscaleceiling", 1.0);
@@ -218,13 +220,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					// Create the transformation matrix
 					Matrix matrix = new Matrix();
 					matrix.Rotate(rotation);
-					matrix.Translate((float)(-offset.x * rotationvector.x), (float)(offset.x * rotationvector.y)); // Left/right offset from the map origin
-					matrix.Translate((float)(offset.y * rotationvector.y), (float)(offset.y * rotationvector.x)); // Up/down offset from the map origin
+					matrix.Translate((float)(-offset.x*scale * rotationvector.x), (float)(offset.x*scale * rotationvector.y)); // Left/right offset from the map origin
+					matrix.Translate((float)(offset.y*scale * rotationvector.y), (float)(offset.y*scale * rotationvector.x)); // Up/down offset from the map origin
 					matrix.Translate(-(float)textureoffset.x, -(float)textureoffset.y); // Texture offset 
 					matrix.Scale((float)texturescale.x, (float)texturescale.y);
 
 					if (!settings.Fullbright)
-						AdjustBrightness(brushtexture, s.Brightness > 0 ? s.Brightness / 255.0f : 0.0f);
+						AdjustBrightness(ref brushtexture, s.Brightness > 0 ? s.Brightness / 255.0f : 0.0f);
+
+					if (scale > 1.0f)
+						ResizeImage(ref brushtexture, brushtexture.Width * (int)scale, brushtexture.Height * (int)scale);
 
 					// Create the texture brush and apply the matrix
 					TextureBrush tbrush = new TextureBrush(brushtexture);
@@ -367,7 +372,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		/// </summary>
 		/// <param name="image">The image to adjust</param>
 		/// <param name="brightness">Brightness between 0.0f and 1.0f</param>
-		private void AdjustBrightness(Image image, float brightness)
+		private void AdjustBrightness(ref Bitmap image, float brightness)
 		{
 			// Make the ColorMatrix.
 			float b = brightness;
@@ -401,6 +406,40 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 			// ... and set it as the adjusted image
 			image = bm;
+		}
+
+		/// <summary>
+		/// Resize the image to the specified width and height. Taken from https://stackoverflow.com/a/24199315 (with some modifications)
+		/// </summary>
+		/// <param name="image">The image to resize.</param>
+		/// <param name="width">The width to resize to.</param>
+		/// <param name="height">The height to resize to.</param>
+		/// <returns>The resized image.</returns>
+		private void ResizeImage(ref Bitmap image, int width, int height)
+		{
+			var destRect = new Rectangle(0, 0, width, height);
+			var destImage = new Bitmap(width, height);
+
+			destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+			using (var graphics = Graphics.FromImage(destImage))
+			{
+				graphics.CompositingMode = CompositingMode.SourceCopy;
+				graphics.CompositingQuality = CompositingQuality.HighQuality;
+				graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+				graphics.SmoothingMode = SmoothingMode.HighQuality;
+				graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+				using (var wrapMode = new ImageAttributes())
+				{
+					wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+					graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+				}
+			}
+
+			image.Dispose();
+
+			image = destImage;
 		}
 
 		#endregion

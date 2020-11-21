@@ -674,7 +674,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			ImageExportSettingsForm form = new ImageExportSettingsForm();
 			if (form.ShowDialog() == DialogResult.OK)
 			{
-				ImageExportSettings settings = new ImageExportSettings(Path.GetDirectoryName(form.FilePath), Path.GetFileNameWithoutExtension(form.FilePath), Path.GetExtension(form.FilePath), form.Floor, form.Fullbright, form.Brightmap, form.Tiles, form.GetPixelFormat(), form.GetImageFormat());
+				ImageExportSettings settings = new ImageExportSettings(Path.GetDirectoryName(form.FilePath), Path.GetFileNameWithoutExtension(form.FilePath), Path.GetExtension(form.FilePath), form.Floor, form.Fullbright, form.Brightmap, form.Tiles, form.ImageScale, form.GetPixelFormat(), form.GetImageFormat());
 				ImageExporter exporter = new ImageExporter(sectors, settings);
 
 				string text = "The following images will be created:\n\n" + string.Join("\n", exporter.GetImageNames());

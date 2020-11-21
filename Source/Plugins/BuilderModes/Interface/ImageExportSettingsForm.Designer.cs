@@ -43,6 +43,8 @@
 			this.cbFullbright = new System.Windows.Forms.CheckBox();
 			this.cbBrightmap = new System.Windows.Forms.CheckBox();
 			this.cbTiles = new System.Windows.Forms.CheckBox();
+			this.cbScale = new System.Windows.Forms.ComboBox();
+			this.label4 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// tbExportPath
@@ -194,6 +196,29 @@
 			this.cbTiles.Text = "Create 64x64 tiles";
 			this.cbTiles.UseVisualStyleBackColor = true;
 			// 
+			// cbScale
+			// 
+			this.cbScale.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbScale.FormattingEnabled = true;
+			this.cbScale.Items.AddRange(new object[] {
+            "100%",
+            "200%",
+            "400%",
+            "800%"});
+			this.cbScale.Location = new System.Drawing.Point(102, 89);
+			this.cbScale.Name = "cbScale";
+			this.cbScale.Size = new System.Drawing.Size(71, 21);
+			this.cbScale.TabIndex = 17;
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(12, 92);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(37, 13);
+			this.label4.TabIndex = 18;
+			this.label4.Text = "Scale:";
+			// 
 			// ImageExportSettingsForm
 			// 
 			this.AcceptButton = this.export;
@@ -201,6 +226,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancel;
 			this.ClientSize = new System.Drawing.Size(447, 188);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.cbScale);
 			this.Controls.Add(this.cbTiles);
 			this.Controls.Add(this.cbBrightmap);
 			this.Controls.Add(this.cbFullbright);
@@ -242,5 +269,7 @@
 		private System.Windows.Forms.CheckBox cbFullbright;
 		private System.Windows.Forms.CheckBox cbBrightmap;
 		private System.Windows.Forms.CheckBox cbTiles;
+		private System.Windows.Forms.ComboBox cbScale;
+		private System.Windows.Forms.Label label4;
 	}
 }

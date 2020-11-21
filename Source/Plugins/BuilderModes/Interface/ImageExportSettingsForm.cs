@@ -44,6 +44,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		public bool Fullbright { get { return cbFullbright.Checked; } }
 		public bool Brightmap { get { return cbBrightmap.Checked; } }
 		public bool Tiles { get { return cbTiles.Checked; } }
+		public float ImageScale { get { return (float)Math.Pow(2, cbScale.SelectedIndex); } }
 
 		#endregion
 
@@ -73,6 +74,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			cbFullbright.Checked = General.Settings.ReadPluginSetting("imageexportfullbright", true);
 			cbBrightmap.Checked = General.Settings.ReadPluginSetting("imageexportbrightmap", false);
 			cbTiles.Checked = General.Settings.ReadPluginSetting("imageexporttiles", false);
+			cbScale.SelectedIndex = General.Settings.ReadPluginSetting("imageexportscale", 0);
 		}
 
 		#endregion
@@ -133,9 +135,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void export_Click(object sender, EventArgs e)
 		{
-			 General.Settings.WritePluginSetting("imageexportfullbright", cbFullbright.Checked);
-			 General.Settings.WritePluginSetting("imageexportbrightmap", cbBrightmap.Checked);
-			 General.Settings.WritePluginSetting("imageexporttiles", cbTiles.Checked);
+			General.Settings.WritePluginSetting("imageexportfullbright", cbFullbright.Checked);
+			General.Settings.WritePluginSetting("imageexportbrightmap", cbBrightmap.Checked);
+			General.Settings.WritePluginSetting("imageexporttiles", cbTiles.Checked);
+			General.Settings.WritePluginSetting("imageexportscale", cbScale.SelectedIndex);
 
 			this.DialogResult = DialogResult.OK;
 			this.Close();
