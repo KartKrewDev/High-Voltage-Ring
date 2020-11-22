@@ -590,14 +590,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							foreach(Thing t in be.Things)
 							{
-								if (t.Sector == null)
-									t.DetermineSector(blockmap);
+								// Always determine the thing's current sector because it might have change since the last determination
+								t.DetermineSector(blockmap);
 
 								if (t.Sector == s && t.Selected != s.Selected) t.Selected = s.Selected;
 							}
 						}
-						//foreach(Thing t in General.Map.Map.Things) 
-						//	if(t.Sector == s && t.Selected != s.Selected) t.Selected = s.Selected;
 					}
 
 					if(update) 
@@ -836,8 +834,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						foreach (Thing t in be.Things)
 						{
-							if (t.Sector == null)
-								t.DetermineSector(blockmap);
+							// Always determine the thing's current sector because it might have change since the last determination
+							t.DetermineSector(blockmap);
 
 							if (t.Sector == s && t.Selected != s.Selected) t.Selected = s.Selected;
 						}
