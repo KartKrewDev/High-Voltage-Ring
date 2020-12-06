@@ -301,6 +301,27 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		[FieldDescription(Description = "Fade color", Field1 = "fadecolor")]
 		public bool FadeColor = true;
 
+		[FieldDescription(Description = "Floor color", Field1 = "color_floor")]
+		public bool FloorColor = true;
+
+		[FieldDescription(Description = "Ceiling color", Field1 = "color_ceiling")]
+		public bool CeilingColor = true;
+
+		[FieldDescription(Description = "Top wall color", Field1 = "color_walltop")]
+		public bool TopWallColor = true;
+
+		[FieldDescription(Description = "Bottom wall color", Field1 = "color_wallbottom")]
+		public bool BottomWallColor = true;
+
+		[FieldDescription(Description = "Sprites color", Field1 = "color_sprites")]
+		public bool SpritesColor = true;
+
+		[FieldDescription(Description = "Floor glow", Field1 = "floorglowcolor", Field2 = "floorglowheight")]
+		public bool FloorGlow = true;
+
+		[FieldDescription(Description = "Ceiling glow", Field1 = "ceilingglowcolor", Field2 = "ceilingglowheight")]
+		public bool CeilingGlow = true;
+
 		[FieldDescription(Description = "Desaturation", Field1 = "desaturation")]
 		public bool Desaturation = true;
 
