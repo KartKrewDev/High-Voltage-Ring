@@ -934,12 +934,17 @@ namespace CodeImp.DoomBuilder.Rendering
 						// Update buffer if needed
 						t.Update();
 
-                        //mxd. Check 3D distance. Check against MaxValue to save doing GetLenthSq if there's not DistanceCheck defined
-                        if (t.Info.DistanceCheckSq < double.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
-							continue;
+						//mxd. Check 3D distance. Check against MaxValue to save doing GetLenthSq if there's not DistanceCheck defined
+						if (t.Info.DistanceCheckSq < double.MaxValue)
+						{
+							t.CalculateCameraDistance(cameraposition);
+
+							if (t.CameraDistance > t.Info.DistanceCheckSq)
+								continue;
+						}
 
 						// Only do this sector when a vertexbuffer is created
-						if(t.GeometryBuffer != null) 
+						if (t.GeometryBuffer != null) 
 						{
 							// Determine the shader pass we want to use for this object
 							ShaderName wantedshaderpass = (((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass;
@@ -1248,9 +1253,14 @@ namespace CodeImp.DoomBuilder.Rendering
 					t.Update();
 
 					//mxd. Check 3D distance. Check against MaxValue to save doing GetLenthSq if there's not DistanceCheck defined
-					if (t.Info.DistanceCheckSq < double.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
-						continue;
-					
+					if (t.Info.DistanceCheckSq < double.MaxValue)
+					{
+						t.CalculateCameraDistance(cameraposition);
+
+						if (t.CameraDistance > t.Info.DistanceCheckSq)
+							continue;
+					}
+
 					t.UpdateSpriteFrame(); // Set correct texture, geobuffer and triangles count
 					if(t.Texture is UnknownImage) continue;
 					
@@ -1471,8 +1481,13 @@ namespace CodeImp.DoomBuilder.Rendering
 				t.Update();
 
 				// Check 3D distance. Check against MaxValue to save doing GetLenthSq if there's not DistanceCheck defined
-				if (t.Info.DistanceCheckSq < double.MaxValue && (t.Thing.Position - cameraposition).GetLengthSq() > t.Info.DistanceCheckSq)
-					continue;
+				if (t.Info.DistanceCheckSq < double.MaxValue)
+				{
+					t.CalculateCameraDistance(cameraposition);
+
+					if (t.CameraDistance > t.Info.DistanceCheckSq)
+						continue;
+				}
 					
 				Color4 vertexcolor = new Color4(t.VertexColor);
 
