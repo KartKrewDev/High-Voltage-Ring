@@ -111,11 +111,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			// Fetch settings from the panel
 			bool fixedcurve = panel.FixedCurve;
+			bool fixedcurveoutwards = panel.FixedCurveOutwards;
 			int vertices = Math.Min(panel.Vertices, (int)Math.Ceiling(line.Length / 4));
 			int distance = panel.Distance;
 			int angle = (!fixedcurve && distance == 0 ? Math.Max(5, panel.Angle) : panel.Angle);
 			double theta = Angle2D.DegToRad(angle);
-			if(distance < 0) theta = -theta; //mxd
+			if((!fixedcurve && distance < 0) || (fixedcurve && fixedcurveoutwards)) theta = -theta; //mxd
 
 			// Make list
 			List<Vector2D> points = new List<Vector2D>(vertices);
@@ -193,8 +194,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			int distance = General.Settings.ReadPluginSetting("curvelinedefsmode.distance", DEFAULT_DISTANCE);
 			int angle = General.Settings.ReadPluginSetting("curvelinedefsmode.angle", DEFAULT_ANGLE);
 			bool fixedcurve = General.Settings.ReadPluginSetting("curvelinedefsmode.fixedcurve", false);
+			bool fixeddirection = General.Settings.ReadPluginSetting("curvelinedefsmode.fixedcurveoutwards", true);
 
-			panel.SetValues(vertices, distance, angle, fixedcurve);
+			panel.SetValues(vertices, distance, angle, fixedcurve, fixeddirection);
 			panel.Register();
 			panel.OnValueChanged += OnValuesChanged;
 		}
@@ -206,6 +208,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Settings.WritePluginSetting("curvelinedefsmode.distance", panel.Distance);
 			General.Settings.WritePluginSetting("curvelinedefsmode.angle", panel.Angle);
 			General.Settings.WritePluginSetting("curvelinedefsmode.fixedcurve", panel.FixedCurve);
+			General.Settings.WritePluginSetting("curvelinedefsmode.fixedcurveoutwards", panel.FixedCurveOutwards);
 			panel.Unregister();
 		}
 
@@ -458,7 +461,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(prevoffset != 0)
 				{
 					// Set new verts count without triggering the update...
-					panel.SetValues(panel.Vertices + Math.Sign(prevoffset - offset), panel.Distance, panel.Angle, panel.FixedCurve);
+					panel.SetValues(panel.Vertices + Math.Sign(prevoffset - offset), panel.Distance, panel.Angle, panel.FixedCurve, panel.FixedCurveOutwards);
 
 					// Update hint text
 					hintlabel.Text = "Vertices: " + panel.Vertices;
@@ -471,7 +474,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(double.IsNaN(u))
 				{
 					// Set new distance without triggering the update...
-					panel.SetValues(panel.Vertices, 0, panel.Angle, panel.FixedCurve); // Special cases...
+					panel.SetValues(panel.Vertices, 0, panel.Angle, panel.FixedCurve, panel.FixedCurveOutwards); // Special cases...
 				}
 				else
 				{
@@ -482,7 +485,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						newoffset = panel.Distance + offset;
 
 					// Set new distance without triggering the update...
-					panel.SetValues(panel.Vertices, newoffset, panel.Angle, panel.FixedCurve);
+					panel.SetValues(panel.Vertices, newoffset, panel.Angle, panel.FixedCurve, panel.FixedCurveOutwards);
 				}
 
 				// Update hint text
@@ -499,7 +502,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(panel.Angle == 0 && (Math.Sign(offset - prevoffset) != Math.Sign(panel.Distance)))
 					{
 						// Set new distance without triggering the update...
-						panel.SetValues(panel.Vertices, -panel.Distance, panel.Angle, panel.FixedCurve);
+						panel.SetValues(panel.Vertices, -panel.Distance, panel.Angle, panel.FixedCurve, panel.FixedCurveOutwards);
 
 						// Recalculate affected values...
 						perpendicular *= -1;
@@ -540,7 +543,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				// Set new angle without triggering the update...
-				panel.SetValues(panel.Vertices, panel.Distance, newangle, panel.FixedCurve);
+				panel.SetValues(panel.Vertices, panel.Distance, newangle, panel.FixedCurve, panel.FixedCurveOutwards);
 
 				// Update hint text
 				hintlabel.Text = "Angle: " + panel.Angle;

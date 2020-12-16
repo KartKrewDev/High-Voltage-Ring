@@ -14,6 +14,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		#region ================== Variables
 
 		private bool blockevents;
+		private bool fixedcurveoutwards;
 
 		#endregion
 
@@ -26,6 +27,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		public int AngleIncrement { get { return (int)angle.Increment; } }
 		public int MaximumAngle { get { return (int)angle.Maximum; } }
 		public bool FixedCurve { get { return fixedcurve.Checked; } }
+		public bool FixedCurveOutwards { get { return fixedcurveoutwards; } }
 
 		#endregion
 		
@@ -40,7 +42,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		#region ================== Mathods
 
-		public void SetValues(int verts, int distance, int angle, bool fixedcurve)
+		public void SetValues(int verts, int distance, int angle, bool fixedcurve, bool fixeddirection)
 		{
 			blockevents = true;
 
@@ -48,6 +50,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			this.distance.Value = General.Clamp(distance, (int)this.distance.Minimum, (int)this.distance.Maximum);
 			this.angle.Value = General.Clamp(angle, (int)this.angle.Minimum, (int)this.angle.Maximum);
 			this.fixedcurve.Checked = fixedcurve;
+			this.fixedcurveoutwards = fixeddirection;
 
 			blockevents = false;
 		}
@@ -123,12 +126,19 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void flip_Click(object sender, EventArgs e)
 		{
-			distance.Value = -distance.Value;
+			if (fixedcurve.Checked)
+			{
+				fixedcurveoutwards = !fixedcurveoutwards;
+				OnValueChanged(this, EventArgs.Empty);
+			}
+			else
+				distance.Value = -distance.Value;
+			
 		}
 
 		private void reset_Click(object sender, EventArgs e)
 		{
-			SetValues(CurveLinedefsMode.DEFAULT_VERTICES_COUNT, CurveLinedefsMode.DEFAULT_DISTANCE, CurveLinedefsMode.DEFAULT_ANGLE, false);
+			SetValues(CurveLinedefsMode.DEFAULT_VERTICES_COUNT, CurveLinedefsMode.DEFAULT_DISTANCE, CurveLinedefsMode.DEFAULT_ANGLE, false, true);
 			if(OnValueChanged != null) OnValueChanged(this, EventArgs.Empty);
 		}
 

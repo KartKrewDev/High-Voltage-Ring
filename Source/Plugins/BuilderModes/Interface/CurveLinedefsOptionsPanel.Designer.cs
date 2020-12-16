@@ -35,13 +35,13 @@
 			this.distance = new CodeImp.DoomBuilder.Controls.ToolStripNumericUpDown();
 			this.anglelabel = new System.Windows.Forms.ToolStripLabel();
 			this.angle = new CodeImp.DoomBuilder.Controls.ToolStripNumericUpDown();
+			this.flip = new System.Windows.Forms.ToolStripButton();
 			this.reset = new System.Windows.Forms.ToolStripButton();
 			this.separator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.fixedcurve = new System.Windows.Forms.ToolStripButton();
 			this.separator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.apply = new System.Windows.Forms.ToolStripButton();
 			this.cancel = new System.Windows.Forms.ToolStripButton();
-			this.flip = new System.Windows.Forms.ToolStripButton();
 			this.toolstrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -59,8 +59,8 @@
             this.separator1,
             this.fixedcurve,
             this.separator2,
-            this.apply,
-            this.cancel});
+            this.cancel,
+            this.apply});
 			this.toolstrip.Location = new System.Drawing.Point(0, 0);
 			this.toolstrip.Name = "toolstrip";
 			this.toolstrip.Size = new System.Drawing.Size(760, 25);
@@ -70,7 +70,7 @@
 			// vertslabel
 			// 
 			this.vertslabel.Name = "vertslabel";
-			this.vertslabel.Size = new System.Drawing.Size(54, 22);
+			this.vertslabel.Size = new System.Drawing.Size(53, 22);
 			this.vertslabel.Text = "Vertices: ";
 			// 
 			// verts
@@ -172,6 +172,16 @@
             0});
 			this.angle.ValueChanged += new System.EventHandler(this.OnUIValuesChanged);
 			// 
+			// flip
+			// 
+			this.flip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.flip.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Flip;
+			this.flip.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.flip.Name = "flip";
+			this.flip.Size = new System.Drawing.Size(23, 22);
+			this.flip.Text = "Flip Curve";
+			this.flip.Click += new System.EventHandler(this.flip_Click);
+			// 
 			// reset
 			// 
 			this.reset.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -195,7 +205,7 @@
 			this.fixedcurve.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.fixedcurve.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
 			this.fixedcurve.Name = "fixedcurve";
-			this.fixedcurve.Size = new System.Drawing.Size(128, 22);
+			this.fixedcurve.Size = new System.Drawing.Size(129, 22);
 			this.fixedcurve.Text = "Fixed circular curve";
 			this.fixedcurve.CheckedChanged += new System.EventHandler(this.fixedcurve_CheckedChanged);
 			// 
@@ -224,16 +234,6 @@
 			this.cancel.Size = new System.Drawing.Size(23, 22);
 			this.cancel.Text = "Cancel";
 			this.cancel.Click += new System.EventHandler(this.cancel_Click);
-			// 
-			// flip
-			// 
-			this.flip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.flip.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Flip;
-			this.flip.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.flip.Name = "flip";
-			this.flip.Size = new System.Drawing.Size(23, 22);
-			this.flip.Text = "Flip Curve";
-			this.flip.Click += new System.EventHandler(this.flip_Click);
 			// 
 			// CurveLinedefsOptionsPanel
 			// 
