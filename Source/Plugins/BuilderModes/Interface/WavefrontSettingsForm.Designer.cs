@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent() 
 		{
+			this.components = new System.ComponentModel.Container();
 			this.tbExportPath = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.cbExportForGZDoom = new System.Windows.Forms.CheckBox();
@@ -37,7 +38,6 @@
 			this.cbExportTextures = new System.Windows.Forms.CheckBox();
 			this.nudScale = new System.Windows.Forms.NumericUpDown();
 			this.label2 = new System.Windows.Forms.Label();
-			this.browse = new System.Windows.Forms.Button();
 			this.gbGZDoom = new System.Windows.Forms.GroupBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.rbZScript = new System.Windows.Forms.RadioButton();
@@ -52,12 +52,9 @@
 			this.tbActorName = new System.Windows.Forms.TextBox();
 			this.label6 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
-			this.bBrowseModelPath = new System.Windows.Forms.Button();
 			this.tbModelPath = new System.Windows.Forms.TextBox();
-			this.bBrowseActorPath = new System.Windows.Forms.Button();
 			this.tbActorPath = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.bBrowseBasePath = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.tbBasePath = new System.Windows.Forms.TextBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -70,12 +67,19 @@
 			this.cbNormalizeLowestVertex = new System.Windows.Forms.CheckBox();
 			this.cbCenterModel = new System.Windows.Forms.CheckBox();
 			this.cbIgnoreControlSectors = new System.Windows.Forms.CheckBox();
+			this.bBrowseModelPath = new System.Windows.Forms.Button();
+			this.bBrowseActorPath = new System.Windows.Forms.Button();
+			this.bBrowseBasePath = new System.Windows.Forms.Button();
+			this.browse = new System.Windows.Forms.Button();
+			this.actorNameError = new System.Windows.Forms.PictureBox();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.nudScale)).BeginInit();
 			this.gbGZDoom.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.groupBox4.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.actorNameError)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tbExportPath
@@ -176,18 +180,9 @@
 			this.label2.TabIndex = 9;
 			this.label2.Text = "Scale:";
 			// 
-			// browse
-			// 
-			this.browse.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
-			this.browse.Location = new System.Drawing.Point(405, 10);
-			this.browse.Name = "browse";
-			this.browse.Size = new System.Drawing.Size(30, 24);
-			this.browse.TabIndex = 1;
-			this.browse.UseVisualStyleBackColor = true;
-			this.browse.Click += new System.EventHandler(this.browse_Click);
-			// 
 			// gbGZDoom
 			// 
+			this.gbGZDoom.Controls.Add(this.actorNameError);
 			this.gbGZDoom.Controls.Add(this.groupBox3);
 			this.gbGZDoom.Controls.Add(this.groupBox2);
 			this.gbGZDoom.Controls.Add(this.bResetPaths);
@@ -323,6 +318,7 @@
 			this.tbActorName.Name = "tbActorName";
 			this.tbActorName.Size = new System.Drawing.Size(296, 20);
 			this.tbActorName.TabIndex = 15;
+			this.tbActorName.TextChanged += new System.EventHandler(this.tbActorName_TextChanged);
 			// 
 			// label6
 			// 
@@ -342,32 +338,12 @@
 			this.label5.TabIndex = 13;
 			this.label5.Text = "Model path:";
 			// 
-			// bBrowseModelPath
-			// 
-			this.bBrowseModelPath.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
-			this.bBrowseModelPath.Location = new System.Drawing.Point(376, 99);
-			this.bBrowseModelPath.Name = "bBrowseModelPath";
-			this.bBrowseModelPath.Size = new System.Drawing.Size(30, 24);
-			this.bBrowseModelPath.TabIndex = 12;
-			this.bBrowseModelPath.UseVisualStyleBackColor = true;
-			this.bBrowseModelPath.Click += new System.EventHandler(this.bBrowseModelPath_Click);
-			// 
 			// tbModelPath
 			// 
 			this.tbModelPath.Location = new System.Drawing.Point(74, 101);
 			this.tbModelPath.Name = "tbModelPath";
 			this.tbModelPath.Size = new System.Drawing.Size(296, 20);
 			this.tbModelPath.TabIndex = 11;
-			// 
-			// bBrowseActorPath
-			// 
-			this.bBrowseActorPath.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
-			this.bBrowseActorPath.Location = new System.Drawing.Point(376, 73);
-			this.bBrowseActorPath.Name = "bBrowseActorPath";
-			this.bBrowseActorPath.Size = new System.Drawing.Size(30, 24);
-			this.bBrowseActorPath.TabIndex = 10;
-			this.bBrowseActorPath.UseVisualStyleBackColor = true;
-			this.bBrowseActorPath.Click += new System.EventHandler(this.bBrowseActorPath_Click);
 			// 
 			// tbActorPath
 			// 
@@ -384,16 +360,6 @@
 			this.label4.Size = new System.Drawing.Size(59, 13);
 			this.label4.TabIndex = 8;
 			this.label4.Text = "Actor path:";
-			// 
-			// bBrowseBasePath
-			// 
-			this.bBrowseBasePath.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
-			this.bBrowseBasePath.Location = new System.Drawing.Point(376, 47);
-			this.bBrowseBasePath.Name = "bBrowseBasePath";
-			this.bBrowseBasePath.Size = new System.Drawing.Size(30, 24);
-			this.bBrowseBasePath.TabIndex = 7;
-			this.bBrowseBasePath.UseVisualStyleBackColor = true;
-			this.bBrowseBasePath.Click += new System.EventHandler(this.bBrowseBasePath_Click);
 			// 
 			// label3
 			// 
@@ -512,6 +478,56 @@
 			this.cbIgnoreControlSectors.Text = "Ignore 3D floor control sectors";
 			this.cbIgnoreControlSectors.UseVisualStyleBackColor = true;
 			// 
+			// bBrowseModelPath
+			// 
+			this.bBrowseModelPath.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
+			this.bBrowseModelPath.Location = new System.Drawing.Point(376, 99);
+			this.bBrowseModelPath.Name = "bBrowseModelPath";
+			this.bBrowseModelPath.Size = new System.Drawing.Size(30, 24);
+			this.bBrowseModelPath.TabIndex = 12;
+			this.bBrowseModelPath.UseVisualStyleBackColor = true;
+			this.bBrowseModelPath.Click += new System.EventHandler(this.bBrowseModelPath_Click);
+			// 
+			// bBrowseActorPath
+			// 
+			this.bBrowseActorPath.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
+			this.bBrowseActorPath.Location = new System.Drawing.Point(376, 73);
+			this.bBrowseActorPath.Name = "bBrowseActorPath";
+			this.bBrowseActorPath.Size = new System.Drawing.Size(30, 24);
+			this.bBrowseActorPath.TabIndex = 10;
+			this.bBrowseActorPath.UseVisualStyleBackColor = true;
+			this.bBrowseActorPath.Click += new System.EventHandler(this.bBrowseActorPath_Click);
+			// 
+			// bBrowseBasePath
+			// 
+			this.bBrowseBasePath.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
+			this.bBrowseBasePath.Location = new System.Drawing.Point(376, 47);
+			this.bBrowseBasePath.Name = "bBrowseBasePath";
+			this.bBrowseBasePath.Size = new System.Drawing.Size(30, 24);
+			this.bBrowseBasePath.TabIndex = 7;
+			this.bBrowseBasePath.UseVisualStyleBackColor = true;
+			this.bBrowseBasePath.Click += new System.EventHandler(this.bBrowseBasePath_Click);
+			// 
+			// browse
+			// 
+			this.browse.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
+			this.browse.Location = new System.Drawing.Point(405, 10);
+			this.browse.Name = "browse";
+			this.browse.Size = new System.Drawing.Size(30, 24);
+			this.browse.TabIndex = 1;
+			this.browse.UseVisualStyleBackColor = true;
+			this.browse.Click += new System.EventHandler(this.browse_Click);
+			// 
+			// actorNameError
+			// 
+			this.actorNameError.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Warning;
+			this.actorNameError.Location = new System.Drawing.Point(376, 25);
+			this.actorNameError.Name = "actorNameError";
+			this.actorNameError.Size = new System.Drawing.Size(16, 16);
+			this.actorNameError.TabIndex = 24;
+			this.actorNameError.TabStop = false;
+			this.actorNameError.Visible = false;
+			// 
 			// WavefrontSettingsForm
 			// 
 			this.AcceptButton = this.export;
@@ -546,6 +562,7 @@
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.actorNameError)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -595,5 +612,7 @@
 		private System.Windows.Forms.CheckBox cbNormalizeLowestVertex;
 		private System.Windows.Forms.CheckBox cbCenterModel;
 		private System.Windows.Forms.CheckBox cbIgnoreControlSectors;
+		private System.Windows.Forms.PictureBox actorNameError;
+		private System.Windows.Forms.ToolTip toolTip1;
 	}
 }

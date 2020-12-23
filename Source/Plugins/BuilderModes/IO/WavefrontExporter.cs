@@ -84,7 +84,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			ExportForGZDoom = form.UseGZDoomScale;
 			ExportTextures = form.ExportTextures;
 
-			ActorName = form.ActorName;
+			ActorName = form.ActorName.Trim();
 			BasePath = form.BasePath;
 			ActorPath = form.ActorPath;
 			ModelPath = form.ModelPath;

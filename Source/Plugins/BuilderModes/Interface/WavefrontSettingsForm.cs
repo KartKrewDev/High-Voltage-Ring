@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Linq;
@@ -112,7 +113,25 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			// Check settings
 			if (cbExportForGZDoom.Checked)
 			{
-				if(!PathIsValid(tbBasePath.Text.Trim()))
+				if (tbActorName.Text.Trim().Length == 0)
+				{
+					MessageBox.Show("Actor name can not be empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (Char.IsDigit(tbActorName.Text.Trim()[0]))
+				{
+					MessageBox.Show("Actor name can not start with a number!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (tbActorName.Text.Trim().Any(c => Char.IsWhiteSpace(c)))
+				{
+					MessageBox.Show("Actor name can not contain whitespace!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (!PathIsValid(tbBasePath.Text.Trim()))
 				{
 					MessageBox.Show("Base path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
@@ -274,6 +293,46 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 				cbNoGravity.Checked = true;
 
 			cbNoGravity.Enabled = !cbSpawnOnCeiling.Checked;
+		}
+
+		private void tbActorName_TextChanged(object sender, EventArgs e)
+		{
+			string name = tbActorName.Text.Trim();
+			bool haserror = false;
+			string errortext = "";
+
+			if (name.Length == 0)
+			{
+				errortext += "Actor name can not be empty";
+				haserror = true;
+			}
+			else
+			{
+				if (name.Any(c => Char.IsWhiteSpace(c)))
+				{
+					errortext += "Actor name can not contain whitespace";
+					haserror = true;
+				}
+
+				if (Char.IsDigit(name[0]))
+				{
+					if (errortext.Length > 0) errortext += "\n";
+					errortext += "Actor name can not start with a digit";
+					haserror = true;
+				}
+			}
+
+			if (haserror)
+			{
+				tbActorName.BackColor = Color.FromArgb(255, 192, 192);
+				toolTip1.SetToolTip(actorNameError, errortext);
+				actorNameError.Visible = true;
+			}
+			else
+			{
+				tbActorName.BackColor = SystemColors.Window;
+				actorNameError.Visible = false;
+			}
 		}
 	}
 }
