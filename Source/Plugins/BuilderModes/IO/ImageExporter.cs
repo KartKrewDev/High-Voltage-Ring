@@ -175,7 +175,8 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				if (asbrightmap)
 				{
 					// Create the brightmap based on the sector brightness
-					using (SolidBrush sbrush = new SolidBrush(Color.FromArgb(255, s.Brightness, s.Brightness, s.Brightness)))
+					int brightness = General.Clamp(s.Brightness, 0, 255);
+					using (SolidBrush sbrush = new SolidBrush(Color.FromArgb(255, brightness, brightness, brightness)))
 						gtexture.FillPath(sbrush, gpath);
 				}
 				else
@@ -226,7 +227,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					matrix.Scale((float)texturescale.x, (float)texturescale.y);
 
 					if (!settings.Fullbright)
-						AdjustBrightness(ref brushtexture, s.Brightness > 0 ? s.Brightness / 255.0f : 0.0f);
+					{
+						int brightness = General.Clamp(s.Brightness, 0, 255);
+						AdjustBrightness(ref brushtexture, brightness > 0 ? brightness / 255.0f : 0.0f);
+					}
 
 					if (scale > 1.0f)
 						ResizeImage(ref brushtexture, brushtexture.Width * (int)scale, brushtexture.Height * (int)scale);
