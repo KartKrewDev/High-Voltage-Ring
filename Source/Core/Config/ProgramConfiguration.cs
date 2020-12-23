@@ -331,7 +331,7 @@ namespace CodeImp.DoomBuilder.Config
 				animatevisualselection = cfg.ReadSetting("animatevisualselection", true);
 				previousversion = cfg.ReadSetting("currentversion", 0);
 				dockersposition = cfg.ReadSetting("dockersposition", 1);
-				collapsedockers = cfg.ReadSetting("collapsedockers", true);
+				collapsedockers = cfg.ReadSetting("collapsedockers", false);
 				dockerswidth = cfg.ReadSetting("dockerswidth", 300);
 				pasteoptions.ReadConfiguration(cfg, "pasteoptions");
 				toolbarscript = cfg.ReadSetting("toolbarscript", true);
