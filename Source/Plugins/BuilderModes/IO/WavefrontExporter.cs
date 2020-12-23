@@ -635,6 +635,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		private static StringBuilder CreateObjGeometry(List<Dictionary<string, List<WorldVertex[]>>> geometryByTexture, ref WavefrontExportSettings data) 
 		{
 			StringBuilder obj = new StringBuilder();
+			Vector2D offset;
 			const string vertexFormatter = "{0} {2} {1}\n";
 
 			Dictionary<Vector3D, int> uniqueVerts = new Dictionary<Vector3D, int>();
@@ -736,16 +737,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			data.Radius = br.x - tl.x > tl.y - br.y ? (int)(tl.y - br.y) / 2 : (int)(br.x - tl.x) / 2;
 			data.Height = (int)(tl.z - br.z);
 
+			if (data.CenterModel)
+				offset = new Vector2D(tl.x + (br.x - tl.x) / 2.0, tl.y + (br.y - tl.y) / 2.0);
+			else
+				offset = new Vector2D(0.0, 0.0);
+
 			//write geometry
 			//write vertices
 			if (data.ExportForGZDoom) 
 			{
-				Vector2D offset;
 
-				if (data.CenterModel)
-					offset = new Vector2D(tl.x + (br.x - tl.x) / 2.0, tl.y + (br.y - tl.y) / 2.0);
-				else
-					offset = new Vector2D(0.0, 0.0);
 
 				foreach (KeyValuePair<Vector3D, int> group in uniqueVerts)
 				{
@@ -758,8 +759,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			{
 				// biwa. Not sure why the x-axis is flipped here, since it will result in wrong normals when using the model directly in GZDoom. For this reason
 				// I disabled the flipping above
-				foreach(KeyValuePair<Vector3D, int> group in uniqueVerts)
-					obj.Append(string.Format(CultureInfo.InvariantCulture, "v " + vertexFormatter, -group.Key.x * data.Scale, group.Key.y * data.Scale, group.Key.z * data.Scale));
+				foreach (KeyValuePair<Vector3D, int> group in uniqueVerts)
+				{
+					double z = (group.Key.z - (data.NormalizeLowestVertex ? br.z : 0)) * data.Scale;
+
+					obj.Append(string.Format(CultureInfo.InvariantCulture, "v " + vertexFormatter, -(group.Key.x - offset.x) * data.Scale, (group.Key.y - offset.y) * data.Scale, z));
+				}
 			}
 
 			//write normals

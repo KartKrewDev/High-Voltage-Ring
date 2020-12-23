@@ -42,13 +42,12 @@
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.rbZScript = new System.Windows.Forms.RadioButton();
 			this.rbDecorate = new System.Windows.Forms.RadioButton();
-			this.cbCenterModel = new System.Windows.Forms.CheckBox();
-			this.cbNormalizeLowestVertex = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.tbSprite = new System.Windows.Forms.TextBox();
+			this.label7 = new System.Windows.Forms.Label();
 			this.cbSolid = new System.Windows.Forms.CheckBox();
 			this.cbSpawnOnCeiling = new System.Windows.Forms.CheckBox();
 			this.cbNoGravity = new System.Windows.Forms.CheckBox();
-			this.cbIgnoreControlSectors = new System.Windows.Forms.CheckBox();
 			this.bResetPaths = new System.Windows.Forms.Button();
 			this.tbActorName = new System.Windows.Forms.TextBox();
 			this.label6 = new System.Windows.Forms.Label();
@@ -68,8 +67,9 @@
 			this.lbSkipTextures = new System.Windows.Forms.ListBox();
 			this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
-			this.label7 = new System.Windows.Forms.Label();
-			this.tbSprite = new System.Windows.Forms.TextBox();
+			this.cbNormalizeLowestVertex = new System.Windows.Forms.CheckBox();
+			this.cbCenterModel = new System.Windows.Forms.CheckBox();
+			this.cbIgnoreControlSectors = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.nudScale)).BeginInit();
 			this.gbGZDoom.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -108,7 +108,7 @@
 			// export
 			// 
 			this.export.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.export.Location = new System.Drawing.Point(279, 525);
+			this.export.Location = new System.Drawing.Point(279, 518);
 			this.export.Name = "export";
 			this.export.Size = new System.Drawing.Size(75, 23);
 			this.export.TabIndex = 4;
@@ -120,7 +120,7 @@
 			// 
 			this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(360, 525);
+			this.cancel.Location = new System.Drawing.Point(360, 518);
 			this.cancel.Name = "cancel";
 			this.cancel.Size = new System.Drawing.Size(75, 23);
 			this.cancel.TabIndex = 5;
@@ -137,7 +137,7 @@
 			// cbExportTextures
 			// 
 			this.cbExportTextures.AutoSize = true;
-			this.cbExportTextures.Location = new System.Drawing.Point(27, 64);
+			this.cbExportTextures.Location = new System.Drawing.Point(200, 19);
 			this.cbExportTextures.Name = "cbExportTextures";
 			this.cbExportTextures.Size = new System.Drawing.Size(96, 17);
 			this.cbExportTextures.TabIndex = 6;
@@ -188,7 +188,6 @@
 			// 
 			// gbGZDoom
 			// 
-			this.gbGZDoom.Controls.Add(this.groupBox4);
 			this.gbGZDoom.Controls.Add(this.groupBox3);
 			this.gbGZDoom.Controls.Add(this.groupBox2);
 			this.gbGZDoom.Controls.Add(this.bResetPaths);
@@ -205,9 +204,9 @@
 			this.gbGZDoom.Controls.Add(this.tbBasePath);
 			this.gbGZDoom.Controls.Add(this.groupBox1);
 			this.gbGZDoom.Controls.Add(this.cbExportForGZDoom);
-			this.gbGZDoom.Location = new System.Drawing.Point(21, 87);
+			this.gbGZDoom.Location = new System.Drawing.Point(15, 141);
 			this.gbGZDoom.Name = "gbGZDoom";
-			this.gbGZDoom.Size = new System.Drawing.Size(414, 424);
+			this.gbGZDoom.Size = new System.Drawing.Size(420, 368);
 			this.gbGZDoom.TabIndex = 10;
 			this.gbGZDoom.TabStop = false;
 			// 
@@ -215,9 +214,9 @@
 			// 
 			this.groupBox3.Controls.Add(this.rbZScript);
 			this.groupBox3.Controls.Add(this.rbDecorate);
-			this.groupBox3.Location = new System.Drawing.Point(184, 158);
+			this.groupBox3.Location = new System.Drawing.Point(8, 286);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(222, 119);
+			this.groupBox3.Size = new System.Drawing.Size(170, 73);
 			this.groupBox3.TabIndex = 23;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Actor format";
@@ -245,30 +244,6 @@
 			this.rbDecorate.Text = "DECORATE";
 			this.rbDecorate.UseVisualStyleBackColor = true;
 			// 
-			// cbCenterModel
-			// 
-			this.cbCenterModel.AutoSize = true;
-			this.cbCenterModel.Checked = true;
-			this.cbCenterModel.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbCenterModel.Location = new System.Drawing.Point(6, 21);
-			this.cbCenterModel.Name = "cbCenterModel";
-			this.cbCenterModel.Size = new System.Drawing.Size(88, 17);
-			this.cbCenterModel.TabIndex = 20;
-			this.cbCenterModel.Text = "Center model";
-			this.cbCenterModel.UseVisualStyleBackColor = true;
-			// 
-			// cbNormalizeLowestVertex
-			// 
-			this.cbNormalizeLowestVertex.AutoSize = true;
-			this.cbNormalizeLowestVertex.Checked = true;
-			this.cbNormalizeLowestVertex.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbNormalizeLowestVertex.Location = new System.Drawing.Point(6, 44);
-			this.cbNormalizeLowestVertex.Name = "cbNormalizeLowestVertex";
-			this.cbNormalizeLowestVertex.Size = new System.Drawing.Size(166, 17);
-			this.cbNormalizeLowestVertex.TabIndex = 19;
-			this.cbNormalizeLowestVertex.Text = "Normalize lowest vertex z to 0";
-			this.cbNormalizeLowestVertex.UseVisualStyleBackColor = true;
-			// 
 			// groupBox2
 			// 
 			this.groupBox2.Controls.Add(this.tbSprite);
@@ -282,6 +257,24 @@
 			this.groupBox2.TabIndex = 18;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Actor settings";
+			// 
+			// tbSprite
+			// 
+			this.tbSprite.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+			this.tbSprite.Location = new System.Drawing.Point(50, 88);
+			this.tbSprite.MaxLength = 4;
+			this.tbSprite.Name = "tbSprite";
+			this.tbSprite.Size = new System.Drawing.Size(69, 20);
+			this.tbSprite.TabIndex = 4;
+			// 
+			// label7
+			// 
+			this.label7.AutoSize = true;
+			this.label7.Location = new System.Drawing.Point(7, 91);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(37, 13);
+			this.label7.TabIndex = 3;
+			this.label7.Text = "Sprite:";
 			// 
 			// cbSolid
 			// 
@@ -314,21 +307,9 @@
 			this.cbNoGravity.Text = "No gravity";
 			this.cbNoGravity.UseVisualStyleBackColor = true;
 			// 
-			// cbIgnoreControlSectors
-			// 
-			this.cbIgnoreControlSectors.AutoSize = true;
-			this.cbIgnoreControlSectors.Checked = true;
-			this.cbIgnoreControlSectors.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbIgnoreControlSectors.Location = new System.Drawing.Point(6, 67);
-			this.cbIgnoreControlSectors.Name = "cbIgnoreControlSectors";
-			this.cbIgnoreControlSectors.Size = new System.Drawing.Size(168, 17);
-			this.cbIgnoreControlSectors.TabIndex = 17;
-			this.cbIgnoreControlSectors.Text = "Ignore 3D floor control sectors";
-			this.cbIgnoreControlSectors.UseVisualStyleBackColor = true;
-			// 
 			// bResetPaths
 			// 
-			this.bResetPaths.Location = new System.Drawing.Point(74, 129);
+			this.bResetPaths.Location = new System.Drawing.Point(74, 127);
 			this.bResetPaths.Name = "bResetPaths";
 			this.bResetPaths.Size = new System.Drawing.Size(75, 23);
 			this.bResetPaths.TabIndex = 16;
@@ -355,7 +336,7 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(5, 106);
+			this.label5.Location = new System.Drawing.Point(5, 104);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(63, 13);
 			this.label5.TabIndex = 13;
@@ -364,7 +345,7 @@
 			// bBrowseModelPath
 			// 
 			this.bBrowseModelPath.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Folder;
-			this.bBrowseModelPath.Location = new System.Drawing.Point(376, 101);
+			this.bBrowseModelPath.Location = new System.Drawing.Point(376, 99);
 			this.bBrowseModelPath.Name = "bBrowseModelPath";
 			this.bBrowseModelPath.Size = new System.Drawing.Size(30, 24);
 			this.bBrowseModelPath.TabIndex = 12;
@@ -373,7 +354,7 @@
 			// 
 			// tbModelPath
 			// 
-			this.tbModelPath.Location = new System.Drawing.Point(74, 103);
+			this.tbModelPath.Location = new System.Drawing.Point(74, 101);
 			this.tbModelPath.Name = "tbModelPath";
 			this.tbModelPath.Size = new System.Drawing.Size(296, 20);
 			this.tbModelPath.TabIndex = 11;
@@ -436,18 +417,18 @@
 			this.groupBox1.Controls.Add(this.bAddFlat);
 			this.groupBox1.Controls.Add(this.bAddTexture);
 			this.groupBox1.Controls.Add(this.lbSkipTextures);
-			this.groupBox1.Location = new System.Drawing.Point(9, 283);
+			this.groupBox1.Location = new System.Drawing.Point(184, 158);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(169, 132);
+			this.groupBox1.Size = new System.Drawing.Size(222, 201);
 			this.groupBox1.TabIndex = 4;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Skip textures";
 			// 
 			// bRemoveTexture
 			// 
-			this.bRemoveTexture.Location = new System.Drawing.Point(6, 68);
+			this.bRemoveTexture.Location = new System.Drawing.Point(7, 140);
 			this.bRemoveTexture.Name = "bRemoveTexture";
-			this.bRemoveTexture.Size = new System.Drawing.Size(155, 23);
+			this.bRemoveTexture.Size = new System.Drawing.Size(209, 23);
 			this.bRemoveTexture.TabIndex = 3;
 			this.bRemoveTexture.Text = "Remove selected";
 			this.bRemoveTexture.UseVisualStyleBackColor = true;
@@ -455,9 +436,9 @@
 			// 
 			// bAddFlat
 			// 
-			this.bAddFlat.Location = new System.Drawing.Point(86, 99);
+			this.bAddFlat.Location = new System.Drawing.Point(114, 169);
 			this.bAddFlat.Name = "bAddFlat";
-			this.bAddFlat.Size = new System.Drawing.Size(75, 23);
+			this.bAddFlat.Size = new System.Drawing.Size(102, 23);
 			this.bAddFlat.TabIndex = 2;
 			this.bAddFlat.Text = "Add flat";
 			this.bAddFlat.UseVisualStyleBackColor = true;
@@ -465,9 +446,9 @@
 			// 
 			// bAddTexture
 			// 
-			this.bAddTexture.Location = new System.Drawing.Point(5, 99);
+			this.bAddTexture.Location = new System.Drawing.Point(7, 169);
 			this.bAddTexture.Name = "bAddTexture";
-			this.bAddTexture.Size = new System.Drawing.Size(75, 23);
+			this.bAddTexture.Size = new System.Drawing.Size(102, 23);
 			this.bAddTexture.TabIndex = 1;
 			this.bAddTexture.Text = "Add texture";
 			this.bAddTexture.UseVisualStyleBackColor = true;
@@ -479,7 +460,7 @@
 			this.lbSkipTextures.Location = new System.Drawing.Point(6, 19);
 			this.lbSkipTextures.Name = "lbSkipTextures";
 			this.lbSkipTextures.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.lbSkipTextures.Size = new System.Drawing.Size(156, 43);
+			this.lbSkipTextures.Size = new System.Drawing.Size(210, 108);
 			this.lbSkipTextures.TabIndex = 0;
 			// 
 			// groupBox4
@@ -487,30 +468,49 @@
 			this.groupBox4.Controls.Add(this.cbNormalizeLowestVertex);
 			this.groupBox4.Controls.Add(this.cbCenterModel);
 			this.groupBox4.Controls.Add(this.cbIgnoreControlSectors);
-			this.groupBox4.Location = new System.Drawing.Point(184, 283);
+			this.groupBox4.Controls.Add(this.cbExportTextures);
+			this.groupBox4.Location = new System.Drawing.Point(15, 64);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(222, 132);
-			this.groupBox4.TabIndex = 11;
+			this.groupBox4.Size = new System.Drawing.Size(420, 71);
+			this.groupBox4.TabIndex = 12;
 			this.groupBox4.TabStop = false;
-			this.groupBox4.Text = "Settings";
+			this.groupBox4.Text = "General settings";
 			// 
-			// label7
+			// cbNormalizeLowestVertex
 			// 
-			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(7, 91);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(37, 13);
-			this.label7.TabIndex = 3;
-			this.label7.Text = "Sprite:";
+			this.cbNormalizeLowestVertex.AutoSize = true;
+			this.cbNormalizeLowestVertex.Checked = true;
+			this.cbNormalizeLowestVertex.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbNormalizeLowestVertex.Location = new System.Drawing.Point(6, 44);
+			this.cbNormalizeLowestVertex.Name = "cbNormalizeLowestVertex";
+			this.cbNormalizeLowestVertex.Size = new System.Drawing.Size(166, 17);
+			this.cbNormalizeLowestVertex.TabIndex = 19;
+			this.cbNormalizeLowestVertex.Text = "Normalize lowest vertex z to 0";
+			this.cbNormalizeLowestVertex.UseVisualStyleBackColor = true;
 			// 
-			// tbSprite
+			// cbCenterModel
 			// 
-			this.tbSprite.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-			this.tbSprite.Location = new System.Drawing.Point(50, 88);
-			this.tbSprite.MaxLength = 4;
-			this.tbSprite.Name = "tbSprite";
-			this.tbSprite.Size = new System.Drawing.Size(69, 20);
-			this.tbSprite.TabIndex = 4;
+			this.cbCenterModel.AutoSize = true;
+			this.cbCenterModel.Checked = true;
+			this.cbCenterModel.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbCenterModel.Location = new System.Drawing.Point(6, 21);
+			this.cbCenterModel.Name = "cbCenterModel";
+			this.cbCenterModel.Size = new System.Drawing.Size(88, 17);
+			this.cbCenterModel.TabIndex = 20;
+			this.cbCenterModel.Text = "Center model";
+			this.cbCenterModel.UseVisualStyleBackColor = true;
+			// 
+			// cbIgnoreControlSectors
+			// 
+			this.cbIgnoreControlSectors.AutoSize = true;
+			this.cbIgnoreControlSectors.Checked = true;
+			this.cbIgnoreControlSectors.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbIgnoreControlSectors.Location = new System.Drawing.Point(200, 42);
+			this.cbIgnoreControlSectors.Name = "cbIgnoreControlSectors";
+			this.cbIgnoreControlSectors.Size = new System.Drawing.Size(168, 17);
+			this.cbIgnoreControlSectors.TabIndex = 17;
+			this.cbIgnoreControlSectors.Text = "Ignore 3D floor control sectors";
+			this.cbIgnoreControlSectors.UseVisualStyleBackColor = true;
 			// 
 			// WavefrontSettingsForm
 			// 
@@ -518,11 +518,11 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(447, 560);
+			this.ClientSize = new System.Drawing.Size(447, 553);
+			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.gbGZDoom);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.nudScale);
-			this.Controls.Add(this.cbExportTextures);
 			this.Controls.Add(this.cancel);
 			this.Controls.Add(this.export);
 			this.Controls.Add(this.label1);
@@ -582,18 +582,18 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Button bResetPaths;
-		private System.Windows.Forms.CheckBox cbIgnoreControlSectors;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.CheckBox cbNoGravity;
 		private System.Windows.Forms.CheckBox cbSpawnOnCeiling;
-		private System.Windows.Forms.CheckBox cbNormalizeLowestVertex;
 		private System.Windows.Forms.CheckBox cbSolid;
-		private System.Windows.Forms.CheckBox cbCenterModel;
 		private System.Windows.Forms.RadioButton rbDecorate;
 		private System.Windows.Forms.RadioButton rbZScript;
 		private System.Windows.Forms.GroupBox groupBox3;
-		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.TextBox tbSprite;
 		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.GroupBox groupBox4;
+		private System.Windows.Forms.CheckBox cbNormalizeLowestVertex;
+		private System.Windows.Forms.CheckBox cbCenterModel;
+		private System.Windows.Forms.CheckBox cbIgnoreControlSectors;
 	}
 }
