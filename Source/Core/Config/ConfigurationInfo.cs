@@ -232,8 +232,13 @@ namespace CodeImp.DoomBuilder.Config
 		//mxd. Destructor
 		~ConfigurationInfo()
 		{
-			if (thingsfilters != null) foreach(ThingsFilter tf in thingsfilters) tf.Dispose();
-			if (testEngines != null) foreach(EngineInfo ei in testEngines) ei.Dispose();
+			// biwa. There have been crash reports because of null references
+			// https://github.com/jewalky/UltimateDoomBuilder/issues/251
+			// https://github.com/jewalky/UltimateDoomBuilder/issues/352
+			// https://github.com/jewalky/UltimateDoomBuilder/issues/514
+			// Can't reproduce, but add a safeguard anyway.
+			if (thingsfilters != null) foreach(ThingsFilter tf in thingsfilters) if(tf != null) tf.Dispose();
+			if (testEngines != null) foreach(EngineInfo ei in testEngines) if(ei != null) ei.Dispose();
 		}
 		
 		#endregion
