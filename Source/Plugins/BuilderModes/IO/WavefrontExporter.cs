@@ -658,8 +658,8 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					Dictionary<WorldVertex, VertexIndices> vertsData = new Dictionary<WorldVertex, VertexIndices>();
 					foreach(WorldVertex[] verts in group.Value) 
 					{
-						//vertex normals
-						Vector3D n = new Vector3D(verts[0].nx, verts[0].ny, verts[0].nz).GetNormal();
+						//vertex normals. biwa not sure why I need to invert the normal, but it seems to be necessary
+						Vector3D n = new Vector3D(verts[0].nx, verts[0].ny, verts[0].nz).GetNormal() * -1;
 						int ni;
 						if(uniqueNormals.ContainsKey(n)) 
 						{
@@ -773,10 +773,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 			//write UV coords
 			foreach(KeyValuePair<PointF, int> group in uniqueUVs)
-				if(data.ExportForGZDoom) // Flip the U value when exporting for GZDoom
-					obj.Append(string.Format(CultureInfo.InvariantCulture, "vt {0} {1}\n", -group.Key.X, -group.Key.Y));
-				else
-					obj.Append(string.Format(CultureInfo.InvariantCulture, "vt {0} {1}\n", group.Key.X, -group.Key.Y));
+				obj.Append(string.Format(CultureInfo.InvariantCulture, "vt {0} {1}\n", group.Key.X, -group.Key.Y));
 
 			// GZDoom ignores the material lib, so don't add it if the model is for GZDoom
 			if (!data.ExportForGZDoom)
