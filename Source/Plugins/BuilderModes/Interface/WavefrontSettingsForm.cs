@@ -1,6 +1,7 @@
 ﻿#region ================== Namespaces
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -78,6 +79,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			tbActorPath.Text = General.Settings.ReadPluginSetting("objactorpath", Path.GetDirectoryName(initialPath));
 			tbModelPath.Text = General.Settings.ReadPluginSetting("objmodelpath", Path.GetDirectoryName(initialPath));
 			tbSprite.Text = General.Settings.ReadPluginSetting("objsprite", "PLAY");
+
+			IDictionary skiptexture = General.Settings.ReadPluginSetting("objskiptextures", new Hashtable());
+			foreach (DictionaryEntry de in skiptexture)
+			{
+				lbSkipTextures.Items.Add(de.Value);
+			}
 
 			// Toggle enable/disable manually because cbFixScale is a child of the group box, so disabling
 			// the group box would also disable cbFixScale
@@ -179,6 +186,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			General.Settings.WritePluginSetting("objmodelpath", tbModelPath.Text);
 			General.Settings.WritePluginSetting("objsprite", tbSprite.Text.ToUpperInvariant());
 
+			Dictionary<string, string> skiptexture = new Dictionary<string, string>();
+			int i = 0;
+			foreach(string t in lbSkipTextures.Items)
+			{
+				skiptexture["texture" + i] = t;
+				i++;
+			}
+
+			General.Settings.WritePluginSetting("objskiptextures", skiptexture);
+
 			this.DialogResult = DialogResult.OK;
 			this.Close();
 		}
@@ -232,7 +249,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		private void bRemoveTexture_Click(object sender, EventArgs e)
 		{
 			ListBox.SelectedObjectCollection items = new ListBox.SelectedObjectCollection(lbSkipTextures);
-			//items = lbSkipTextures.SelectedItems;
 
 			for (int i = items.Count - 1; i >= 0; i--)
 			{
