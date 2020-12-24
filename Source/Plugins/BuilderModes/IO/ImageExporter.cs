@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,12 +70,29 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 	#endregion
 
+	#region ================== Exceptions
+
+	[Serializable]
+	public class ImageExportCanceledException : Exception { }
+
+	[Serializable]
+	public class ImageExportImageTooBigException : Exception { }
+
+	#endregion
+
 	internal class ImageExporter
 	{
 		#region ================== Variables
 
 		private ICollection<Sector> sectors;
 		private ImageExportSettings settings;
+		private int numitems;
+		private int doneitems;
+		private int donepercent;
+		private Action addprogress;
+		private Action<string> showphase;
+		private Func<bool> checkcanelexport;
+		private bool cancelexport;
 
 		#endregion
 
@@ -86,10 +104,14 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 		#region ================== Constructors
 
-		public ImageExporter(ICollection<Sector> sectors, ImageExportSettings settings)
+		public ImageExporter(ICollection<Sector> sectors, ImageExportSettings settings, Action addprogress, Action<string> showphase, Func<bool> checkcanelexport)
 		{
 			this.sectors = sectors;
 			this.settings = settings;
+			this.addprogress = addprogress;
+			this.showphase = showphase;
+			this.checkcanelexport = checkcanelexport;
+			cancelexport = false;
 		}
 
 		#endregion
@@ -106,26 +128,63 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 			GetSizeAndOffset(out size, out offset);
 
+			// Count the number of triangles for reporting progress
+			numitems = 0;
+			doneitems = 0;
+			donepercent = 0;
+			foreach (Sector s in sectors)
+				numitems += s.Triangles.Vertices.Count / 3;
+
+			if (settings.Tiles)
+				numitems += GetNumTiles();
+
+			// If exporting a brightmap everything has to be done twice
+			if (settings.Brightmap)
+				numitems *= 2;
+
 			// Use the same image for the normal texture and the brightmap because of memory concerns
+			showphase("Preparing");
 			using (Bitmap image = new Bitmap((int)(size.x * settings.Scale), (int)(size.y * settings.Scale), settings.PixelFormat))
 			{
+				showphase("Creating normal image");
 				// Normal texture image
 				CreateImage(image, offset, settings.Scale, false);
 
 				if (settings.Tiles)
+				{
+					showphase("Saving 64x64 tile images (" + GetNumTiles() + ")");
 					SaveImageAsTiles(image);
+				}
 				else
-					image.Save(Path.Combine(settings.Path, settings.Name) + settings.Extension, settings.ImageFormat);
+				{
+					showphase("Saving normal image");
+					try
+					{
+						image.Save(Path.Combine(settings.Path, settings.Name) + settings.Extension, settings.ImageFormat);
+					}
+					catch(ExternalException)
+					{
+						throw new ImageExportImageTooBigException();
+					}
+				}
 
 				// The brightmap
 				if (settings.Brightmap)
 				{
+					showphase("Creating brightmap image");
 					CreateImage(image, offset, settings.Scale, true);
 
+					showphase("Saving brightmap image");
 					if (settings.Tiles)
+					{
+						showphase("Saving 64x64 tile images (" + GetNumTiles() + ")");
 						SaveImageAsTiles(image, "_brightmap");
+					}
 					else
+					{
 						image.Save(Path.Combine(settings.Path, settings.Name) + "_brightmap" + settings.Extension, settings.ImageFormat);
+						showphase("Saving normal image");
+					}
 				}
 			}
 		}
@@ -139,122 +198,131 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		/// <returns>The image to be exported</returns>
 		private void CreateImage(Bitmap texturebitmap, Vector2D offset, float scale, bool asbrightmap)
 		{
-			Graphics gtexture = null;
-
 			// The texture
-			gtexture = Graphics.FromImage(texturebitmap);
-			gtexture.Clear(Color.Black); // If we don't clear to black we'll see seams where the sectors touch, due to the AA
-			gtexture.InterpolationMode = InterpolationMode.HighQualityBilinear;
-			gtexture.CompositingQuality = CompositingQuality.HighQuality;
-			gtexture.PixelOffsetMode = PixelOffsetMode.HighQuality;
-			gtexture.SmoothingMode = SmoothingMode.AntiAlias; // Without AA the sector edges will be quite rough
-
-			GraphicsPath gpath = new GraphicsPath();
-
-			foreach (Sector s in sectors)
+			using (Graphics gtexture = Graphics.FromImage(texturebitmap))
 			{
-				float rotation = (float)s.Fields.GetValue("rotationfloor", 0.0);
+				gtexture.Clear(Color.Black); // If we don't clear to black we'll see seams where the sectors touch, due to the AA
+				gtexture.InterpolationMode = InterpolationMode.HighQualityBilinear;
+				gtexture.CompositingQuality = CompositingQuality.HighQuality;
+				gtexture.PixelOffsetMode = PixelOffsetMode.HighQuality;
+				gtexture.SmoothingMode = SmoothingMode.AntiAlias; // Without AA the sector edges will be quite rough
 
-				// If a sector is rotated any offset is on the rotated axes. But we need to offset by
-				// map coordinates. We'll use this vector to compute that offset
-				Vector2D rotationvector = Vector2D.FromAngle(Angle2D.DegToRad(rotation) + Angle2D.PIHALF);
-
-				// Sectors are triangulated, so draw every triangle
-				for (int i = 0; i < s.Triangles.Vertices.Count / 3; i++)
+				using (GraphicsPath gpath = new GraphicsPath())
 				{
-					// The GDI image has the 0/0 coordinate in the top left, so invert the y component
-					Vector2D v1 = (s.Triangles.Vertices[i * 3] - offset) * scale; v1.y *= -1.0;
-					Vector2D v2 = (s.Triangles.Vertices[i * 3 + 1] - offset) * scale; v2.y *= -1.0;
-					Vector2D v3 = (s.Triangles.Vertices[i * 3 + 2] - offset) * scale; v3.y *= -1.0;
-				
-					gpath.AddLine((float)v1.x, (float)v1.y, (float)v2.x, (float)v2.y);
-					gpath.AddLine((float)v2.x, (float)v2.y, (float)v3.x, (float)v3.y);
-					gpath.CloseFigure();
-				}
-
-				if (asbrightmap)
-				{
-					// Create the brightmap based on the sector brightness
-					int brightness = General.Clamp(s.Brightness, 0, 255);
-					using (SolidBrush sbrush = new SolidBrush(Color.FromArgb(255, brightness, brightness, brightness)))
-						gtexture.FillPath(sbrush, gpath);
-				}
-				else
-				{
-					Bitmap brushtexture;
-					Vector2D textureoffset = new Vector2D();
-					Vector2D texturescale = new Vector2D();
-
-					if (settings.Floor)
+					foreach (Sector s in sectors)
 					{
-						// The image might have a color correction applied, but we need it without. So we use LocalGetBitmap, because it reloads the image,
-						// but doesn't applie the color correction if we set UseColorCorrection to false first
-						ImageData imagedata = General.Map.Data.GetFlatImage(s.FloorTexture);
-						imagedata.UseColorCorrection = false;
-						brushtexture = new Bitmap(imagedata.LocalGetBitmap());
-						imagedata.UseColorCorrection = true;
+						float rotation = (float)s.Fields.GetValue("rotationfloor", 0.0);
 
-						textureoffset.x = s.Fields.GetValue("xpanningfloor", 0.0) * scale;
-						textureoffset.y = s.Fields.GetValue("ypanningfloor", 0.0) * scale;
+						// If a sector is rotated any offset is on the rotated axes. But we need to offset by
+						// map coordinates. We'll use this vector to compute that offset
+						Vector2D rotationvector = Vector2D.FromAngle(Angle2D.DegToRad(rotation) + Angle2D.PIHALF);
 
-						// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
-						texturescale.x = 1.0 / s.Fields.GetValue("xscalefloor", 1.0);
-						texturescale.y = 1.0 / s.Fields.GetValue("yscalefloor", 1.0);
+						// Sectors are triangulated, so draw every triangle
+						for (int i = 0; i < s.Triangles.Vertices.Count / 3; i++)
+						{
+							// The GDI image has the 0/0 coordinate in the top left, so invert the y component
+							Vector2D v1 = (s.Triangles.Vertices[i * 3] - offset) * scale; v1.y *= -1.0;
+							Vector2D v2 = (s.Triangles.Vertices[i * 3 + 1] - offset) * scale; v2.y *= -1.0;
+							Vector2D v3 = (s.Triangles.Vertices[i * 3 + 2] - offset) * scale; v3.y *= -1.0;
+
+							gpath.AddLine((float)v1.x, (float)v1.y, (float)v2.x, (float)v2.y);
+							gpath.AddLine((float)v2.x, (float)v2.y, (float)v3.x, (float)v3.y);
+							gpath.CloseFigure();
+
+							doneitems++;
+
+							int newpercent = (int)(((double)doneitems / numitems) * 100);
+							if (newpercent > donepercent)
+							{
+								donepercent = newpercent;
+								addprogress();
+
+								if (checkcanelexport())
+									throw new ImageExportCanceledException();
+							}
+						}
+
+						if (asbrightmap)
+						{
+							// Create the brightmap based on the sector brightness
+							int brightness = General.Clamp(s.Brightness, 0, 255);
+							using (SolidBrush sbrush = new SolidBrush(Color.FromArgb(255, brightness, brightness, brightness)))
+								gtexture.FillPath(sbrush, gpath);
+						}
+						else
+						{
+							Bitmap brushtexture;
+							Vector2D textureoffset = new Vector2D();
+							Vector2D texturescale = new Vector2D();
+
+							if (settings.Floor)
+							{
+								// The image might have a color correction applied, but we need it without. So we use LocalGetBitmap, because it reloads the image,
+								// but doesn't applie the color correction if we set UseColorCorrection to false first
+								ImageData imagedata = General.Map.Data.GetFlatImage(s.FloorTexture);
+								imagedata.UseColorCorrection = false;
+								brushtexture = new Bitmap(imagedata.LocalGetBitmap());
+								imagedata.UseColorCorrection = true;
+
+								textureoffset.x = s.Fields.GetValue("xpanningfloor", 0.0) * scale;
+								textureoffset.y = s.Fields.GetValue("ypanningfloor", 0.0) * scale;
+
+								// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
+								texturescale.x = 1.0 / s.Fields.GetValue("xscalefloor", 1.0);
+								texturescale.y = 1.0 / s.Fields.GetValue("yscalefloor", 1.0);
+							}
+							else
+							{
+								// The image might have a color correction applied, but we need it without. So we use LocalGetBitmap, because it reloads the image,
+								// but doesn't applie the color correction if we set UseColorCorrection to false first
+								ImageData imagedata = General.Map.Data.GetFlatImage(s.CeilTexture);
+								imagedata.UseColorCorrection = false;
+								brushtexture = new Bitmap(imagedata.LocalGetBitmap());
+								imagedata.UseColorCorrection = true;
+
+								textureoffset.x = s.Fields.GetValue("xpanningceiling", 0.0) * scale;
+								textureoffset.y = s.Fields.GetValue("ypanningceiling", 0.0) * scale;
+
+								// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
+								texturescale.x = 1.0 / s.Fields.GetValue("xscaleceiling", 1.0);
+								texturescale.y = 1.0 / s.Fields.GetValue("yscaleceiling", 1.0);
+							}
+
+							// Create the transformation matrix
+							Matrix matrix = new Matrix();
+							matrix.Rotate(rotation);
+							matrix.Translate((float)(-offset.x * scale * rotationvector.x), (float)(offset.x * scale * rotationvector.y)); // Left/right offset from the map origin
+							matrix.Translate((float)(offset.y * scale * rotationvector.y), (float)(offset.y * scale * rotationvector.x)); // Up/down offset from the map origin
+							matrix.Translate(-(float)textureoffset.x, -(float)textureoffset.y); // Texture offset 
+							matrix.Scale((float)texturescale.x, (float)texturescale.y);
+
+							if (!settings.Fullbright)
+							{
+								int brightness = General.Clamp(s.Brightness, 0, 255);
+								AdjustBrightness(ref brushtexture, brightness > 0 ? brightness / 255.0f : 0.0f);
+							}
+
+							if (scale > 1.0f)
+								ResizeImage(ref brushtexture, brushtexture.Width * (int)scale, brushtexture.Height * (int)scale);
+
+							// Create the texture brush and apply the matrix
+							TextureBrush tbrush = new TextureBrush(brushtexture);
+							tbrush.Transform = matrix;
+
+							// Draw the islands of the sector
+							gtexture.FillPath(tbrush, gpath);
+
+							// Dispose unneeded objects
+							brushtexture.Dispose();
+							tbrush.Dispose();
+							matrix.Dispose();
+						}
+
+						// Reset the graphics path
+						gpath.Reset();
 					}
-					else
-					{
-						// The image might have a color correction applied, but we need it without. So we use LocalGetBitmap, because it reloads the image,
-						// but doesn't applie the color correction if we set UseColorCorrection to false first
-						ImageData imagedata = General.Map.Data.GetFlatImage(s.CeilTexture);
-						imagedata.UseColorCorrection = false;
-						brushtexture = new Bitmap(imagedata.LocalGetBitmap());
-						imagedata.UseColorCorrection = true;
-
-						textureoffset.x = s.Fields.GetValue("xpanningceiling", 0.0) * scale;
-						textureoffset.y = s.Fields.GetValue("ypanningceiling", 0.0) * scale;
-
-						// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
-						texturescale.x = 1.0 / s.Fields.GetValue("xscaleceiling", 1.0);
-						texturescale.y = 1.0 / s.Fields.GetValue("yscaleceiling", 1.0);
-					}
-
-					// Create the transformation matrix
-					Matrix matrix = new Matrix();
-					matrix.Rotate(rotation);
-					matrix.Translate((float)(-offset.x*scale * rotationvector.x), (float)(offset.x*scale * rotationvector.y)); // Left/right offset from the map origin
-					matrix.Translate((float)(offset.y*scale * rotationvector.y), (float)(offset.y*scale * rotationvector.x)); // Up/down offset from the map origin
-					matrix.Translate(-(float)textureoffset.x, -(float)textureoffset.y); // Texture offset 
-					matrix.Scale((float)texturescale.x, (float)texturescale.y);
-
-					if (!settings.Fullbright)
-					{
-						int brightness = General.Clamp(s.Brightness, 0, 255);
-						AdjustBrightness(ref brushtexture, brightness > 0 ? brightness / 255.0f : 0.0f);
-					}
-
-					if (scale > 1.0f)
-						ResizeImage(ref brushtexture, brushtexture.Width * (int)scale, brushtexture.Height * (int)scale);
-
-					// Create the texture brush and apply the matrix
-					TextureBrush tbrush = new TextureBrush(brushtexture);
-					tbrush.Transform = matrix;
-
-					// Draw the islands of the sector
-					gtexture.FillPath(tbrush, gpath);
-
-					// Dispose unneeded objects
-					brushtexture.Dispose();
-					tbrush.Dispose();
-					matrix.Dispose();
 				}
-
-				// Reset the graphics path
-				gpath.Reset();
 			}
-
-			// Dispose unneeded objects
-			gpath.Dispose();
-			gtexture.Dispose();
 		}
 
 		/// <summary>
@@ -282,7 +350,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					if(y * TILE_SIZE + TILE_SIZE > image.Size.Height)
 						height = image.Size.Height - (y * TILE_SIZE);
 
-
 					using (Bitmap bitmap = new Bitmap(TILE_SIZE, TILE_SIZE))
 					using (Graphics g = Graphics.FromImage(bitmap))
 					{
@@ -293,6 +360,21 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					}
 
 					imagenum++;
+
+					doneitems++;
+
+					int newpercent = (int)(((double)doneitems / numitems) * 100);
+					if (newpercent > donepercent)
+					{
+						donepercent = newpercent;
+						addprogress();
+
+						if (checkcanelexport())
+							throw new ImageExportCanceledException();
+					}
+
+					if (checkcanelexport())
+						throw new ImageExportCanceledException();
 				}
 			}
 		}
@@ -330,7 +412,23 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			}
 
 			return imagenames;
+		}
 
+		/// <summary>
+		/// Gets the total number of tiles
+		/// </summary>
+		/// <returns>Number of tiles</returns>
+		public int GetNumTiles()
+		{
+			Vector2D size;
+			Vector2D offset;
+
+			GetSizeAndOffset(out size, out offset);
+
+			int xnum = (int)Math.Ceiling(size.x * settings.Scale / (double)TILE_SIZE);
+			int ynum = (int)Math.Ceiling(size.y * settings.Scale / (double)TILE_SIZE);
+
+			return xnum * ynum;
 		}
 
 		/// <summary>

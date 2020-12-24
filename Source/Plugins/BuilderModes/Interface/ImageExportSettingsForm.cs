@@ -30,11 +30,21 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
+using CodeImp.DoomBuilder.Map;
+using CodeImp.DoomBuilder.BuilderModes.IO;
 
 namespace CodeImp.DoomBuilder.BuilderModes.Interface
 {
+	enum ImageExportResult
+	{
+		OK,
+		Canceled,
+		OutOfMemory,
+		ImageTooBig
+	}
+
 	public partial class ImageExportSettingsForm : Form
 	{
 		#region ================== Properties
@@ -48,6 +58,21 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		#endregion
 
+		#region ================== Delegates
+
+		private delegate void CallVoidMethodDeletage();
+		private delegate void CallStringMethodDeletage(string s);
+		private delegate void CallImageExportResultMethodDeletage(ImageExportResult ier);
+
+		#endregion
+
+		#region ================== Variables
+
+		Thread exportthread;
+		bool exporting;
+		bool cancelexport;
+
+		#endregion
 
 		#region ================== Constructor
 
@@ -57,6 +82,8 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 			cbImageFormat.SelectedIndex = 0;
 			cbPixelFormat.SelectedIndex = 0;
+			exporting = false;
+			cancelexport = false;
 
 			string name = Path.GetFileNameWithoutExtension(General.Map.FileTitle) + "_" + General.Map.Options.LevelName + "_" + Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
 
@@ -105,6 +132,157 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			}
 		}
 
+		/// <summary>
+		/// Starts exporting the image(s). Disables all controls and starts the thread that does the actual exporting.
+		/// </summary>
+		private void StartExport()
+		{
+			ICollection<Sector> sectors = General.Map.Map.SelectedSectorsCount == 0 ? General.Map.Map.Sectors : General.Map.Map.GetSelectedSectors(true);
+
+			exporting = true;
+			cancelexport = false;
+
+			progress.Maximum = 100; //sectors.Count * (Brightmap ? 2 : 1);
+			progress.Value = 0;
+			progress.Visible = true;
+
+			lbPhase.Text = "";
+			lbPhase.Visible = true;
+
+			foreach (Control c in Controls)
+			{
+				if (!(c is ProgressBar || c is Label))
+					c.Enabled = false;
+			}
+
+			export.Enabled = true;
+			export.Text = "Cancel";
+
+			ImageExportSettings settings = new ImageExportSettings(Path.GetDirectoryName(FilePath), Path.GetFileNameWithoutExtension(FilePath), Path.GetExtension(FilePath), Floor, Fullbright, Brightmap, Tiles, ImageScale, GetPixelFormat(), GetImageFormat());
+
+			exportthread = new Thread(() => RunExport(settings));
+			exportthread.Name = "Image export";
+			exportthread.Priority = ThreadPriority.Normal;
+			exportthread.Start();
+		}
+
+		/// <summary>
+		/// Enables all controls. This has to be called when the export is finished (either successfully or unsuccessfully)
+		/// </summary>
+		/// <param name="ier">Image export result</param>
+		private void StopExport(ImageExportResult ier)
+		{
+			if (this.InvokeRequired)
+			{
+				CallImageExportResultMethodDeletage d = StopExport;
+				this.Invoke(d, ier);
+			}
+			else
+			{
+				progress.Visible = false;
+				lbPhase.Visible = false;
+
+				foreach (Control c in Controls)
+				{
+					if (!(c is ProgressBar || c is Label))
+						c.Enabled = true;
+				}
+
+				export.Text = "Export";
+
+				if (ier == ImageExportResult.OK)
+					MessageBox.Show("Export successful.", "Export to image", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				else if(ier == ImageExportResult.Canceled)
+					MessageBox.Show("Export canceled.", "Export to image", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				else if (ier == ImageExportResult.OutOfMemory)
+					MessageBox.Show("Exporting failed. There's likely not enough consecutive free memory to create the image. Try a lower color depth or file format", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				else if(ier == ImageExportResult.ImageTooBig)
+					MessageBox.Show("Exporting failed. The image is likely too big for the current settings. Try a lower color depth or file format", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			exporting = false;
+		}
+
+		private bool CheckCancelExport()
+		{
+			return cancelexport;
+		}
+
+		/// <summary>
+		/// Shows the current phase in textual form. Is called by the exporter
+		/// </summary>
+		/// <param name="text"></param>
+		private void ShowPhase(string text)
+		{
+			if (this.InvokeRequired)
+			{
+				CallStringMethodDeletage d = ShowPhase;
+				this.Invoke(d, text);
+			}
+			else
+			{
+				lbPhase.Text = text;
+			}
+		}
+
+		/// <summary>
+		/// Adds progress to the progress bar. Is called by the exporter
+		/// </summary>
+		private void AddProgress()
+		{
+			if (progress.InvokeRequired)
+			{
+				CallVoidMethodDeletage d = AddProgress;
+				try { progress.Invoke(d); }
+				catch (ThreadInterruptedException) { }
+			}
+			else
+			{
+				// Just winforms things to make the progress bar animation not lag behind
+				int value = progress.Value + 1;
+				progress.Value = value;
+				progress.Value = value - 1;
+				progress.Value = value;
+			}
+		}
+
+		/// <summary>
+		/// Runs the actual exporter
+		/// </summary>
+		/// <param name="settings">Export settings</param>
+		private void RunExport(ImageExportSettings settings)
+		{
+			ICollection<Sector> sectors = General.Map.Map.SelectedSectorsCount == 0 ? General.Map.Map.Sectors : General.Map.Map.GetSelectedSectors(true);
+
+			ImageExporter exporter = new ImageExporter(sectors, settings, AddProgress, ShowPhase, CheckCancelExport);
+
+			try
+			{
+				exporter.Export();
+			}
+			catch (ArgumentException) // Happens if there's not enough consecutive memory to create the file
+			{
+				StopExport(ImageExportResult.OutOfMemory);
+				return;
+			}
+			catch(ImageExportCanceledException)
+			{
+				StopExport(ImageExportResult.Canceled);
+				return;
+			}
+			catch(ImageExportImageTooBigException)
+			{
+				StopExport(ImageExportResult.ImageTooBig);
+				return;
+			}
+
+			StopExport(ImageExportResult.OK);
+		}
+
+		#endregion
+
+		#region ================== Events
+
 		private void browse_Click(object sender, EventArgs e)
 		{
 			if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -125,9 +303,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			}
 		}
 
-		#endregion
-
-		private void cancel_Click(object sender, EventArgs e)
+		private void close_Click(object sender, EventArgs e)
 		{
 			this.DialogResult = DialogResult.Cancel;
 			this.Close();
@@ -135,13 +311,27 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void export_Click(object sender, EventArgs e)
 		{
-			General.Settings.WritePluginSetting("imageexportfullbright", cbFullbright.Checked);
-			General.Settings.WritePluginSetting("imageexportbrightmap", cbBrightmap.Checked);
-			General.Settings.WritePluginSetting("imageexporttiles", cbTiles.Checked);
-			General.Settings.WritePluginSetting("imageexportscale", cbScale.SelectedIndex);
+			if (exporting)
+			{
+				cancelexport = true;
+				export.Enabled = false;
+			}
+			else
+			{
+				General.Settings.WritePluginSetting("imageexportfullbright", cbFullbright.Checked);
+				General.Settings.WritePluginSetting("imageexportbrightmap", cbBrightmap.Checked);
+				General.Settings.WritePluginSetting("imageexporttiles", cbTiles.Checked);
+				General.Settings.WritePluginSetting("imageexportscale", cbScale.SelectedIndex);
 
-			this.DialogResult = DialogResult.OK;
-			this.Close();
+				// Exporting works like this:
+				// In here StartExport() is called
+				// StartExport() disables all controls and creates a thread that runs RunExport() in the background; then the StartExport method ends
+				// RunExport() creates an instance of ImageExporter and starts the actual export
+				// When ImageExporter finishes its job it runs StopExport()
+				// StopExport() enables all controls again
+
+				StartExport();
+			}
 		}
 
 		private void cbImageFormat_SelectedIndexChanged(object sender, EventArgs e)
@@ -160,5 +350,15 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 			tbExportPath.Text = Path.ChangeExtension(tbExportPath.Text, newextension);
 		}
+
+
+		private void ImageExportSettingsForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			// Do not allow closing the form while the export is running
+			if (exporting)
+				e.Cancel = true;
+		}
+
+		#endregion
 	}
 }

@@ -31,7 +31,7 @@
 			this.tbExportPath = new System.Windows.Forms.TextBox();
 			this.browse = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.cancel = new System.Windows.Forms.Button();
+			this.close = new System.Windows.Forms.Button();
 			this.export = new System.Windows.Forms.Button();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.cbImageFormat = new System.Windows.Forms.ComboBox();
@@ -45,6 +45,8 @@
 			this.cbTiles = new System.Windows.Forms.CheckBox();
 			this.cbScale = new System.Windows.Forms.ComboBox();
 			this.label4 = new System.Windows.Forms.Label();
+			this.progress = new System.Windows.Forms.ProgressBar();
+			this.lbPhase = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// tbExportPath
@@ -73,16 +75,16 @@
 			this.label1.TabIndex = 4;
 			this.label1.Text = "Path:";
 			// 
-			// cancel
+			// close
 			// 
-			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(360, 153);
-			this.cancel.Name = "cancel";
-			this.cancel.Size = new System.Drawing.Size(75, 23);
-			this.cancel.TabIndex = 7;
-			this.cancel.Text = "Cancel";
-			this.cancel.UseVisualStyleBackColor = true;
-			this.cancel.Click += new System.EventHandler(this.cancel_Click);
+			this.close.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.close.Location = new System.Drawing.Point(360, 153);
+			this.close.Name = "close";
+			this.close.Size = new System.Drawing.Size(75, 23);
+			this.close.TabIndex = 7;
+			this.close.Text = "Close";
+			this.close.UseVisualStyleBackColor = true;
+			this.close.Click += new System.EventHandler(this.close_Click);
 			// 
 			// export
 			// 
@@ -219,13 +221,34 @@
 			this.label4.TabIndex = 18;
 			this.label4.Text = "Scale:";
 			// 
+			// progress
+			// 
+			this.progress.Location = new System.Drawing.Point(12, 153);
+			this.progress.Name = "progress";
+			this.progress.Size = new System.Drawing.Size(261, 23);
+			this.progress.Step = 1;
+			this.progress.TabIndex = 19;
+			this.progress.Visible = false;
+			// 
+			// lbPhase
+			// 
+			this.lbPhase.AutoSize = true;
+			this.lbPhase.Location = new System.Drawing.Point(14, 127);
+			this.lbPhase.Name = "lbPhase";
+			this.lbPhase.Size = new System.Drawing.Size(45, 13);
+			this.lbPhase.TabIndex = 20;
+			this.lbPhase.Text = "lbPhase";
+			this.lbPhase.Visible = false;
+			// 
 			// ImageExportSettingsForm
 			// 
 			this.AcceptButton = this.export;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.CancelButton = this.cancel;
+			this.CancelButton = this.close;
 			this.ClientSize = new System.Drawing.Size(447, 188);
+			this.Controls.Add(this.lbPhase);
+			this.Controls.Add(this.progress);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.cbScale);
 			this.Controls.Add(this.cbTiles);
@@ -237,7 +260,7 @@
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.cbPixelFormat);
 			this.Controls.Add(this.cbImageFormat);
-			this.Controls.Add(this.cancel);
+			this.Controls.Add(this.close);
 			this.Controls.Add(this.export);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.browse);
@@ -247,6 +270,7 @@
 			this.MinimizeBox = false;
 			this.Name = "ImageExportSettingsForm";
 			this.Text = "Image export settings";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImageExportSettingsForm_FormClosing);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -257,7 +281,7 @@
 		private System.Windows.Forms.Button browse;
 		private System.Windows.Forms.TextBox tbExportPath;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button cancel;
+		private System.Windows.Forms.Button close;
 		private System.Windows.Forms.Button export;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog;
 		private System.Windows.Forms.ComboBox cbImageFormat;
@@ -271,5 +295,7 @@
 		private System.Windows.Forms.CheckBox cbTiles;
 		private System.Windows.Forms.ComboBox cbScale;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.ProgressBar progress;
+		private System.Windows.Forms.Label lbPhase;
 	}
 }
