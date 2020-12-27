@@ -4280,14 +4280,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				if (applytoceiling)
 				{
-					level.sector.CeilSlopeOffset = 0;
-					level.sector.CeilSlope = new Vector3D(0, 0, -1);
+					level.sector.CeilSlopeOffset = double.NaN;
+					level.sector.CeilSlope = new Vector3D();
 					numceilings++;
 				}
 				else
 				{
-					level.sector.FloorSlopeOffset = 0;
-					level.sector.FloorSlope = new Vector3D(0, 0, 1);
+					level.sector.FloorSlopeOffset = double.NaN;
+					level.sector.FloorSlope = new Vector3D();
 					numfloors++;
 				}
 
