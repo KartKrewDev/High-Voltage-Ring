@@ -4245,6 +4245,75 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		[BeginAction("resetslope")]
+		public void ResetSlope()
+		{
+			List<IVisualEventReceiver> selectedsectors = GetSelectedObjects(true, false, false, false, false);
+			if (selectedsectors.Count == 0)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "You need to select at least one floor or ceiling to reset slope.");
+				return;
+			}
+
+			General.Map.UndoRedo.CreateUndo("Reset plane slope");
+
+			int numfloors = 0;
+			int numceilings = 0;
+
+			// Reset slope
+			foreach (BaseVisualGeometrySector bvgs in selectedsectors)
+			{
+				SectorLevel level = bvgs.Level;
+				bool applytoceiling = false;
+				if (level.extrafloor)
+				{
+					// The top side of 3D floors is the ceiling of the sector, but it's a "floor" in UDB, so the
+					// ceiling of the control sector has to be modified
+					if (level.type == SectorLevelType.Floor)
+						applytoceiling = true;
+				}
+				else
+				{
+					if (level.type == SectorLevelType.Ceiling)
+						applytoceiling = true;
+				}
+
+				if (applytoceiling)
+				{
+					level.sector.CeilSlopeOffset = 0;
+					level.sector.CeilSlope = new Vector3D(0, 0, -1);
+					numceilings++;
+				}
+				else
+				{
+					level.sector.FloorSlopeOffset = 0;
+					level.sector.FloorSlope = new Vector3D(0, 0, 1);
+					numfloors++;
+				}
+
+				// Rebuild sector
+				BaseVisualSector vs;
+				if (VisualSectorExists(level.sector))
+				{
+					vs = (BaseVisualSector)GetVisualSector(level.sector);
+				}
+				else
+				{
+					vs = CreateBaseVisualSector(level.sector);
+				}
+
+				if (vs != null) vs.UpdateSectorGeometry(true);
+			}
+
+			string ptype = "plane";
+			if (numfloors == 0) ptype = "ceiling";
+			else if (numceilings == 0) ptype = "floor";
+
+			UpdateChangedObjects();
+
+			General.Interface.DisplayStatus(StatusType.Action, string.Format("{1} {0} slopes reset.", ptype, numfloors+numceilings));
+		}
+
 		[BeginAction("slopebetweenhandles")]
 		public void SlopeBetweenHandles()
 		{
