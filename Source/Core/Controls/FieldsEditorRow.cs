@@ -260,12 +260,12 @@ namespace CodeImp.DoomBuilder.Controls
 		// This defines the field
 		public void Define(object value)
 		{
-			//mxd. Don't count as defined when default value is passed
-			if(value.ToString() == fieldtype.GetDefaultValue().ToString()) return;
-			
-			// Now defined
 			fieldtype.SetValue(value);
 			this.Cells[2].Value = fieldtype.GetStringValue();
+
+			//mxd. Don't count as defined when default value is passed
+			if (value.ToString() == fieldtype.GetDefaultValue().ToString()) return;
+
 			this.DefaultCellStyle.ForeColor = (rowtype == FieldsEditorRowType.USERVAR ? SystemColors.HotTrack : SystemColors.WindowText);
 			isdefined = true;
 		}
