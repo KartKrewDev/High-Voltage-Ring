@@ -312,12 +312,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				
 				SetTexture(BuilderPlug.Me.CopiedFlat);
 
-				// Update
-				if(mode.VisualSectorExists(level.sector))
+				// Update. We need to create a visual sector if it doesn't exist yet. This can happen when pasting
+				// to a 3D floor and its control sector wasn't in view before
+				BaseVisualSector vs;
+
+				if (mode.VisualSectorExists(level.sector))
 				{
-					BaseVisualSector vs = (BaseVisualSector)mode.GetVisualSector(level.sector);
-					vs.UpdateSectorGeometry(false);
+					vs = (BaseVisualSector)mode.GetVisualSector(level.sector);
 				}
+				else
+				{
+					vs = mode.CreateBaseVisualSector(level.sector);
+				}
+
+				if (vs != null)
+					vs.UpdateSectorGeometry(false);
 			}
 		}
 
