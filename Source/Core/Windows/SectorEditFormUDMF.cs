@@ -906,15 +906,20 @@ namespace CodeImp.DoomBuilder.Windows
 				}
 
 				// Clear horizontal slopes
-				if(Math.Round(Angle2D.RadToDeg(s.FloorSlope.GetAngleZ()), 3) == 90.0)
+				double diff = Math.Abs(Math.Round(s.FloorSlopeOffset) - s.FloorSlopeOffset);
+				if (Math.Abs(s.FloorSlope.z) == 1.0 && diff < 0.000000001)
 				{
+					s.FloorHeight = -Convert.ToInt32(s.FloorSlopeOffset);
 					s.FloorSlope = new Vector3D();
-					s.FloorSlopeOffset = float.NaN;
+					s.FloorSlopeOffset = double.NaN;
 				}
-				if(Math.Round(Angle2D.RadToDeg(s.CeilSlope.GetAngleZ()), 3) == 270.0)
+
+				diff = Math.Abs(Math.Round(s.CeilSlopeOffset) - s.CeilSlopeOffset);
+				if (Math.Abs(s.CeilSlope.z) == 1.0 && diff < 0.000000001)
 				{
+					s.CeilHeight = -Convert.ToInt32(s.CeilSlopeOffset);
 					s.CeilSlope = new Vector3D();
-					s.CeilSlopeOffset = float.NaN;
+					s.CeilSlopeOffset = double.NaN;
 				}
 			}
 

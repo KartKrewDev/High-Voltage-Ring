@@ -222,6 +222,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public static void ApplySlope(SectorLevel level, Plane plane, BaseVisualMode mode)
 		{
 			bool applytoceiling = false;
+			bool reset = false;
+			int height = 0;
+			
 
 			Vector2D center = new Vector2D(level.sector.BBox.X + level.sector.BBox.Width / 2,
 											   level.sector.BBox.Y + level.sector.BBox.Height / 2);
@@ -239,16 +242,44 @@ namespace CodeImp.DoomBuilder.VisualModes
 					applytoceiling = true;
 			}
 
+			// If the plane horizontal remove the slope and set the sector height instead
+			// Rounding errors can result in offsets of horizontal planes to be a tiny, tiny bit off a whole number,
+			// assume we want to remove the plane in this case
+			double diff = Math.Abs(Math.Round(plane.d) - plane.d);
+			if (plane.Normal.z == 1.0 && diff < 0.000000001)
+			{
+				reset = true;
+				height = -Convert.ToInt32(plane.d);
+			}
+
 			if (applytoceiling)
 			{
-				Plane downplane = plane.GetInverted();
-				level.sector.CeilSlope = downplane.Normal;
-				level.sector.CeilSlopeOffset = downplane.Offset;
+				if (reset)
+				{
+					level.sector.CeilHeight = height;
+					level.sector.CeilSlope = new Vector3D();
+					level.sector.CeilSlopeOffset = double.NaN;
+				}
+				else
+				{
+					Plane downplane = plane.GetInverted();
+					level.sector.CeilSlope = downplane.Normal;
+					level.sector.CeilSlopeOffset = downplane.Offset;
+				}
 			}
 			else
 			{
-				level.sector.FloorSlope = plane.Normal;
-				level.sector.FloorSlopeOffset = plane.Offset;
+				if (reset)
+				{
+					level.sector.FloorHeight = height;
+					level.sector.FloorSlope = new Vector3D();
+					level.sector.FloorSlopeOffset = double.NaN;
+				}
+				else
+				{
+					level.sector.FloorSlope = plane.Normal;
+					level.sector.FloorSlopeOffset = plane.Offset;
+				}
 			}
 
 			// Rebuild sector
