@@ -942,8 +942,8 @@ namespace CodeImp.DoomBuilder.ZDoom
                                 udefault = sp;
                                 break;
                             case UniversalType.Float:
-                                float d;
-                                if (!float.TryParse(sp, out d))
+                                double d;
+                                if (!double.TryParse(sp, out d))
                                 {
                                     parser.LogWarning("Incorrect float default from string \"" + sp + "\"");
                                     break;
