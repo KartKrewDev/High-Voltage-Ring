@@ -519,6 +519,7 @@
     <Compile Include="VisualModes\VisualSidedefParts.cs" />
     <Compile Include="VisualModes\VisualSidedefSlope.cs" />
     <Compile Include="VisualModes\VisualUpper.cs" />
+    <Compile Include="VisualModes\VisualVertexSlope.cs" />
     <Compile Include="VisualModes\WallPolygon.cs" />
   </ItemGroup>
   <ItemGroup>

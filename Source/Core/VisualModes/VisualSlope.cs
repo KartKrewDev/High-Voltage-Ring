@@ -5,6 +5,12 @@ using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.VisualModes
 {
+	public enum VisualSlopeType
+	{
+		Line,
+		Vertex
+	}
+
 	public abstract class VisualSlope : IVisualPickable
 	{
 		#region ================== Variables
@@ -24,6 +30,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// Was changed?
 		private bool changed;
 
+		protected VisualSlopeType type;
 		protected double length;
 
 		private Matrix position;
@@ -50,6 +57,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public bool SmartPivot { get { return smartpivot; } set { smartpivot = value; } }
 
 		public bool Changed { get { return changed; } set { changed = value; } }
+
+		public VisualSlopeType Type { get { return type; } }
 
 		public double Length { get { return length; } }
 
@@ -99,6 +108,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		}
 
 		public virtual void Update() {}
+		public virtual Vector3D GetPivotPoint() { return new Vector3D(); }
 
 		public void SetPosition(Line2D line, Plane plane)
 		{

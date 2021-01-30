@@ -33,7 +33,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 	public enum PickingMode
 	{
 		Default,
-		SlopeHandles
+		SidedefSlopeHandles,
+		VertexSlopeHandles
 	}
 
 	/// <summary>
@@ -82,6 +83,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		protected Dictionary<Thing, VisualThing> allthings;
 		protected Dictionary<Sector, VisualSector> allsectors;
 		protected Dictionary<Sector, List<VisualSlope>> allslopehandles;
+		protected Dictionary<Sector, List<VisualSlope>> sidedefslopehandles;
+		protected Dictionary<Sector, List<VisualSlope>> vertexslopehandles;
 		protected List<VisualBlockEntry> visibleblocks;
 		protected List<VisualThing> visiblethings;
 		protected List<VisualSector> visiblesectors;
@@ -96,6 +99,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public VisualBlockMap BlockMap { get { return blockmap; } }
 		public Dictionary<Vertex, VisualVertexPair> VisualVertices { get { return vertices; } } //mxd
 		public Dictionary<Sector, List<VisualSlope>> AllSlopeHandles { get { return allslopehandles; } }
+		public Dictionary<Sector, List<VisualSlope>> SidedefSlopeHandles { get { return sidedefslopehandles; } }
+		public Dictionary<Sector, List<VisualSlope>> VertexSlopeHandles { get { return vertexslopehandles; } }
 
 		// Rendering
 		public IRenderer3D Renderer { get { return renderer; } }
@@ -115,6 +120,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.allsectors = new Dictionary<Sector, VisualSector>(General.Map.Map.Sectors.Count);
 			this.allthings = new Dictionary<Thing, VisualThing>(General.Map.Map.Things.Count);
 			this.allslopehandles = new Dictionary<Sector, List<VisualSlope>>(General.Map.Map.Sectors.Count);
+			this.sidedefslopehandles = new Dictionary<Sector, List<VisualSlope>>(General.Map.Map.Sectors.Count);
+			this.vertexslopehandles = new Dictionary<Sector, List<VisualSlope>>(General.Map.Map.Sectors.Count);
 			this.visibleblocks = new List<VisualBlockEntry>();
 			this.visiblesectors = new List<VisualSector>(50);
 			this.visiblegeometry = new List<VisualGeometry>(200);
@@ -735,8 +742,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 				foreach(VisualGeometry g in vs.FixedGeometry) pickables.Add(g);
 
 				// Add slope handles
-				if (General.Map.UDMF && pickingmode == PickingMode.SlopeHandles && allslopehandles.ContainsKey(General.Map.VisualCamera.Sector))
-					pickables.AddRange(allslopehandles[General.Map.VisualCamera.Sector]);
+				if (General.Map.UDMF)
+				{
+					if (pickingmode == PickingMode.SidedefSlopeHandles && sidedefslopehandles.ContainsKey(General.Map.VisualCamera.Sector))
+						pickables.AddRange(sidedefslopehandles[General.Map.VisualCamera.Sector]);
+					else if (pickingmode == PickingMode.VertexSlopeHandles && vertexslopehandles.ContainsKey(General.Map.VisualCamera.Sector))
+						pickables.AddRange(vertexslopehandles[General.Map.VisualCamera.Sector]);
+				}
 			}
 			
 			// Go for all lines to see which ones we intersect
@@ -783,8 +795,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 										}
 
 										// Add slope handles
-										if (General.Map.UDMF && pickingmode == PickingMode.SlopeHandles && allslopehandles.ContainsKey(ld.Front.Sector))
-											pickables.AddRange(allslopehandles[ld.Front.Sector]);
+										if (General.Map.UDMF)
+										{
+											if (pickingmode == PickingMode.SidedefSlopeHandles && sidedefslopehandles.ContainsKey(ld.Front.Sector))
+												pickables.AddRange(sidedefslopehandles[ld.Front.Sector]);
+											else if (pickingmode == PickingMode.VertexSlopeHandles && vertexslopehandles.ContainsKey(ld.Front.Sector))
+												pickables.AddRange(vertexslopehandles[ld.Front.Sector]);
+										}
 									}
 									
 									// Add sidedef if on the front side
@@ -824,8 +841,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 										}
 
 										// Add slope handles
-										if (General.Map.UDMF && pickingmode == PickingMode.SlopeHandles && allslopehandles.ContainsKey(ld.Back.Sector))
-											pickables.AddRange(allslopehandles[ld.Back.Sector]);
+										if (General.Map.UDMF)
+										{
+											if (pickingmode == PickingMode.SidedefSlopeHandles && sidedefslopehandles.ContainsKey(ld.Back.Sector))
+												pickables.AddRange(sidedefslopehandles[ld.Back.Sector]);
+											else if (pickingmode == PickingMode.VertexSlopeHandles && vertexslopehandles.ContainsKey(ld.Back.Sector))
+												pickables.AddRange(vertexslopehandles[ld.Back.Sector]);
+										}
 									}
 
 									// Add sidedef if on the front side
@@ -891,7 +913,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			// If picking mode is for slope handles only return slope handles. We have to do it this
 			// way because otherwise it's possible to pick slope handles through other geometry
-			if (pickingmode == PickingMode.SlopeHandles && !(result.picked is VisualSlope))
+			if (pickingmode != PickingMode.Default && !(result.picked is VisualSlope))
 				result.picked = null;
 
 			// Done

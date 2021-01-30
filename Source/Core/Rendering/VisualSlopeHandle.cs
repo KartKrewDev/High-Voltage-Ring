@@ -10,14 +10,16 @@ namespace CodeImp.DoomBuilder.Rendering
 	{
 		#region ================== Variables
 
-		private VertexBuffer geometry;
+		private VertexBuffer linegeometry;
+		private VertexBuffer vertexgeometry;
 		private bool isdisposed;
 
 		#endregion
 
 		#region ================== Properties
 
-		public VertexBuffer Geometry { get { return geometry; } }
+		public VertexBuffer LineGeometry { get { return linegeometry; } }
+		public VertexBuffer VertexGeometry { get { return vertexgeometry; } }
 
 		#endregion
 
@@ -37,8 +39,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			// Not already disposed?
 			if (!isdisposed)
 			{
-				if (geometry != null)
-					geometry.Dispose();
+				if (linegeometry != null)
+					linegeometry.Dispose();
 
 				// Unregister resource
 				General.Map.Graphics.UnregisterResource(this);
@@ -70,18 +72,38 @@ namespace CodeImp.DoomBuilder.Rendering
 				v0, v2, v3
 			};
 
-			geometry = new VertexBuffer();
-			General.Map.Graphics.SetBufferData(geometry, vertices);
+			linegeometry = new VertexBuffer();
+			General.Map.Graphics.SetBufferData(linegeometry, vertices);
+
+			v0 = new WorldVertex(0.0f, 0.0f, 0.1f);
+			v1 = new WorldVertex(4.0f, -8.0f, 0.1f);
+			v2 = new WorldVertex(-4.0f, -8.0f, 0.1f);
+
+			v0.c = PixelColor.INT_WHITE;
+			v1.c = v2.c = PixelColor.INT_WHITE_NO_ALPHA;
+
+			vertices = new[]
+			{
+				v0, v1, v2
+			};
+
+			vertexgeometry = new VertexBuffer();
+			General.Map.Graphics.SetBufferData(vertexgeometry, vertices);
 		}
 
 		// This is called before a device is reset
 		// (when resized or display adapter was changed)
 		public void UnloadResource()
 		{
-			if (geometry != null)
-				geometry.Dispose();
+			if (linegeometry != null)
+				linegeometry.Dispose();
 
-			geometry = null;
+			linegeometry = null;
+
+			if (vertexgeometry != null)
+				vertexgeometry.Dispose();
+
+			vertexgeometry = null;
 		}
 
 		#endregion

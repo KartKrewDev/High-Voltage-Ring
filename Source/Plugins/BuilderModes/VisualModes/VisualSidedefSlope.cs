@@ -48,6 +48,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.level = level;
 			this.up = up;
 
+			type = VisualSlopeType.Line;
+
 			// length = sidedef.Line.Length;
 
 			Update();
@@ -182,9 +184,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if (selectedsectors.Count == 0)
 			{
 				// No sectors selected, so find all handles that belong to the same level
-				foreach (VisualSidedefSlope checkhandle in mode.AllSlopeHandles[starthandle.Sidedef.Sector])
+				foreach (VisualSidedefSlope checkhandle in mode.SidedefSlopeHandles[starthandle.Sidedef.Sector])
+				{
 					if (checkhandle != starthandle && checkhandle.Level == starthandle.Level)
 						potentialhandles.Add(checkhandle);
+				}
 			}
 			else
 			{
@@ -195,15 +199,17 @@ namespace CodeImp.DoomBuilder.VisualModes
 					sectors.Add(bvgs.Sector.Sector);
 
 				foreach (Sector s in sectors)
-					foreach (VisualSidedefSlope checkhandle in mode.AllSlopeHandles[s])
-						if(checkhandle != starthandle)
+					foreach (VisualSidedefSlope checkhandle in mode.SidedefSlopeHandles[s])
+					{
+						if (checkhandle != starthandle)
 							foreach (BaseVisualGeometrySector bvgs in selectedsectors)
 								if (bvgs.Level == checkhandle.Level)
 									potentialhandles.Add(checkhandle);
+					}
 			}
 
 			foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in mode.AllSlopeHandles)
-				foreach (VisualSidedefSlope checkhandle in kvp.Value)
+				foreach (VisualSlope checkhandle in kvp.Value)
 					checkhandle.SmartPivot = false;
 
 			// Sort potential handles by their angle difference to the start handle. That means that handles with less angle difference will be at the beginning of the list
@@ -296,6 +302,15 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if (vs != null) vs.UpdateSectorGeometry(true);
 		}
 
+		/// <summary>
+		/// Gets the pivor point for this slope handle
+		/// </summary>
+		/// <returns>The pivot point as Vector3D</returns>
+		public override Vector3D GetPivotPoint()
+		{
+			return new Vector3D(sidedef.Line.Line.GetCoordinatesAt(0.5), level.plane.GetZ(sidedef.Line.Line.GetCoordinatesAt(0.5)));
+		}
+
 		#endregion
 
 		#region ================== Events
@@ -321,7 +336,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			// TODO: doing this every time is kind of stupid. Maybe store the pivot handle in the mode?
 			foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in mode.AllSlopeHandles)
 			{
-				foreach (VisualSidedefSlope handle in kvp.Value)
+				foreach (VisualSlope handle in kvp.Value)
 				{
 					if (handle.Pivot)
 					{
@@ -344,12 +359,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 			mode.CreateUndo("Change slope");
 
 			Plane originalplane = level.plane;
-			Plane pivotplane = ((VisualSidedefSlope)pivothandle).Level.plane;
+			Plane pivotplane = pivothandle is VisualVertexSlope ? ((VisualVertexSlope)pivothandle).Level.plane : ((VisualSidedefSlope)pivothandle).Level.plane;
 
 			// Build a new plane. p1 and p2 are the points of the slope handle that is modified, with the changed amound added; p3 is on the line of the pivot handle
 			Vector3D p1 = new Vector3D(sidedef.Line.Start.Position, originalplane.GetZ(sidedef.Line.Start.Position) + amount);
 			Vector3D p2 = new Vector3D(sidedef.Line.End.Position, originalplane.GetZ(sidedef.Line.End.Position) + amount);
-			Vector3D p3 = new Vector3D(((VisualSidedefSlope)pivothandle).Sidedef.Line.Line.GetCoordinatesAt(0.5), pivotplane.GetZ(((VisualSidedefSlope)pivothandle).Sidedef.Line.Line.GetCoordinatesAt(0.5)));
+			Vector3D p3 = pivothandle.GetPivotPoint();
 
 			Plane plane = new Plane(p1, p2, p3, true);
 

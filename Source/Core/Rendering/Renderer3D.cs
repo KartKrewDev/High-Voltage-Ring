@@ -667,12 +667,20 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				world = handle.Position;
 				graphics.SetUniform(UniformName.world, ref world);
-				graphics.SetUniform(UniformName.slopeHandleLength, (float)handle.Length);
 				graphics.SetUniform(UniformName.vertexColor, color.ToColorValue());
 
-				graphics.SetVertexBuffer(visualslopehandle.Geometry);
-				graphics.Draw(PrimitiveType.TriangleList, 0, 2);
-
+				if (handle.Type == VisualSlopeType.Line)
+				{
+					graphics.SetUniform(UniformName.slopeHandleLength, (float)handle.Length);
+					graphics.SetVertexBuffer(visualslopehandle.LineGeometry);
+					graphics.Draw(PrimitiveType.TriangleList, 0, 2);
+				}
+				else if (handle.Type == VisualSlopeType.Vertex)
+				{
+					graphics.SetUniform(UniformName.slopeHandleLength, 1.0f);
+					graphics.SetVertexBuffer(visualslopehandle.VertexGeometry);
+					graphics.Draw(PrimitiveType.TriangleList, 0, 1);
+				}
 			}
 
 			// Done
