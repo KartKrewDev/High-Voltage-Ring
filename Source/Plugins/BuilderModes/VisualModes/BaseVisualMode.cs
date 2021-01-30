@@ -417,8 +417,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
 				{
-					foreach (VisualSlope handle in kvp.Value)
-						if (handle.Selected) selectedobjects.Add((VisualSidedefSlope)handle);
+					foreach (BaseVisualSlope handle in kvp.Value)
+						if (handle.Selected) selectedobjects.Add(handle);
 				}
 			}
 
@@ -540,7 +540,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 				else if(target.picked is VisualSlope)
 				{
-
 					// Clear smart pivot handles, otherwise it will keep being displayed
 					foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
 						foreach (VisualSlope checkhandle in kvp.Value)
@@ -1305,10 +1304,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				foreach (VisualSlope handle in kvp.Value)
 					if (handle != null && handle.Selected)
-						if(handle is VisualSidedefSlope)
-							RemoveSelectedObject((VisualSidedefSlope)handle);
-						else
-							RemoveSelectedObject((VisualVertexSlope)handle);
+						if (handle is BaseVisualSlope)
+							RemoveSelectedObject((BaseVisualSlope)handle);
 
 				kvp.Value.Clear();
 			}

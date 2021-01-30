@@ -482,6 +482,7 @@
     <Compile Include="VisualModes\BaseVisualGeometrySidedef.cs" />
     <Compile Include="VisualModes\BaseVisualMode.cs" />
     <Compile Include="VisualModes\BaseVisualSector.cs" />
+    <Compile Include="VisualModes\BaseVisualSlope.cs" />
     <Compile Include="VisualModes\BaseVisualThing.cs" />
     <Compile Include="VisualModes\BaseVisualVertex.cs" />
     <Compile Include="VisualModes\Effect3DFloor.cs" />

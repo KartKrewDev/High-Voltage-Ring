@@ -819,7 +819,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if (General.Map.UDMF)
 			{
 				if (mode.AllSlopeHandles.ContainsKey(level.sector))
-					foreach (VisualSidedefSlope handle in mode.AllSlopeHandles[level.sector])
+					foreach (VisualSlope handle in mode.AllSlopeHandles[level.sector])
 						handle.Changed = true;
 			}
 		}

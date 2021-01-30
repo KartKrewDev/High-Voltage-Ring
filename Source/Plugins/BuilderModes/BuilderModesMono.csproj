@@ -480,6 +480,7 @@
     <Compile Include="VisualModes\BaseVisualGeometrySidedef.cs" />
     <Compile Include="VisualModes\BaseVisualMode.cs" />
     <Compile Include="VisualModes\BaseVisualSector.cs" />
+    <Compile Include="VisualModes\BaseVisualSlope.cs" />
     <Compile Include="VisualModes\BaseVisualThing.cs" />
     <Compile Include="VisualModes\BaseVisualVertex.cs" />
     <Compile Include="VisualModes\Effect3DFloor.cs" />
@@ -517,6 +518,7 @@
     <Compile Include="VisualModes\VisualSidedefParts.cs" />
     <Compile Include="VisualModes\VisualSidedefSlope.cs" />
     <Compile Include="VisualModes\VisualUpper.cs" />
+    <Compile Include="VisualModes\VisualVertexSlope.cs" />
     <Compile Include="VisualModes\WallPolygon.cs" />
   </ItemGroup>
   <ItemGroup>
