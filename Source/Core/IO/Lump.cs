@@ -133,8 +133,9 @@ namespace CodeImp.DoomBuilder.IO
 		//mxd. This returns (hopefully) unique hash value for a texture name of any length
 		public static long MakeLongName(string name, bool uselongnames)
 		{
-			name = name.Trim().ToUpper();
-			if(!uselongnames && name.Length > DataManager.CLASIC_IMAGE_NAME_LENGTH)
+			// biwa. is using ToUpper a good idea? Will result in clashes with same names with different cases
+			name = name.ToUpper();
+			if (!uselongnames && name.Length > DataManager.CLASIC_IMAGE_NAME_LENGTH)
 			{
 				name = name.Substring(0, DataManager.CLASIC_IMAGE_NAME_LENGTH);
 			}
