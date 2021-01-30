@@ -617,9 +617,9 @@ namespace CodeImp.DoomBuilder.ZDoom
 
                 // try to read in a variable/method.
                 bool bmethod = false;
-                string[] availablemodifiers = new string[] { "static", "native", "action", "readonly", "protected", "private", "virtual", "override", "meta", "transient", "deprecated", "final", "play", "ui", "clearscope", "virtualscope", "version", "const" };
+                string[] availablemodifiers = new string[] { "static", "native", "action", "readonly", "protected", "private", "virtual", "override", "meta", "transient", "deprecated", "final", "play", "ui", "clearscope", "virtualscope", "version", "const", "abstract" };
                 string[] versionedmodifiers = new string[] { "version", "deprecated" };
-                string[] methodmodifiers = new string[] { "action", "virtual", "override", "final" };
+                string[] methodmodifiers = new string[] { "action", "virtual", "override", "final", "abstract" };
                 HashSet<string> modifiers = new HashSet<string>();
                 List<string> types = new List<string>();
                 List<List<int>> typearraylens = new List<List<int>>();
