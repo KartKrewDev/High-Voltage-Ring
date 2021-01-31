@@ -84,18 +84,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 			List<LineAngleInfo> lines = new List<LineAngleInfo>();
 			List<double> angles = new List<double>();
 
-			// Special case handling
-			if (vertex.Linedefs.Count == 0) // should never happen
-			{
-				angle = 0.0;
-				return;
-			}
-			else if (vertex.Linedefs.Count == 1)
-			{
-				angle = vertex.Linedefs.First().Angle + Angle2D.PIHALF;
-				return;
-			}
-
 			// Get all lines that we have to take into account. Ignore linedefs where both sides
 			// don't belong to the sector or don't belong to the sector
 			foreach (Linedef ld in vertex.Linedefs)
@@ -121,9 +109,15 @@ namespace CodeImp.DoomBuilder.VisualModes
 			}
 
 			// Special case handling
-			if(lines.Count == 0)
+			if (lines.Count < 2)
 			{
-				angle = lines[0].angle;
+				if (vertex.Linedefs.Count == 1)
+				{
+					angle = vertex.Linedefs.First().Angle + Angle2D.PIHALF;
+					return;
+				}
+
+				angle = 0.0;
 				return;
 			}
 
