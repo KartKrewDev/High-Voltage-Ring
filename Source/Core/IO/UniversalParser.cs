@@ -191,11 +191,15 @@ namespace CodeImp.DoomBuilder.IO
 			while((cpErrorResult == 0) && (endofstruct == false))
 			{
 				// Get current character
-				if(line == data.Length - 1) break;
-				if(pos > data[line].Length - 1) 
+				if (pos > data[line].Length - 1) 
 				{
 					pos = 0;
 					line++;
+
+					// Stop if we have reached the end of the data
+					if (line == data.Length)
+						break;
+
 					if(string.IsNullOrEmpty(data[line])) continue; //mxd. Skip empty lines here so correct line number is displayed on errors
 				}
 
