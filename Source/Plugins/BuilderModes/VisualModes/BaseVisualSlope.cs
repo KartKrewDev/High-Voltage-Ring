@@ -50,6 +50,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			{
 				this.selected = false;
 				mode.RemoveSelectedObject(this);
+				mode.RenderSlopeHandles.Remove(this);
 			}
 			else
 			{
@@ -61,6 +62,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 				this.selected = true;
 				mode.AddSelectedObject(this);
+				mode.RenderSlopeHandles.Add(this);
 			}
 		}
 
@@ -76,10 +78,26 @@ namespace CodeImp.DoomBuilder.VisualModes
 						if (handle.Selected)
 							General.Interface.DisplayStatus(Windows.StatusType.Warning, "It is not allowed to mark selected slope handles as pivot slope handles.");
 						else
-							handle.Pivot = !handle.Pivot;
+						{
+							if (handle.Pivot)
+							{
+								mode.RenderSlopeHandles.Remove(handle);
+								handle.Pivot = false;
+							}
+							else
+							{
+								mode.RenderSlopeHandles.Add(handle);
+								handle.Pivot = true;
+							}
+						}
 					}
 					else
+					{
+						if(!handle.Selected && !handle.SmartPivot)
+							mode.RenderSlopeHandles.Remove(handle);
+
 						handle.Pivot = false;
+					}
 				}
 			}
 		}

@@ -116,7 +116,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		private List<VisualVertex> visualvertices;
 
 		// Visual slope handles
-		private List<VisualSlope> visualslopehandles;
+		private ICollection<VisualSlope> visualslopehandles;
 
 		//mxd. Event lines
 		private List<Line3D> eventlines;
@@ -1842,7 +1842,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		//mxd
 		public void SetVisualVertices(List<VisualVertex> verts) { visualvertices = verts; }
 
-		public void SetVisualSlopeHandles(List<VisualSlope> handles) { visualslopehandles = handles; }
+		public void SetVisualSlopeHandles(ICollection<VisualSlope> handles) { visualslopehandles = handles; }
 
 		//mxd
 		public void SetEventLines(List<Line3D> lines) { eventlines = lines; }

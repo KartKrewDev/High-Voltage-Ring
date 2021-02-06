@@ -524,26 +524,49 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			if (updateinfo)
 			{
-				if (newtarget.picked is VisualSidedefSlope)
+				if (target.picked is VisualSlope) // Old target
 				{
-					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
-					VisualSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)newtarget.picked, this);
-					if (handle != null)
-						handle.SmartPivot = true;
-				}
-				else if(newtarget.picked is VisualVertexSlope)
-				{
-					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
-					VisualSlope handle = VisualVertexSlope.GetSmartPivotHandle((VisualVertexSlope)newtarget.picked, this);
-					if (handle != null)
-						handle.SmartPivot = true;
-				}
-				else if(target.picked is VisualSlope)
-				{
+					// Don't render old slope handle anymore
+					if (!((VisualSlope)target.picked).Selected && !((VisualSlope)target.picked).Pivot)
+						renderslopehandles.Remove((VisualSlope)target.picked);
+
 					// Clear smart pivot handles, otherwise it will keep being displayed
 					foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
 						foreach (VisualSlope checkhandle in kvp.Value)
-							checkhandle.SmartPivot = false;
+						{
+							if (checkhandle.SmartPivot)
+							{
+								checkhandle.SmartPivot = false;
+
+								if (!checkhandle.Selected && !checkhandle.Pivot)
+									renderslopehandles.Remove(checkhandle);
+							}
+						}
+				}
+
+				if (newtarget.picked is VisualSidedefSlope)
+				{
+					renderslopehandles.Add((VisualSidedefSlope)newtarget.picked);
+
+					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
+					VisualSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)newtarget.picked, this);
+					if (handle != null)
+					{
+						handle.SmartPivot = true;
+						renderslopehandles.Add(handle);
+					}
+				}
+				else if(newtarget.picked is VisualVertexSlope)
+				{
+					renderslopehandles.Add((VisualVertexSlope)newtarget.picked);
+
+					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
+					VisualSlope handle = VisualVertexSlope.GetSmartPivotHandle((VisualVertexSlope)newtarget.picked, this);
+					if (handle != null)
+					{
+						handle.SmartPivot = true;
+						renderslopehandles.Add(handle);
+					}
 				}
 			}
 
@@ -1633,14 +1656,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					renderer.SetVisualVertices(verts);
 				}
 
-				// Visual slope handles
-				List<VisualSlope> handles = new List<VisualSlope>();
-				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
-					foreach (VisualSlope handle in kvp.Value)
-						if (handle.Selected || handle.Pivot || handle.SmartPivot || target.picked == handle)
-							handles.Add(handle);
-
-				renderer.SetVisualSlopeHandles(handles);
+				renderer.SetVisualSlopeHandles(renderslopehandles);
 
 				// Done rendering geometry
 				renderer.FinishGeometry();
@@ -2482,6 +2498,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							handle.Pivot = false;
 						}
 					}
+
+					renderslopehandles.Clear();
 				}
 			}
 
@@ -4329,7 +4347,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Clear smart pivot handles, otherwise it will keep being displayed
 				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
 					foreach (VisualSlope checkhandle in kvp.Value)
-						checkhandle.SmartPivot = false;
+						if (checkhandle.SmartPivot && !(checkhandle.Selected || checkhandle.Pivot))
+						{
+							checkhandle.SmartPivot = false;
+							renderslopehandles.Remove(checkhandle);
+						}
 			}
 		}
 
@@ -4345,7 +4367,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Clear smart pivot handles, otherwise it will keep being displayed
 				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
 					foreach (VisualSlope checkhandle in kvp.Value)
-						checkhandle.SmartPivot = false;
+					{
+						if (checkhandle.SmartPivot && !(checkhandle.Selected || checkhandle.Pivot))
+						{
+							checkhandle.SmartPivot = false;
+							renderslopehandles.Remove(checkhandle);
+						}
+					}
 			}
 		}
 
