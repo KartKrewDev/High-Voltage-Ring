@@ -921,19 +921,19 @@ namespace CodeImp.DoomBuilder.Rendering
 
 				if (xminintersect)
 				{
-					gridplotter.DrawLineSolid((int)xminplotline.v1.x, (int)xminplotline.v1.y, (int)xminplotline.v2.x, (int)xminplotline.v2.y, ref c, mask);
+					gridplotter.DrawLineSolid((int)xminplotline.v1.x, (int)Math.Round(xminplotline.v1.y + 0.499999), (int)xminplotline.v2.x, (int)Math.Round(xminplotline.v2.y + 0.499999), ref c, mask);
 				}
 				if (xmaxintersect)
 				{
-					gridplotter.DrawLineSolid((int)xmaxplotline.v1.x, (int)xmaxplotline.v1.y, (int)xmaxplotline.v2.x, (int)xmaxplotline.v2.y, ref c, mask);
+					gridplotter.DrawLineSolid((int)xmaxplotline.v1.x, (int)Math.Round(xmaxplotline.v1.y + 0.499999), (int)xmaxplotline.v2.x, (int)Math.Round(xmaxplotline.v2.y + 0.499999), ref c, mask);
 				}
 				if (yminintersect)
 				{
-					gridplotter.DrawLineSolid((int)yminplotline.v1.x, (int)yminplotline.v1.y, (int)yminplotline.v2.x, (int)yminplotline.v2.y, ref c, mask);
+					gridplotter.DrawLineSolid((int)yminplotline.v1.x, (int)Math.Round(yminplotline.v1.y + 0.499999), (int)yminplotline.v2.x, (int)Math.Round(yminplotline.v2.y + 0.499999), ref c, mask);
 				}
 				if (ymaxintersect)
 				{
-					gridplotter.DrawLineSolid((int)ymaxplotline.v1.x, (int)ymaxplotline.v1.y, (int)ymaxplotline.v2.x, (int)ymaxplotline.v2.y, ref c, mask);
+					gridplotter.DrawLineSolid((int)ymaxplotline.v1.x, (int)Math.Round(ymaxplotline.v1.y + 0.499999), (int)ymaxplotline.v2.x, (int)Math.Round(ymaxplotline.v2.y + 0.499999), ref c, mask);
 				}
 
 				num++;
