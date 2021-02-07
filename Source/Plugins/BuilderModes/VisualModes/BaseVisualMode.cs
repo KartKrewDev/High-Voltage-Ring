@@ -526,46 +526,47 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				if (target.picked is VisualSlope) // Old target
 				{
+					// Remove all smart pivot handles from being processed. There should only be exactly one, but better save than sorry
+					List<VisualSlope> sph = new List<VisualSlope>();
+
+					foreach (VisualSlope vs in usedslopehandles)
+					{
+						if(vs.SmartPivot && !(vs.Selected || vs.Pivot))
+							sph.Add(vs);
+
+						vs.SmartPivot = false;
+					}
+
+					foreach (VisualSlope vs in sph)
+						usedslopehandles.Remove(vs);
+
 					// Don't render old slope handle anymore
 					if (!((VisualSlope)target.picked).Selected && !((VisualSlope)target.picked).Pivot)
-						renderslopehandles.Remove((VisualSlope)target.picked);
-
-					// Clear smart pivot handles, otherwise it will keep being displayed
-					foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
-						foreach (VisualSlope checkhandle in kvp.Value)
-						{
-							if (checkhandle.SmartPivot)
-							{
-								checkhandle.SmartPivot = false;
-
-								if (!checkhandle.Selected && !checkhandle.Pivot)
-									renderslopehandles.Remove(checkhandle);
-							}
-						}
+						usedslopehandles.Remove((VisualSlope)target.picked);
 				}
 
 				if (newtarget.picked is VisualSidedefSlope)
 				{
-					renderslopehandles.Add((VisualSidedefSlope)newtarget.picked);
+					usedslopehandles.Add((VisualSidedefSlope)newtarget.picked);
 
 					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
 					VisualSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)newtarget.picked, this);
 					if (handle != null)
 					{
 						handle.SmartPivot = true;
-						renderslopehandles.Add(handle);
+						usedslopehandles.Add(handle);
 					}
 				}
 				else if(newtarget.picked is VisualVertexSlope)
 				{
-					renderslopehandles.Add((VisualVertexSlope)newtarget.picked);
+					usedslopehandles.Add((VisualVertexSlope)newtarget.picked);
 
 					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
 					VisualSlope handle = VisualVertexSlope.GetSmartPivotHandle((VisualVertexSlope)newtarget.picked, this);
 					if (handle != null)
 					{
 						handle.SmartPivot = true;
-						renderslopehandles.Add(handle);
+						usedslopehandles.Add(handle);
 					}
 				}
 			}
@@ -1332,6 +1333,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				kvp.Value.Clear();
 			}
+			usedslopehandles.Clear();
 			allslopehandles.Clear();
 			sidedefslopehandles.Clear();
 			vertexslopehandles.Clear();
@@ -1656,7 +1658,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					renderer.SetVisualVertices(verts);
 				}
 
-				renderer.SetVisualSlopeHandles(renderslopehandles);
+				renderer.SetVisualSlopeHandles(usedslopehandles);
 
 				// Done rendering geometry
 				renderer.FinishGeometry();
@@ -2496,10 +2498,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						{
 							handle.Selected = false;
 							handle.Pivot = false;
+							handle.SmartPivot = false;
 						}
 					}
 
-					renderslopehandles.Clear();
+					usedslopehandles.Clear();
 				}
 			}
 
@@ -4350,7 +4353,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if (checkhandle.SmartPivot && !(checkhandle.Selected || checkhandle.Pivot))
 						{
 							checkhandle.SmartPivot = false;
-							renderslopehandles.Remove(checkhandle);
+							usedslopehandles.Remove(checkhandle);
 						}
 			}
 		}
@@ -4367,13 +4370,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Clear smart pivot handles, otherwise it will keep being displayed
 				foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in allslopehandles)
 					foreach (VisualSlope checkhandle in kvp.Value)
-					{
 						if (checkhandle.SmartPivot && !(checkhandle.Selected || checkhandle.Pivot))
 						{
 							checkhandle.SmartPivot = false;
-							renderslopehandles.Remove(checkhandle);
+							usedslopehandles.Remove(checkhandle);
 						}
-					}
 			}
 		}
 

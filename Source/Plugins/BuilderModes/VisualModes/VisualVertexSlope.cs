@@ -203,10 +203,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 					}
 			}
 
-			foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in mode.AllSlopeHandles)
-				foreach (VisualSlope checkhandle in kvp.Value)
-					checkhandle.SmartPivot = false;
-
 			handle = potentialhandles.OrderByDescending(h => Vector2D.Distance(h.Vertex.Position, starthandle.vertex.Position)).First();
 
 			if (handle == starthandle)
@@ -315,8 +311,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 			// Still no pivot handle, cancle
 			if (pivothandle == null)
 				return;
-
-			pivothandle.SmartPivot = true;
 
 			mode.CreateUndo("Change slope");
 

@@ -89,7 +89,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		protected List<VisualThing> visiblethings;
 		protected List<VisualSector> visiblesectors;
 		protected List<VisualGeometry> visiblegeometry;
-		protected HashSet<VisualSlope> renderslopehandles;
+		protected HashSet<VisualSlope> usedslopehandles;
 		
 		#endregion
 
@@ -102,7 +102,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public Dictionary<Sector, List<VisualSlope>> AllSlopeHandles { get { return allslopehandles; } }
 		public Dictionary<Sector, List<VisualSlope>> SidedefSlopeHandles { get { return sidedefslopehandles; } }
 		public Dictionary<Sector, List<VisualSlope>> VertexSlopeHandles { get { return vertexslopehandles; } }
-		public HashSet<VisualSlope> RenderSlopeHandles { get { return renderslopehandles; } }
+		public HashSet<VisualSlope> UsedSlopeHandles { get { return usedslopehandles; } }
 
 		// Rendering
 		public IRenderer3D Renderer { get { return renderer; } }
@@ -128,7 +128,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.visiblesectors = new List<VisualSector>(50);
 			this.visiblegeometry = new List<VisualGeometry>(200);
 			this.visiblethings = new List<VisualThing>(100);
-			this.renderslopehandles = new HashSet<VisualSlope>();
+			this.usedslopehandles = new HashSet<VisualSlope>();
 			this.processgeometry = true;
 			this.processthings = true;
 			this.vertices = new Dictionary<Vertex, VisualVertexPair>(); //mxd

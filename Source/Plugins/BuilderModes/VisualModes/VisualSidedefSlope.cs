@@ -195,10 +195,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 					}
 			}
 
-			foreach (KeyValuePair<Sector, List<VisualSlope>> kvp in mode.AllSlopeHandles)
-				foreach (VisualSlope checkhandle in kvp.Value)
-					checkhandle.SmartPivot = false;
-
 			// Sort potential handles by their angle difference to the start handle. That means that handles with less angle difference will be at the beginning of the list
 			List<VisualSidedefSlope> anglediffsortedhandles = potentialhandles.OrderBy(h => Math.Abs(starthandle.NormalizedAngleDeg - h.NormalizedAngleDeg)).ToList();
 
@@ -340,8 +336,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 			// Still no pivot handle, cancle
 			if (pivothandle == null)
 				return;
-
-			pivothandle.SmartPivot = true;
 
 			mode.CreateUndo("Change slope");
 

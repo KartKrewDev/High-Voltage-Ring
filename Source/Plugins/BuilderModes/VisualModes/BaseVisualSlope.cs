@@ -50,7 +50,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			{
 				this.selected = false;
 				mode.RemoveSelectedObject(this);
-				mode.RenderSlopeHandles.Remove(this);
+				mode.UsedSlopeHandles.Remove(this);
 			}
 			else
 			{
@@ -62,7 +62,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 				this.selected = true;
 				mode.AddSelectedObject(this);
-				mode.RenderSlopeHandles.Add(this);
+				mode.UsedSlopeHandles.Add(this);
 			}
 		}
 
@@ -81,12 +81,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 						{
 							if (handle.Pivot)
 							{
-								mode.RenderSlopeHandles.Remove(handle);
+								mode.UsedSlopeHandles.Remove(handle);
 								handle.Pivot = false;
 							}
 							else
 							{
-								mode.RenderSlopeHandles.Add(handle);
+								mode.UsedSlopeHandles.Add(handle);
 								handle.Pivot = true;
 							}
 						}
@@ -94,7 +94,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					else
 					{
 						if(!handle.Selected && !handle.SmartPivot)
-							mode.RenderSlopeHandles.Remove(handle);
+							mode.UsedSlopeHandles.Remove(handle);
 
 						handle.Pivot = false;
 					}
