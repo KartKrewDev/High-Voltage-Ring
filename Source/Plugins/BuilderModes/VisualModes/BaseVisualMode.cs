@@ -4341,6 +4341,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		[BeginAction("togglevisualslopepicking")]
 		public void ToggleVisualSidedefSlopePicking()
 		{
+			if (!General.Map.UDMF)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Visual sloping is supported in UDMF only!");
+				return;
+			}
+
 			if (pickingmode != PickingMode.SidedefSlopeHandles)
 				pickingmode = PickingMode.SidedefSlopeHandles;
 			else
@@ -4361,6 +4367,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		[BeginAction("togglevisualvertexslopepicking")]
 		public void ToggleVisualVertexSlopePicking()
 		{
+			if (!General.Map.UDMF)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Visual sloping is supported in UDMF only!");
+				return;
+			}
+
 			if (pickingmode != PickingMode.VertexSlopeHandles)
 				pickingmode = PickingMode.VertexSlopeHandles;
 			else
