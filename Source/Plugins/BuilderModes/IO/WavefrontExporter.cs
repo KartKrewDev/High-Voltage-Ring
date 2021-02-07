@@ -360,7 +360,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			}
 
 			//done
-			General.Interface.DisplayStatus(StatusType.Warning, "Geometry exported to \"" + savePath);
+			General.Interface.DisplayStatus(StatusType.Info, "Geometry exported to \"" + savePath);
 		}
 
 		#endregion
