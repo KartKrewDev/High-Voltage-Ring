@@ -1809,7 +1809,7 @@ namespace CodeImp.DoomBuilder.Data
                 if (!string.IsNullOrEmpty(actor.ReplacesClass) && thingtypesbyclass.ContainsKey(actor.ReplacesClass))
                 {
                     // Update info
-                    thingtypesbyclass[actor.ReplacesClass].ModifyByDecorateActor(actor, true);
+                    thingtypesbyclass[actor.ReplacesClass].ModifyByDecorateActor(actor);
 
                     // Count
                     counter++;
