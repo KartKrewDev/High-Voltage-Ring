@@ -168,20 +168,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// <summary>
 		/// Finds a slope handle to pivot around. It takes the vertex that's furthest away from the given handle
 		/// </summary>
-		/// <param name="starthandle">The slope handle to start from (the one we need to find a pivot handle for)</param>
 		/// <returns></returns>
-		public static VisualVertexSlope GetSmartPivotHandle(VisualVertexSlope starthandle, BaseVisualMode mode)
+		public override VisualSlope GetSmartPivotHandle()
 		{
-			VisualVertexSlope handle = starthandle;
+			VisualSlope handle = this;
 			List<VisualVertexSlope> potentialhandles = new List<VisualVertexSlope>();
 			List<IVisualEventReceiver> selectedsectors = mode.GetSelectedObjects(true, false, false, false, false);
 
 			if (selectedsectors.Count == 0)
 			{
 				// No sectors selected, so find all handles that belong to the same level
-				foreach (VisualVertexSlope checkhandle in mode.VertexSlopeHandles[starthandle.Sector])
+				foreach (VisualVertexSlope checkhandle in mode.VertexSlopeHandles[sector])
 				{
-					if (checkhandle != starthandle && checkhandle.Level == starthandle.Level)
+					if (checkhandle != this && checkhandle.Level == level)
 						potentialhandles.Add(checkhandle);
 				}
 			}
@@ -196,16 +195,16 @@ namespace CodeImp.DoomBuilder.VisualModes
 				foreach (Sector s in sectors)
 					foreach (VisualVertexSlope checkhandle in mode.VertexSlopeHandles[s])
 					{
-						if (checkhandle != starthandle)
+						if (checkhandle != this)
 							foreach (BaseVisualGeometrySector bvgs in selectedsectors)
 								if (bvgs.Level == checkhandle.Level)
 									potentialhandles.Add(checkhandle);
 					}
 			}
 
-			handle = potentialhandles.OrderByDescending(h => Vector2D.Distance(h.Vertex.Position, starthandle.vertex.Position)).First();
+			handle = potentialhandles.OrderByDescending(h => Vector2D.Distance(h.Vertex.Position, vertex.Position)).First();
 
-			if (handle == starthandle)
+			if (handle == this)
 				return null;
 
 			return handle;
@@ -306,7 +305,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			// User didn't set a pivot handle, try to find the smart pivot handle
 			if (pivothandle == null)
-				pivothandle = GetSmartPivotHandle(this, mode);
+				pivothandle = GetSmartPivotHandle();
 
 			// Still no pivot handle, cancle
 			if (pivothandle == null)

@@ -109,6 +109,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public virtual void Update() {}
 		public virtual Vector3D GetPivotPoint() { return new Vector3D(); }
+		public virtual VisualSlope GetSmartPivotHandle() { return null; }
 
 		public void SetPosition(Line2D line, Plane plane)
 		{

@@ -545,24 +545,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						usedslopehandles.Remove((VisualSlope)target.picked);
 				}
 
-				if (newtarget.picked is VisualSidedefSlope)
+				if(newtarget.picked is VisualSlope)
 				{
-					usedslopehandles.Add((VisualSidedefSlope)newtarget.picked);
+					usedslopehandles.Add((VisualSlope)newtarget.picked);
 
 					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
-					VisualSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)newtarget.picked, this);
-					if (handle != null)
-					{
-						handle.SmartPivot = true;
-						usedslopehandles.Add(handle);
-					}
-				}
-				else if(newtarget.picked is VisualVertexSlope)
-				{
-					usedslopehandles.Add((VisualVertexSlope)newtarget.picked);
-
-					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
-					VisualSlope handle = VisualVertexSlope.GetSmartPivotHandle((VisualVertexSlope)newtarget.picked, this);
+					VisualSlope handle = ((VisualSlope)newtarget.picked).GetSmartPivotHandle();
 					if (handle != null)
 					{
 						handle.SmartPivot = true;
@@ -839,7 +827,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// No handles selected, try to slope between highlighted handle and it smart pivot
 			if (handles.Count == 0 && HighlightedTarget is VisualSidedefSlope)
 			{
-				VisualSidedefSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
+				//VisualSidedefSlope handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
+				VisualSidedefSlope handle = (VisualSidedefSlope)((VisualSidedefSlope)HighlightedTarget).GetSmartPivotHandle();
 				if (handle == null)
 				{
 					General.Interface.DisplayStatus(StatusType.Warning, "Couldn't find a smart pivot handle.");
@@ -857,9 +846,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					VisualSidedefSlope handle;
 
 					if (HighlightedTarget is VisualSidedefSlope)
-						handle = VisualSidedefSlope.GetSmartPivotHandle((VisualSidedefSlope)HighlightedTarget, this);
+						handle = (VisualSidedefSlope)((VisualSidedefSlope)HighlightedTarget).GetSmartPivotHandle();
 					else
-						handle = VisualSidedefSlope.GetSmartPivotHandle(handles[0], this);
+						handle = (VisualSidedefSlope)(handles[0].GetSmartPivotHandle());
 
 					if (handle == null)
 					{

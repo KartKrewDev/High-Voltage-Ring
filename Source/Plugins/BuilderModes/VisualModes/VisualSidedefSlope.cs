@@ -160,20 +160,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// same angle as the start handle, and is the furthest away. If such a handle does not exist it finds one that's
 		/// closest to those specs
 		/// </summary>
-		/// <param name="starthandle">The slope handle to start from (the one we need to find a pivot handle for)</param>
 		/// <returns></returns>
-		public static VisualSidedefSlope GetSmartPivotHandle(VisualSidedefSlope starthandle, BaseVisualMode mode)
+		public override VisualSlope GetSmartPivotHandle()
 		{
-			VisualSidedefSlope handle = starthandle;
+			VisualSlope handle = this;
 			List<VisualSidedefSlope> potentialhandles = new List<VisualSidedefSlope>();
 			List<IVisualEventReceiver> selectedsectors = mode.GetSelectedObjects(true, false, false, false, false);
 
 			if (selectedsectors.Count == 0)
 			{
 				// No sectors selected, so find all handles that belong to the same level
-				foreach (VisualSidedefSlope checkhandle in mode.SidedefSlopeHandles[starthandle.Sidedef.Sector])
+				foreach (VisualSidedefSlope checkhandle in mode.SidedefSlopeHandles[sidedef.Sector])
 				{
-					if (checkhandle != starthandle && checkhandle.Level == starthandle.Level)
+					if (checkhandle != this && checkhandle.Level == level)
 						potentialhandles.Add(checkhandle);
 				}
 			}
@@ -188,7 +187,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 				foreach (Sector s in sectors)
 					foreach (VisualSidedefSlope checkhandle in mode.SidedefSlopeHandles[s])
 					{
-						if (checkhandle != starthandle)
+						if (checkhandle != this)
 							foreach (BaseVisualGeometrySector bvgs in selectedsectors)
 								if (bvgs.Level == checkhandle.Level)
 									potentialhandles.Add(checkhandle);
@@ -196,13 +195,13 @@ namespace CodeImp.DoomBuilder.VisualModes
 			}
 
 			// Sort potential handles by their angle difference to the start handle. That means that handles with less angle difference will be at the beginning of the list
-			List<VisualSidedefSlope> anglediffsortedhandles = potentialhandles.OrderBy(h => Math.Abs(starthandle.NormalizedAngleDeg - h.NormalizedAngleDeg)).ToList();
+			List<VisualSidedefSlope> anglediffsortedhandles = potentialhandles.OrderBy(h => Math.Abs(NormalizedAngleDeg - h.NormalizedAngleDeg)).ToList();
 
 			// Get all potential handles that have to same angle as the one that's closest to the start handle, then sort them by distance, and take the one that's furthest away
 			if (anglediffsortedhandles.Count > 0)
-				handle = anglediffsortedhandles.Where(h => h.NormalizedAngleDeg == anglediffsortedhandles[0].NormalizedAngleDeg).OrderByDescending(h => Math.Abs(starthandle.Sidedef.Line.Line.GetDistanceToLine(h.sidedef.Line.GetCenterPoint(), false))).First();
+				handle = anglediffsortedhandles.Where(h => h.NormalizedAngleDeg == anglediffsortedhandles[0].NormalizedAngleDeg).OrderByDescending(h => Math.Abs(sidedef.Line.Line.GetDistanceToLine(h.sidedef.Line.GetCenterPoint(), false))).First();
 
-			if (handle == starthandle)
+			if (handle == this)
 				return null;
 
 			return handle;
@@ -331,7 +330,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			// User didn't set a pivot handle, try to find the smart pivot handle
 			if(pivothandle == null)
-				pivothandle = GetSmartPivotHandle(this, mode);
+				pivothandle = GetSmartPivotHandle();
 
 			// Still no pivot handle, cancle
 			if (pivothandle == null)
