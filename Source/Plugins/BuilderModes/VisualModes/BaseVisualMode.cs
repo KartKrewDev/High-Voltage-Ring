@@ -518,6 +518,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			Vector3D delta = General.Map.VisualCamera.Target - General.Map.VisualCamera.Position;
 			delta = delta.GetFixedLength(General.Settings.ViewDistance * PICK_RANGE);
 			VisualPickResult newtarget = PickObject(start, start + delta);
+			VisualSlope pickedhandle = null;
 			
 			// Should we update the info on panels?
 			bool updateinfo = (newtarget.picked != target.picked);
@@ -549,18 +550,24 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					usedslopehandles.Add((VisualSlope)newtarget.picked);
 
-					// Get the smart pivot handle for the targeted slope handle, so that it can be drawn
-					VisualSlope handle = ((VisualSlope)newtarget.picked).GetSmartPivotHandle();
-					if (handle != null)
-					{
-						handle.SmartPivot = true;
-						usedslopehandles.Add(handle);
-					}
+					pickedhandle = ((VisualSlope)newtarget.picked);
 				}
 			}
 
 			// Apply new target
 			target = newtarget;
+
+			// Get the smart pivot handle for the targeted slope handle, so that it can be drawn. We have to do it after the current
+			// target is set because otherwise it might get wrong results if the old target was a floor/ceiling
+			if (pickedhandle != null)
+			{
+				VisualSlope handle = pickedhandle.GetSmartPivotHandle();
+				if (handle != null)
+				{
+					handle.SmartPivot = true;
+					usedslopehandles.Add(handle);
+				}
+			}
 
 			// Show target info
 			if (updateinfo)

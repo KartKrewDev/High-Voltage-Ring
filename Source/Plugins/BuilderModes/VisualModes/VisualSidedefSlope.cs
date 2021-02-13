@@ -163,9 +163,20 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// <returns></returns>
 		public override VisualSlope GetSmartPivotHandle()
 		{
+			List<IVisualEventReceiver> selectedsectors = mode.GetSelectedObjects(true, false, false, false, false);
+
+			// Special handling for triangular sectors
+			if (selectedsectors.Count == 0 && BuilderPlug.Me.UseOppositeSmartPivotHandle && sidedef.Sector.Sidedefs.Count == 3)
+			{
+				foreach(VisualVertexSlope vvs in mode.VertexSlopeHandles[sidedef.Sector])
+				{
+					if (vvs.Level == level && !vvs.Vertex.Linedefs.Contains(sidedef.Line))
+						return vvs;
+				}
+			}
+
 			VisualSlope handle = this;
 			List<VisualSidedefSlope> potentialhandles = new List<VisualSidedefSlope>();
-			List<IVisualEventReceiver> selectedsectors = mode.GetSelectedObjects(true, false, false, false, false);
 
 			if (selectedsectors.Count == 0)
 			{
@@ -293,6 +304,15 @@ namespace CodeImp.DoomBuilder.VisualModes
 			return new Vector3D(sidedef.Line.Line.GetCoordinatesAt(0.5), level.plane.GetZ(sidedef.Line.Line.GetCoordinatesAt(0.5)));
 		}
 
+		public List<Vector3D> GetPivotPoints()
+		{
+			return new List<Vector3D>()
+			{
+				new Vector3D(sidedef.Line.Start.Position, level.plane.GetZ(sidedef.Line.Start.Position)),
+				new Vector3D(sidedef.Line.End.Position, level.plane.GetZ(sidedef.Line.End.Position))
+			};
+		}
+
 		#endregion
 
 		#region ================== Events
@@ -339,7 +359,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			mode.CreateUndo("Change slope");
 
 			Plane originalplane = level.plane;
-			Plane pivotplane = pivothandle is VisualVertexSlope ? ((VisualVertexSlope)pivothandle).Level.plane : ((VisualSidedefSlope)pivothandle).Level.plane;
+			Plane pivotplane = ((BaseVisualSlope)pivothandle).Level.plane;
 
 			// Build a new plane. p1 and p2 are the points of the slope handle that is modified, with the changed amound added; p3 is on the line of the pivot handle
 			Vector3D p1 = new Vector3D(sidedef.Line.Start.Position, originalplane.GetZ(sidedef.Line.Start.Position) + amount);

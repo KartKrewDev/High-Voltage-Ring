@@ -30,6 +30,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			this.tabs = new System.Windows.Forms.TabControl();
 			this.taboptions = new System.Windows.Forms.TabPage();
+			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.eventlinelabelstyle = new System.Windows.Forms.ComboBox();
+			this.eventlinelabelvisibility = new System.Windows.Forms.ComboBox();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.label15 = new System.Windows.Forms.Label();
 			this.label14 = new System.Windows.Forms.Label();
@@ -75,16 +78,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.label10 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.heightbysidedef = new System.Windows.Forms.ComboBox();
-			this.groupBox5 = new System.Windows.Forms.GroupBox();
-			this.eventlinelabelvisibility = new System.Windows.Forms.ComboBox();
-			this.eventlinelabelstyle = new System.Windows.Forms.ComboBox();
+			this.useoppositesmartpivothandle = new System.Windows.Forms.CheckBox();
 			this.tabs.SuspendLayout();
 			this.taboptions.SuspendLayout();
+			this.groupBox5.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
-			this.groupBox5.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// tabs
@@ -116,6 +117,44 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.taboptions.TabIndex = 0;
 			this.taboptions.Text = "Editing";
 			this.taboptions.UseVisualStyleBackColor = true;
+			// 
+			// groupBox5
+			// 
+			this.groupBox5.Controls.Add(this.eventlinelabelstyle);
+			this.groupBox5.Controls.Add(this.eventlinelabelvisibility);
+			this.groupBox5.Location = new System.Drawing.Point(6, 445);
+			this.groupBox5.Name = "groupBox5";
+			this.groupBox5.Size = new System.Drawing.Size(272, 54);
+			this.groupBox5.TabIndex = 4;
+			this.groupBox5.TabStop = false;
+			this.groupBox5.Text = "Event line labels";
+			// 
+			// eventlinelabelstyle
+			// 
+			this.eventlinelabelstyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.eventlinelabelstyle.FormattingEnabled = true;
+			this.eventlinelabelstyle.Items.AddRange(new object[] {
+            "Action only",
+            "Action + short arguments",
+            "Action + full arguments"});
+			this.eventlinelabelstyle.Location = new System.Drawing.Point(133, 19);
+			this.eventlinelabelstyle.Name = "eventlinelabelstyle";
+			this.eventlinelabelstyle.Size = new System.Drawing.Size(133, 21);
+			this.eventlinelabelstyle.TabIndex = 1;
+			// 
+			// eventlinelabelvisibility
+			// 
+			this.eventlinelabelvisibility.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.eventlinelabelvisibility.FormattingEnabled = true;
+			this.eventlinelabelvisibility.Items.AddRange(new object[] {
+            "Never show",
+            "Forward only",
+            "Reverse only",
+            "Forward + Reverse"});
+			this.eventlinelabelvisibility.Location = new System.Drawing.Point(6, 19);
+			this.eventlinelabelvisibility.Name = "eventlinelabelvisibility";
+			this.eventlinelabelvisibility.Size = new System.Drawing.Size(121, 21);
+			this.eventlinelabelvisibility.TabIndex = 0;
 			// 
 			// groupBox4
 			// 
@@ -235,6 +274,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// 
 			// groupBox3
 			// 
+			this.groupBox3.Controls.Add(this.useoppositesmartpivothandle);
 			this.groupBox3.Controls.Add(this.additivepaintselect);
 			this.groupBox3.Controls.Add(this.switchviewmodes);
 			this.groupBox3.Controls.Add(this.autodrawonedit);
@@ -670,43 +710,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.heightbysidedef.Size = new System.Drawing.Size(309, 21);
 			this.heightbysidedef.TabIndex = 0;
 			// 
-			// groupBox5
+			// useoppositesmartpivothandle
 			// 
-			this.groupBox5.Controls.Add(this.eventlinelabelstyle);
-			this.groupBox5.Controls.Add(this.eventlinelabelvisibility);
-			this.groupBox5.Location = new System.Drawing.Point(6, 445);
-			this.groupBox5.Name = "groupBox5";
-			this.groupBox5.Size = new System.Drawing.Size(272, 54);
-			this.groupBox5.TabIndex = 4;
-			this.groupBox5.TabStop = false;
-			this.groupBox5.Text = "Event line labels";
-			// 
-			// eventlinelabelvisibility
-			// 
-			this.eventlinelabelvisibility.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.eventlinelabelvisibility.FormattingEnabled = true;
-			this.eventlinelabelvisibility.Items.AddRange(new object[] {
-            "Never show",
-            "Forward only",
-            "Reverse only",
-            "Forward + Reverse"});
-			this.eventlinelabelvisibility.Location = new System.Drawing.Point(6, 19);
-			this.eventlinelabelvisibility.Name = "eventlinelabelvisibility";
-			this.eventlinelabelvisibility.Size = new System.Drawing.Size(121, 21);
-			this.eventlinelabelvisibility.TabIndex = 0;
-			// 
-			// eventlinelabelstyle
-			// 
-			this.eventlinelabelstyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.eventlinelabelstyle.FormattingEnabled = true;
-			this.eventlinelabelstyle.Items.AddRange(new object[] {
-            "Action only",
-            "Action + short arguments",
-            "Action + full arguments"});
-			this.eventlinelabelstyle.Location = new System.Drawing.Point(133, 19);
-			this.eventlinelabelstyle.Name = "eventlinelabelstyle";
-			this.eventlinelabelstyle.Size = new System.Drawing.Size(133, 21);
-			this.eventlinelabelstyle.TabIndex = 1;
+			this.useoppositesmartpivothandle.AutoSize = true;
+			this.useoppositesmartpivothandle.Location = new System.Drawing.Point(13, 333);
+			this.useoppositesmartpivothandle.Name = "useoppositesmartpivothandle";
+			this.useoppositesmartpivothandle.Size = new System.Drawing.Size(321, 17);
+			this.useoppositesmartpivothandle.TabIndex = 12;
+			this.useoppositesmartpivothandle.Text = "Opposite side/vertex is smart pivot handle on triangular sectors";
+			this.useoppositesmartpivothandle.UseVisualStyleBackColor = true;
 			// 
 			// PreferencesForm
 			// 
@@ -721,6 +733,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.Text = "PreferencesForm";
 			this.tabs.ResumeLayout(false);
 			this.taboptions.ResumeLayout(false);
+			this.groupBox5.ResumeLayout(false);
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
@@ -729,7 +742,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.groupBox2.PerformLayout();
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
-			this.groupBox5.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -786,5 +798,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private System.Windows.Forms.GroupBox groupBox5;
 		private System.Windows.Forms.ComboBox eventlinelabelvisibility;
 		private System.Windows.Forms.ComboBox eventlinelabelstyle;
+		private System.Windows.Forms.CheckBox useoppositesmartpivothandle;
 	}
 }

@@ -141,6 +141,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private int eventlinelabelvisibility; // 0 = never show, 1 = forward only, 2 = reverse only, 3 = forward + reverse
 		private int eventlinelabelstyle; // 0 = Action only, 1 = Action + short arguments, 2 = action + full arguments
 		private bool eventlinedistinctcolors;
+		private bool useoppositesmartpivothandle;
 
 		#endregion
 
@@ -199,6 +200,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public int EventLineLabelVisibility { get { return eventlinelabelvisibility; } internal set { eventlinelabelvisibility = value; } }
 		public int EventLineLabelStyle { get { return eventlinelabelstyle; } internal set { eventlinelabelstyle = value; } }
 		public bool EventLineDistinctColors { get { return eventlinedistinctcolors; } internal set { eventlinedistinctcolors = value; } }
+		public bool UseOppositeSmartPivotHandle { get { return useoppositesmartpivothandle; } internal set { useoppositesmartpivothandle = value; } }
 
 		//mxd. "Make Door" action persistent settings
 		internal MakeDoorSettings MakeDoor;
@@ -306,6 +308,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			eventlinelabelvisibility = General.Settings.ReadPluginSetting("eventlinelabelvisibility", 3);
 			eventlinelabelstyle = General.Settings.ReadPluginSetting("eventlinelabelstyle", 2);
 			eventlinedistinctcolors = General.Settings.ReadPluginSetting("eventlinedistinctcolors", true);
+			useoppositesmartpivothandle = General.Settings.ReadPluginSetting("useoppositesmartpivothandle", true);
 		}
 
 		//mxd. Load settings, which can be changed via UI

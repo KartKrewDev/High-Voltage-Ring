@@ -171,9 +171,20 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// <returns></returns>
 		public override VisualSlope GetSmartPivotHandle()
 		{
+			List<IVisualEventReceiver> selectedsectors = mode.GetSelectedObjects(true, false, false, false, false);
+
+			// Special handling for triangular sectors
+			if (selectedsectors.Count == 0 && BuilderPlug.Me.UseOppositeSmartPivotHandle && sector.Sidedefs.Count == 3)
+			{
+				foreach (VisualSidedefSlope vss in mode.SidedefSlopeHandles[sector])
+				{
+					if (vss.Level == level && !(vss.Sidedef.Line.Start == vertex || vss.Sidedef.Line.End == vertex))
+						return vss;
+				}
+			}
+
 			VisualSlope handle = this;
 			List<VisualVertexSlope> potentialhandles = new List<VisualVertexSlope>();
-			List<IVisualEventReceiver> selectedsectors = mode.GetSelectedObjects(true, false, false, false, false);
 
 			if (selectedsectors.Count == 0)
 			{
@@ -315,14 +326,26 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			Plane originalplane = level.plane;
 
-			// Build a new plane. Since we only got 2 points (the pivot point of the pivot handle and the vertex slope vertex) we need
-			// to create a third point. That's done by getting the perpendicular of the line between the aforementioned 2 points, then
-			// add the perpendicular to the vertex position of the vertex slope vertex
-			Vector3D p3 = pivothandle.GetPivotPoint();
-			Vector2D perp = new Line2D(vertex.Position, p3).GetPerpendicular();
+			Vector3D p1, p2, p3;
 
-			Vector3D p1 = new Vector3D(vertex.Position, originalplane.GetZ(vertex.Position) + amount);
-			Vector3D p2 = new Vector3D(vertex.Position + perp, originalplane.GetZ(vertex.Position + perp) + amount);
+			if (pivothandle is VisualVertexSlope)
+			{
+				// Build a new plane. Since we only got 2 points (the pivot point of the pivot handle and the vertex slope vertex) we need
+				// to create a third point. That's done by getting the perpendicular of the line between the aforementioned 2 points, then
+				// add the perpendicular to the vertex position of the vertex slope vertex
+				p3 = pivothandle.GetPivotPoint();
+				Vector2D perp = new Line2D(vertex.Position, p3).GetPerpendicular();
+
+				p1 = new Vector3D(vertex.Position, originalplane.GetZ(vertex.Position) + amount);
+				p2 = new Vector3D(vertex.Position + perp, originalplane.GetZ(vertex.Position + perp) + amount);
+			}
+			else // VisualSidedefSlope
+			{
+				List<Vector3D> pivotpoints = ((VisualSidedefSlope)pivothandle).GetPivotPoints();
+				p1 = new Vector3D(vertex.Position, originalplane.GetZ(vertex.Position) + amount);
+				p2 = pivotpoints[0];
+				p3 = pivotpoints[1];
+			}
 
 			Plane plane = new Plane(p1, p2, p3, true);
 
