@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -104,13 +105,19 @@ namespace CodeImp.DoomBuilder.ZDoom
 							return false;
 						}
 
-						SkipWhitespace(false);
+						SkipWhitespace(true);
+
+						token = ReadToken();
 
 						// Try to read the optional decal id
-						token = ReadToken();
-						if(!string.IsNullOrEmpty(token))
+						if (token == "{")
 						{
-							ReadSignedInt(token, ref decalid);
+							datastream.Seek(-token.Length - 1, SeekOrigin.Current);
+						}
+						else
+						{
+							if (!string.IsNullOrEmpty(token))
+								ReadSignedInt(token, ref decalid);
 						}
 
 						SkipWhitespace(true);
