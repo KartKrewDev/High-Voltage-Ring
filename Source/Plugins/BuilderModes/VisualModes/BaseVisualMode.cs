@@ -4422,12 +4422,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				if (applytoceiling)
 				{
+					// Set the ceiling height to something hopefully sensible
+					level.sector.CeilHeight = (int)Math.Round(level.plane.GetZ(level.sector.BBox.X + level.sector.BBox.Width / 2, level.sector.BBox.Y + level.sector.BBox.Height / 2));
+
 					level.sector.CeilSlopeOffset = double.NaN;
 					level.sector.CeilSlope = new Vector3D();
 					numceilings++;
 				}
 				else
 				{
+					// Set the floor height to something hopefully sensible
+					level.sector.FloorHeight = (int)Math.Round(level.plane.GetZ(level.sector.BBox.X + level.sector.BBox.Width / 2, level.sector.BBox.Y + level.sector.BBox.Height / 2));
+
 					level.sector.FloorSlopeOffset = double.NaN;
 					level.sector.FloorSlope = new Vector3D();
 					numfloors++;
