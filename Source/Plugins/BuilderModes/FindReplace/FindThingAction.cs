@@ -220,12 +220,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					else
 					{
 						List<string> argslist = new List<string>();
+						LinedefActionInfo info = General.Map.Config.GetLinedefActionInfo(t.Action);
 
-						// Process args, drop trailing zeroes
-						for(int i = t.Args.Length - 1; i > -1; i--)
+						// Process args
+						for (int i = t.Args.Length - 1; i >= 0; i--)
 						{
-							if(t.Args[i] == 0 && argslist.Count == 0) continue; // Skip tail zeroes
-							argslist.Insert(0, t.Args[i].ToString());
+							if (info.Args[i].Used)
+								argslist.Insert(0, t.Args[i].ToString());
+							else if (argslist.Count != 0) // Show unused args as "-" if they are not at the last args
+								argslist.Insert(0, "-");
 						}
 
 						// Process arg0str...
