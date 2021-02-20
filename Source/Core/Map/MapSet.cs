@@ -3401,6 +3401,9 @@ namespace CodeImp.DoomBuilder.Map
 		/// <summary>This finds the line closest to the specified position.</summary>
 		public static Linedef NearestLinedefRange(BlockMap<BlockEntry> selectionmap, Vector2D pos, double maxrange) //mxd
 		{
+			if (selectionmap == null)
+				return null;
+
 			Linedef closest = null;
 			double distance = double.MaxValue;
 			double maxrangesq = maxrange * maxrange;
