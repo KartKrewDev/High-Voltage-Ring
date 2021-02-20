@@ -26,9 +26,22 @@ using CodeImp.DoomBuilder.Map;
 
 namespace CodeImp.DoomBuilder.Config
 {
+	public struct ErrorCheckerExemptions
+	{
+		public bool IgnoreUpperTexture;
+		public bool IgnoreMiddleTexture;
+		public bool IgnoreLowerTexture;
+	}
+
 	public class LinedefActionInfo : INumberedTitle, IComparable<LinedefActionInfo>
 	{
 		#region ================== Constants
+
+		#endregion
+
+		#region ================== Constants
+
+
 
 		#endregion
 
@@ -45,6 +58,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly bool isgeneralized;
 		private readonly bool isknown;
 		private readonly bool requiresactivation; //mxd
+		private readonly ErrorCheckerExemptions errorcheckerexemptions;
 		
 		#endregion
 
@@ -61,6 +75,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool IsNull { get { return (index == 0); } }
 		public bool RequiresActivation { get { return requiresactivation; } } //mxd
 		public ArgumentInfo[] Args { get { return args; } }
+		public ErrorCheckerExemptions ErrorCheckerExemptions { get { return errorcheckerexemptions; } }
 
 		#endregion
 
@@ -77,6 +92,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
 			this.isgeneralized = false;
 			this.isknown = true;
+			this.errorcheckerexemptions = new ErrorCheckerExemptions();
 			
 			// Read settings
 			this.name = cfg.ReadSetting(actionsetting + ".title", "Unnamed");
@@ -86,8 +102,13 @@ namespace CodeImp.DoomBuilder.Config
 			this.title = this.prefix + " " + this.name;
 			this.title = this.title.Trim();
 
+			// Error checker exemptions
+			this.errorcheckerexemptions.IgnoreUpperTexture = cfg.ReadSetting(actionsetting + ".errorchecker.ignoreuppertexture", false);
+			this.errorcheckerexemptions.IgnoreMiddleTexture = cfg.ReadSetting(actionsetting + ".errorchecker.ignoremiddletexture", false);
+			this.errorcheckerexemptions.IgnoreLowerTexture = cfg.ReadSetting(actionsetting + ".errorchecker.ignorelowertexture", false);
+
 			// Read the args
-			for(int i = 0; i < Linedef.NUM_ARGS; i++)
+			for (int i = 0; i < Linedef.NUM_ARGS; i++)
 				this.args[i] = new ArgumentInfo(cfg, actionsetting, i, enums);
 			
 			// We have no destructor
