@@ -917,7 +917,7 @@ namespace CodeImp.DoomBuilder.Windows
 				diff = Math.Abs(Math.Round(s.CeilSlopeOffset) - s.CeilSlopeOffset);
 				if (Math.Abs(s.CeilSlope.z) == 1.0 && diff < 0.000000001)
 				{
-					s.CeilHeight = -Convert.ToInt32(s.CeilSlopeOffset);
+					s.CeilHeight = Convert.ToInt32(s.CeilSlopeOffset);
 					s.CeilSlope = new Vector3D();
 					s.CeilSlopeOffset = double.NaN;
 				}
