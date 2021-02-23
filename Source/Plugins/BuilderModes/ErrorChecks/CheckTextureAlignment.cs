@@ -309,17 +309,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				int partheight = (int)Math.Round(((target.Sector.CeilHeight - source.Sector.CeilHeight) / texturescaley) * linescaley);
 				return ((int)Tools.GetSidedefMiddleOffsetY(target, target.OffsetY + GetSidedefValue(target, matchingparttype, "offsety", 0f), linescaley, false) + partheight) % textureheight;
 			}
-			
-			if(target.HighTexture == texturename
-					&& partsize.IntersectsWith(BuilderModesTools.GetSidedefPartSize(target, VisualGeometryType.WALL_UPPER))) 
+
+			// Only check upper and lower textures if the sidedef as an other side. See https://github.com/jewalky/UltimateDoomBuilder/issues/533
+			if (target.Other != null && target.HighTexture == texturename
+					&& partsize.IntersectsWith(BuilderModesTools.GetSidedefPartSize(target, VisualGeometryType.WALL_UPPER)))
 			{
 				matchingparttype = VisualGeometryType.WALL_UPPER;
 				int partheight = (int) Math.Round(((target.Sector.CeilHeight - source.Sector.CeilHeight) / texturescaley) * linescaley);
 				return ((int)Tools.GetSidedefTopOffsetY(target, target.OffsetY + GetSidedefValue(target, matchingparttype, "offsety", 0f), linescaley, false) + partheight) % textureheight;
 			}
 
-			if(target.LowTexture == texturename
-				  && partsize.IntersectsWith(BuilderModesTools.GetSidedefPartSize(target, VisualGeometryType.WALL_LOWER))) 
+			if (target.Other != null && target.LowTexture == texturename
+				  && partsize.IntersectsWith(BuilderModesTools.GetSidedefPartSize(target, VisualGeometryType.WALL_LOWER)))
 			{
 				matchingparttype = VisualGeometryType.WALL_LOWER;
 				int partheight = (int)Math.Round(((target.Sector.CeilHeight - source.Sector.CeilHeight) / texturescaley) * linescaley);
