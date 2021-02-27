@@ -948,16 +948,39 @@ namespace CodeImp.DoomBuilder
                 //      Treat "save as" into the current archive as normal save.
                 bool isSaveAs = (purpose == SavePurpose.AsNewFile) && (newfilepathname != filepathname);
 				// On Save AS we have to copy the previous file to the new file
-				if(isSaveAs) 
+				if (isSaveAs)
 				{
 					// Copy if original file still exists
-					if(File.Exists(filepathname)) File.Copy(filepathname, newfilepathname, true);
+					if (File.Exists(filepathname))
+						File.Copy(filepathname, newfilepathname, true);
 				}
 
-				// If the target file exists, we need to rebuild it
-                // [ZZ] The original code here would do some weird trickery with tempfiles.
-                //      I'm just finding the map lumps and deleting them on later stages.
-				targetwad = new WAD(newfilepathname);
+				if (File.Exists(newfilepathname))
+				{
+					// If the target file exists, we need to rebuild it
+					// biwa. This somewhat restores the behavior that was change with commit b996d8a380056ed9cb3a3f90f3c534e29e77e53c
+					// Not rebuilding the WAD can cause issues with WADs that do not have their directory at the bottom.
+					// See https://github.com/jewalky/UltimateDoomBuilder/issues/531
+					origwadfile = newfilepathname + ".temp";
+					File.Move(newfilepathname, origwadfile);
+
+					// Open original file
+					WAD origwad = new WAD(origwadfile, true);
+
+					// Create new target file
+					targetwad = new WAD(newfilepathname) { IsIWAD = origwad.IsIWAD }; //mxd. Let's preserve wad type
+
+					CopyAllLumps(origwad, targetwad);
+
+					// Close original file and delete it
+					origwad.Dispose();
+					File.Delete(origwadfile);
+				}
+				else
+				{
+					// Create new target file
+					targetwad = new WAD(newfilepathname);
+				}
 			} 
 			catch(Exception e) 
 			{
@@ -1547,6 +1570,26 @@ namespace CodeImp.DoomBuilder
             if (writeheaders) target.WriteHeaders();
             return tgtheaderindex;
         }
+
+		/// <summary>
+		/// Copies all lumps from one WAD to another
+		/// </summary>
+		/// <param name="source">Source WAD</param>
+		/// <param name="target">Target WAD</param>
+		private static void CopyAllLumps(WAD source, WAD target)
+		{
+			// Go for all lumps
+			for (int i = 0; i < source.Lumps.Count; i++)
+			{
+				Lump srclump = source.Lumps[i];
+
+				// Copy lump over!
+				Lump tgtlump = target.Insert(srclump.Name, target.Lumps.Count, srclump.Length, false);
+				srclump.CopyTo(tgtlump);
+			}
+
+			target.WriteHeaders();
+		}
 
 		// This copies specific map lumps from one WAD to another
 		private void CopyLumpsByType(WAD source, string sourcemapname,
