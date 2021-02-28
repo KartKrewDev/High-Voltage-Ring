@@ -2087,6 +2087,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//mxd. Clear selection info
 				General.Interface.DisplayStatus(StatusType.Selection, string.Empty);
 
+				if (highlighted != null && !highlighted.IsDisposed)
+					highlightasso.Set(highlighted);
+
 				// Recreate the blockmap
 				CreateBlockmap();
 

@@ -785,10 +785,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void Plot()
 		{
 			foreach(Linedef ld in linedefs)
-				renderer.PlotLinedef(ld, General.Colors.Indication);
+				if(!ld.IsDisposed) renderer.PlotLinedef(ld, General.Colors.Indication);
 
 			foreach (Sector s in sectors)
-				renderer.PlotSector(s, General.Colors.Indication);
+				if(!s.IsDisposed) renderer.PlotSector(s, General.Colors.Indication);
 		}
 
 		// This compares an association
