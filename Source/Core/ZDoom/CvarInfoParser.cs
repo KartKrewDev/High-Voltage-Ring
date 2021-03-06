@@ -61,7 +61,9 @@ namespace CodeImp.DoomBuilder.ZDoom
 				//<scope> [noarchive] [cheat] [latch] <type> <name> [= <defaultvalue>];
 				switch(token)
 				{
-					case "user": case "server":
+					case "user":
+					case "server":
+					case "nosave":
 						// read (skip) flags
 						while(true)
 						{
