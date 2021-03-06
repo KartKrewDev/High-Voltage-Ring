@@ -395,8 +395,11 @@ namespace CodeImp.DoomBuilder.Windows
 			floorRenderStyle.SelectedIndex = renderstyles.IndexOf(sc.Fields.GetValue("renderstylefloor", "translucent"));
 
 			// Portal render style
-			ceilportalrenderstyle.SelectedIndex = portalrenderstyles.IndexOf(sc.Fields.GetValue("portal_ceil_overlaytype", "translucent"));
-			floorportalrenderstyle.SelectedIndex = portalrenderstyles.IndexOf(sc.Fields.GetValue("portal_floor_overlaytype", "translucent"));
+			if (portalrenderstyles.Count > 0)
+			{
+				ceilportalrenderstyle.SelectedIndex = portalrenderstyles.IndexOf(sc.Fields.GetValue("portal_ceil_overlaytype", portalrenderstyles[0]));
+				floorportalrenderstyle.SelectedIndex = portalrenderstyles.IndexOf(sc.Fields.GetValue("portal_floor_overlaytype", portalrenderstyles[0]));
+			}
 
 			// Damage
 			damagetype.Text = sc.Fields.GetValue("damagetype", NO_DAMAGETYPE);
@@ -530,9 +533,9 @@ namespace CodeImp.DoomBuilder.Windows
 					floorRenderStyle.SelectedIndex = -1;
 
 				// Portal render style
-				if(ceilportalrenderstyle.SelectedIndex > -1 && ceilportalrenderstyle.SelectedIndex != portalrenderstyles.IndexOf(s.Fields.GetValue("portal_ceil_overlaytype", "translucent")))
+				if(ceilportalrenderstyle.SelectedIndex > -1 && ceilportalrenderstyle.SelectedIndex != portalrenderstyles.IndexOf(s.Fields.GetValue("portal_ceil_overlaytype", portalrenderstyles[0])))
 					ceilportalrenderstyle.SelectedIndex = -1;
-				if(floorportalrenderstyle.SelectedIndex > -1 && floorportalrenderstyle.SelectedIndex != portalrenderstyles.IndexOf(s.Fields.GetValue("portal_floor_overlaytype", "translucent")))
+				if(floorportalrenderstyle.SelectedIndex > -1 && floorportalrenderstyle.SelectedIndex != portalrenderstyles.IndexOf(s.Fields.GetValue("portal_floor_overlaytype", portalrenderstyles[0])))
 					floorportalrenderstyle.SelectedIndex = -1;
 
 				// Damage
@@ -873,9 +876,9 @@ namespace CodeImp.DoomBuilder.Windows
 				if(portalrenderstyles.Count > 0)
 				{
 					if(ceilportalrenderstyle.SelectedIndex > -1)
-						UniFields.SetString(s.Fields, "portal_ceil_overlaytype", portalrenderstyles[ceilportalrenderstyle.SelectedIndex], "translucent");
+						UniFields.SetString(s.Fields, "portal_ceil_overlaytype", portalrenderstyles[ceilportalrenderstyle.SelectedIndex], portalrenderstyles[0]);
 					if(floorportalrenderstyle.SelectedIndex > -1)
-						UniFields.SetString(s.Fields, "portal_floor_overlaytype", portalrenderstyles[floorportalrenderstyle.SelectedIndex], "translucent");
+						UniFields.SetString(s.Fields, "portal_floor_overlaytype", portalrenderstyles[floorportalrenderstyle.SelectedIndex], portalrenderstyles[0]);
 				}
 
 				//Damage
