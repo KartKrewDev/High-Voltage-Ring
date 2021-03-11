@@ -93,6 +93,14 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 				if (c != cbExportForGZDoom)
 					c.Enabled = cbExportForGZDoom.Checked;
 			}
+
+			cbGenerateCode.Checked = General.Settings.ReadPluginSetting("objgeneratecode", true);
+			cbGenerateModeldef.Checked = General.Settings.ReadPluginSetting("objgeneratemodeldef", true);
+
+			if(cbExportForGZDoom.Checked)
+			{
+				gbActorFormat.Enabled = gbActorSettings.Enabled = cbGenerateCode.Checked;
+			}
 		}
 
 		#region ================== Methods
@@ -185,8 +193,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			General.Settings.WritePluginSetting("objactorpath", tbActorPath.Text);
 			General.Settings.WritePluginSetting("objmodelpath", tbModelPath.Text);
 			General.Settings.WritePluginSetting("objsprite", tbSprite.Text.ToUpperInvariant());
+			General.Settings.WritePluginSetting("objgeneratecode", cbGenerateCode.Checked);
+			General.Settings.WritePluginSetting("objgeneratemodeldef", cbGenerateModeldef.Checked);
 
-			Dictionary<string, string> skiptexture = new Dictionary<string, string>();
+			Dictionary <string, string> skiptexture = new Dictionary<string, string>();
 			int i = 0;
 			foreach(string t in lbSkipTextures.Items)
 			{
@@ -349,6 +359,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 				tbActorName.BackColor = SystemColors.Window;
 				actorNameError.Visible = false;
 			}
+		}
+
+		private void cbGenerateCode_CheckedChanged(object sender, EventArgs e)
+		{
+			gbActorFormat.Enabled = gbActorSettings.Enabled = cbGenerateCode.Checked;
 		}
 	}
 }
