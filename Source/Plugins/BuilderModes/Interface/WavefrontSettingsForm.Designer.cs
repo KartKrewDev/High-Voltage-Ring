@@ -114,7 +114,7 @@
 			// export
 			// 
 			this.export.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.export.Location = new System.Drawing.Point(279, 588);
+			this.export.Location = new System.Drawing.Point(279, 575);
 			this.export.Name = "export";
 			this.export.Size = new System.Drawing.Size(75, 23);
 			this.export.TabIndex = 7;
@@ -126,7 +126,7 @@
 			// 
 			this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(360, 588);
+			this.cancel.Location = new System.Drawing.Point(360, 575);
 			this.cancel.Name = "cancel";
 			this.cancel.Size = new System.Drawing.Size(75, 23);
 			this.cancel.TabIndex = 8;
@@ -205,7 +205,7 @@
 			this.gbGZDoom.Controls.Add(this.cbExportForGZDoom);
 			this.gbGZDoom.Location = new System.Drawing.Point(15, 141);
 			this.gbGZDoom.Name = "gbGZDoom";
-			this.gbGZDoom.Size = new System.Drawing.Size(420, 439);
+			this.gbGZDoom.Size = new System.Drawing.Size(420, 425);
 			this.gbGZDoom.TabIndex = 6;
 			this.gbGZDoom.TabStop = false;
 			// 
@@ -225,7 +225,7 @@
 			this.gbActorFormat.Controls.Add(this.rbDecorate);
 			this.gbActorFormat.Location = new System.Drawing.Point(10, 340);
 			this.gbActorFormat.Name = "gbActorFormat";
-			this.gbActorFormat.Size = new System.Drawing.Size(170, 88);
+			this.gbActorFormat.Size = new System.Drawing.Size(170, 73);
 			this.gbActorFormat.TabIndex = 14;
 			this.gbActorFormat.TabStop = false;
 			this.gbActorFormat.Text = "Actor format";
@@ -262,7 +262,7 @@
 			this.gbActorSettings.Controls.Add(this.cbNoGravity);
 			this.gbActorSettings.Location = new System.Drawing.Point(11, 212);
 			this.gbActorSettings.Name = "gbActorSettings";
-			this.gbActorSettings.Size = new System.Drawing.Size(169, 134);
+			this.gbActorSettings.Size = new System.Drawing.Size(169, 122);
 			this.gbActorSettings.TabIndex = 13;
 			this.gbActorSettings.TabStop = false;
 			this.gbActorSettings.Text = "Actor settings";
@@ -429,7 +429,7 @@
 			this.groupBox1.Controls.Add(this.lbSkipTextures);
 			this.groupBox1.Location = new System.Drawing.Point(186, 212);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(222, 216);
+			this.groupBox1.Size = new System.Drawing.Size(222, 201);
 			this.groupBox1.TabIndex = 15;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Skip textures";
@@ -559,7 +559,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(447, 623);
+			this.ClientSize = new System.Drawing.Size(447, 610);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.gbGZDoom);
 			this.Controls.Add(this.label2);
