@@ -2948,6 +2948,9 @@ namespace CodeImp.DoomBuilder.Windows
 		[BeginAction("aligngridtolinedef")]
 		protected void AlignGridToLinedef()
 		{
+			if (General.Map == null)
+				return;
+
 			if (General.Map.Map.SelectedLinedefsCount != 1)
 			{
 				General.Interface.DisplayStatus(StatusType.Warning, "Exactly one linedef must be selected");
@@ -2965,6 +2968,9 @@ namespace CodeImp.DoomBuilder.Windows
 		[BeginAction("setgridorigintovertex")]
 		protected void SetGridOriginToVertex()
 		{
+			if (General.Map == null)
+				return;
+
 			if (General.Map.Map.SelectedVerticessCount != 1)
 			{
 				General.Interface.DisplayStatus(StatusType.Warning, "Exactly one vertex must be selected");
