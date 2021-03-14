@@ -113,9 +113,9 @@ namespace CodeImp.DoomBuilder.Map
 		internal Dictionary<string, bool> Flags { get { return flags; } }
 		public int Action { get { return action; } set { BeforePropsChange(); action = value; } }
 		public int[] Args { get { return args; } }
-		public float Size { get { return size; } }
+		public float Size { get { return size * (float)scaleX / (float)(1 << General.Settings.ThingScale); } }
 		public float RenderSize { get { return rendersize; } }
-		public float Height { get { return height; } } //mxd
+		public float Height { get { return height * (float)scaleY / (float)(1 << General.Settings.ThingScale); } } //mxd
 		public PixelColor Color { get { return color; } }
 		public bool FixedSize { get { return fixedsize; } }
 		public int Tag { get { return tag; } set { BeforePropsChange(); tag = value; if((tag < General.Map.FormatInterface.MinTag) || (tag > General.Map.FormatInterface.MaxTag)) throw new ArgumentOutOfRangeException("Tag", "Invalid tag number"); } }
