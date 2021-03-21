@@ -48,6 +48,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			  ButtonGroup = "000_editing",
 			  AllowCopyPaste = false,
 			  SupportedMapFormats = new[] { "UniversalMapSetIO" },
+			  RequiredMapFeatures = new[] { "PlaneEquationSupport" },
 			  Volatile = true,
 			  UseByDefault = true,
 			  Optional = false,

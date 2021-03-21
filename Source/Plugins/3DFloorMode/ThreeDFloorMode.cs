@@ -53,6 +53,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			  ButtonOrder = int.MinValue + 501,	// Position of the button (lower is more to the left)
 			  ButtonGroup = "000_editing",
 			  SupportedMapFormats = new[] { "HexenMapSetIO", "UniversalMapSetIO" },
+			  RequiredMapFeatures = new[] { "Effect3DFloorSupport" },
 			  UseByDefault = true,
 			  SafeStartMode = false,
 			  Volatile = false)]

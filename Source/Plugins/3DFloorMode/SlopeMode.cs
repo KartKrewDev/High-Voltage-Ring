@@ -62,7 +62,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
               ButtonOrder = int.MinValue + 501,	// Position of the button (lower is more to the left)
               ButtonGroup = "000_editing",
 			  SupportedMapFormats = new[] { "UniversalMapSetIO" },
-              UseByDefault = true,
+			  RequiredMapFeatures = new[] { "PlaneEquationSupport" },
+			  UseByDefault = true,
               SafeStartMode = true,
               IsDeprecated = true,
               DeprecationMessage = "Please use the visual sloping functionality instead.")]

@@ -21,6 +21,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Editing;
@@ -92,7 +94,9 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly string thingclasshelp; //mxd
 		private readonly bool sidedefcompressionignoresaction; //mxd
 		private readonly bool localsidedeftextureoffsets; //MaxW
-		
+		private readonly bool effect3dfloorsupport;
+		private readonly bool planeequationsupport;
+
 		// Skills
 		private readonly List<SkillInfo> skills;
 
@@ -243,6 +247,8 @@ namespace CodeImp.DoomBuilder.Config
 		public bool DOOM { get { return doommapformat; } }
 
 		public bool UseLocalSidedefTextureOffsets { get { return localsidedeftextureoffsets; } } //MaxW
+		public bool Effect3DFloorSupport { get { return effect3dfloorsupport; } }
+		public bool PlaneEquationSupport { get { return planeequationsupport; } }
 
 		// Texture/flat/voxel sources
 		public IDictionary TextureRanges { get { return textureranges; } }
@@ -409,7 +415,9 @@ namespace CodeImp.DoomBuilder.Config
 			sidedefcompressionignoresaction = cfg.ReadSetting("sidedefcompressionignoresaction", false); //mxd
 			defaultlinedefactivation = cfg.ReadSetting("defaultlinedefactivation", ""); //mxd
 			localsidedeftextureoffsets = (cfg.ReadSetting("localsidedeftextureoffsets", false)); //MaxW
-			for(int i = 0; i < Linedef.NUM_ARGS; i++) makedoorargs[i] = cfg.ReadSetting("makedoorarg" + i.ToString(CultureInfo.InvariantCulture), 0);
+			effect3dfloorsupport = cfg.ReadSetting("effect3dfloorsupport", false);
+			planeequationsupport = cfg.ReadSetting("planeequationsupport", false);
+			for (int i = 0; i < Linedef.NUM_ARGS; i++) makedoorargs[i] = cfg.ReadSetting("makedoorarg" + i.ToString(CultureInfo.InvariantCulture), 0);
 
 			//mxd. Update map format flags
 			universalmapformat = (formatinterface == "UniversalMapSetIO");
@@ -1234,6 +1242,37 @@ namespace CodeImp.DoomBuilder.Config
 		public bool HasScriptLumps()
 		{
 			return maplumps.Values.Count(o => o.ScriptBuild || o.Script != null) > 0;
+		}
+
+		/// <summary>
+		/// Checks if this game configuration supports the requested map feature(s)
+		/// </summary>
+		/// <param name="features">Array of strings of property names of the GameConfiguration class</param>
+		/// <returns></returns>
+		public bool SupportsMapFeatures(string[] features, [CallerMemberName] string callername = "")
+		{
+			bool supported = true;
+
+			foreach (string rmf in features)
+			{
+				PropertyInfo pi = GetType().GetProperty(rmf);
+
+				if (pi == null)
+				{
+					General.ErrorLogger.Add(ErrorType.Error, "Check for supported map features (" + string.Join(", ", features) + ") was requested my " + callername + ", but property \"" + rmf + "\" does not exist.");
+					return false;
+				}
+
+				object value = pi.GetValue(this);
+
+				if (value is bool && (bool)value == false)
+				{
+					supported = false;
+					break;
+				}
+			}
+
+			return supported;
 		}
 		
 		#endregion
