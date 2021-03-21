@@ -367,6 +367,9 @@ namespace CodeImp.DoomBuilder.Editing
 				// Engage new mode
 				if(newmode != null)
 				{
+					if (newmode.Attributes.IsDeprecated)
+						General.ErrorLogger.Add(ErrorType.Warning, "The editing mode \"" + newmode.Attributes.DisplayName + "\" is deprecated and will be removed in the future. " + newmode.Attributes.DeprecationMessage);
+
 					newmode.OnEngage();
 					General.Plugins.OnEditEngage(oldmode, newmode);
 				}

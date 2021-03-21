@@ -43,6 +43,8 @@ namespace CodeImp.DoomBuilder.Editing
 		private bool usebydefault;
 		private bool safestartmode;
 		private string[] supportedmapformats; //mxd
+		private bool isdeprecated = false;
+		private string deprecationmessage = string.Empty;
 		
 		#endregion
 		
@@ -114,6 +116,16 @@ namespace CodeImp.DoomBuilder.Editing
 		/// List of map formats this mode can work with. Null means all map formats are supported (mxd)
 		/// </summary>
 		public string[] SupportedMapFormats { get { return supportedmapformats; } set { supportedmapformats = value; } }
+
+		/// <summary>
+		/// When set to true the DeprecationMessage will be shown as a warning in the errors and warnings dialog
+		/// </summary>
+		public bool IsDeprecated { get { return isdeprecated; } set { isdeprecated = value; } }
+
+		/// <summary>
+		/// Message to be shown as a warning in the errors and warnings dialog when IsDeprecated is true
+		/// </summary>
+		public string DeprecationMessage { get { return deprecationmessage; } set { deprecationmessage = value; } }
 
 		#endregion
 

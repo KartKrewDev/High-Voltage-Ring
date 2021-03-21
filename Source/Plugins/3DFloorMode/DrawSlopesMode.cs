@@ -50,8 +50,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			  SupportedMapFormats = new[] { "UniversalMapSetIO" },
 			  Volatile = true,
 			  UseByDefault = true,
-			  Optional = false)]
-
+			  Optional = false,
+			  IsDeprecated = true,
+			  DeprecationMessage = "Please use the visual sloping functionality instead.")]
 	public class DrawSlopesMode : ClassicMode
 	{
 		#region ================== Constants

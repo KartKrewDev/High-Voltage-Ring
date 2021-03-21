@@ -63,7 +63,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
               ButtonGroup = "000_editing",
 			  SupportedMapFormats = new[] { "UniversalMapSetIO" },
               UseByDefault = true,
-              SafeStartMode = true)]
+              SafeStartMode = true,
+              IsDeprecated = true,
+              DeprecationMessage = "Please use the visual sloping functionality instead.")]
 
     public class SlopeMode : ClassicMode
 	{

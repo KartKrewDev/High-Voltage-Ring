@@ -88,7 +88,7 @@ namespace CodeImp.DoomBuilder.Windows
 				// Is this mode selectable by the user?
 				if(emi.IsOptional)
 				{
-					lvi = listmodes.Items.Add(emi.Attributes.DisplayName);
+					lvi = listmodes.Items.Add(emi.Attributes.DisplayName + (emi.Attributes.IsDeprecated ? " (deprecated)" : ""));
 					lvi.Tag = emi;
 					lvi.SubItems.Add(emi.Plugin.Plug.Name);
 					lvi.UseItemStyleForSubItems = true; //mxd
@@ -199,14 +199,14 @@ namespace CodeImp.DoomBuilder.Windows
 					if(emi.Attributes.SupportedMapFormats != null &&
 					    Array.IndexOf(emi.Attributes.SupportedMapFormats, gameconfig.FormatInterface) == -1) 
 					{
-						lvi.Text = emi.Attributes.DisplayName + " (map format not supported)";
+						lvi.Text = emi.Attributes.DisplayName + " (map format not supported" + (emi.Attributes.IsDeprecated ? ", deprecated" : "") + ")";
 						lvi.ForeColor = SystemColors.GrayText;
 						lvi.BackColor = SystemColors.InactiveBorder;
 						lvi.Checked = false;
 					} 
 					else 
 					{
-						lvi.Text = emi.Attributes.DisplayName;
+						lvi.Text = emi.Attributes.DisplayName + (emi.Attributes.IsDeprecated ? " (deprecated)" : "");
 						lvi.ForeColor = SystemColors.WindowText;
 						lvi.BackColor = SystemColors.Window;
 						lvi.Checked = (configinfo.EditModes.ContainsKey(emi.Type.FullName) && configinfo.EditModes[emi.Type.FullName]);

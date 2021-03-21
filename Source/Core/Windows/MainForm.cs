@@ -299,7 +299,7 @@ namespace CodeImp.DoomBuilder.Windows
 			if(General.Editing.Mode != null)
 			{
 				General.MainWindow.CheckEditModeButton(General.Editing.Mode.EditModeButtonName);
-				General.MainWindow.DisplayModeName(General.Editing.Mode.Attributes.DisplayName);
+				General.MainWindow.DisplayModeName(General.Editing.Mode.Attributes.DisplayName + (General.Editing.Mode.Attributes.IsDeprecated ? " (deprecated)" : ""));
 			}
 			else
 			{
