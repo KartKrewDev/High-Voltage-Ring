@@ -1841,13 +1841,18 @@ namespace CodeImp.DoomBuilder.Windows
 		private void ceilingslopecontrol_OnResetClicked(object sender, EventArgs e) 
 		{
 			MakeUndo(); //mxd
-			ceilingslopecontrol.SetOffset(General.GetByIndex(sectors, 0).CeilHeight, true);
+			Sector fs = General.GetByIndex(sectors, 0);
+			Plane p = new Plane(fs.CeilSlope, fs.CeilSlopeOffset);
+			fs.UpdateBBox();
+			ceilingslopecontrol.SetOffset((int)Math.Round(p.GetZ(fs.BBox.X + fs.BBox.Width / 2, fs.BBox.Y + fs.BBox.Height / 2)), true);
 			
 			foreach(Sector s in sectors) 
 			{
+				s.UpdateBBox();
+				p = new Plane(s.CeilSlope, s.CeilSlopeOffset);
+				s.CeilHeight = (int)Math.Round(p.GetZ(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2));
 				s.CeilSlope = new Vector3D();
-				s.CeilSlopeOffset = float.NaN;
-				s.CeilHeight = ceilingheight.GetResult(sectorprops[s].CeilHeight);
+				s.CeilSlopeOffset = double.NaN;
 				s.UpdateNeeded = true;
 				ceilingslopecontrol.SetOffset(s.CeilHeight, false);
 			}
@@ -1861,13 +1866,18 @@ namespace CodeImp.DoomBuilder.Windows
 		private void floorslopecontrol_OnResetClicked(object sender, EventArgs e) 
 		{
 			MakeUndo(); //mxd
-			floorslopecontrol.SetOffset(General.GetByIndex(sectors, 0).FloorHeight, true);
+			Sector fs = General.GetByIndex(sectors, 0);
+			Plane p = new Plane(fs.FloorSlope, fs.FloorSlopeOffset);
+			fs.UpdateBBox();
+			floorslopecontrol.SetOffset((int)Math.Round(p.GetZ(fs.BBox.X + fs.BBox.Width / 2, fs.BBox.Y + fs.BBox.Height / 2)), true);
 			
 			foreach(Sector s in sectors) 
 			{
+				s.UpdateBBox();
+				p = new Plane(s.FloorSlope, s.FloorSlopeOffset);
+				s.FloorHeight = (int)Math.Round(p.GetZ(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2));
 				s.FloorSlope = new Vector3D();
-				s.FloorSlopeOffset = float.NaN;
-				s.FloorHeight = floorheight.GetResult(sectorprops[s].FloorHeight);
+				s.FloorSlopeOffset = double.NaN;
 				s.UpdateNeeded = true;
 				floorslopecontrol.SetOffset(s.FloorHeight, false);
 			}
