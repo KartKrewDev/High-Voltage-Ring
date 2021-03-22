@@ -856,6 +856,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		/// <returns>True if the sector has UDMF fiels associations</returns>
 		public static bool SectorHasUDMFFieldAssociations(Sector sector)
 		{
+			if (sector == null || sector.IsDisposed || sector.Fields == null)
+				return false;
+
 			foreach (UniversalFieldInfo ufi in General.Map.Config.SectorFields)
 			{
 				if (sector.Fields.ContainsKey(ufi.Name))
