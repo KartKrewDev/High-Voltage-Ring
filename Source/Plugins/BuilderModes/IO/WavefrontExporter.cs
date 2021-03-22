@@ -653,8 +653,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					Dictionary<WorldVertex, VertexIndices> vertsData = new Dictionary<WorldVertex, VertexIndices>();
 					foreach(WorldVertex[] verts in group.Value) 
 					{
-						//vertex normals. biwa not sure why I need to invert the normal, but it seems to be necessary
-						Vector3D n = new Vector3D(verts[0].nx, verts[0].ny, verts[0].nz).GetNormal() * -1;
+						//vertex normals. biwa not sure why I need to invert the normal's y component, but it seems to be necessary
+						Vector3D n = new Vector3D(verts[0].nx, verts[0].ny, verts[0].nz).GetNormal();
+						n.y *= -1;
+
 						int ni;
 						if(uniqueNormals.ContainsKey(n)) 
 						{
