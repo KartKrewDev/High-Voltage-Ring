@@ -617,7 +617,8 @@ namespace CodeImp.DoomBuilder.Windows
 				bool haveactivationflag = false;
 				foreach(CheckBox c in udmfactivates.Checkboxes) 
 				{
-					if(c.CheckState != CheckState.Unchecked) 
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					if(ai.IsTrigger && c.CheckState != CheckState.Unchecked) 
 					{
 						haveactivationflag = true;
 						break;
@@ -625,7 +626,13 @@ namespace CodeImp.DoomBuilder.Windows
 				}
 
 				missingactivation.Visible = !haveactivationflag;
-				activationGroup.ForeColor = (!haveactivationflag ? Color.DarkRed : SystemColors.ControlText);
+
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+				{
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					if (ai.IsTrigger)
+						c.ForeColor = (!haveactivationflag ? Color.DarkRed : SystemColors.ControlText);
+				}
 			} 
 			else 
 			{

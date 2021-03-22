@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -745,8 +746,18 @@ namespace CodeImp.DoomBuilder.Config
 			IDictionary dic = cfg.ReadSetting("linedefactivations", new Hashtable());
 			foreach(DictionaryEntry de in dic)
 			{
-				// Add to the list
-				linedefactivates.Add(new LinedefActivateInfo(de.Key.ToString(), de.Value.ToString()));
+				// If the value is a dictionary read the values from that
+				if (de.Value is ICollection)
+				{
+					string name = cfg.ReadSetting("linedefactivations." + de.Key.ToString() + ".name", de.Key.ToString());
+					bool istrigger = cfg.ReadSetting("linedefactivations." + de.Key.ToString() + ".istrigger", true);
+					linedefactivates.Add(new LinedefActivateInfo(de.Key.ToString(), name, istrigger));
+				}
+				else
+				{
+					// Add to the list
+					linedefactivates.Add(new LinedefActivateInfo(de.Key.ToString(), de.Value.ToString(), true));
+				}
 			}
 
 			//mxd. Sort only when activations are numeric
