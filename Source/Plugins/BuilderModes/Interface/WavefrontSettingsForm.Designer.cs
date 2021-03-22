@@ -39,6 +39,8 @@
 			this.nudScale = new System.Windows.Forms.NumericUpDown();
 			this.label2 = new System.Windows.Forms.Label();
 			this.gbGZDoom = new System.Windows.Forms.GroupBox();
+			this.cbGenerateCode = new System.Windows.Forms.CheckBox();
+			this.cbGenerateModeldef = new System.Windows.Forms.CheckBox();
 			this.actorNameError = new System.Windows.Forms.PictureBox();
 			this.gbActorFormat = new System.Windows.Forms.GroupBox();
 			this.rbZScript = new System.Windows.Forms.RadioButton();
@@ -73,8 +75,6 @@
 			this.cbIgnoreControlSectors = new System.Windows.Forms.CheckBox();
 			this.browse = new System.Windows.Forms.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.cbGenerateModeldef = new System.Windows.Forms.CheckBox();
-			this.cbGenerateCode = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.nudScale)).BeginInit();
 			this.gbGZDoom.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.actorNameError)).BeginInit();
@@ -208,6 +208,27 @@
 			this.gbGZDoom.Size = new System.Drawing.Size(420, 425);
 			this.gbGZDoom.TabIndex = 6;
 			this.gbGZDoom.TabStop = false;
+			// 
+			// cbGenerateCode
+			// 
+			this.cbGenerateCode.AutoSize = true;
+			this.cbGenerateCode.Location = new System.Drawing.Point(8, 161);
+			this.cbGenerateCode.Name = "cbGenerateCode";
+			this.cbGenerateCode.Size = new System.Drawing.Size(171, 17);
+			this.cbGenerateCode.TabIndex = 25;
+			this.cbGenerateCode.Text = "Generate ZScript/DECORATE";
+			this.cbGenerateCode.UseVisualStyleBackColor = true;
+			this.cbGenerateCode.CheckedChanged += new System.EventHandler(this.cbGenerateCode_CheckedChanged);
+			// 
+			// cbGenerateModeldef
+			// 
+			this.cbGenerateModeldef.AutoSize = true;
+			this.cbGenerateModeldef.Location = new System.Drawing.Point(8, 184);
+			this.cbGenerateModeldef.Name = "cbGenerateModeldef";
+			this.cbGenerateModeldef.Size = new System.Drawing.Size(132, 17);
+			this.cbGenerateModeldef.TabIndex = 25;
+			this.cbGenerateModeldef.Text = "Generate MODELDEF";
+			this.cbGenerateModeldef.UseVisualStyleBackColor = true;
 			// 
 			// actorNameError
 			// 
@@ -531,27 +552,6 @@
 			this.browse.TabIndex = 2;
 			this.browse.UseVisualStyleBackColor = true;
 			this.browse.Click += new System.EventHandler(this.browse_Click);
-			// 
-			// cbGenerateModeldef
-			// 
-			this.cbGenerateModeldef.AutoSize = true;
-			this.cbGenerateModeldef.Location = new System.Drawing.Point(8, 184);
-			this.cbGenerateModeldef.Name = "cbGenerateModeldef";
-			this.cbGenerateModeldef.Size = new System.Drawing.Size(132, 17);
-			this.cbGenerateModeldef.TabIndex = 25;
-			this.cbGenerateModeldef.Text = "Generate MODELDEF";
-			this.cbGenerateModeldef.UseVisualStyleBackColor = true;
-			// 
-			// cbGenerateCode
-			// 
-			this.cbGenerateCode.AutoSize = true;
-			this.cbGenerateCode.Location = new System.Drawing.Point(8, 161);
-			this.cbGenerateCode.Name = "cbGenerateCode";
-			this.cbGenerateCode.Size = new System.Drawing.Size(171, 17);
-			this.cbGenerateCode.TabIndex = 25;
-			this.cbGenerateCode.Text = "Generate ZScript/DECORATE";
-			this.cbGenerateCode.UseVisualStyleBackColor = true;
-			this.cbGenerateCode.CheckedChanged += new System.EventHandler(this.cbGenerateCode_CheckedChanged);
 			// 
 			// WavefrontSettingsForm
 			// 

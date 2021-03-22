@@ -86,20 +86,21 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 				lbSkipTextures.Items.Add(de.Value);
 			}
 
-			// Toggle enable/disable manually because cbFixScale is a child of the group box, so disabling
-			// the group box would also disable cbFixScale
-			foreach (Control c in gbGZDoom.Controls)
-			{
-				if (c != cbExportForGZDoom)
-					c.Enabled = cbExportForGZDoom.Checked;
-			}
-
 			cbGenerateCode.Checked = General.Settings.ReadPluginSetting("objgeneratecode", true);
 			cbGenerateModeldef.Checked = General.Settings.ReadPluginSetting("objgeneratemodeldef", true);
 
-			if(cbExportForGZDoom.Checked)
+			if (cbExportForGZDoom.Checked)
 			{
 				gbActorFormat.Enabled = gbActorSettings.Enabled = cbGenerateCode.Checked;
+			}
+
+			// Toggle enable/disable manually because cbFixScale is a child of the group box, so disabling
+			// the group box would also disable cbFixScale
+			//foreach (Control c in gbGZDoom.Controls)
+			foreach (Control c in cbExportForGZDoom.Parent.Controls)
+			{
+				if (c != cbExportForGZDoom)
+					c.Enabled = cbExportForGZDoom.Checked;
 			}
 		}
 
@@ -223,9 +224,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			// the group box would also disable cbFixScale
 			foreach(Control c in cbExportForGZDoom.Parent.Controls)
 			{
-				if (c != cbExportForGZDoom)
+				if (c != cbExportForGZDoom && c != gbActorSettings && c != gbActorFormat)
 					c.Enabled = !c.Enabled;
 			}
+
+			gbActorSettings.Enabled = gbActorFormat.Enabled = cbGenerateCode.Checked && cbExportForGZDoom.Checked;
 
 			tbExportPath.Enabled = browse.Enabled = cbExportTextures.Enabled = nudScale.Enabled = !cbExportForGZDoom.Checked;
 		}
