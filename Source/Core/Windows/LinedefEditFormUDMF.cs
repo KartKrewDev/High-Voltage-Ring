@@ -637,7 +637,8 @@ namespace CodeImp.DoomBuilder.Windows
 			else 
 			{
 				missingactivation.Visible = false;
-				activationGroup.ForeColor = SystemColors.ControlText;
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+					c.ForeColor = SystemColors.ControlText;
 			}
 		}
 
