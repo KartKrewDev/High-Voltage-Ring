@@ -229,6 +229,7 @@
 			this.cbGenerateModeldef.TabIndex = 25;
 			this.cbGenerateModeldef.Text = "Generate MODELDEF";
 			this.cbGenerateModeldef.UseVisualStyleBackColor = true;
+			this.cbGenerateModeldef.CheckedChanged += new System.EventHandler(this.cbGenerateModeldef_CheckedChanged);
 			// 
 			// actorNameError
 			// 

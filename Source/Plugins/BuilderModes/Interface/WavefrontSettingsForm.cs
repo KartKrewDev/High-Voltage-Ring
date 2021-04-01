@@ -34,6 +34,8 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		public bool SpawnOnCeiling { get { return cbSpawnOnCeiling.Checked; } }
 		public bool Solid { get { return cbSolid.Checked; } }
 		public bool ZScript { get { return rbZScript.Checked; } }
+		public bool GenerateCode { get { return cbGenerateCode.Checked; } }
+		public bool GenerateModeldef { get { return cbGenerateModeldef.Checked; } }
 		public string Sprite { get { return tbSprite.Text.Trim().ToUpperInvariant(); } }
 
 		#endregion
@@ -89,11 +91,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			cbGenerateCode.Checked = General.Settings.ReadPluginSetting("objgeneratecode", true);
 			cbGenerateModeldef.Checked = General.Settings.ReadPluginSetting("objgeneratemodeldef", true);
 
-			if (cbExportForGZDoom.Checked)
-			{
-				gbActorFormat.Enabled = gbActorSettings.Enabled = cbGenerateCode.Checked;
-			}
-
 			// Toggle enable/disable manually because cbFixScale is a child of the group box, so disabling
 			// the group box would also disable cbFixScale
 			//foreach (Control c in gbGZDoom.Controls)
@@ -102,6 +99,15 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 				if (c != cbExportForGZDoom)
 					c.Enabled = cbExportForGZDoom.Checked;
 			}
+
+			if (cbExportForGZDoom.Checked)
+			{
+				// gbActorFormat.Enabled = gbActorSettings.Enabled = cbGenerateCode.Checked;
+				gbActorFormat.Enabled = gbActorSettings.Enabled = tbActorPath.Enabled = bBrowseActorPath.Enabled = cbGenerateCode.Checked;
+				tbModelPath.Enabled = bBrowseModelPath.Enabled = cbGenerateModeldef.Checked && cbExportForGZDoom.Checked;
+			}
+
+
 		}
 
 		#region ================== Methods
@@ -153,13 +159,13 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 					return;
 				}
 
-				if (!PathIsValid(tbActorPath.Text.Trim()))
+				if (cbGenerateCode.Enabled && !PathIsValid(tbActorPath.Text.Trim()))
 				{
 					MessageBox.Show("Actor path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
 
-				if (!PathIsValid(tbModelPath.Text.Trim()))
+				if (cbGenerateModeldef.Enabled && !PathIsValid(tbModelPath.Text.Trim()))
 				{
 					MessageBox.Show("Model path does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
@@ -225,10 +231,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			foreach(Control c in cbExportForGZDoom.Parent.Controls)
 			{
 				if (c != cbExportForGZDoom && c != gbActorSettings && c != gbActorFormat)
-					c.Enabled = !c.Enabled;
+					c.Enabled = cbExportForGZDoom.Checked;
 			}
 
-			gbActorSettings.Enabled = gbActorFormat.Enabled = cbGenerateCode.Checked && cbExportForGZDoom.Checked;
+			gbActorSettings.Enabled = gbActorFormat.Enabled =  tbActorPath.Enabled = bBrowseActorPath.Enabled = cbGenerateCode.Checked && cbExportForGZDoom.Checked;
+			tbModelPath.Enabled = bBrowseModelPath.Enabled = cbGenerateModeldef.Checked && cbExportForGZDoom.Checked;
 
 			tbExportPath.Enabled = browse.Enabled = cbExportTextures.Enabled = nudScale.Enabled = !cbExportForGZDoom.Checked;
 		}
@@ -366,7 +373,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void cbGenerateCode_CheckedChanged(object sender, EventArgs e)
 		{
-			gbActorFormat.Enabled = gbActorSettings.Enabled = cbGenerateCode.Checked;
+			gbActorFormat.Enabled = gbActorSettings.Enabled = tbActorPath.Enabled = bBrowseActorPath.Enabled = cbGenerateCode.Checked && cbExportForGZDoom.Checked;
+		}
+
+		private void cbGenerateModeldef_CheckedChanged(object sender, EventArgs e)
+		{
+			tbModelPath.Enabled = bBrowseModelPath.Enabled = cbGenerateModeldef.Checked && cbExportForGZDoom.Checked;
 		}
 	}
 }
