@@ -2661,6 +2661,9 @@ namespace CodeImp.DoomBuilder.Windows
 					General.Settings.WriteSetting("recentfiles.file" + i, recentitems[i].Tag.ToString());
 				}
 			}
+
+			// Save program configuration
+			General.SaveSettings();
 		}
 		
 		// This adds a recent file to the list
@@ -2703,6 +2706,8 @@ namespace CodeImp.DoomBuilder.Windows
 
 			// Hide the no recent item
 			itemnorecent.Visible = false;
+
+			SaveRecentFiles();
 		}
 
 		//mxd
@@ -2711,7 +2716,7 @@ namespace CodeImp.DoomBuilder.Windows
 			foreach(ToolStripMenuItem item in recentitems)
 				menufile.DropDownItems.Remove(item);
 
-			SaveRecentFiles();
+			//SaveRecentFiles();
 			CreateRecentFiles();
 		}
 
@@ -3429,9 +3434,12 @@ namespace CodeImp.DoomBuilder.Windows
 				UpdateInterface();
 				General.Editing.UpdateCurrentEditModes();
 				General.Plugins.ProgramReconfigure();
-				
+
+				// Save program configuration
+				General.SaveSettings();
+
 				// Reload resources if a map is open
-				if((General.Map != null) && cfgform.ReloadResources) General.Actions.InvokeAction("builder_reloadresources");
+				if ((General.Map != null) && cfgform.ReloadResources) General.Actions.InvokeAction("builder_reloadresources");
 				
 				// Redraw display
 				RedrawDisplay();
@@ -3455,6 +3463,9 @@ namespace CodeImp.DoomBuilder.Windows
 				ApplyShortcutKeys();
 				General.Colors.CreateCorrectionTable();
 				General.Plugins.ProgramReconfigure();
+
+				// Save program configuration
+				General.SaveSettings();
 				
 				// Map opened?
 				if(General.Map != null)

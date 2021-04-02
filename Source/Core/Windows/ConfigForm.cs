@@ -415,6 +415,8 @@ namespace CodeImp.DoomBuilder.Windows
 				General.Configs[i].Enabled = ci.Enabled;
 				if(ci.Changed) General.Configs[i].Apply(ci);
 			}
+
+			General.SaveGameSettings();
 			
 			// Close
 			this.DialogResult = DialogResult.OK;
