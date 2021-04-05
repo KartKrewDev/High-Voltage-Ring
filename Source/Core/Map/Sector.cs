@@ -546,6 +546,9 @@ namespace CodeImp.DoomBuilder.Map
 		
 		// This checks if the given point is inside the sector polygon
 		// See: http://paulbourke.net/geometry/polygonmesh/index.html#insidepoly
+		// This checks for the linedefs instead of the sidedefs, since self-referencing sectors
+		// will never result in an odd number of intersections when using sidedefs, since both
+		// sidedefs of the outer linedef belong to the same sector
 		public bool Intersect(Vector2D p) { return Intersect(p, true); }
 		public bool Intersect(Vector2D p, bool countontopastrue)
 		{
@@ -554,13 +557,17 @@ namespace CodeImp.DoomBuilder.Map
 			
 			uint c = 0;
 			Vector2D v1, v2;
+			HashSet<Linedef> linedefs = new HashSet<Linedef>(sidedefs.Count);
+
+			foreach (Sidedef sd in sidedefs)
+				linedefs.Add(sd.Line);
 			
-			// Go for all sidedefs
-			foreach(Sidedef sd in sidedefs)
+			// Go for all linedefs
+			foreach(Linedef ld in linedefs)
 			{
 				// Get vertices
-				v1 = sd.Line.Start.Position;
-				v2 = sd.Line.End.Position;
+				v1 = ld.Start.Position;
+				v2 = ld.End.Position;
 
 				//mxd. On top of a vertex?
 				if(p == v1 || p == v2) return countontopastrue;
