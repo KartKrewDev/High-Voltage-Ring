@@ -283,7 +283,7 @@ namespace CodeImp.DoomBuilder.Map
 			{
 				sector = null;
 			}
-			if (sectors.Count == 1)
+			else if (sectors.Count == 1)
 			{
 				sector = sectors[0];
 			}
