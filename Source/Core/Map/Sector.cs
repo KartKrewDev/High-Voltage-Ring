@@ -546,9 +546,6 @@ namespace CodeImp.DoomBuilder.Map
 		
 		// This checks if the given point is inside the sector polygon
 		// See: http://paulbourke.net/geometry/polygonmesh/index.html#insidepoly
-		// This checks for the linedefs instead of the sidedefs, since self-referencing sectors
-		// will never result in an odd number of intersections when using sidedefs, since both
-		// sidedefs of the outer linedef belong to the same sector
 		public bool Intersect(Vector2D p) { return Intersect(p, true); }
 		public bool Intersect(Vector2D p, bool countontopastrue)
 		{
@@ -557,20 +554,21 @@ namespace CodeImp.DoomBuilder.Map
 			
 			uint c = 0;
 			Vector2D v1, v2;
-			HashSet<Linedef> linedefs = new HashSet<Linedef>(sidedefs.Count);
+			bool selfreferencing = true;
 
-			foreach (Sidedef sd in sidedefs)
-				linedefs.Add(sd.Line);
-			
 			// Go for all linedefs
-			foreach(Linedef ld in linedefs)
+			foreach(Sidedef sd in sidedefs)
 			{
 				// Get vertices
-				v1 = ld.Start.Position;
-				v2 = ld.End.Position;
+				v1 = sd.Line.Start.Position;
+				v2 = sd.Line.End.Position;
 
 				//mxd. On top of a vertex?
 				if(p == v1 || p == v2) return countontopastrue;
+
+				// If both sidedefs of any one line aren't referencing the same sector, then it's not a self-referencing sector
+				if (sd.Other == null || (sd.Other != null && sd.Other.Sector != this))
+					selfreferencing = false;
 
 				// Check for intersection
 				if(v1.y != v2.y //mxd. If line is not horizontal...
@@ -581,8 +579,11 @@ namespace CodeImp.DoomBuilder.Map
 					c++; //mxd. ...Count the line as crossed
 			}
 
-			// Inside this polygon when we crossed odd number of polygon lines
-			return (c % 2 != 0);
+			// Inside this polygon when we crossed odd number of polygon lines (for non-self-referencing sectors)
+			if (!selfreferencing)
+				return (c % 2 != 0);
+			else
+				return (c % 2 == 0);
 		}
 		
 		// This creates a bounding box rectangle
