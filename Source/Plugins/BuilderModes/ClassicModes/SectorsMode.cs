@@ -19,7 +19,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections.Concurrent;
 using CodeImp.DoomBuilder.Actions;
 using CodeImp.DoomBuilder.BuilderModes.Interface;
 using CodeImp.DoomBuilder.Config;
@@ -78,6 +81,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// Stores sizes of the text for text labels so that they only have to be computed once
 		private Dictionary<string, float> textlabelsizecache;
+
+		private HashSet<Thing> determinedsectorthings;
 
 		#endregion
 
@@ -585,20 +590,36 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(General.Interface.AltState ^ BuilderPlug.Me.SyncronizeThingEdit)
 					{
 						List<BlockEntry> belist = blockmap.GetSquareRange(s.BBox);
+						HashSet<Thing> detthings = new HashSet<Thing>(); // Things that still need their sector to be determined
+						ConcurrentBag<Thing> selthings = new ConcurrentBag<Thing>(); // Things that have to have their selection status changed
 
-						foreach(BlockEntry be in belist)
+						foreach (BlockEntry be in belist)
 						{
 							foreach(Thing t in be.Things)
 							{
-								// Always determine the thing's current sector because it might have change since the last determination
-								t.DetermineSector(blockmap);
-
-								if (t.Sector == s && t.Selected != s.Selected) t.Selected = s.Selected;
+								// If the thing isn't cached we need to add it to the list of things that need their sector to be determined,
+								// otherwise (if they are cached) add them to the list of things that have to have their selection status changed
+								if (!determinedsectorthings.Contains(t))
+									detthings.Add(t);
+								else if (t.Sector == s && t.Selected != s.Selected)
+									selthings.Add(t);
 							}
 						}
+
+						// Determine sectors of things in parallel. If there's a match add the thing to the list of things that have to have their selection status changed
+						Parallel.ForEach(detthings, t => {
+							t.DetermineSector(blockmap);
+							determinedsectorthings.Add(t); // Add to cache
+							if (t.Sector == s && t.Selected != s.Selected) selthings.Add(t);
+						});
+
+						// Finally change the selection status. This has be done here (and not in parallel), since changing the Selected property
+						// runs some methods that are not threadsafe
+						foreach (Thing t in selthings)
+							t.Selected = s.Selected;
 					}
 
-					if(update) 
+					if (update) 
 					{
 						UpdateOverlay();
 						renderer.Present();
@@ -843,6 +864,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 			}
 
+			determinedsectorthings = new HashSet<Thing>();
+
 			// Make text labels for sectors
 			SetupLabels();
 			
@@ -851,7 +874,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			UpdateOverlaySurfaces();//mxd
 			UpdateSelectionInfo(); //mxd
 		}
-		
+
 		// Mode disengages
 		public override void OnDisengage()
 		{
@@ -904,7 +927,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.HideInfo();
 			General.Interface.Display.HideToolTip(); //mxd
 		}
-
+		
 		// This redraws the display
 		public override void OnRedrawDisplay()
 		{
@@ -1499,6 +1522,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Recreate the blockmap to not include the potentially un-done sectors and things anymore
 			CreateBlockmap();
 
+			// Clear the cache of things that already got their sector determined
+			determinedsectorthings = new HashSet<Thing>();
+
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)
 				highlightasso.Set(highlighted);
@@ -1524,6 +1550,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			// Recreate the blockmap to include the potentially re-done sectors and things again
 			CreateBlockmap();
+
+			// Clear the cache of things that already got their sector determined
+			determinedsectorthings = new HashSet<Thing>();
 
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)
