@@ -1855,6 +1855,9 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			Sector fs = General.GetByIndex(sectors, 0);
 
+			// biwa. Do not reset to the z position of the plane of the center of the sector anymore, since 
+			// that will result in pretty crazy values of 3D floor control sectors
+			/*
 			if (fs.CeilSlope.IsNormalized())
 			{
 				fs.UpdateBBox();
@@ -1863,15 +1866,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 			else
 				ceilingslopecontrol.SetOffset(fs.CeilHeight, true);
+			*/
+			ceilingslopecontrol.SetOffset(fs.CeilHeight, true);
 
 			foreach (Sector s in sectors) 
 			{
+				// biwa. Do not reset to the z position of the plane of the center of the sector anymore, since 
+				// that will result in pretty crazy values of 3D floor control sectors
+				/*
 				if (s.CeilSlope.IsNormalized())
 				{
 					s.UpdateBBox();
 					Plane p = new Plane(s.CeilSlope, s.CeilSlopeOffset);
 					s.CeilHeight = (int)Math.Round(p.GetZ(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2));
 				}
+				*/
 
 				s.CeilSlope = new Vector3D();
 				s.CeilSlopeOffset = double.NaN;
@@ -1890,6 +1899,9 @@ namespace CodeImp.DoomBuilder.Windows
 			MakeUndo(); //mxd
 			Sector fs = General.GetByIndex(sectors, 0);
 
+			// biwa. Do not reset to the z position of the plane of the center of the sector anymore, since 
+			// that will result in pretty crazy values of 3D floor control sectors
+			/*
 			if (fs.FloorSlope.IsNormalized())
 			{
 				fs.UpdateBBox();
@@ -1898,15 +1910,22 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 			else
 				floorslopecontrol.SetOffset(fs.FloorHeight, true);
+			*/
+
+			floorslopecontrol.SetOffset(fs.FloorHeight, true);
 
 			foreach (Sector s in sectors) 
 			{
+				// biwa. Do not reset to the z position of the plane of the center of the sector anymore, since 
+				// that will result in pretty crazy values of 3D floor control sectors
+				/*
 				if (s.FloorSlope.IsNormalized())
 				{
 					s.UpdateBBox();
 					Plane p = new Plane(s.FloorSlope, s.FloorSlopeOffset);
 					s.FloorHeight = (int)Math.Round(p.GetZ(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2));
 				}
+				*/
 
 				s.FloorSlope = new Vector3D();
 				s.FloorSlopeOffset = double.NaN;
