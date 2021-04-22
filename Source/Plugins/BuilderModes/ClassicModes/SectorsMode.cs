@@ -82,7 +82,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Stores sizes of the text for text labels so that they only have to be computed once
 		private Dictionary<string, float> textlabelsizecache;
 
-		private HashSet<Thing> determinedsectorthings;
+		private ConcurrentDictionary<Thing, bool> determinedsectorthings;
 
 		#endregion
 
@@ -599,7 +599,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							{
 								// If the thing isn't cached we need to add it to the list of things that need their sector to be determined,
 								// otherwise (if they are cached) add them to the list of things that have to have their selection status changed
-								if (!determinedsectorthings.Contains(t))
+								if (!determinedsectorthings.ContainsKey(t))
 									detthings.Add(t);
 								else if (t.Sector == s && t.Selected != s.Selected)
 									selthings.Add(t);
@@ -609,7 +609,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Determine sectors of things in parallel. If there's a match add the thing to the list of things that have to have their selection status changed
 						Parallel.ForEach(detthings, t => {
 							t.DetermineSector(blockmap);
-							determinedsectorthings.Add(t); // Add to cache
+							determinedsectorthings[t] = true; // Add to cache
 							if (t.Sector == s && t.Selected != s.Selected) selthings.Add(t);
 						});
 
@@ -864,7 +864,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 			}
 
-			determinedsectorthings = new HashSet<Thing>();
+			determinedsectorthings = new ConcurrentDictionary<Thing, bool>();
 
 			// Make text labels for sectors
 			SetupLabels();
@@ -1523,7 +1523,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			CreateBlockmap();
 
 			// Clear the cache of things that already got their sector determined
-			determinedsectorthings = new HashSet<Thing>();
+			determinedsectorthings = new ConcurrentDictionary<Thing, bool>();
 
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)
@@ -1552,7 +1552,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			CreateBlockmap();
 
 			// Clear the cache of things that already got their sector determined
-			determinedsectorthings = new HashSet<Thing>();
+			determinedsectorthings = new ConcurrentDictionary<Thing, bool>();
 
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)
@@ -2020,7 +2020,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				CreateBlockmap();
 
 				// Clear the cache of things that already got their sector determined
-				determinedsectorthings = new HashSet<Thing>();
+				determinedsectorthings = new ConcurrentDictionary<Thing, bool>();
 			}
 
 			if(selectedthings.Count > 0 || selectedsectors.Count > 0)
@@ -2081,7 +2081,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				CreateBlockmap();
 
 				// Clear the cache of things that already got their sector determined
-				determinedsectorthings = new HashSet<Thing>();
+				determinedsectorthings = new ConcurrentDictionary<Thing, bool>();
 
 				//mxd. Update
 				UpdateOverlaySurfaces();
@@ -2129,7 +2129,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				CreateBlockmap();
 
 				// Clear the cache of things that already got their sector determined
-				determinedsectorthings = new HashSet<Thing>();
+				determinedsectorthings = new ConcurrentDictionary<Thing, bool>();
 
 				//mxd. Update
 				UpdateOverlaySurfaces();
