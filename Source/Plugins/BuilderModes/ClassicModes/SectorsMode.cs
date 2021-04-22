@@ -2018,6 +2018,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				// Recreate the blockmap since it shouldn't include the deleted sectors anymore
 				CreateBlockmap();
+
+				// Clear the cache of things that already got their sector determined
+				determinedsectorthings = new HashSet<Thing>();
 			}
 
 			if(selectedthings.Count > 0 || selectedsectors.Count > 0)
@@ -2077,6 +2080,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Recreate the blockmap
 				CreateBlockmap();
 
+				// Clear the cache of things that already got their sector determined
+				determinedsectorthings = new HashSet<Thing>();
+
 				//mxd. Update
 				UpdateOverlaySurfaces();
 				UpdateEffectLabels();
@@ -2121,6 +2127,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				// Recreate the blockmap
 				CreateBlockmap();
+
+				// Clear the cache of things that already got their sector determined
+				determinedsectorthings = new HashSet<Thing>();
 
 				//mxd. Update
 				UpdateOverlaySurfaces();
