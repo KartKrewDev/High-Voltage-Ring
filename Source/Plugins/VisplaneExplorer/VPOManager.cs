@@ -102,8 +102,8 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 
 			// Load the map
 			bool isHexen = General.Map.HEXEN;
-			if(VPO_LoadWAD(context, filename) != 0) throw new Exception("VPO is unable to read this file.");
-			if(VPO_OpenMap(context, mapname, ref isHexen) != 0) throw new Exception("VPO is unable to open this map.");
+			if(VPO_LoadWAD(context, filename) != 0) throw new Exception("VPO is unable to read this file:" + (VPO_GetError(context) ?? "<unknown error>"));
+			if(VPO_OpenMap(context, mapname, ref isHexen) != 0) throw new Exception("VPO is unable to open this map:" + (VPO_GetError(context) ?? "<unknown error>"));
 			VPO_OpenDoorSectors(context, BuilderPlug.InterfaceForm.OpenDoors ? 1 : -1); //mxd
 
 			// Processing
