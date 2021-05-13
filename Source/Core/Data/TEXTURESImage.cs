@@ -202,9 +202,11 @@ namespace CodeImp.DoomBuilder.Data
 							ImageData img = General.Map.Data.GetTextureImage(p.LumpName);
 							if(!(img is UnknownImage) && img != this)
 							{
-                                //mxd. Apply transformations from TexturePatch. We don't want to modify the original bitmap here, so make a copy
-                                Bitmap bmp = new Bitmap(img.LocalGetBitmap());
-                                Bitmap patchbmp = TransformPatch(bitmap, p, bmp);
+								//mxd. Apply transformations from TexturePatch. We don't want to modify the original bitmap here, so make a copy
+								// biwa. Make sure to get the image without color correction, as the final texture would be too bright if the patch
+								// is also a texture
+								Bitmap bmp = new Bitmap(img.LocalGetBitmap(false));
+								Bitmap patchbmp = TransformPatch(bitmap, p, bmp);
 
 								// Draw the patch on the texture image
 								Rectangle tgtrect = new Rectangle(p.X, p.Y, patchbmp.Size.Width, patchbmp.Size.Height);

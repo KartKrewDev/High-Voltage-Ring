@@ -235,42 +235,44 @@ namespace CodeImp.DoomBuilder.Data
 
         public Image GetBackgroundBitmap()
         {
-            return LocalGetBitmap();
+            return LocalGetBitmap(usecolorcorrection);
         }
 
         public Bitmap GetSkyboxBitmap()
         {
-            return LocalGetBitmap();
+            return LocalGetBitmap(usecolorcorrection);
         }
 
         public Bitmap ExportBitmap()
         {
-            return LocalGetBitmap();
+            return LocalGetBitmap(usecolorcorrection);
         }
 
         public Bitmap GetSpritePreview()
         {
             if (spritepreviewbitmap == null)
-                spritepreviewbitmap = LocalGetBitmap();
+                spritepreviewbitmap = LocalGetBitmap(usecolorcorrection);
             return spritepreviewbitmap;
         }
 
         // Loads the image directly. This is needed by the background loader for some patches.
-        public Bitmap LocalGetBitmap()
-        {
-            // Note: if this turns out to be too slow, do NOT try to make it use GetBitmap or bitmap.
-            // Create a cache for the local background loader thread instead.
+		// biwa. Just setting UseGammeCorrection before LocalGetBitmap was not enough, since its
+		// state is subject to race conditions at load time when using a texture as a patch
+		public Bitmap LocalGetBitmap(bool withcolorcorrection)
+		{
+			// Note: if this turns out to be too slow, do NOT try to make it use GetBitmap or bitmap.
+			// Create a cache for the local background loader thread instead.
 
-            LocalLoadResult result = LocalLoadImage();
-            if (result.messages.Any(x => x.Type == ErrorType.Error))
-            {
-                return Properties.Resources.Failed;
-            }
-            ConvertImageFormat(result);
-            return result.bitmap;
-        }
-		
-        public void LoadImageNow()
+			LocalLoadResult result = LocalLoadImage();
+			if (result.messages.Any(x => x.Type == ErrorType.Error))
+			{
+				return Properties.Resources.Failed;
+			}
+			ConvertImageFormat(result, withcolorcorrection);
+			return result.bitmap;
+		}
+
+		public void LoadImageNow()
         {
             if (imagestate != ImageLoadState.Ready)
             {
@@ -293,7 +295,7 @@ namespace CodeImp.DoomBuilder.Data
             // Do the loading
             LocalLoadResult loadResult = LocalLoadImage();
 
-            ConvertImageFormat(loadResult);
+            ConvertImageFormat(loadResult, usecolorcorrection);
             MakeImagePreview(loadResult);
             MakeAlphaTestImage(loadResult);
 
@@ -393,7 +395,7 @@ namespace CodeImp.DoomBuilder.Data
             public string Text { get; set; }
         }
 
-        void ConvertImageFormat(LocalLoadResult loadResult)
+        void ConvertImageFormat(LocalLoadResult loadResult, bool withcolorcorrection)
 		{
             // Bitmap loaded successfully?
             Bitmap bitmap = loadResult.bitmap;
@@ -427,7 +429,7 @@ namespace CodeImp.DoomBuilder.Data
 				}
 					
 				// This applies brightness correction on the image
-				if(usecolorcorrection)
+				if(withcolorcorrection)
 				{
 					BitmapData bmpdata = null;
 						
