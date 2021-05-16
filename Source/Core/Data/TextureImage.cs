@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using CodeImp.DoomBuilder.Rendering;
-using CodeImp.DoomBuilder.IO;
 using System.IO;
 using System.Linq;
 
@@ -80,6 +79,11 @@ namespace CodeImp.DoomBuilder.Data
 
             Bitmap bitmap = null;
             List<LogMessage> messages = new List<LogMessage>();
+			int[] columnumpatches = new int[width];
+			bool hasnegativeoffsetpatch = false;
+			Dictionary<TexturePatch, Bitmap> patchbmps = new Dictionary<TexturePatch, Bitmap>();
+
+			bool fixnegativeoffsets = General.Map.Config.Compatibility.FixNegativePatchOffsets;
 
 			// Create texture bitmap
 			try
@@ -100,48 +104,81 @@ namespace CodeImp.DoomBuilder.Data
 
 			if(!messages.Any(x => x.Type == ErrorType.Error))
 			{
-				// Go for all patches
-				foreach(TexturePatch p in patches)
+				// Load all patch bitmaps, and see if the patch has a negative vertical offset
+				foreach (TexturePatch p in patches)
 				{
 					// Get the patch data stream
 					string patchlocation = string.Empty; //mxd
 					Stream patchdata = General.Map.Data.GetPatchData(p.LumpName, p.HasLongName, ref patchlocation);
-					if(patchdata != null)
+					if (patchdata != null)
 					{
 						// Get a reader for the data
 						Bitmap patchbmp = ImageDataFormat.TryLoadImage(patchdata, ImageDataFormat.DOOMPICTURE, General.Map.Data.Palette);
-						if(patchbmp == null)
+						if (patchbmp == null)
 						{
 							//mxd. Probably that's a flat?..
-							if(General.Map.Config.MixTexturesFlats) 
+							if (General.Map.Config.MixTexturesFlats)
 							{
 								patchbmp = ImageDataFormat.TryLoadImage(patchdata, ImageDataFormat.DOOMFLAT, General.Map.Data.Palette);
 							}
-							if(patchbmp == null) 
+							if (patchbmp == null)
 							{
-                                // Data is in an unknown format!
-                                messages.Add(new LogMessage(ErrorType.Error, "Patch lump \"" + Path.Combine(patchlocation, p.LumpName) + "\" data format could not be read, while loading texture \"" + this.Name + "\". Does this lump contain valid picture data at all?"));
+								// Data is in an unknown format!
+								messages.Add(new LogMessage(ErrorType.Error, "Patch lump \"" + Path.Combine(patchlocation, p.LumpName) + "\" data format could not be read, while loading texture \"" + this.Name + "\". Does this lump contain valid picture data at all?"));
 								missingpatches++; //mxd
 							}
 						}
 
-						if(patchbmp != null)
-						{
-                            // Draw the patch
-							DrawToPixelData(patchbmp, pixels, width, height, p.X, p.Y);
-                            patchbmp.Dispose();
-						}
+						// Store the bitmap
+						patchbmps[p] = patchbmp;
 
-                        // Done
-                        patchdata.Dispose();
+						// Done
+						patchdata.Dispose();
 					}
 					else
 					{
-                        // Missing a patch lump!
-                        messages.Add(new LogMessage(ErrorType.Error, "Missing patch lump \"" + p.LumpName + "\" while loading texture \"" + this.Name + "\". Did you forget to include required resources?"));
+						// Missing a patch lump!
+						messages.Add(new LogMessage(ErrorType.Error, "Missing patch lump \"" + p.LumpName + "\" while loading texture \"" + this.Name + "\". Did you forget to include required resources?"));
 						missingpatches++; //mxd
 					}
+
+					// Check if there are any patches with negative vertical offsets
+					if (p.Y < 0)
+						hasnegativeoffsetpatch = true;
 				}
+
+				// There's a bug in vanilla Doom where negative patch offsets are ignored (the patch y offset is set to 0). If
+				// the configuration is for an engine that doesn't fix the bug we have to emulate that behavior
+				// See https://doomwiki.org/wiki/Vertical_offsets_are_ignored_in_texture_patches
+				if (!fixnegativeoffsets && hasnegativeoffsetpatch)
+				{
+					// Check which columns have more than one patch
+					foreach(TexturePatch p in patches)
+					{
+						if (patchbmps[p] == null) continue;
+
+						for(int x=0; x < patchbmps[p].Width; x++)
+						{
+							int ox = p.X + x;
+							if (ox >= 0 && ox < columnumpatches.Length)
+								columnumpatches[ox]++;
+						}
+					}
+				}
+
+				// Go for all patches
+				foreach(TexturePatch p in patches)
+				{
+					if(patchbmps.ContainsKey(p) && patchbmps[p] != null)
+					{
+                        // Draw the patch
+						DrawToPixelData(patchbmps[p], pixels, width, height, p.X, p.Y, fixnegativeoffsets, columnumpatches);
+					}
+				}
+
+				// Don't need the bitmaps anymore
+				foreach (Bitmap bmp in patchbmps.Values)
+					bmp?.Dispose();
 
 				// Done
 				bitmap.UnlockBits(bitmapdata);
@@ -158,26 +195,39 @@ namespace CodeImp.DoomBuilder.Data
 		}
 
         // This draws the picture to the given pixel color data
-        static unsafe void DrawToPixelData(Bitmap bmp, PixelColor* target, int targetwidth, int targetheight, int x, int y)
+        static unsafe void DrawToPixelData(Bitmap bmp, PixelColor* target, int targetwidth, int targetheight, int x, int y, bool fixnegativeoffsets, int[] columnumpatches)
         {
             // Get bitmap
             int width = bmp.Size.Width;
             int height = bmp.Size.Height;
+			int patchy = y;
 
             // Lock bitmap pixels
             BitmapData bmpdata = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             PixelColor* pixels = (PixelColor*)bmpdata.Scan0.ToPointer();
 
+			// Negative vertical offsets not allowed?
+			if (y < 0 && !fixnegativeoffsets)
+				y = 0;
+
             // Go for all pixels in the original image
             for (int ox = 0; ox < width; ox++)
             {
-                for (int oy = 0; oy < height; oy++)
+				int tx = x + ox;
+				int drawheight = height;
+
+				// If we have to emulate the negative vertical offset bug we also have to recalculate the height of the
+				// patch that is actually drawn, since it'll only draw as many pixels as it'd draw as if the negative
+				// vertical offset was taken into account
+				if (patchy < 0 && !fixnegativeoffsets && tx < width && tx >= 0 && tx < columnumpatches.Length && columnumpatches[tx] > 1)
+					drawheight = height + patchy;
+
+				for (int oy = 0; oy < drawheight; oy++)
                 {
                     // Copy this pixel?
                     if (pixels[oy * width + ox].a > 0.5f)
                     {
                         // Calculate target pixel and copy when within bounds
-                        int tx = x + ox;
                         int ty = y + oy;
                         if ((tx >= 0) && (tx < targetwidth) && (ty >= 0) && (ty < targetheight))
                             target[ty * targetwidth + tx] = pixels[oy * width + ox];
