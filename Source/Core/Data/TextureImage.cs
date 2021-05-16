@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -80,10 +81,12 @@ namespace CodeImp.DoomBuilder.Data
             Bitmap bitmap = null;
             List<LogMessage> messages = new List<LogMessage>();
 			int[] columnumpatches = new int[width];
+			BitArray columnmasked = new BitArray(width, false);
 			bool hasnegativeoffsetpatch = false;
 			Dictionary<TexturePatch, Bitmap> patchbmps = new Dictionary<TexturePatch, Bitmap>();
 
 			bool fixnegativeoffsets = General.Map.Config.Compatibility.FixNegativePatchOffsets;
+			bool fixmaskedoffsets = General.Map.Config.Compatibility.FixMaskedPatchOffsets;
 
 			// Create texture bitmap
 			try
@@ -150,18 +153,26 @@ namespace CodeImp.DoomBuilder.Data
 				// There's a bug in vanilla Doom where negative patch offsets are ignored (the patch y offset is set to 0). If
 				// the configuration is for an engine that doesn't fix the bug we have to emulate that behavior
 				// See https://doomwiki.org/wiki/Vertical_offsets_are_ignored_in_texture_patches
-				if (!fixnegativeoffsets && hasnegativeoffsetpatch)
+				if (!fixnegativeoffsets || !fixmaskedoffsets)
 				{
 					// Check which columns have more than one patch
 					foreach(TexturePatch p in patches)
 					{
 						if (patchbmps[p] == null) continue;
 
-						for(int x=0; x < patchbmps[p].Width; x++)
+						bool ismaked = BitmapIsMasked(patchbmps[p]);
+
+						for (int x = 0; x < patchbmps[p].Width; x++)
 						{
 							int ox = p.X + x;
 							if (ox >= 0 && ox < columnumpatches.Length)
-								columnumpatches[ox]++;
+							{
+								if(!fixnegativeoffsets)
+									columnumpatches[ox]++;
+
+								if (!fixmaskedoffsets && ismaked)
+									columnmasked[ox] = true;
+							}
 						}
 					}
 				}
@@ -172,7 +183,7 @@ namespace CodeImp.DoomBuilder.Data
 					if(patchbmps.ContainsKey(p) && patchbmps[p] != null)
 					{
                         // Draw the patch
-						DrawToPixelData(patchbmps[p], pixels, width, height, p.X, p.Y, fixnegativeoffsets, columnumpatches);
+						DrawToPixelData(patchbmps[p], pixels, width, height, p.X, p.Y, fixnegativeoffsets, fixmaskedoffsets, columnumpatches, columnmasked);
 					}
 				}
 
@@ -195,7 +206,7 @@ namespace CodeImp.DoomBuilder.Data
 		}
 
         // This draws the picture to the given pixel color data
-        static unsafe void DrawToPixelData(Bitmap bmp, PixelColor* target, int targetwidth, int targetheight, int x, int y, bool fixnegativeoffsets, int[] columnumpatches)
+        static unsafe void DrawToPixelData(Bitmap bmp, PixelColor* target, int targetwidth, int targetheight, int x, int y, bool fixnegativeoffsets, bool fixmaskedoffsets, int[] columnumpatches, BitArray columnmasked)
         {
             // Get bitmap
             int width = bmp.Size.Width;
@@ -206,10 +217,6 @@ namespace CodeImp.DoomBuilder.Data
             BitmapData bmpdata = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             PixelColor* pixels = (PixelColor*)bmpdata.Scan0.ToPointer();
 
-			// Negative vertical offsets not allowed?
-			if (y < 0 && !fixnegativeoffsets)
-				y = 0;
-
             // Go for all pixels in the original image
             for (int ox = 0; ox < width; ox++)
             {
@@ -219,7 +226,7 @@ namespace CodeImp.DoomBuilder.Data
 				// If we have to emulate the negative vertical offset bug we also have to recalculate the height of the
 				// patch that is actually drawn, since it'll only draw as many pixels as it'd draw as if the negative
 				// vertical offset was taken into account
-				if (patchy < 0 && !fixnegativeoffsets && tx < width && tx >= 0 && tx < columnumpatches.Length && columnumpatches[tx] > 1)
+				if ((patchy < 0 && !fixnegativeoffsets && tx < width && tx >= 0 && tx < columnumpatches.Length && columnumpatches[tx] > 1) && !(!fixmaskedoffsets && tx >= 0 && tx < columnmasked.Length && columnmasked[tx] == true))
 					drawheight = height + patchy;
 
 				for (int oy = 0; oy < drawheight; oy++)
@@ -227,8 +234,18 @@ namespace CodeImp.DoomBuilder.Data
                     // Copy this pixel?
                     if (pixels[oy * width + ox].a > 0.5f)
                     {
+						int realy = y;
+
+						if (!fixmaskedoffsets && tx >= 0 && tx < columnmasked.Length && columnmasked[tx] == true)
+						{
+							if (tx >= 0 && tx < columnumpatches.Length && columnumpatches[tx] == 1)
+								realy = 0;
+						}
+						else if (y < 0 && !fixnegativeoffsets)
+							realy = 0;
+
                         // Calculate target pixel and copy when within bounds
-                        int ty = y + oy;
+                        int ty = realy + oy;
                         if ((tx >= 0) && (tx < targetwidth) && (ty >= 0) && (ty < targetheight))
                             target[ty * targetwidth + tx] = pixels[oy * width + ox];
                     }
@@ -238,6 +255,37 @@ namespace CodeImp.DoomBuilder.Data
             // Done
             bmp.UnlockBits(bmpdata);
         }
+
+		/// <summary>
+		/// Checks if the given bitmap has masked pixels
+		/// </summary>
+		/// <param name="bmp">Bitmap to check</param>
+		/// <returns>true if masked, false if not masked</returns>
+		internal static unsafe bool BitmapIsMasked(Bitmap bmp)
+		{
+			// Get bitmap
+			int width = bmp.Size.Width;
+			int height = bmp.Size.Height;
+
+			// Lock bitmap pixels
+			BitmapData bmpdata = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+			PixelColor* pixels = (PixelColor*)bmpdata.Scan0.ToPointer();
+
+			for (int ox = 0; ox < width; ox++)
+			{
+				for (int oy = 0; oy < height; oy++)
+				{
+					if (pixels[oy * width + ox].a <= 0.5f)
+					{
+						bmp.UnlockBits(bmpdata);
+						return true;
+					}
+				}
+			}
+
+			bmp.UnlockBits(bmpdata);
+			return false;
+		}
 
         #endregion
     }

@@ -36,11 +36,13 @@ namespace CodeImp.DoomBuilder.Config
 {
 	public struct CompatibilityOptions
 	{
-		public readonly bool FixNegativePatchOffsets;
+		public bool FixNegativePatchOffsets;
+		public bool FixMaskedPatchOffsets;
 
 		public CompatibilityOptions(Configuration cfg)
 		{
 			FixNegativePatchOffsets = cfg.ReadSetting("compatibility.fixnegativepatchoffsets", false);
+			FixMaskedPatchOffsets = cfg.ReadSetting("compatibility.fixmaskedpatchoffsets", false);
 		}
 	}
 
