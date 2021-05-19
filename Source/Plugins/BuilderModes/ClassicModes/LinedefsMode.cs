@@ -1659,13 +1659,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				l.FlipSidedefs();
 			}
 
-			// Remove selection if only one linedef was selected
-			if(selectedcount == 1)
-			{
-				foreach(Linedef ld in selected) ld.Selected = false;
-				selected.Clear();
-			}
-
 			// Redraw
 			General.Map.Map.Update();
 			General.Map.IsChanged = true;
