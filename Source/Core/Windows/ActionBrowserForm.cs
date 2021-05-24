@@ -38,6 +38,7 @@ namespace CodeImp.DoomBuilder.Windows
 		private readonly Label[] optionlbls;
 		private readonly TreeNode[] allNodes; //mxd
 		private readonly bool addanyaction; //mxd
+		private int actionidmaxdigits;
 		
 		// Properties
 		public int SelectedAction { get { return selectedaction; } }
@@ -149,7 +150,8 @@ namespace CodeImp.DoomBuilder.Windows
             int wd = (int)e.Graphics.MeasureString(parts[parts.Length - 1], nodeFont).Width;
             nodeRect.Width = wd;
 
-            SizeF tagSize = e.Graphics.MeasureString("999 ", nodeFont);
+			string pad = " ".PadLeft(actionidmaxdigits+1, '9');
+            SizeF tagSize = e.Graphics.MeasureString(pad, nodeFont);
             if (parts.Length == 2)
                 nodeRect.Width += (int)tagSize.Width;
 
@@ -245,8 +247,17 @@ namespace CodeImp.DoomBuilder.Windows
                         TreeNode n = cn.Nodes.Add((ai.Index > 0) ? string.Format("{0}\t{1}", ai.Index, ai.Title) : ai.Title);
 						n.Tag = ai;
 
+						// Get number of digits in the int. Thanks to https://stackoverflow.com/a/4483960
+						// We need this for the correct spacing between the action id and the description
+						if (ai.Index > 0)
+						{
+							int numdigits = (int)Math.Floor(Math.Log10(ai.Index) + 1);
+							if (actionidmaxdigits < numdigits)
+								actionidmaxdigits = numdigits;
+						}
+
 						// This is the given action?
-						if(ai.Index == action) 
+						if (ai.Index == action) 
 						{
 							// Select this and expand the category
 							cn.Expand();
