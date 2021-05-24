@@ -71,14 +71,18 @@ namespace CodeImp.DoomBuilder.Config
 			{
 				// Check if the item key is numeric
 				int index;
-				if(int.TryParse(de.Key.ToString(), NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, CultureInfo.InvariantCulture, out index))
+				string key = de.Key.ToString();
+				if (int.TryParse(key, NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, CultureInfo.InvariantCulture, out index))
 				{
 					// Add to list
 					this.bits.Add(new GeneralizedBit(index, de.Value.ToString()));
 				}
 				else
 				{
-					General.ErrorLogger.Add(ErrorType.Warning, "Structure \"" + fullpath + "." + name + "\" contains invalid entries. The keys must be numeric.");
+					if (key == "name")
+						this.name = de.Value.ToString();
+					else
+						General.ErrorLogger.Add(ErrorType.Warning, "Structure \"" + fullpath + "." + name + "\" contains invalid entries. The keys must be numeric.");
 				}
 			}
 			
