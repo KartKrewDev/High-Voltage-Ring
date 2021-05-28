@@ -39,12 +39,6 @@ namespace CodeImp.DoomBuilder.Map
 	
 	public sealed class Sector : SelectableElement, IMultiTaggedMapElement
 	{
-		#region ================== Constants
-
-		internal const int SLOPE_DECIMALS = 7;
-
-		#endregion
-
 		#region ================== Variables
 
 		// Map
