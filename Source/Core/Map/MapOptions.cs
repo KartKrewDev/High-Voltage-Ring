@@ -85,7 +85,6 @@ namespace CodeImp.DoomBuilder.Map
 
 		//mxd.
 		private bool uselongtexturenames;
-		private bool useresourcesinreadonlymode;
 
 		//mxd. Position and scale
 		private readonly Vector2D viewposition;
@@ -143,7 +142,6 @@ namespace CodeImp.DoomBuilder.Map
 
 		//mxd
 		public bool UseLongTextureNames { get { return uselongtexturenames; } set { uselongtexturenames = value; } }
-		public bool UseResourcesInReadonlyMode { get { return useresourcesinreadonlymode; } set { useresourcesinreadonlymode = value; } }
 
 		//mxd. Position and scale
 		public Vector2D ViewPosition { get { return viewposition; } }
@@ -172,9 +170,6 @@ namespace CodeImp.DoomBuilder.Map
 			//mxd. Sector drawing options
 			this.custombrightness = 196;
 			this.customceilheight = 128;
-
-			// UDB doesn't have the means to modify files in resources anymore, so load resources as read-only by default
-			this.useresourcesinreadonlymode = true;
 		}
 
 		// Constructor to load from Doom Builder Map Settings Configuration
@@ -239,7 +234,6 @@ namespace CodeImp.DoomBuilder.Map
 
 			//mxd
 			uselongtexturenames = longtexturenamessupported && this.mapconfig.ReadSetting("uselongtexturenames", false);
-			useresourcesinreadonlymode = this.mapconfig.ReadSetting("useresourcesinreadonlymode", false);
 
 			//mxd. Position and scale
 			float vpx = this.mapconfig.ReadSetting("viewpositionx", float.NaN);
@@ -373,7 +367,6 @@ namespace CodeImp.DoomBuilder.Map
 
 			//mxd
 			mapconfig.WriteSetting("uselongtexturenames", uselongtexturenames);
-			mapconfig.WriteSetting("useresourcesinreadonlymode", useresourcesinreadonlymode);
 
 			//mxd. Position and scale
 			mapconfig.WriteSetting("viewpositionx", General.Map.Renderer2D.OffsetX);
