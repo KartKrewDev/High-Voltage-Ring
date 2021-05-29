@@ -54,7 +54,12 @@ namespace CodeImp.DoomBuilder.Windows
 			// Initialize
 			InitializeComponent();
 			CodeImp.DoomBuilder.General.ApplyMonoListViewFix(listtextures);
-			
+
+			#if NO_WIN32
+			// Linux doesn't require .exe or .bat file extensions
+			testprogramdialog.Filter = "All files|*";
+			#endif
+
 			// Make list column header full width
 			columnname.Width = listconfigs.ClientRectangle.Width - SystemInformation.VerticalScrollBarWidth - 2;
 			
@@ -839,7 +844,7 @@ namespace CodeImp.DoomBuilder.Windows
 			if(listconfigs.SelectedItems.Count > 0) listconfigs.SelectedItems[0].EnsureVisible();
 		}
 
-		#region ============= Copy/Paste context menu (mxd)
+#region ============= Copy/Paste context menu (mxd)
 
 		private void copypastemenu_Opening(object sender, System.ComponentModel.CancelEventArgs e) 
 		{
@@ -933,6 +938,6 @@ namespace CodeImp.DoomBuilder.Windows
 			General.Interface.DisplayStatus(StatusType.Info, "Pasted color presets from \"" + configinfocopy.Name + "\"");
 		}
 
-		#endregion
+#endregion
 	}
 }
