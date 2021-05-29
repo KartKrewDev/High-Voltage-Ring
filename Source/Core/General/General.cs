@@ -1197,9 +1197,16 @@ namespace CodeImp.DoomBuilder
 
 			// Open map file dialog
 			OpenFileDialog openfile = new OpenFileDialog();
-			openfile.Filter = "Doom WAD Files (*.wad)|*.wad";
 			openfile.Title = "Open Map";
-			if(!string.IsNullOrEmpty(settings.LastUsedMapFolder) && Directory.Exists(settings.LastUsedMapFolder)) //mxd
+
+#if NO_WIN32
+			// No easy way to have case-insesitivity for non-Windows platforms
+			openfile.Filter = "Doom WAD Files (*.wad)|*.wad;*.Wad;*.wAd;*.WAd;*.waD;*.WaD;*.wAD;*.WAD";
+#else
+			openfile.Filter = "Doom WAD Files (*.wad)|*.wad";
+#endif			
+
+			if (!string.IsNullOrEmpty(settings.LastUsedMapFolder) && Directory.Exists(settings.LastUsedMapFolder)) //mxd
 			{
 				openfile.RestoreDirectory = true;
 				openfile.InitialDirectory = settings.LastUsedMapFolder;
