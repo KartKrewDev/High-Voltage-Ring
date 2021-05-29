@@ -158,7 +158,7 @@ namespace CodeImp.DoomBuilder.Data
 					// Check which columns have more than one patch
 					foreach(TexturePatch p in patches)
 					{
-						if (patchbmps[p] == null) continue;
+						if (!patchbmps.ContainsKey(p) || patchbmps[p] == null) continue;
 
 						bool ismaked = BitmapIsMasked(patchbmps[p]);
 
