@@ -1603,6 +1603,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		[BeginAction("fliplinedefs")]
 		public void FlipLinedefs()
 		{
+			bool deselect = false;
+
 			// No selected lines?
 			ICollection<Linedef> selected = General.Map.Map.GetSelectedLinedefs(true);
 			if(selected.Count == 0)
@@ -1613,6 +1615,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// Select the highlighted item
 					highlighted.Selected = true;
 					selected.Add(highlighted);
+
+					// If nothing was selected we want to deselect the highlighted line when we're done
+					deselect = true;
 				}
 			}
 
@@ -1637,6 +1642,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				General.Interface.DisplayStatus(StatusType.Warning, (selectedcount > 1 ? "Selected linedefs already point in the right direction!" 
 																					   : "Selected linedef already points in the right direction!"));
+
+				// There might be linedefs that were filtered out, so deselect all linedefs (if necessary) anyway
+				if (deselect)
+					General.Map.Map.ClearSelectedLinedefs();
+
 				return;
 			}
 
@@ -1658,6 +1668,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				l.FlipVertices();
 				l.FlipSidedefs();
 			}
+
+			if(deselect)
+				General.Map.Map.ClearSelectedLinedefs();
 
 			// Redraw
 			General.Map.Map.Update();
