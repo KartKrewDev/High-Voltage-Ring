@@ -1119,18 +1119,45 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				}
 			}
 
-			si.ceilingheight = primary.Sector.CeilHeight;
-			si.floorheight = primary.Sector.FloorHeight;
+			if (primary == null || primary.IsDisposed)
+			{
+				si.ceilingheight = General.Settings.DefaultCeilingHeight;
+				si.floorheight = General.Settings.DefaultFloorHeight;
+			}
+			else
+			{
+				si.ceilingheight = primary.Sector.CeilHeight;
+				si.floorheight = primary.Sector.FloorHeight;
+			}
 
-			if(stairsectorbuilderform.UpperTextureTexture == "")
-				stairsectorbuilderform.UpperTextureTexture = (secondary == null) ? primary.MiddleTexture : primary.HighTexture;
+			if (stairsectorbuilderform.UpperTextureTexture == "")
+			{
+				if ((primary == null || primary.IsDisposed) && (secondary == null || secondary.IsDisposed))
+					stairsectorbuilderform.UpperTextureTexture = General.Settings.DefaultTexture;
+				else if (secondary == null || secondary.IsDisposed)
+					stairsectorbuilderform.UpperTextureTexture = primary.MiddleTexture;
+				else
+					stairsectorbuilderform.UpperTextureTexture = secondary.HighTexture;
+			}
 
 			if(stairsectorbuilderform.LowerTextureTexture == "")
-				stairsectorbuilderform.LowerTextureTexture = (secondary == null) ? primary.MiddleTexture : primary.LowTexture;
+			{
+				if ((primary == null || primary.IsDisposed) && (secondary == null || secondary.IsDisposed))
+					stairsectorbuilderform.LowerTextureTexture = General.Settings.DefaultTexture;
+				else if (secondary == null || secondary.IsDisposed)
+					stairsectorbuilderform.LowerTextureTexture = primary.MiddleTexture;
+				else
+					stairsectorbuilderform.LowerTextureTexture = secondary.LowTexture;
+
+			}
 
 			siout = si;
 		}
 
+		/// <summary>
+		/// Get the base heights from a linedef. If there are no sidedefs it uses the default values.
+		/// </summary>
+		/// <param name="ld">Linedef to the the base heights from</param>
 		private void GetSetBaseHeights(Linedef ld)
 		{
 			if(baseheightset) return;
@@ -1141,19 +1168,43 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			{
 				if(ld.Back == null)
 				{
+					if (ld.Front != null && !ld.Front.IsDisposed && ld.Front.Sector != null && !ld.Front.Sector.IsDisposed)
+					{
+						stairsectorbuilderform.CeilingBase = ld.Front.Sector.CeilHeight;
+						stairsectorbuilderform.FloorBase = ld.Front.Sector.FloorHeight;
+					}
+					else
+					{
+						stairsectorbuilderform.CeilingBase = General.Settings.DefaultCeilingHeight;
+						stairsectorbuilderform.FloorBase = General.Settings.DefaultFloorHeight;
+					}
+				}
+				else
+				{
+					if (ld.Back != null && !ld.Back.IsDisposed && ld.Back.Sector != null && !ld.Back.Sector.IsDisposed)
+					{
+						stairsectorbuilderform.CeilingBase = ld.Back.Sector.CeilHeight;
+						stairsectorbuilderform.FloorBase = ld.Back.Sector.FloorHeight;
+					}
+					else
+					{
+						stairsectorbuilderform.CeilingBase = General.Settings.DefaultCeilingHeight;
+						stairsectorbuilderform.FloorBase = General.Settings.DefaultFloorHeight;
+					}
+				}
+			}
+			else
+			{
+				if (ld.Front != null && !ld.Front.IsDisposed && ld.Front.Sector != null && !ld.Front.Sector.IsDisposed)
+				{
 					stairsectorbuilderform.CeilingBase = ld.Front.Sector.CeilHeight;
 					stairsectorbuilderform.FloorBase = ld.Front.Sector.FloorHeight;
 				}
 				else
 				{
-					stairsectorbuilderform.CeilingBase = ld.Back.Sector.CeilHeight;
-					stairsectorbuilderform.FloorBase = ld.Back.Sector.FloorHeight;
+					stairsectorbuilderform.CeilingBase = General.Settings.DefaultCeilingHeight;
+					stairsectorbuilderform.FloorBase = General.Settings.DefaultFloorHeight;
 				}
-			}
-			else
-			{
-				stairsectorbuilderform.CeilingBase = ld.Front.Sector.CeilHeight;
-				stairsectorbuilderform.FloorBase = ld.Front.Sector.FloorHeight;
 			}
 		}
 
