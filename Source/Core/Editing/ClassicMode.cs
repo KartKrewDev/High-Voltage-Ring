@@ -751,9 +751,12 @@ namespace CodeImp.DoomBuilder.Editing
 					}
 				}
 
-				if(start == null) 
+				if(start == null) // biwa. If there's no existing valid player start create one
 				{
-					// biwa. If there's no existing valid player start create one
+					// Create an undo snapshot that can will be revoked in OnMapTestEnd to remove the temporary player start
+					// This has to be done because just creating and deleting the thing will screw with the undo/redo. See https://github.com/jewalky/UltimateDoomBuilder/issues/573
+					General.Map.UndoRedo.CreateUndo("Create temporary player thing");
+
 					playerStartIsTempThing = true;
 					start = General.Map.Map.CreateThing();
 
@@ -761,12 +764,14 @@ namespace CodeImp.DoomBuilder.Editing
 					{
 						General.Settings.ApplyDefaultThingSettings(start);
 						start.Type = 1;
-					} else
+					}
+					else
 					{
 						General.MainWindow.DisplayStatus(StatusType.Warning, "Can't test from current position: couldn't create player start!");
 						return false;
 					}
-				} else
+				}
+				else
 				{
 					playerStartIsTempThing = false;
 				}
@@ -786,11 +791,15 @@ namespace CodeImp.DoomBuilder.Editing
 		{
 			if(testFromCurrentPosition) 
 			{
-				//restore position
-				playerStart.Move(playerStartPosition);
-
 				if (playerStartIsTempThing) // biwa
-					General.Map.Map.RemoveThing(playerStart.Index);
+				{
+					General.Map.UndoRedo.WithdrawUndo();
+				}
+				else
+				{
+					//restore position
+					playerStart.Move(playerStartPosition);
+				}
 
 				playerStart = null;
 			}
