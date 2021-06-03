@@ -86,6 +86,9 @@ namespace CodeImp.DoomBuilder.Map
 		private bool fixedsize;
 		private bool directional; //mxd. If true, we need to render an arrow
 
+		// biwa. This should only ever be used for temporary player starts for the "test from current position" action
+		private bool recordundo;
+
         // Rendering
         private int lastProcessed;
 
@@ -126,7 +129,7 @@ namespace CodeImp.DoomBuilder.Map
         #region ================== Constructor / Disposer
 
         // Constructor
-        internal Thing(MapSet map, int listindex)
+        internal Thing(MapSet map, int listindex, bool recordundo = true)
 		{
 			// Initialize
 			this.elementtype = MapElementType.THING; //mxd
@@ -137,8 +140,9 @@ namespace CodeImp.DoomBuilder.Map
 			this.scaleX = 1.0f;
 			this.scaleY = 1.0f;
 			this.spritescale = new SizeF(1.0f, 1.0f);
+			this.recordundo = recordundo;
 			
-			if(map == General.Map.Map)
+			if(map == General.Map.Map && recordundo)
 				General.Map.UndoRedo.RecAddThing(this);
 			
 			// We have no destructor
@@ -151,7 +155,7 @@ namespace CodeImp.DoomBuilder.Map
 			// Not already disposed?
 			if(!isdisposed)
 			{
-				if(map == General.Map.Map)
+				if(map == General.Map.Map && recordundo)
 					General.Map.UndoRedo.RecRemThing(this);
 
 				// Remove from main list

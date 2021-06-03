@@ -678,6 +678,26 @@ namespace CodeImp.DoomBuilder.Map
 			return t;
 		}
 
+		/// <summary>
+		/// This creates a temporary thing. The difference to normal thing creation is that the creation will not be recorded by the undo manager.
+		/// This should only be used in very specific cases, like creating a temporary player start for the "test from current position" action
+		/// </summary>
+		/// <returns>The new thing</returns>
+		internal Thing CreateTempThing()
+		{
+			if (numthings == General.Map.FormatInterface.MaxThings)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Failed to complete operation: maximum number of things reached.");
+				return null;
+			}
+
+			// Make the thing
+			Thing t = new Thing(this, numthings, false);
+			AddItem(t, ref things, numthings, ref numthings);
+			return t;
+
+		}
+
 		// This increases the size of the array to add an item
 		private void AddItem<T>(T item, ref T[] array, int index, ref int counter) where T: MapElement
 		{
