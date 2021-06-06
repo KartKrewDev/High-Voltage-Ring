@@ -176,7 +176,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			foreach (DecalInfo di in decals.Values)
 			{
 				if(di.Index != -1)
-					dict.Add(di.Index, di);
+					dict[di.Index] = di;
 			}
 
 			return dict;
