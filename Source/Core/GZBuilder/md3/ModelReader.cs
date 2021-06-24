@@ -1290,8 +1290,19 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				while ((line = reader.ReadLine()) != null) {
 					string[] fields = line.Trim().Split(new[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-					if (fields.Length == 0) continue; // Empty line
-					if (fields[0].Trim() == "#") continue; // Comment
+					// Empty line
+					if (fields.Length == 0)
+					{
+						linenum++;
+						continue;
+					}
+
+					// Comment
+					if (fields[0].Trim() == "#")
+					{
+						linenum++;
+						continue;
+					}
 
 					string keyword = fields[0].Trim();
 					string payload = null;
@@ -1346,25 +1357,25 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 							{
 								// Sanity check for vertices
 								for (int i=0; i < fv.Count; i++)
-									if(fv[i] != -1 && fv[i] > vertices.Count)
+									if(fv[i] != -1 && fv[i] >= vertices.Count)
 									{
-										result.Errors = String.Format("Error in line {0}: vertex {1} does not exist", linenum, i + 1);
+										result.Errors = String.Format("Error in line {0}: vertex {1} does not exist", linenum, fv[i] + 1);
 										return result;
 									}
 
 								// Sanity check for texture coordinates
 								for (int i=0; i < vt.Count; i++)
-									if(vt[i] != -1 && vt[i] > texcoords.Count)
+									if(vt[i] != -1 && vt[i] >= texcoords.Count)
 									{
-										result.Errors = String.Format("Error in line {0}: texture coordinate {1} does not exist", linenum, i + 1);
+										result.Errors = String.Format("Error in line {0}: texture coordinate {1} does not exist", linenum, vt[i] + 1);
 										return result;
 									}
 
 								// Sanity check for normals
 								for (int i = 0; i < vn.Count; i++)
-									if (vn[i] != -1 && vn[i] > normals.Count)
+									if (vn[i] != -1 && vn[i] >= normals.Count)
 									{
-										result.Errors = String.Format("Error in line {0}: vertex {1} does not exist", linenum, i + 1);
+										result.Errors = String.Format("Error in line {0}: vertex {1} does not exist", linenum, vn[i] + 1);
 										return result;
 									}
 
