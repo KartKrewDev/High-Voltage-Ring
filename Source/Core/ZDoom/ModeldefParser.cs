@@ -200,7 +200,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 									foreach(var fs in mds.Frames[targetsprite])
 									{
 										// Sanity checks
-										if(string.IsNullOrEmpty(mds.ModelNames[fs.ModelIndex]))
+										if(fs.ModelIndex >= mds.ModelNames.Count || string.IsNullOrEmpty(mds.ModelNames[fs.ModelIndex]))
 										{
 											LogWarning("Model definition \"" + classname + "\", frame \"" + fs.SpriteName + " " + fs.FrameName + "\" references undefined model index " + fs.ModelIndex);
 											continue;
