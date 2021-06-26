@@ -277,7 +277,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				if (General.Map.Data.GetTextureExists(name))
 				{
 					ImageData image = General.Map.Data.GetTextureImage(name);
-					image.LoadImageNow();
+					image.LoadImageNow(false);
 
 					t = image.Texture;
 
@@ -294,7 +294,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				if (General.Map.Data.GetTextureExists(name))
 				{
 					ImageData image = General.Map.Data.GetTextureImage(name);
-					image.LoadImageNow();
+					image.LoadImageNow(false);
 
 					t = image.Texture;
 				}
@@ -308,7 +308,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.MD3
 				if (General.Map.Data.GetSpriteExists(name))
 				{
 					ImageData image = General.Map.Data.GetSpriteImage(name);
-					image.LoadImageNow();
+					image.LoadImageNow(false);
 
 					t = image.Texture;
 				}

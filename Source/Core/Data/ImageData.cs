@@ -274,14 +274,19 @@ namespace CodeImp.DoomBuilder.Data
 
 		public void LoadImageNow()
         {
-            if (imagestate != ImageLoadState.Ready)
-            {
-                imagestate = ImageLoadState.Loading;
-                LoadImage(true);
-            }
+			LoadImageNow(true);
         }
 
-        internal void BackgroundLoadImage()
+		public void LoadImageNow(bool notify)
+		{
+			if (imagestate != ImageLoadState.Ready)
+			{
+				imagestate = ImageLoadState.Loading;
+				LoadImage(notify);
+			}
+		}
+
+		internal void BackgroundLoadImage()
         {
             LoadImage(true);
         }
