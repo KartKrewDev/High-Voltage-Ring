@@ -4636,8 +4636,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				first.controlSide = start.Sidedef;
 			}
 
-			//mxd
+			// We potentially need to deal with 2 textures (because of long and short texture names). This is even important
+			// for classic texture alignments, since for example Eternity Engine doesn't support local sidedef texture offsets,
+			// but full texture names from a /textures directory
 			HashSet<long> texturehashes = new HashSet<long> { texture.LongName };
+			switch (start.GeometryType)
+			{
+				case VisualGeometryType.WALL_LOWER:
+					texturehashes.Add(first.controlSide.LongLowTexture);
+					break;
+
+				case VisualGeometryType.WALL_MIDDLE:
+				case VisualGeometryType.WALL_MIDDLE_3D:
+					texturehashes.Add(first.controlSide.LongMiddleTexture);
+					break;
+
+				case VisualGeometryType.WALL_UPPER:
+					texturehashes.Add(first.controlSide.LongHighTexture);
+					break;
+			}
 
 			first.forward = true;
 			todo.Push(first);
