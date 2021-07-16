@@ -1400,7 +1400,8 @@ namespace CodeImp.DoomBuilder.Geometry
 				// Before this point, the new geometry is not linked with the existing geometry.
 				// Now perform standard geometry stitching to merge the new geometry with the rest
 				// of the map. The marked vertices indicate the new geometry.
-				map.StitchGeometry();
+				if (!map.StitchGeometry())
+					return false;
 				map.Update(true, false);
 
 				// Find our new lines again, because they have been merged with the other geometry

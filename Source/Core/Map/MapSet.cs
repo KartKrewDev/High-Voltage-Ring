@@ -2129,22 +2129,36 @@ namespace CodeImp.DoomBuilder.Map
 			
 			// Split moving lines with unselected vertices
 			ICollection<Vertex> nearbyfixedverts = FilterByArea(fixedverts, ref editarea);
-			if(!SplitLinesByVertices(movinglines, nearbyfixedverts, STITCH_DISTANCE, movinglines, mergemode))
+			if (!SplitLinesByVertices(movinglines, nearbyfixedverts, STITCH_DISTANCE, movinglines, mergemode))
+			{
+				EndAddRemove(); // Unfreeze arrays before returning
 				return false;
+			}
 
             // Split non-moving lines with selected vertices
             fixedlines = new HashSet<Linedef>(fixedlines.Where(fixedline => !fixedline.IsDisposed));
-			if(!SplitLinesByVertices(fixedlines, movingverts, STITCH_DISTANCE, movinglines, mergemode))
+			if (!SplitLinesByVertices(fixedlines, movingverts, STITCH_DISTANCE, movinglines, mergemode))
+			{
+				EndAddRemove(); // Unfreeze arrays before returning
 				return false;
+			}
 
 			//mxd. Split moving lines with fixed lines
-			if(!SplitLinesByLines(fixedlines, movinglines, mergemode)) return false;
+			if (!SplitLinesByLines(fixedlines, movinglines, mergemode))
+			{
+				EndAddRemove(); // Unfreeze arrays before returning
+				return false;
+			}
 			
 			// Remove looped linedefs
 			RemoveLoopedLinedefs(movinglines);
-			
+
 			// Join overlapping lines
-			if(!JoinOverlappingLines(movinglines)) return false;
+			if (!JoinOverlappingLines(movinglines))
+			{
+				EndAddRemove(); // Unfreeze arrays before returning
+				return false;
+			}
 
 			//mxd. Remove remaining new verts from dragged shape if possible
 			if(mergemode == MergeGeometryMode.REPLACE)
