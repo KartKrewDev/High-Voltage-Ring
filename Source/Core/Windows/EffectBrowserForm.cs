@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Config;
 
@@ -77,8 +78,10 @@ namespace CodeImp.DoomBuilder.Windows
 
 						if(effects.SelectedItems.Count == 0)
 						{
-							// Go for all bits
-							foreach(GeneralizedBit ab in o.Bits)
+							// Go for all bits. Start with the highest bits, then go backwards. We
+							// have to do this since effects can consist of multiple bits, and starting
+							// from the lowest might catch the wrong effects.
+							foreach(GeneralizedBit ab in o.Bits.OrderByDescending(b => b.Index))
 							{
 								// Select this setting if matches
 								if((effect & ab.Index) == ab.Index)
