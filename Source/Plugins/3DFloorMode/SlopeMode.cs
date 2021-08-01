@@ -64,7 +64,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			  SupportedMapFormats = new[] { "UniversalMapSetIO" },
 			  RequiredMapFeatures = new[] { "PlaneEquationSupport" },
 			  UseByDefault = true,
-              SafeStartMode = true,
               IsDeprecated = true,
               DeprecationMessage = "Please use the visual sloping functionality instead.")]
 
