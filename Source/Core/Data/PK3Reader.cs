@@ -596,6 +596,15 @@ namespace CodeImp.DoomBuilder.Data
 
 								return null;
 							}
+							catch(NotSupportedException e)
+							{
+								General.ErrorLogger.Add(ErrorType.Error, "Cannot load the file \"" + filename + "\" from archive \"" + location.GetDisplayName() + "\". " + e.Message);
+
+								filedata.Dispose();
+								filedata = null;
+
+								return null;
+							}
 
 							break;
 						}
