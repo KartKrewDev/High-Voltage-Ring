@@ -22,6 +22,8 @@ namespace CodeImp.DoomBuilder.ZDoom
             public ZScriptActorStructure Actor { get; internal set; }
             internal DecorateCategoryInfo Region;
 			public bool IsMixin { get; internal set; }
+			public bool IsExtension { get; internal set; }
+			public List<ZScriptClassStructure> Extensions { get; internal set; }
 
             // these are used for parsing and error reporting
             public ZScriptParser Parser { get; internal set; }
@@ -34,7 +36,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             // textresourcepath
             public string TextResourcePath { get; internal set; }
 
-            internal ZScriptClassStructure(ZScriptParser parser, string classname, string replacesname, string parentname, bool ismixin, DecorateCategoryInfo region)
+            internal ZScriptClassStructure(ZScriptParser parser, string classname, string replacesname, string parentname, bool ismixin, bool isextension, DecorateCategoryInfo region)
             {
                 Parser = parser;
 
@@ -52,6 +54,8 @@ namespace CodeImp.DoomBuilder.ZDoom
                 Region = region;
 
 				IsMixin = ismixin;
+				IsExtension = isextension;
+				Extensions = new List<ZScriptClassStructure>();
             }
 
             internal void RestoreStreamData()
@@ -97,7 +101,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                 if (ReplacementName != null) log_inherits += ((log_inherits.Length > 0) ? ", " : "") + "replaces " + ReplacementName;
                 if (log_inherits.Length > 0) log_inherits = " (" + log_inherits + ")";
 
-                if (isactor || IsMixin)
+                if (isactor || IsMixin || IsExtension)
                 {
                     Actor = new ZScriptActorStructure(Parser, Region, ClassName, ReplacementName, ParentName);
                     if (Parser.HasError)
@@ -106,26 +110,29 @@ namespace CodeImp.DoomBuilder.ZDoom
                         return false;
                     }
 
-                    // check actor replacement.
-                    Parser.archivedactors[Actor.ClassName.ToLowerInvariant()] = Actor;
-                    Parser.realarchivedactors[Actor.ClassName.ToLowerInvariant()] = Actor;
-                    if (Actor.CheckActorSupported())
-                        Parser.actors[Actor.ClassName.ToLowerInvariant()] = Actor;
+					if (!IsExtension)
+					{
+						// check actor replacement.
+						Parser.archivedactors[Actor.ClassName.ToLowerInvariant()] = Actor;
+						Parser.realarchivedactors[Actor.ClassName.ToLowerInvariant()] = Actor;
+						if (Actor.CheckActorSupported())
+							Parser.actors[Actor.ClassName.ToLowerInvariant()] = Actor;
 
-                    // Replace an actor?
-                    if (Actor.ReplacesClass != null)
-                    {
-                        if (Parser.GetArchivedActorByName(Actor.ReplacesClass, false) != null)
-                            Parser.archivedactors[Actor.ReplacesClass.ToLowerInvariant()] = Actor;
-                        else
-                            Parser.LogWarning("Unable to find \"" + Actor.ReplacesClass + "\" class to replace, while parsing \"" + Actor.ClassName + "\"");
+						// Replace an actor?
+						if (Actor.ReplacesClass != null)
+						{
+							if (Parser.GetArchivedActorByName(Actor.ReplacesClass, false) != null)
+								Parser.archivedactors[Actor.ReplacesClass.ToLowerInvariant()] = Actor;
+							else
+								Parser.LogWarning("Unable to find \"" + Actor.ReplacesClass + "\" class to replace, while parsing \"" + Actor.ClassName + "\"");
 
-                        if (Actor.CheckActorSupported() && Parser.GetActorByName(Actor.ReplacesClass) != null)
-                            Parser.actors[Actor.ReplacesClass.ToLowerInvariant()] = Actor;
-                    }
+							if (Actor.CheckActorSupported() && Parser.GetActorByName(Actor.ReplacesClass) != null)
+								Parser.actors[Actor.ReplacesClass.ToLowerInvariant()] = Actor;
+						}
 
-                    //mxd. Add to current text resource
-                    if (!Parser.scriptresources[TextResourcePath].Entries.Contains(Actor.ClassName)) Parser.scriptresources[TextResourcePath].Entries.Add(Actor.ClassName);
+						//mxd. Add to current text resource
+						if (!Parser.scriptresources[TextResourcePath].Entries.Contains(Actor.ClassName)) Parser.scriptresources[TextResourcePath].Entries.Add(Actor.ClassName);
+					}
                 }
 
                 //Parser.LogWarning(string.Format("Parsed {0}class {1}{2}", isactor?"actor ":"", ClassName, log_inherits));
@@ -750,7 +757,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			// now if we are a class, and we inherit actor, parse this entry as an actor. don't process extensions.
 			if (!isstruct && !extend && !mixin)
 			{
-				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, (tok_replacename != null) ? tok_replacename.Value : null, (tok_parentname != null) ? tok_parentname.Value : null, false, region);
+				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, (tok_replacename != null) ? tok_replacename.Value : null, (tok_parentname != null) ? tok_parentname.Value : null, false, false, region);
 				cls.Position = cpos;
 				string clskey = cls.ClassName.ToLowerInvariant();
 				if (allclasses.ContainsKey(clskey))
@@ -762,11 +769,32 @@ namespace CodeImp.DoomBuilder.ZDoom
 				allclasses.Add(cls.ClassName.ToLowerInvariant(), cls);
 				allclasseslist.Add(cls);
 			}
+			else if(!isstruct && extend)
+			{
+				string clskey = tok_classname.Value.ToLowerInvariant();
+
+				if(!allclasses.ContainsKey(clskey))
+				{
+					ReportError("Trying to extend class " + tok_classname.Value + " before it was defined");
+					return false;
+				}
+
+				// GZDoom doesn't allow extending classes that are from another archive
+				if(!allclasses[clskey].DataLocation.Equals(datalocation))
+				{
+					ReportError("Trying to extend class " + tok_classname.Value + " that's not part of data location \"" + datalocation + "\", but \"" + allclasses[clskey].DataLocation + "\"");
+					return false;
+				}
+
+				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, null, null, false, true, region);
+				cls.Position = cpos;
+				allclasses[clskey].Extensions.Add(cls);
+			}
 			else if (mixin)
 			{
 				// This is a bit ugly. We're treating mixin classes as actors, even though they aren't. But otherwise the parser
 				// doesn't parse all the actor info we need
-				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, null, null, true, region);
+				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, null, null, true, false, region);
 				cls.Position = cpos;
 				string clskey = cls.ClassName.ToLowerInvariant();
 				if(mixinclasses.ContainsKey(clskey))
@@ -987,6 +1015,11 @@ namespace CodeImp.DoomBuilder.ZDoom
             {
                 if (!cls.Process())
                     return false;
+
+				// Process extensions
+				foreach (ZScriptClassStructure extension in cls.Extensions)
+					if (!extension.Process())
+						return false;
             }
 
 			// Parse mixin class data
@@ -1111,6 +1144,40 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 							if (!actor.flags.ContainsKey("solid") && mixincls.Actor.flags.ContainsKey("solid"))
 								actor.flags["solid"] = true;
+						}
+					}
+
+					// Extensions. https://zdoom.org/wiki/ZScript_classes#Extending_Classes
+					if (cls.Extensions.Count > 0)
+					{
+						foreach(ZScriptClassStructure extension in cls.Extensions)
+						{
+							ActorStructure extenseionactor = extension.Actor;
+
+							if (extenseionactor == null)
+								continue;
+
+							// States
+							if (extenseionactor.states.ContainsKey("spawn"))
+								actor.states["spawn"] = extenseionactor.GetState("spawn");
+
+							// Properties
+							if (extenseionactor.props.ContainsKey("height"))
+								actor.props["height"] = new List<string>(extenseionactor.props["height"]);
+
+							if (extenseionactor.props.ContainsKey("radius"))
+								actor.props["radius"] = new List<string>(extenseionactor.props["radius"]);
+
+							// Flags
+							if (extenseionactor.flags.ContainsKey("spawnceiling"))
+								actor.flags["spawnceiling"] = true;
+
+							if (extenseionactor.flags.ContainsKey("solid"))
+								actor.flags["solid"] = true;
+
+							// user_ variables
+							foreach (string uservarname in extenseionactor.uservars.Keys)
+								actor.uservars[uservarname] = extenseionactor.uservars[uservarname];
 						}
 					}
 				}
