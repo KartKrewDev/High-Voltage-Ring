@@ -992,6 +992,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 								General.Map.Map.ClearSelectedLinedefs();
 							}
 
+							General.Map.Renderer2D.UpdateExtraFloorFlag();
+
 							SetupLabels();
 							UpdateLabels();
 
