@@ -39,6 +39,7 @@
 			this.spacing = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.distinctsectors = new System.Windows.Forms.CheckBox();
 			this.singledirection = new System.Windows.Forms.CheckBox();
 			this.singlesteps = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -107,7 +108,7 @@
 			this.groupBox10 = new System.Windows.Forms.GroupBox();
 			this.middletexturetexture = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.middletexture = new System.Windows.Forms.CheckBox();
-			this.distinctsectors = new System.Windows.Forms.CheckBox();
+			this.prefabdefault = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.tabcontrol.SuspendLayout();
 			this.tabPage1.SuspendLayout();
@@ -264,6 +265,18 @@
 			this.groupBox3.TabIndex = 3;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Appearance";
+			// 
+			// distinctsectors
+			// 
+			this.distinctsectors.AutoSize = true;
+			this.distinctsectors.Enabled = false;
+			this.distinctsectors.Location = new System.Drawing.Point(10, 43);
+			this.distinctsectors.Name = "distinctsectors";
+			this.distinctsectors.Size = new System.Drawing.Size(101, 18);
+			this.distinctsectors.TabIndex = 2;
+			this.distinctsectors.Text = "Distinct sectors";
+			this.distinctsectors.UseVisualStyleBackColor = true;
+			this.distinctsectors.CheckedChanged += new System.EventHandler(this.distinctsectors_CheckedChanged);
 			// 
 			// singledirection
 			// 
@@ -975,6 +988,7 @@
 			// 
 			// groupBox11
 			// 
+			this.groupBox11.Controls.Add(this.prefabdefault);
 			this.groupBox11.Controls.Add(this.prefabload);
 			this.groupBox11.Controls.Add(this.prefabdelete);
 			this.groupBox11.Controls.Add(this.prefabsave);
@@ -1081,17 +1095,15 @@
 			this.middletexture.UseVisualStyleBackColor = true;
 			this.middletexture.CheckedChanged += new System.EventHandler(this.middletexture_CheckedChanged);
 			// 
-			// distinctsectors
+			// prefabdefault
 			// 
-			this.distinctsectors.AutoSize = true;
-			this.distinctsectors.Enabled = false;
-			this.distinctsectors.Location = new System.Drawing.Point(10, 43);
-			this.distinctsectors.Name = "distinctsectors";
-			this.distinctsectors.Size = new System.Drawing.Size(101, 18);
-			this.distinctsectors.TabIndex = 2;
-			this.distinctsectors.Text = "Distinct sectors";
-			this.distinctsectors.UseVisualStyleBackColor = true;
-			this.distinctsectors.CheckedChanged += new System.EventHandler(this.distinctsectors_CheckedChanged);
+			this.prefabdefault.Location = new System.Drawing.Point(247, 156);
+			this.prefabdefault.Name = "prefabdefault";
+			this.prefabdefault.Size = new System.Drawing.Size(70, 23);
+			this.prefabdefault.TabIndex = 29;
+			this.prefabdefault.Text = "Set default";
+			this.prefabdefault.UseVisualStyleBackColor = true;
+			this.prefabdefault.Click += new System.EventHandler(this.prefabdefault_Click);
 			// 
 			// StairSectorBuilderForm
 			// 
@@ -1240,5 +1252,6 @@
 		private CodeImp.DoomBuilder.Controls.TextureSelectorControl middletexturetexture;
 		private System.Windows.Forms.CheckBox middletexture;
 		private System.Windows.Forms.CheckBox distinctsectors;
+		private System.Windows.Forms.Button prefabdefault;
 	}
 }

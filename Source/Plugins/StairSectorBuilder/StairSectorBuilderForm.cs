@@ -278,8 +278,18 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				}
 			}
 
-            // Show window
-            base.Show(owner);
+			// Check if there's a "[Default]" prefab and load it if so
+			foreach (BuilderPlug.Prefab p in BuilderPlug.Me.Prefabs)
+			{
+				if(p.name == "[Default]")
+				{
+					LoadPrefab(p);
+					break;
+				}
+			}
+
+			// Show window
+			base.Show(owner);
         }
 
 		private void ComputeHeights()
@@ -318,7 +328,21 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 
 		private void btnOK_Click(object sender, EventArgs e)
 		{
-			SavePrefab("[Previous]", true, 0);
+			int position = 0;
+
+			// We always want to have the "[Default]" prefab on top, so look for it and add "[Previous]" after that
+			for (int i = 0; i < BuilderPlug.Me.Prefabs.Count; i++)
+			{
+				BuilderPlug.Prefab p = BuilderPlug.Me.Prefabs[i];
+
+				if (p.name == "[Default]")
+				{
+					position = i+1;
+					break;
+				}
+			}
+
+			SavePrefab("[Previous]", true, position);
 
 			General.Editing.AcceptMode();
 		}
@@ -638,8 +662,16 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 
 			if(name == "[Previous]")
 				MessageBox.Show(Owner, "The prefab name \"[Previous]\" is reserved and can not be overwritten.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else if (name == "[Default]")
+				MessageBox.Show(Owner, "The prefab name \"[Default]\" is reserved and can not be overwritten manually.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 				SavePrefab(prefabname.Text.Trim(), false, -1);
+		}
+
+
+		private void prefabdefault_Click(object sender, EventArgs e)
+		{
+			SavePrefab("[Default]", true, 0);
 		}
 
 		private void SavePrefab(string name, bool forceoverwrite, int position)
@@ -751,9 +783,12 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 
 		private void LoadPrefab(int position)
 		{
-			loadingprefab = true;
+			LoadPrefab(BuilderPlug.Me.Prefabs[position]);
+		}
 
-			BuilderPlug.Prefab p = BuilderPlug.Me.Prefabs[position];
+		private void LoadPrefab(BuilderPlug.Prefab p)
+		{
+			loadingprefab = true;
 
 			prefabname.Text = p.name;
 
