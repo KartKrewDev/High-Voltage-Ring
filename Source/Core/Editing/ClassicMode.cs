@@ -765,8 +765,7 @@ namespace CodeImp.DoomBuilder.Editing
 					{
 						// We have to ignore property changes, otherwise the undo manager will try to record the changes
 						General.Map.UndoRedo.IgnorePropChanges = true;
-						General.Settings.ApplyDefaultThingSettings(start);
-						start.Type = 1;
+						General.Settings.ApplyCleanThingSettings(start, 1);
 					}
 					else
 					{

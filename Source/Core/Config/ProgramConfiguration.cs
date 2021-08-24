@@ -704,7 +704,10 @@ namespace CodeImp.DoomBuilder.Config
 			defaultthingflags = new List<string>(setflags);
 		}
 
-		// This applies default settings to a thing
+		/// <summary>
+		/// This applies the settings of the last edited thing to the given thing.
+		/// </summary>
+		/// <param name="t">Thing to apply the settings to</param>
 		public void ApplyDefaultThingSettings(Thing t)
 		{
 			t.Type = defaultthingtype;
@@ -722,7 +725,37 @@ namespace CodeImp.DoomBuilder.Config
 				t.Args[4] = (int)tti.Args[4].DefaultValue;
 			}
 		}
-		
+
+		/// <summary>
+		/// Applies clean thing settings to the given thing, with the flags and aruments set in the game's config.
+		/// </summary>
+		/// <param name="t">Thing to apply the settings to</param>
+		/// <param name="type">Optional thing type. If not set the current thing type will be used, otherwise the type will be changed and used</param>
+		public void ApplyCleanThingSettings(Thing t, int type = 0)
+		{
+			if (type > 0)
+				t.Type = type;
+
+			// Remove all current flags
+			foreach (string flag in t.GetFlags().Keys)
+				t.SetFlag(flag, false);
+
+			// Add default flags
+			foreach(string flag in General.Map.Config.DefaultThingFlags)
+				t.SetFlag(flag, true);
+
+			// Set default arguments
+			ThingTypeInfo tti = General.Map.Data.GetThingInfoEx(t.Type);
+			if (tti != null)
+			{
+				t.Args[0] = (int)tti.Args[0].DefaultValue;
+				t.Args[1] = (int)tti.Args[1].DefaultValue;
+				t.Args[2] = (int)tti.Args[2].DefaultValue;
+				t.Args[3] = (int)tti.Args[3].DefaultValue;
+				t.Args[4] = (int)tti.Args[4].DefaultValue;
+			}
+		}
+
 		// This attempts to find the default drawing settings
 		public void FindDefaultDrawSettings()
 		{
