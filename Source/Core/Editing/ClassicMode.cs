@@ -83,6 +83,7 @@ namespace CodeImp.DoomBuilder.Editing
 		private Thing playerStart;
 		private Vector3D playerStartPosition;
 		private bool playerStartIsTempThing;
+		private bool mapWasChangedBeforeTest;
 		
 		#endregion
 
@@ -729,6 +730,9 @@ namespace CodeImp.DoomBuilder.Editing
 					return false;
 				}
 
+				// Capture whether the map was changed before modifying player things.
+				mapWasChangedBeforeTest = General.Map.IsChanged;
+
 				//find Single Player Start. Should be type 1 in all games
 				Thing start = null;
 				
@@ -807,6 +811,13 @@ namespace CodeImp.DoomBuilder.Editing
 				}
 
 				playerStart = null;
+
+				// Restore the value of General.Map.IsChanged before player
+				// things were modified in OnMapTestBegin().
+				if (!mapWasChangedBeforeTest)
+				{
+					General.Map.ForceMapIsChangedFalse();
+				}
 			}
 		}
 
