@@ -18,30 +18,20 @@
 #region ================== Namespaces
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using System.Windows.Forms;
-using System.IO;
-using System.Reflection;
+using System.Drawing;
+using System.Threading.Tasks;
 using System.Linq;
-using System.Diagnostics;
+using System.Windows.Forms;
 using CodeImp.DoomBuilder.Windows;
-using CodeImp.DoomBuilder.IO;
-using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Editing;
-using System.Drawing;
 using CodeImp.DoomBuilder.Actions;
-using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.BuilderModes;
-using CodeImp.DoomBuilder.BuilderModes.Interface;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Config;
-// using CodeImp.DoomBuilder.GZBuilder.Geometry;
 
 #endregion
 
@@ -1504,6 +1494,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		public void RelocateControlSectors()
 		{
 			List<Vector2D> positions;
+			Dictionary<Sector, List<Thing>> controlsectorthings = new Dictionary<Sector, List<Thing>>();
 
 			if (threedfloors.Count == 0)
 			{
@@ -1528,6 +1519,11 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				return;
 			}
 
+			// Update all thing's sector, since we might have to move things that are in control sectors
+			Parallel.ForEach(General.Map.Map.Things, t => {
+				t.DetermineSector(blockmap);
+			});
+
 			// Control sectors are not allowed to be bigger than what the CSA expects, otherwise sectors might overlap
 			// Abort relocation if one of the control sectors is too big (that should only happen if the user edited the
 			// sector manually
@@ -1540,6 +1536,16 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					General.Interface.DisplayStatus(StatusType.Warning, string.Format("Control sector {0} exceeds horizontal or vertical dimension of {1}. Aborted", tdf.Sector.Index, BuilderPlug.Me.ControlSectorArea.SectorSize));
 					return;
 				}
+
+				if (!controlsectorthings.ContainsKey(tdf.Sector))
+					controlsectorthings.Add(tdf.Sector, new List<Thing>());
+
+				// Find all things in the 3D floor's control sector so they can be also moved
+				List<BlockEntry> belist = blockmap.GetSquareRange(tdf.Sector.BBox);
+				foreach (BlockEntry be in belist)
+					foreach (Thing t in be.Things)
+						if(t.Sector == tdf.Sector)
+							controlsectorthings[tdf.Sector].Add(t);
 			}
 
 			General.Map.UndoRedo.CreateUndo("Relocate 3D floor control sectors");
@@ -1552,21 +1558,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			{
 				Vector2D offset = new Vector2D(tdf.Sector.BBox.Left - positions[i].x, tdf.Sector.BBox.Bottom - positions[i].y);
 				HashSet<Vertex> vertices = new HashSet<Vertex>();
-				List<Thing> movethings = new List<Thing>();
-				List<BlockEntry> belist = blockmap.GetSquareRange(tdf.Sector.BBox);
-
-				// Find all things in the 3D floor's control sector so they can be also moved
-				foreach (BlockEntry be in belist)
-				{
-					foreach (Thing t in be.Things)
-					{
-						// Always determine the thing's current sector because it might have change since the last determination
-						t.DetermineSector(blockmap);
-
-						if (t.Sector == tdf.Sector)
-							movethings.Add(t);
-					}
-				}
 
 				// Get all vertices
 				foreach (Sidedef sd in tdf.Sector.Sidedefs)
@@ -1580,7 +1571,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					v.Move(v.Position - offset);
 
 				// Move the things in the control sector
-				foreach (Thing t in movethings)
+				foreach (Thing t in controlsectorthings[tdf.Sector])
 					t.Move(t.Position - new Vector3D(offset));
 
 				// The bounding box of the sector has changed
