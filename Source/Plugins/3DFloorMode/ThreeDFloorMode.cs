@@ -1533,6 +1533,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			// sector manually
 			foreach (ThreeDFloor tdf in threedfloors)
 			{
+				tdf.Sector.UpdateBBox();
+
 				if (tdf.Sector.BBox.Width > BuilderPlug.Me.ControlSectorArea.SectorSize || tdf.Sector.BBox.Height > BuilderPlug.Me.ControlSectorArea.SectorSize)
 				{
 					General.Interface.DisplayStatus(StatusType.Warning, string.Format("Control sector {0} exceeds horizontal or vertical dimension of {1}. Aborted", tdf.Sector.Index, BuilderPlug.Me.ControlSectorArea.SectorSize));
@@ -1550,6 +1552,21 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			{
 				Vector2D offset = new Vector2D(tdf.Sector.BBox.Left - positions[i].x, tdf.Sector.BBox.Bottom - positions[i].y);
 				HashSet<Vertex> vertices = new HashSet<Vertex>();
+				List<Thing> movethings = new List<Thing>();
+				List<BlockEntry> belist = blockmap.GetSquareRange(tdf.Sector.BBox);
+
+				// Find all things in the 3D floor's control sector so they can be also moved
+				foreach (BlockEntry be in belist)
+				{
+					foreach (Thing t in be.Things)
+					{
+						// Always determine the thing's current sector because it might have change since the last determination
+						t.DetermineSector(blockmap);
+
+						if (t.Sector == tdf.Sector)
+							movethings.Add(t);
+					}
+				}
 
 				// Get all vertices
 				foreach (Sidedef sd in tdf.Sector.Sidedefs)
@@ -1558,11 +1575,22 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					vertices.Add(sd.Line.End);
 				}
 
+				// Move vertices
 				foreach (Vertex v in vertices)
 					v.Move(v.Position - offset);
 
+				// Move the things in the control sector
+				foreach (Thing t in movethings)
+					t.Move(t.Position - new Vector3D(offset));
+
+				// The bounding box of the sector has changed
+				tdf.Sector.UpdateBBox();
+
 				i++;
 			}
+
+			// Rebuild the blockmap
+			CreateBlockmap();
 
 			General.Map.Map.Update();
 			General.Interface.RedrawDisplay();
