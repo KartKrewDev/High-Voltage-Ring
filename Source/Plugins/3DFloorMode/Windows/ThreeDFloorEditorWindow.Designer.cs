@@ -51,7 +51,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.threeDFloorPanel.AutoScroll = true;
-			this.threeDFloorPanel.BackColor = System.Drawing.SystemColors.ControlLightLight;
+			this.threeDFloorPanel.BackColor = System.Drawing.SystemColors.Window;
 			this.threeDFloorPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.threeDFloorPanel.Location = new System.Drawing.Point(12, 6);
 			this.threeDFloorPanel.Name = "threeDFloorPanel";
