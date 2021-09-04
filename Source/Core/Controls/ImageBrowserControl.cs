@@ -117,7 +117,7 @@ namespace CodeImp.DoomBuilder.Controls
 			items = new List<ImageBrowserItem>();
 
 			//mxd
-			StepsList sizes = new StepsList { 4, 8, 16, 32, 48, 64, 96, 128, 196, 256, 512, 1024 };
+			StepsList sizes = new StepsList { 4, 8, 16, 32, 48, 64, 96, 128, 192, 256, 512, 1024 };
 			filterWidth.StepValues = sizes;
 			filterHeight.StepValues = sizes;
 
