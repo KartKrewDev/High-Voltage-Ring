@@ -44,6 +44,14 @@ namespace CodeImp.DoomBuilder.Controls
 			InitializeComponent();
 			CodeImp.DoomBuilder.General.ApplyMonoListViewFix(flags);
 
+			
+			// We have to set the parernt (and subsequently the new location relative to the parent) here since
+			// we can't set the parent in the designer. And if the parent is not set to the ConfigurablePictureBox
+			// the Label's background alpha will not work correctly
+			labelFloorTextureSize.Parent = floortex;
+			labelFloorTextureSize.Location = new Point(1, 1);
+			labelCeilTextureSize.Parent = ceilingtex;
+			labelCeilTextureSize.Location = new Point(1, 1);
 			//mxd
 			labelFloorTextureSize.BackColor = Color.FromArgb(128, labelFloorTextureSize.BackColor);
 			labelCeilTextureSize.BackColor = Color.FromArgb(128, labelCeilTextureSize.BackColor);
@@ -98,25 +106,25 @@ namespace CodeImp.DoomBuilder.Controls
 			if(s.LongFloorTexture == MapSet.EmptyLongName)
 			{
 				labelFloorTextureSize.Visible = false;
-				General.DisplayZoomedImage(floortex, Properties.Resources.MissingTexture);
+				floortex.Image = Properties.Resources.MissingTexture;
 			} 
 			else 
 			{
 				ImageData image = General.Map.Data.GetFlatImage(s.FloorTexture);
 				DisplayTextureSize(labelFloorTextureSize, image);
-				General.DisplayZoomedImage(floortex, image.GetPreview());
+				floortex.Image = image.GetPreview();
 			}
 
 			if(s.LongCeilTexture == MapSet.EmptyLongName) 
 			{
 				labelCeilTextureSize.Visible = false;
-				General.DisplayZoomedImage(ceilingtex, Properties.Resources.MissingTexture);
+				ceilingtex.Image = Properties.Resources.MissingTexture;
 			} 
 			else 
 			{
 				ImageData image = General.Map.Data.GetFlatImage(s.CeilTexture);
 				DisplayTextureSize(labelCeilTextureSize, image); //mxd
-				General.DisplayZoomedImage(ceilingtex, image.GetPreview());
+				ceilingtex.Image = image.GetPreview();
 			}
 
 			//mxd
@@ -374,7 +382,7 @@ namespace CodeImp.DoomBuilder.Controls
         }
 
         //mxd
-        private static void UpdateTexturePanel(GroupBox panel, Label texturename, List<Label> proplabels, Panel image, int sizeref, bool extendedinfoshown)
+        private static void UpdateTexturePanel(GroupBox panel, Label texturename, List<Label> proplabels, ConfigurablePictureBox image, int sizeref, bool extendedinfoshown)
 		{
 			//Reposition texture name label?
 			if(texturename.Width < image.Width + 2) 

@@ -58,28 +58,28 @@ namespace CodeImp.DoomBuilder.Controls
 			this.frontpanel = new System.Windows.Forms.GroupBox();
 			this.flowLayoutPanelFront = new System.Windows.Forms.FlowLayoutPanel();
 			this.panelFrontTop = new System.Windows.Forms.Panel();
+			this.labelTextureFrontTop = new System.Windows.Forms.Label();
+			this.fronthightex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.frontTopUDMFOffsetLabel = new System.Windows.Forms.Label();
 			this.frontTopUDMFOffset = new System.Windows.Forms.Label();
 			this.frontTopUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.frontTopUDMFScale = new System.Windows.Forms.Label();
-			this.fronthightex = new System.Windows.Forms.Panel();
-			this.labelTextureFrontTop = new System.Windows.Forms.Label();
 			this.fronthighname = new System.Windows.Forms.Label();
 			this.panelFrontMid = new System.Windows.Forms.Panel();
 			this.frontMidUDMFOffsetLabel = new System.Windows.Forms.Label();
 			this.frontMidUDMFOffset = new System.Windows.Forms.Label();
 			this.frontMidUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.frontMidUDMFScale = new System.Windows.Forms.Label();
-			this.frontmidtex = new System.Windows.Forms.Panel();
 			this.labelTextureFrontMid = new System.Windows.Forms.Label();
+			this.frontmidtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.frontmidname = new System.Windows.Forms.Label();
 			this.panelFrontLow = new System.Windows.Forms.Panel();
+			this.labelTextureFrontBottom = new System.Windows.Forms.Label();
+			this.frontlowtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.frontBottomUDMFOffsetLabel = new System.Windows.Forms.Label();
 			this.frontBottomUDMFOffset = new System.Windows.Forms.Label();
 			this.frontBottomUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.frontBottomUDMFScale = new System.Windows.Forms.Label();
-			this.frontlowtex = new System.Windows.Forms.Panel();
-			this.labelTextureFrontBottom = new System.Windows.Forms.Label();
 			this.frontlowname = new System.Windows.Forms.Label();
 			this.backpanel = new System.Windows.Forms.GroupBox();
 			this.flowLayoutPanelBack = new System.Windows.Forms.FlowLayoutPanel();
@@ -88,7 +88,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backTopUDMFOffset = new System.Windows.Forms.Label();
 			this.backTopUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.backTopUDMFScale = new System.Windows.Forms.Label();
-			this.backhightex = new System.Windows.Forms.Panel();
 			this.labelTextureBackTop = new System.Windows.Forms.Label();
 			this.backhighname = new System.Windows.Forms.Label();
 			this.panelBackMid = new System.Windows.Forms.Panel();
@@ -96,7 +95,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backMidUDMFOffset = new System.Windows.Forms.Label();
 			this.backMidUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.backMidUDMFScale = new System.Windows.Forms.Label();
-			this.backmidtex = new System.Windows.Forms.Panel();
 			this.labelTextureBackMid = new System.Windows.Forms.Label();
 			this.backmidname = new System.Windows.Forms.Label();
 			this.panelBackLow = new System.Windows.Forms.Panel();
@@ -104,31 +102,33 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backBottomUDMFOffset = new System.Windows.Forms.Label();
 			this.backBottomUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.backBottomUDMFScale = new System.Windows.Forms.Label();
-			this.backlowtex = new System.Windows.Forms.Panel();
 			this.labelTextureBackBottom = new System.Windows.Forms.Label();
 			this.backlowname = new System.Windows.Forms.Label();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this.flagsPanel = new System.Windows.Forms.GroupBox();
 			this.flags = new CodeImp.DoomBuilder.Controls.TransparentListView();
+			this.backhightex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
+			this.backmidtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
+			this.backlowtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.infopanel.SuspendLayout();
 			this.frontpanel.SuspendLayout();
 			this.flowLayoutPanelFront.SuspendLayout();
 			this.panelFrontTop.SuspendLayout();
-			this.fronthightex.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.fronthightex)).BeginInit();
 			this.panelFrontMid.SuspendLayout();
-			this.frontmidtex.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.frontmidtex)).BeginInit();
 			this.panelFrontLow.SuspendLayout();
-			this.frontlowtex.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.frontlowtex)).BeginInit();
 			this.backpanel.SuspendLayout();
 			this.flowLayoutPanelBack.SuspendLayout();
 			this.panelBackTop.SuspendLayout();
-			this.backhightex.SuspendLayout();
 			this.panelBackMid.SuspendLayout();
-			this.backmidtex.SuspendLayout();
 			this.panelBackLow.SuspendLayout();
-			this.backlowtex.SuspendLayout();
 			this.flowLayoutPanel1.SuspendLayout();
 			this.flagsPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backhightex)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.backmidtex)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.backlowtex)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// actionlabel
@@ -451,17 +451,48 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// panelFrontTop
 			// 
+			this.panelFrontTop.Controls.Add(this.labelTextureFrontTop);
+			this.panelFrontTop.Controls.Add(this.fronthightex);
 			this.panelFrontTop.Controls.Add(this.frontTopUDMFOffsetLabel);
 			this.panelFrontTop.Controls.Add(this.frontTopUDMFOffset);
 			this.panelFrontTop.Controls.Add(this.frontTopUDMFScaleLabel);
 			this.panelFrontTop.Controls.Add(this.frontTopUDMFScale);
-			this.panelFrontTop.Controls.Add(this.fronthightex);
 			this.panelFrontTop.Controls.Add(this.fronthighname);
 			this.panelFrontTop.Location = new System.Drawing.Point(0, 0);
 			this.panelFrontTop.Margin = new System.Windows.Forms.Padding(0);
 			this.panelFrontTop.Name = "panelFrontTop";
 			this.panelFrontTop.Size = new System.Drawing.Size(160, 82);
 			this.panelFrontTop.TabIndex = 5;
+			// 
+			// labelTextureFrontTop
+			// 
+			this.labelTextureFrontTop.AutoSize = true;
+			this.labelTextureFrontTop.BackColor = System.Drawing.Color.Black;
+			this.labelTextureFrontTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelTextureFrontTop.ForeColor = System.Drawing.Color.White;
+			this.labelTextureFrontTop.Location = new System.Drawing.Point(6, 3);
+			this.labelTextureFrontTop.MaximumSize = new System.Drawing.Size(0, 13);
+			this.labelTextureFrontTop.Name = "labelTextureFrontTop";
+			this.labelTextureFrontTop.Size = new System.Drawing.Size(48, 13);
+			this.labelTextureFrontTop.TabIndex = 0;
+			this.labelTextureFrontTop.Text = "128x128";
+			// 
+			// fronthightex
+			// 
+			this.fronthightex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.fronthightex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.fronthightex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.fronthightex.Highlighted = false;
+			this.fronthightex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.fronthightex.Location = new System.Drawing.Point(3, 0);
+			this.fronthightex.Name = "fronthightex";
+			this.fronthightex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.fronthightex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.fronthightex.Size = new System.Drawing.Size(64, 64);
+			this.fronthightex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.fronthightex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.fronthightex.TabIndex = 11;
+			this.fronthightex.TabStop = false;
 			// 
 			// frontTopUDMFOffsetLabel
 			// 
@@ -499,30 +530,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.frontTopUDMFScale.TabIndex = 10;
 			this.frontTopUDMFScale.Text = "--, --";
 			// 
-			// fronthightex
-			// 
-			this.fronthightex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.fronthightex.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.fronthightex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.fronthightex.Controls.Add(this.labelTextureFrontTop);
-			this.fronthightex.Location = new System.Drawing.Point(3, 0);
-			this.fronthightex.Name = "fronthightex";
-			this.fronthightex.Size = new System.Drawing.Size(64, 64);
-			this.fronthightex.TabIndex = 0;
-			// 
-			// labelTextureFrontTop
-			// 
-			this.labelTextureFrontTop.AutoSize = true;
-			this.labelTextureFrontTop.BackColor = System.Drawing.Color.Black;
-			this.labelTextureFrontTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelTextureFrontTop.ForeColor = System.Drawing.Color.White;
-			this.labelTextureFrontTop.Location = new System.Drawing.Point(1, 1);
-			this.labelTextureFrontTop.MaximumSize = new System.Drawing.Size(0, 13);
-			this.labelTextureFrontTop.Name = "labelTextureFrontTop";
-			this.labelTextureFrontTop.Size = new System.Drawing.Size(48, 13);
-			this.labelTextureFrontTop.TabIndex = 0;
-			this.labelTextureFrontTop.Text = "128x128";
-			// 
 			// fronthighname
 			// 
 			this.fronthighname.AutoSize = true;
@@ -540,6 +547,7 @@ namespace CodeImp.DoomBuilder.Controls
 			this.panelFrontMid.Controls.Add(this.frontMidUDMFOffset);
 			this.panelFrontMid.Controls.Add(this.frontMidUDMFScaleLabel);
 			this.panelFrontMid.Controls.Add(this.frontMidUDMFScale);
+			this.panelFrontMid.Controls.Add(this.labelTextureFrontMid);
 			this.panelFrontMid.Controls.Add(this.frontmidtex);
 			this.panelFrontMid.Controls.Add(this.frontmidname);
 			this.panelFrontMid.Location = new System.Drawing.Point(160, 0);
@@ -584,29 +592,35 @@ namespace CodeImp.DoomBuilder.Controls
 			this.frontMidUDMFScale.TabIndex = 10;
 			this.frontMidUDMFScale.Text = "--, --";
 			// 
-			// frontmidtex
-			// 
-			this.frontmidtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.frontmidtex.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.frontmidtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.frontmidtex.Controls.Add(this.labelTextureFrontMid);
-			this.frontmidtex.Location = new System.Drawing.Point(3, 0);
-			this.frontmidtex.Name = "frontmidtex";
-			this.frontmidtex.Size = new System.Drawing.Size(64, 64);
-			this.frontmidtex.TabIndex = 2;
-			// 
 			// labelTextureFrontMid
 			// 
 			this.labelTextureFrontMid.AutoSize = true;
 			this.labelTextureFrontMid.BackColor = System.Drawing.Color.Black;
 			this.labelTextureFrontMid.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelTextureFrontMid.ForeColor = System.Drawing.Color.White;
-			this.labelTextureFrontMid.Location = new System.Drawing.Point(1, 1);
+			this.labelTextureFrontMid.Location = new System.Drawing.Point(6, 3);
 			this.labelTextureFrontMid.MaximumSize = new System.Drawing.Size(0, 13);
 			this.labelTextureFrontMid.Name = "labelTextureFrontMid";
 			this.labelTextureFrontMid.Size = new System.Drawing.Size(48, 13);
 			this.labelTextureFrontMid.TabIndex = 1;
 			this.labelTextureFrontMid.Text = "128x128";
+			// 
+			// frontmidtex
+			// 
+			this.frontmidtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.frontmidtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.frontmidtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.frontmidtex.Highlighted = false;
+			this.frontmidtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.frontmidtex.Location = new System.Drawing.Point(3, 0);
+			this.frontmidtex.Name = "frontmidtex";
+			this.frontmidtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.frontmidtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.frontmidtex.Size = new System.Drawing.Size(64, 64);
+			this.frontmidtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.frontmidtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.frontmidtex.TabIndex = 9;
+			this.frontmidtex.TabStop = false;
 			// 
 			// frontmidname
 			// 
@@ -621,17 +635,48 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// panelFrontLow
 			// 
+			this.panelFrontLow.Controls.Add(this.labelTextureFrontBottom);
+			this.panelFrontLow.Controls.Add(this.frontlowtex);
 			this.panelFrontLow.Controls.Add(this.frontBottomUDMFOffsetLabel);
 			this.panelFrontLow.Controls.Add(this.frontBottomUDMFOffset);
 			this.panelFrontLow.Controls.Add(this.frontBottomUDMFScaleLabel);
 			this.panelFrontLow.Controls.Add(this.frontBottomUDMFScale);
-			this.panelFrontLow.Controls.Add(this.frontlowtex);
 			this.panelFrontLow.Controls.Add(this.frontlowname);
 			this.panelFrontLow.Location = new System.Drawing.Point(320, 0);
 			this.panelFrontLow.Margin = new System.Windows.Forms.Padding(0);
 			this.panelFrontLow.Name = "panelFrontLow";
 			this.panelFrontLow.Size = new System.Drawing.Size(160, 82);
 			this.panelFrontLow.TabIndex = 12;
+			// 
+			// labelTextureFrontBottom
+			// 
+			this.labelTextureFrontBottom.AutoSize = true;
+			this.labelTextureFrontBottom.BackColor = System.Drawing.Color.Black;
+			this.labelTextureFrontBottom.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelTextureFrontBottom.ForeColor = System.Drawing.Color.White;
+			this.labelTextureFrontBottom.Location = new System.Drawing.Point(6, 3);
+			this.labelTextureFrontBottom.MaximumSize = new System.Drawing.Size(0, 13);
+			this.labelTextureFrontBottom.Name = "labelTextureFrontBottom";
+			this.labelTextureFrontBottom.Size = new System.Drawing.Size(48, 13);
+			this.labelTextureFrontBottom.TabIndex = 2;
+			this.labelTextureFrontBottom.Text = "128x128";
+			// 
+			// frontlowtex
+			// 
+			this.frontlowtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.frontlowtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.frontlowtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.frontlowtex.Highlighted = false;
+			this.frontlowtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.frontlowtex.Location = new System.Drawing.Point(3, 0);
+			this.frontlowtex.Name = "frontlowtex";
+			this.frontlowtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.frontlowtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.frontlowtex.Size = new System.Drawing.Size(64, 64);
+			this.frontlowtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.frontlowtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.frontlowtex.TabIndex = 11;
+			this.frontlowtex.TabStop = false;
 			// 
 			// frontBottomUDMFOffsetLabel
 			// 
@@ -669,30 +714,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.frontBottomUDMFScale.TabIndex = 10;
 			this.frontBottomUDMFScale.Text = "--, --";
 			// 
-			// frontlowtex
-			// 
-			this.frontlowtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.frontlowtex.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.frontlowtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.frontlowtex.Controls.Add(this.labelTextureFrontBottom);
-			this.frontlowtex.Location = new System.Drawing.Point(3, 0);
-			this.frontlowtex.Name = "frontlowtex";
-			this.frontlowtex.Size = new System.Drawing.Size(64, 64);
-			this.frontlowtex.TabIndex = 4;
-			// 
-			// labelTextureFrontBottom
-			// 
-			this.labelTextureFrontBottom.AutoSize = true;
-			this.labelTextureFrontBottom.BackColor = System.Drawing.Color.Black;
-			this.labelTextureFrontBottom.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelTextureFrontBottom.ForeColor = System.Drawing.Color.White;
-			this.labelTextureFrontBottom.Location = new System.Drawing.Point(1, 1);
-			this.labelTextureFrontBottom.MaximumSize = new System.Drawing.Size(0, 13);
-			this.labelTextureFrontBottom.Name = "labelTextureFrontBottom";
-			this.labelTextureFrontBottom.Size = new System.Drawing.Size(48, 13);
-			this.labelTextureFrontBottom.TabIndex = 2;
-			this.labelTextureFrontBottom.Text = "128x128";
-			// 
 			// frontlowname
 			// 
 			this.frontlowname.AutoSize = true;
@@ -729,11 +750,12 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// panelBackTop
 			// 
+			this.panelBackTop.Controls.Add(this.labelTextureBackTop);
+			this.panelBackTop.Controls.Add(this.backhightex);
 			this.panelBackTop.Controls.Add(this.backTopUDMFOffsetLabel);
 			this.panelBackTop.Controls.Add(this.backTopUDMFOffset);
 			this.panelBackTop.Controls.Add(this.backTopUDMFScaleLabel);
 			this.panelBackTop.Controls.Add(this.backTopUDMFScale);
-			this.panelBackTop.Controls.Add(this.backhightex);
 			this.panelBackTop.Controls.Add(this.backhighname);
 			this.panelBackTop.Location = new System.Drawing.Point(0, 0);
 			this.panelBackTop.Margin = new System.Windows.Forms.Padding(0);
@@ -777,24 +799,13 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backTopUDMFScale.TabIndex = 10;
 			this.backTopUDMFScale.Text = "--, --";
 			// 
-			// backhightex
-			// 
-			this.backhightex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.backhightex.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.backhightex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.backhightex.Controls.Add(this.labelTextureBackTop);
-			this.backhightex.Location = new System.Drawing.Point(3, 0);
-			this.backhightex.Name = "backhightex";
-			this.backhightex.Size = new System.Drawing.Size(64, 64);
-			this.backhightex.TabIndex = 0;
-			// 
 			// labelTextureBackTop
 			// 
 			this.labelTextureBackTop.AutoSize = true;
 			this.labelTextureBackTop.BackColor = System.Drawing.Color.Black;
 			this.labelTextureBackTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelTextureBackTop.ForeColor = System.Drawing.Color.White;
-			this.labelTextureBackTop.Location = new System.Drawing.Point(1, 1);
+			this.labelTextureBackTop.Location = new System.Drawing.Point(6, 3);
 			this.labelTextureBackTop.MaximumSize = new System.Drawing.Size(0, 13);
 			this.labelTextureBackTop.Name = "labelTextureBackTop";
 			this.labelTextureBackTop.Size = new System.Drawing.Size(48, 13);
@@ -814,11 +825,12 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// panelBackMid
 			// 
+			this.panelBackMid.Controls.Add(this.labelTextureBackMid);
+			this.panelBackMid.Controls.Add(this.backmidtex);
 			this.panelBackMid.Controls.Add(this.backMidUDMFOffsetLabel);
 			this.panelBackMid.Controls.Add(this.backMidUDMFOffset);
 			this.panelBackMid.Controls.Add(this.backMidUDMFScaleLabel);
 			this.panelBackMid.Controls.Add(this.backMidUDMFScale);
-			this.panelBackMid.Controls.Add(this.backmidtex);
 			this.panelBackMid.Controls.Add(this.backmidname);
 			this.panelBackMid.Location = new System.Drawing.Point(160, 0);
 			this.panelBackMid.Margin = new System.Windows.Forms.Padding(0);
@@ -862,24 +874,13 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backMidUDMFScale.TabIndex = 10;
 			this.backMidUDMFScale.Text = "--, --";
 			// 
-			// backmidtex
-			// 
-			this.backmidtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.backmidtex.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.backmidtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.backmidtex.Controls.Add(this.labelTextureBackMid);
-			this.backmidtex.Location = new System.Drawing.Point(3, 0);
-			this.backmidtex.Name = "backmidtex";
-			this.backmidtex.Size = new System.Drawing.Size(64, 64);
-			this.backmidtex.TabIndex = 2;
-			// 
 			// labelTextureBackMid
 			// 
 			this.labelTextureBackMid.AutoSize = true;
 			this.labelTextureBackMid.BackColor = System.Drawing.Color.Black;
 			this.labelTextureBackMid.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelTextureBackMid.ForeColor = System.Drawing.Color.White;
-			this.labelTextureBackMid.Location = new System.Drawing.Point(1, 1);
+			this.labelTextureBackMid.Location = new System.Drawing.Point(6, 3);
 			this.labelTextureBackMid.MaximumSize = new System.Drawing.Size(0, 13);
 			this.labelTextureBackMid.Name = "labelTextureBackMid";
 			this.labelTextureBackMid.Size = new System.Drawing.Size(48, 13);
@@ -899,11 +900,12 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// panelBackLow
 			// 
+			this.panelBackLow.Controls.Add(this.labelTextureBackBottom);
+			this.panelBackLow.Controls.Add(this.backlowtex);
 			this.panelBackLow.Controls.Add(this.backBottomUDMFOffsetLabel);
 			this.panelBackLow.Controls.Add(this.backBottomUDMFOffset);
 			this.panelBackLow.Controls.Add(this.backBottomUDMFScaleLabel);
 			this.panelBackLow.Controls.Add(this.backBottomUDMFScale);
-			this.panelBackLow.Controls.Add(this.backlowtex);
 			this.panelBackLow.Controls.Add(this.backlowname);
 			this.panelBackLow.Location = new System.Drawing.Point(320, 0);
 			this.panelBackLow.Margin = new System.Windows.Forms.Padding(0);
@@ -947,24 +949,13 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backBottomUDMFScale.TabIndex = 10;
 			this.backBottomUDMFScale.Text = "--, --";
 			// 
-			// backlowtex
-			// 
-			this.backlowtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.backlowtex.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.backlowtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.backlowtex.Controls.Add(this.labelTextureBackBottom);
-			this.backlowtex.Location = new System.Drawing.Point(3, 0);
-			this.backlowtex.Name = "backlowtex";
-			this.backlowtex.Size = new System.Drawing.Size(64, 64);
-			this.backlowtex.TabIndex = 4;
-			// 
 			// labelTextureBackBottom
 			// 
 			this.labelTextureBackBottom.AutoSize = true;
 			this.labelTextureBackBottom.BackColor = System.Drawing.Color.Black;
 			this.labelTextureBackBottom.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelTextureBackBottom.ForeColor = System.Drawing.Color.White;
-			this.labelTextureBackBottom.Location = new System.Drawing.Point(1, 1);
+			this.labelTextureBackBottom.Location = new System.Drawing.Point(6, 3);
 			this.labelTextureBackBottom.MaximumSize = new System.Drawing.Size(0, 13);
 			this.labelTextureBackBottom.Name = "labelTextureBackBottom";
 			this.labelTextureBackBottom.Size = new System.Drawing.Size(48, 13);
@@ -1022,6 +1013,57 @@ namespace CodeImp.DoomBuilder.Controls
 			this.flags.UseCompatibleStateImageBehavior = false;
 			this.flags.View = System.Windows.Forms.View.List;
 			// 
+			// backhightex
+			// 
+			this.backhightex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.backhightex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.backhightex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.backhightex.Highlighted = false;
+			this.backhightex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.backhightex.Location = new System.Drawing.Point(3, 0);
+			this.backhightex.Name = "backhightex";
+			this.backhightex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.backhightex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.backhightex.Size = new System.Drawing.Size(64, 64);
+			this.backhightex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.backhightex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.backhightex.TabIndex = 12;
+			this.backhightex.TabStop = false;
+			// 
+			// backmidtex
+			// 
+			this.backmidtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.backmidtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.backmidtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.backmidtex.Highlighted = false;
+			this.backmidtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.backmidtex.Location = new System.Drawing.Point(3, 0);
+			this.backmidtex.Name = "backmidtex";
+			this.backmidtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.backmidtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.backmidtex.Size = new System.Drawing.Size(64, 64);
+			this.backmidtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.backmidtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.backmidtex.TabIndex = 13;
+			this.backmidtex.TabStop = false;
+			// 
+			// backlowtex
+			// 
+			this.backlowtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.backlowtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.backlowtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.backlowtex.Highlighted = false;
+			this.backlowtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.backlowtex.Location = new System.Drawing.Point(3, 0);
+			this.backlowtex.Name = "backlowtex";
+			this.backlowtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.backlowtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.backlowtex.Size = new System.Drawing.Size(64, 64);
+			this.backlowtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.backlowtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.backlowtex.TabIndex = 14;
+			this.backlowtex.TabStop = false;
+			// 
 			// LinedefInfoPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -1038,32 +1080,26 @@ namespace CodeImp.DoomBuilder.Controls
 			this.flowLayoutPanelFront.ResumeLayout(false);
 			this.panelFrontTop.ResumeLayout(false);
 			this.panelFrontTop.PerformLayout();
-			this.fronthightex.ResumeLayout(false);
-			this.fronthightex.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.fronthightex)).EndInit();
 			this.panelFrontMid.ResumeLayout(false);
 			this.panelFrontMid.PerformLayout();
-			this.frontmidtex.ResumeLayout(false);
-			this.frontmidtex.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.frontmidtex)).EndInit();
 			this.panelFrontLow.ResumeLayout(false);
 			this.panelFrontLow.PerformLayout();
-			this.frontlowtex.ResumeLayout(false);
-			this.frontlowtex.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.frontlowtex)).EndInit();
 			this.backpanel.ResumeLayout(false);
 			this.flowLayoutPanelBack.ResumeLayout(false);
 			this.panelBackTop.ResumeLayout(false);
 			this.panelBackTop.PerformLayout();
-			this.backhightex.ResumeLayout(false);
-			this.backhightex.PerformLayout();
 			this.panelBackMid.ResumeLayout(false);
 			this.panelBackMid.PerformLayout();
-			this.backmidtex.ResumeLayout(false);
-			this.backmidtex.PerformLayout();
 			this.panelBackLow.ResumeLayout(false);
 			this.panelBackLow.PerformLayout();
-			this.backlowtex.ResumeLayout(false);
-			this.backlowtex.PerformLayout();
 			this.flowLayoutPanel1.ResumeLayout(false);
 			this.flagsPanel.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.backhightex)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.backmidtex)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.backlowtex)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -1076,18 +1112,12 @@ namespace CodeImp.DoomBuilder.Controls
 		private System.Windows.Forms.Label length;
 		private System.Windows.Forms.Label frontoffset;
 		private System.Windows.Forms.Label backoffset;
-		private System.Windows.Forms.Panel fronthightex;
 		private System.Windows.Forms.Label frontlowname;
-		private System.Windows.Forms.Panel frontlowtex;
 		private System.Windows.Forms.Label frontmidname;
-		private System.Windows.Forms.Panel frontmidtex;
 		private System.Windows.Forms.Label fronthighname;
 		private System.Windows.Forms.Label backlowname;
-		private System.Windows.Forms.Panel backlowtex;
 		private System.Windows.Forms.Label backmidname;
-		private System.Windows.Forms.Panel backmidtex;
 		private System.Windows.Forms.Label backhighname;
-		private System.Windows.Forms.Panel backhightex;
 		private System.Windows.Forms.GroupBox frontpanel;
 		private System.Windows.Forms.GroupBox backpanel;
 		private System.Windows.Forms.Label backoffsetlabel;
@@ -1138,7 +1168,6 @@ namespace CodeImp.DoomBuilder.Controls
 		private System.Windows.Forms.Label frontBottomUDMFScaleLabel;
 		private System.Windows.Forms.Label frontBottomUDMFOffsetLabel;
 		private System.Windows.Forms.Label labelTextureFrontTop;
-		private System.Windows.Forms.Label labelTextureFrontMid;
 		private System.Windows.Forms.Label labelTextureFrontBottom;
 		private System.Windows.Forms.Label labelTextureBackTop;
 		private System.Windows.Forms.Label labelTextureBackMid;
@@ -1152,6 +1181,12 @@ namespace CodeImp.DoomBuilder.Controls
 		private System.Windows.Forms.Label activation;
 		private System.Windows.Forms.Label activationlabel;
 		private System.Windows.Forms.Label actionlabel;
-
+		private ConfigurablePictureBox frontmidtex;
+		private System.Windows.Forms.Label labelTextureFrontMid;
+		private ConfigurablePictureBox fronthightex;
+		private ConfigurablePictureBox frontlowtex;
+		private ConfigurablePictureBox backhightex;
+		private ConfigurablePictureBox backmidtex;
+		private ConfigurablePictureBox backlowtex;
 	}
 }

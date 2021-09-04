@@ -58,17 +58,17 @@ namespace CodeImp.DoomBuilder.Controls
 			this.ceilingAngle = new System.Windows.Forms.Label();
 			this.ceilingOffset = new System.Windows.Forms.Label();
 			this.ceilingpanel = new System.Windows.Forms.GroupBox();
-			this.ceilingname = new System.Windows.Forms.Label();
-			this.ceilingtex = new System.Windows.Forms.Panel();
 			this.labelCeilTextureSize = new System.Windows.Forms.Label();
+			this.ceilingtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
+			this.ceilingname = new System.Windows.Forms.Label();
 			this.floorpanel = new System.Windows.Forms.GroupBox();
+			this.labelFloorTextureSize = new System.Windows.Forms.Label();
+			this.floortex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.floorLight = new System.Windows.Forms.Label();
 			this.floorScale = new System.Windows.Forms.Label();
 			this.floorOffset = new System.Windows.Forms.Label();
 			this.floorAngle = new System.Windows.Forms.Label();
 			this.floorname = new System.Windows.Forms.Label();
-			this.floortex = new System.Windows.Forms.Panel();
-			this.labelFloorTextureSize = new System.Windows.Forms.Label();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this.flagsPanel = new System.Windows.Forms.GroupBox();
 			this.flags = new CodeImp.DoomBuilder.Controls.TransparentListView();
@@ -76,9 +76,9 @@ namespace CodeImp.DoomBuilder.Controls
 			label5 = new System.Windows.Forms.Label();
 			this.sectorinfo.SuspendLayout();
 			this.ceilingpanel.SuspendLayout();
-			this.ceilingtex.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ceilingtex)).BeginInit();
 			this.floorpanel.SuspendLayout();
-			this.floortex.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.floortex)).BeginInit();
 			this.flowLayoutPanel1.SuspendLayout();
 			this.flagsPanel.SuspendLayout();
 			this.SuspendLayout();
@@ -356,6 +356,8 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// ceilingpanel
 			// 
+			this.ceilingpanel.Controls.Add(this.labelCeilTextureSize);
+			this.ceilingpanel.Controls.Add(this.ceilingtex);
 			this.ceilingpanel.Controls.Add(this.ceilingOffsetLabel);
 			this.ceilingpanel.Controls.Add(this.ceilingOffset);
 			this.ceilingpanel.Controls.Add(this.ceilingLight);
@@ -365,7 +367,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.ceilingpanel.Controls.Add(this.ceilingScale);
 			this.ceilingpanel.Controls.Add(this.ceilingLightLabel);
 			this.ceilingpanel.Controls.Add(this.ceilingname);
-			this.ceilingpanel.Controls.Add(this.ceilingtex);
 			this.ceilingpanel.Location = new System.Drawing.Point(506, 0);
 			this.ceilingpanel.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.ceilingpanel.Name = "ceilingpanel";
@@ -373,6 +374,36 @@ namespace CodeImp.DoomBuilder.Controls
 			this.ceilingpanel.TabIndex = 3;
 			this.ceilingpanel.TabStop = false;
 			this.ceilingpanel.Text = " Ceiling ";
+			// 
+			// labelCeilTextureSize
+			// 
+			this.labelCeilTextureSize.AutoSize = true;
+			this.labelCeilTextureSize.BackColor = System.Drawing.Color.Black;
+			this.labelCeilTextureSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelCeilTextureSize.ForeColor = System.Drawing.Color.White;
+			this.labelCeilTextureSize.Location = new System.Drawing.Point(10, 17);
+			this.labelCeilTextureSize.MaximumSize = new System.Drawing.Size(0, 13);
+			this.labelCeilTextureSize.Name = "labelCeilTextureSize";
+			this.labelCeilTextureSize.Size = new System.Drawing.Size(48, 13);
+			this.labelCeilTextureSize.TabIndex = 1;
+			this.labelCeilTextureSize.Text = "128x128";
+			// 
+			// ceilingtex
+			// 
+			this.ceilingtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.ceilingtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.ceilingtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.ceilingtex.Highlighted = false;
+			this.ceilingtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.ceilingtex.Location = new System.Drawing.Point(7, 14);
+			this.ceilingtex.Name = "ceilingtex";
+			this.ceilingtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.ceilingtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.ceilingtex.Size = new System.Drawing.Size(64, 64);
+			this.ceilingtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.ceilingtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.ceilingtex.TabIndex = 31;
+			this.ceilingtex.TabStop = false;
 			// 
 			// ceilingname
 			// 
@@ -383,32 +414,10 @@ namespace CodeImp.DoomBuilder.Controls
 			this.ceilingname.TabIndex = 1;
 			this.ceilingname.Text = "BROWNHUG";
 			// 
-			// ceilingtex
-			// 
-			this.ceilingtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.ceilingtex.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.ceilingtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.ceilingtex.Controls.Add(this.labelCeilTextureSize);
-			this.ceilingtex.Location = new System.Drawing.Point(7, 14);
-			this.ceilingtex.Name = "ceilingtex";
-			this.ceilingtex.Size = new System.Drawing.Size(64, 64);
-			this.ceilingtex.TabIndex = 0;
-			// 
-			// labelCeilTextureSize
-			// 
-			this.labelCeilTextureSize.AutoSize = true;
-			this.labelCeilTextureSize.BackColor = System.Drawing.Color.Black;
-			this.labelCeilTextureSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelCeilTextureSize.ForeColor = System.Drawing.Color.White;
-			this.labelCeilTextureSize.Location = new System.Drawing.Point(1, 1);
-			this.labelCeilTextureSize.MaximumSize = new System.Drawing.Size(0, 13);
-			this.labelCeilTextureSize.Name = "labelCeilTextureSize";
-			this.labelCeilTextureSize.Size = new System.Drawing.Size(48, 13);
-			this.labelCeilTextureSize.TabIndex = 1;
-			this.labelCeilTextureSize.Text = "128x128";
-			// 
 			// floorpanel
 			// 
+			this.floorpanel.Controls.Add(this.labelFloorTextureSize);
+			this.floorpanel.Controls.Add(this.floortex);
 			this.floorpanel.Controls.Add(this.floorLight);
 			this.floorpanel.Controls.Add(this.floorOffsetLabel);
 			this.floorpanel.Controls.Add(this.floorLightLabel);
@@ -418,7 +427,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.floorpanel.Controls.Add(this.floorScaleLabel);
 			this.floorpanel.Controls.Add(this.floorAngle);
 			this.floorpanel.Controls.Add(this.floorname);
-			this.floorpanel.Controls.Add(this.floortex);
 			this.floorpanel.Location = new System.Drawing.Point(303, 0);
 			this.floorpanel.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.floorpanel.Name = "floorpanel";
@@ -426,6 +434,36 @@ namespace CodeImp.DoomBuilder.Controls
 			this.floorpanel.TabIndex = 4;
 			this.floorpanel.TabStop = false;
 			this.floorpanel.Text = " Floor ";
+			// 
+			// labelFloorTextureSize
+			// 
+			this.labelFloorTextureSize.AutoSize = true;
+			this.labelFloorTextureSize.BackColor = System.Drawing.Color.Black;
+			this.labelFloorTextureSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelFloorTextureSize.ForeColor = System.Drawing.Color.White;
+			this.labelFloorTextureSize.Location = new System.Drawing.Point(10, 17);
+			this.labelFloorTextureSize.MaximumSize = new System.Drawing.Size(0, 13);
+			this.labelFloorTextureSize.Name = "labelFloorTextureSize";
+			this.labelFloorTextureSize.Size = new System.Drawing.Size(48, 13);
+			this.labelFloorTextureSize.TabIndex = 0;
+			this.labelFloorTextureSize.Text = "128x128";
+			// 
+			// floortex
+			// 
+			this.floortex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.floortex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.floortex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.floortex.Highlighted = false;
+			this.floortex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.floortex.Location = new System.Drawing.Point(7, 14);
+			this.floortex.Name = "floortex";
+			this.floortex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.floortex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.floortex.Size = new System.Drawing.Size(64, 64);
+			this.floortex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.floortex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.floortex.TabIndex = 30;
+			this.floortex.TabStop = false;
 			// 
 			// floorLight
 			// 
@@ -471,30 +509,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.floorname.Size = new System.Drawing.Size(73, 13);
 			this.floorname.TabIndex = 1;
 			this.floorname.Text = "BROWNHUG";
-			// 
-			// floortex
-			// 
-			this.floortex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.floortex.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.floortex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.floortex.Controls.Add(this.labelFloorTextureSize);
-			this.floortex.Location = new System.Drawing.Point(7, 14);
-			this.floortex.Name = "floortex";
-			this.floortex.Size = new System.Drawing.Size(64, 64);
-			this.floortex.TabIndex = 0;
-			// 
-			// labelFloorTextureSize
-			// 
-			this.labelFloorTextureSize.AutoSize = true;
-			this.labelFloorTextureSize.BackColor = System.Drawing.Color.Black;
-			this.labelFloorTextureSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelFloorTextureSize.ForeColor = System.Drawing.Color.White;
-			this.labelFloorTextureSize.Location = new System.Drawing.Point(1, 1);
-			this.labelFloorTextureSize.MaximumSize = new System.Drawing.Size(0, 13);
-			this.labelFloorTextureSize.Name = "labelFloorTextureSize";
-			this.labelFloorTextureSize.Size = new System.Drawing.Size(48, 13);
-			this.labelFloorTextureSize.TabIndex = 0;
-			this.labelFloorTextureSize.Text = "128x128";
 			// 
 			// flowLayoutPanel1
 			// 
@@ -549,12 +563,10 @@ namespace CodeImp.DoomBuilder.Controls
 			this.sectorinfo.PerformLayout();
 			this.ceilingpanel.ResumeLayout(false);
 			this.ceilingpanel.PerformLayout();
-			this.ceilingtex.ResumeLayout(false);
-			this.ceilingtex.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ceilingtex)).EndInit();
 			this.floorpanel.ResumeLayout(false);
 			this.floorpanel.PerformLayout();
-			this.floortex.ResumeLayout(false);
-			this.floortex.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.floortex)).EndInit();
 			this.flowLayoutPanel1.ResumeLayout(false);
 			this.flagsPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -571,10 +583,8 @@ namespace CodeImp.DoomBuilder.Controls
 		private System.Windows.Forms.Label effect;
 		private System.Windows.Forms.GroupBox ceilingpanel;
 		private System.Windows.Forms.Label ceilingname;
-		private System.Windows.Forms.Panel ceilingtex;
 		private System.Windows.Forms.GroupBox floorpanel;
 		private System.Windows.Forms.Label floorname;
-		private System.Windows.Forms.Panel floortex;
 		private System.Windows.Forms.GroupBox sectorinfo;
 		private System.Windows.Forms.Label ceilingLight;
 		private System.Windows.Forms.Label ceilingScale;
@@ -605,5 +615,7 @@ namespace CodeImp.DoomBuilder.Controls
 		private System.Windows.Forms.Label effectlabel;
 		private System.Windows.Forms.Label labelfloor;
 		private System.Windows.Forms.Label labelceiling;
+		private ConfigurablePictureBox ceilingtex;
+		private ConfigurablePictureBox floortex;
 	}
 }

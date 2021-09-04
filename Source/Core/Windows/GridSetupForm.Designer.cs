@@ -42,7 +42,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.backoffset = new System.Windows.Forms.Label();
 			this.selectflat = new System.Windows.Forms.Button();
 			this.selecttexture = new System.Windows.Forms.Button();
-			this.backgroundimage = new System.Windows.Forms.Panel();
+			this.backgroundimage = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.cancel = new System.Windows.Forms.Button();
 			this.apply = new System.Windows.Forms.Button();
 			this.browsefile = new System.Windows.Forms.OpenFileDialog();
@@ -51,12 +51,13 @@ namespace CodeImp.DoomBuilder.Windows
 			groupBox2 = new System.Windows.Forms.GroupBox();
 			groupBox1.SuspendLayout();
 			groupBox2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backgroundimage)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// groupBox1
 			// 
-			groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			groupBox1.Controls.Add(this.gridsize);
 			groupBox1.Controls.Add(label1);
 			groupBox1.Location = new System.Drawing.Point(12, 12);
@@ -95,8 +96,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// groupBox2
 			// 
-			groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			groupBox2.Controls.Add(this.backscaley);
 			groupBox2.Controls.Add(this.backscalex);
 			groupBox2.Controls.Add(this.backoffsety);
@@ -258,12 +259,19 @@ namespace CodeImp.DoomBuilder.Windows
 			// backgroundimage
 			// 
 			this.backgroundimage.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.backgroundimage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
 			this.backgroundimage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.backgroundimage.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.backgroundimage.Highlighted = false;
+			this.backgroundimage.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 			this.backgroundimage.Location = new System.Drawing.Point(28, 60);
 			this.backgroundimage.Name = "backgroundimage";
-			this.backgroundimage.Size = new System.Drawing.Size(91, 87);
-			this.backgroundimage.TabIndex = 1;
+			this.backgroundimage.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.backgroundimage.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.backgroundimage.Size = new System.Drawing.Size(87, 87);
+			this.backgroundimage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.backgroundimage.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.backgroundimage.TabIndex = 31;
+			this.backgroundimage.TabStop = false;
 			// 
 			// cancel
 			// 
@@ -309,7 +317,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "GridSetupForm";
-			this.Opacity = 0;
+			this.Opacity = 0D;
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -319,13 +327,12 @@ namespace CodeImp.DoomBuilder.Windows
 			groupBox1.PerformLayout();
 			groupBox2.ResumeLayout(false);
 			groupBox2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backgroundimage)).EndInit();
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
-
-		private System.Windows.Forms.Panel backgroundimage;
 		private System.Windows.Forms.Button selecttexture;
 		private System.Windows.Forms.Button selectflat;
 		private System.Windows.Forms.CheckBox showbackground;
@@ -340,5 +347,6 @@ namespace CodeImp.DoomBuilder.Windows
 		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox backscalex;
 		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox backoffsety;
 		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox backoffsetx;
+		private Controls.ConfigurablePictureBox backgroundimage;
 	}
 }

@@ -28,46 +28,19 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.sectorTopFlat = new System.Windows.Forms.Panel();
-			this.sectorBorderTexture = new System.Windows.Forms.Panel();
-			this.sectorBottomFlat = new System.Windows.Forms.Panel();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.bottomHeight = new System.Windows.Forms.Label();
 			this.topHeight = new System.Windows.Forms.Label();
 			this.borderHeight = new System.Windows.Forms.Label();
+			this.sectorTopFlat = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
+			this.sectorBorderTexture = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
+			this.sectorBottomFlat = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
+			((System.ComponentModel.ISupportInitialize)(this.sectorTopFlat)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.sectorBorderTexture)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.sectorBottomFlat)).BeginInit();
 			this.SuspendLayout();
-			// 
-			// sectorTopFlat
-			// 
-			this.sectorTopFlat.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.sectorTopFlat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.sectorTopFlat.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.sectorTopFlat.Location = new System.Drawing.Point(12, 16);
-			this.sectorTopFlat.Name = "sectorTopFlat";
-			this.sectorTopFlat.Size = new System.Drawing.Size(65, 65);
-			this.sectorTopFlat.TabIndex = 22;
-			// 
-			// sectorBorderTexture
-			// 
-			this.sectorBorderTexture.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.sectorBorderTexture.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.sectorBorderTexture.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.sectorBorderTexture.Location = new System.Drawing.Point(83, 16);
-			this.sectorBorderTexture.Name = "sectorBorderTexture";
-			this.sectorBorderTexture.Size = new System.Drawing.Size(65, 65);
-			this.sectorBorderTexture.TabIndex = 21;
-			// 
-			// sectorBottomFlat
-			// 
-			this.sectorBottomFlat.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.sectorBottomFlat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-			this.sectorBottomFlat.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.sectorBottomFlat.Location = new System.Drawing.Point(154, 16);
-			this.sectorBottomFlat.Name = "sectorBottomFlat";
-			this.sectorBottomFlat.Size = new System.Drawing.Size(65, 65);
-			this.sectorBottomFlat.TabIndex = 20;
 			// 
 			// label3
 			// 
@@ -129,22 +102,76 @@
 			this.borderHeight.Text = "X";
 			this.borderHeight.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// sectorTopFlat
+			// 
+			this.sectorTopFlat.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.sectorTopFlat.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.sectorTopFlat.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.sectorTopFlat.Highlighted = false;
+			this.sectorTopFlat.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.sectorTopFlat.Location = new System.Drawing.Point(12, 16);
+			this.sectorTopFlat.Name = "sectorTopFlat";
+			this.sectorTopFlat.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.sectorTopFlat.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.sectorTopFlat.Size = new System.Drawing.Size(64, 64);
+			this.sectorTopFlat.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.sectorTopFlat.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.sectorTopFlat.TabIndex = 31;
+			this.sectorTopFlat.TabStop = false;
+			// 
+			// sectorBorderTexture
+			// 
+			this.sectorBorderTexture.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.sectorBorderTexture.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.sectorBorderTexture.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.sectorBorderTexture.Highlighted = false;
+			this.sectorBorderTexture.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.sectorBorderTexture.Location = new System.Drawing.Point(83, 16);
+			this.sectorBorderTexture.Name = "sectorBorderTexture";
+			this.sectorBorderTexture.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.sectorBorderTexture.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.sectorBorderTexture.Size = new System.Drawing.Size(64, 64);
+			this.sectorBorderTexture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.sectorBorderTexture.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.sectorBorderTexture.TabIndex = 32;
+			this.sectorBorderTexture.TabStop = false;
+			// 
+			// sectorBottomFlat
+			// 
+			this.sectorBottomFlat.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.sectorBottomFlat.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.sectorBottomFlat.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.sectorBottomFlat.Highlighted = false;
+			this.sectorBottomFlat.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.sectorBottomFlat.Location = new System.Drawing.Point(154, 16);
+			this.sectorBottomFlat.Name = "sectorBottomFlat";
+			this.sectorBottomFlat.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.sectorBottomFlat.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.sectorBottomFlat.Size = new System.Drawing.Size(64, 64);
+			this.sectorBottomFlat.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.sectorBottomFlat.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.sectorBottomFlat.TabIndex = 33;
+			this.sectorBottomFlat.TabStop = false;
+			// 
 			// ThreeDFloorHelperTooltipElementControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.sectorBottomFlat);
+			this.Controls.Add(this.sectorBorderTexture);
+			this.Controls.Add(this.sectorTopFlat);
 			this.Controls.Add(this.borderHeight);
 			this.Controls.Add(this.topHeight);
 			this.Controls.Add(this.bottomHeight);
-			this.Controls.Add(this.sectorTopFlat);
-			this.Controls.Add(this.sectorBorderTexture);
-			this.Controls.Add(this.sectorBottomFlat);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Name = "ThreeDFloorHelperTooltipElementControl";
 			this.Size = new System.Drawing.Size(222, 82);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.ThreeDFloorHelperTooltipElementControl_Paint);
+			((System.ComponentModel.ISupportInitialize)(this.sectorTopFlat)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.sectorBorderTexture)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.sectorBottomFlat)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -155,11 +182,11 @@
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
-		public System.Windows.Forms.Panel sectorBorderTexture;
-		public System.Windows.Forms.Panel sectorTopFlat;
-		public System.Windows.Forms.Panel sectorBottomFlat;
 		public System.Windows.Forms.Label bottomHeight;
 		public System.Windows.Forms.Label topHeight;
 		public System.Windows.Forms.Label borderHeight;
+		public Controls.ConfigurablePictureBox sectorTopFlat;
+		public Controls.ConfigurablePictureBox sectorBorderTexture;
+		public Controls.ConfigurablePictureBox sectorBottomFlat;
 	}
 }

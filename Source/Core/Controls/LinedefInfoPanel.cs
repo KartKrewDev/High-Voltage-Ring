@@ -48,6 +48,22 @@ namespace CodeImp.DoomBuilder.Controls
 			hexenformatwidth = infopanel.Width;
 			doomformatwidth = infopanel.Width - 190;
 
+			// We have to set the parernt (and subsequently the new location relative to the parent) here since
+			// we can't set the parent in the designer. And if the parent is not set to the ConfigurablePictureBox
+			// the Label's background alpha will not work correctly
+			labelTextureFrontTop.Parent = fronthightex;
+			labelTextureFrontTop.Location = new Point(1, 1);
+			labelTextureFrontMid.Parent = frontmidtex;
+			labelTextureFrontMid.Location = new Point(1, 1);
+			labelTextureFrontBottom.Parent = frontlowtex;
+			labelTextureFrontBottom.Location = new Point(1, 1);
+			labelTextureBackTop.Parent = backhightex;
+			labelTextureBackTop.Location = new Point(1, 1);
+			labelTextureBackMid.Parent = backmidtex;
+			labelTextureBackMid.Location = new Point(1, 1);
+			labelTextureBackBottom.Parent = backlowtex;
+			labelTextureBackBottom.Location = new Point(1, 1);
+
 			//mxd
 			labelTextureFrontTop.BackColor = Color.FromArgb(128, labelTextureFrontTop.BackColor);
 			labelTextureFrontMid.BackColor = Color.FromArgb(128, labelTextureFrontMid.BackColor);
@@ -500,11 +516,11 @@ namespace CodeImp.DoomBuilder.Controls
 				UpdateTexturePanel(panelBackTop, l.Back.HighTexture, backhighname, labelTextureBackTop, 
 					Math.Max(backTopUDMFOffset.Right, backTopUDMFScale.Right) + 4, backhightex,
 					backTopUDMFOffsetLabel.Left, hasTopFields, l.Back.HighRequired());
-
+				
 				UpdateTexturePanel(panelBackMid, l.Back.MiddleTexture, backmidname, labelTextureBackMid,
 					Math.Max(backMidUDMFOffset.Right, backMidUDMFScale.Right) + 4, backmidtex,
 					backMidUDMFOffsetLabel.Left, hasMiddleFields, l.Back.MiddleRequired());
-
+				
 				UpdateTexturePanel(panelBackLow, l.Back.LowTexture, backlowname, labelTextureBackBottom,
 					Math.Max(backBottomUDMFOffset.Right, backBottomUDMFScale.Right) + 4, backlowtex,
 					backBottomUDMFOffsetLabel.Left, hasBottomFields, l.Back.LowRequired());
@@ -597,7 +613,7 @@ namespace CodeImp.DoomBuilder.Controls
             //this.Update(); // ano - don't think this is needed, and is slow
         }
 
-        private static void UpdateTexturePanel(Panel panel, string texturename, Label texturenamelabel, Label sizelabel, int maxlabelright, Panel image, int sizeref, bool extendedinfoshown, bool required)
+        private static void UpdateTexturePanel(Panel panel, string texturename, Label texturenamelabel, Label sizelabel, int maxlabelright, ConfigurablePictureBox image, int sizeref, bool extendedinfoshown, bool required)
 		{
 			// Set texture name
 			texturenamelabel.Text = (texturename.Length > DataManager.CLASIC_IMAGE_NAME_LENGTH ? texturename : texturename.ToUpperInvariant());
@@ -696,18 +712,18 @@ namespace CodeImp.DoomBuilder.Controls
 		}
 
 		// This shows a sidedef texture in a panel
-		private static void DisplayTextureImage(Panel panel, Label sizelabel, string name, bool required)
+		private static void DisplayTextureImage(ConfigurablePictureBox panel, Label sizelabel, string name, bool required)
 		{
 			// Check if name is a "none" texture
 			if((name.Length < 1) || (name == "-"))
 			{
 				sizelabel.Visible = false; //mxd
-				
+
 				// Determine image to show
-				if(required) 
-					General.DisplayZoomedImage(panel, Properties.Resources.MissingTexture);
+				if (required)
+					panel.Image = Properties.Resources.MissingTexture;
 				else
-					panel.BackgroundImage = null;
+					panel.Image = null;
 			}
 			else
 			{
@@ -722,9 +738,9 @@ namespace CodeImp.DoomBuilder.Controls
 				{
 					sizelabel.Visible = false;
 				}
-				
+
 				// Set the image
-				General.DisplayZoomedImage(panel, texture.GetPreview());
+				panel.Image = texture.GetPreview();
 			}
 		}
 	}

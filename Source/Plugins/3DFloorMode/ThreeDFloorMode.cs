@@ -322,9 +322,14 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					tooltipelements.Add(tte);
 				}
 
-				General.DisplayZoomedImage(tooltipelements[count].sectorBottomFlat, General.Map.Data.GetFlatImage(tdf.BottomFlat).GetPreview());
-				General.DisplayZoomedImage(tooltipelements[count].sectorBorderTexture, General.Map.Data.GetFlatImage(tdf.BorderTexture).GetPreview());
-				General.DisplayZoomedImage(tooltipelements[count].sectorTopFlat, General.Map.Data.GetFlatImage(tdf.TopFlat).GetPreview());
+				tooltipelements[count].sectorBottomFlat.Image = General.Map.Data.GetFlatImage(tdf.BottomFlat).GetPreview();
+				tooltipelements[count].sectorTopFlat.Image = General.Map.Data.GetFlatImage(tdf.TopFlat).GetPreview();
+				tooltipelements[count].sectorBorderTexture.Image = General.Map.Data.GetFlatImage(tdf.BorderTexture).GetPreview();
+
+
+				//General.DisplayZoomedImage(tooltipelements[count].sectorBottomFlat, General.Map.Data.GetFlatImage(tdf.BottomFlat).GetPreview());
+				//General.DisplayZoomedImage(tooltipelements[count].sectorBorderTexture, General.Map.Data.GetFlatImage(tdf.BorderTexture).GetPreview());
+				//General.DisplayZoomedImage(tooltipelements[count].sectorTopFlat, General.Map.Data.GetFlatImage(tdf.TopFlat).GetPreview());
 
 				tooltipelements[count].bottomHeight.Text = tdf.BottomHeight.ToString();
 				tooltipelements[count].topHeight.Text = tdf.TopHeight.ToString();
