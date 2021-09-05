@@ -92,28 +92,29 @@ namespace CodeImp.DoomBuilder.Config
 			//mxd. Determine and check increment steps
 			// biwa. Setting this to be in debug build only. There are valid scenarios where this isn't a problem, specifically MBF21,
 			// where the "alternate damage mode" for sectors is made up of 3 bits.
-			#if DEBUG
+			
 			if(bits.Count > 1)
 			{
 				// Use the second bit as the structure's step
-				bitstep = bits[1].Index; 
-				
+				bitstep = bits[1].Index;
+
+				#if DEBUG
 				// Check the rest of the values
 				for(int i = 1; i < bits.Count; i++)
 				{
 					if(bits[i].Index - bits[i - 1].Index != bitstep)
 						General.ErrorLogger.Add(ErrorType.Warning, "Structure \"" + fullpath + "." + name + "\" contains options with mixed increments (option \"" + bits[i].Title + "\" increment (" + (bits[i - 1].Index - bits[i].Index) + ") doesn't match the structure increment (" + bitstep + ")).");
 				}
+				#endif
 			}
-			#endif
 
 			// We have no destructor
 			GC.SuppressFinalize(this);
 		}
 
-		#endregion
+#endregion
 
-		#region ================== Methods
+#region ================== Methods
 
 		// This presents the item as string
 		public override string ToString()
@@ -121,6 +122,6 @@ namespace CodeImp.DoomBuilder.Config
 			return name;
 		}
 		
-		#endregion
+#endregion
 	}
 }
