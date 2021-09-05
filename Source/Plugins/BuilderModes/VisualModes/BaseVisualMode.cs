@@ -1390,8 +1390,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if (ld.IsDisposed)
 						continue;
 
-					if (ld.Front != null && !ld.Front.Sector.IsDisposed) vertexsectors.Add(ld.Front.Sector);
-					if (ld.Back != null && !ld.Front.Sector.IsDisposed) vertexsectors.Add(ld.Back.Sector);
+					if (ld.Front != null && ld.Front.Sector != null && !ld.Front.Sector.IsDisposed) vertexsectors.Add(ld.Front.Sector);
+					if (ld.Back != null && ld.Back.Sector != null && !ld.Back.Sector.IsDisposed) vertexsectors.Add(ld.Back.Sector);
 				}
 
 				foreach(Sector s in vertexsectors)
