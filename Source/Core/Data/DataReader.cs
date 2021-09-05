@@ -222,10 +222,13 @@ namespace CodeImp.DoomBuilder.Data
 
 		//mxd. When implemented, returns all sprites, which name starts with given string
 		public abstract HashSet<string> GetSpriteNames();
-		
+
 		#endregion
 
 		#region ================== Decorate, Modeldef, Mapinfo, Gldefs, etc...
+
+		// When implemented, this returns DEHACKED lumps
+		public abstract IEnumerable<TextResourceData> GetDehackedData(string pname);
 
 		// When implemented, this returns DECORATE lumps
 		public abstract IEnumerable<TextResourceData> GetDecorateData(string pname);

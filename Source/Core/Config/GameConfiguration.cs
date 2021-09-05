@@ -24,6 +24,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using CodeImp.DoomBuilder.Dehacked;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Editing;
@@ -204,6 +205,9 @@ namespace CodeImp.DoomBuilder.Config
 		// Compatibility options
 		CompatibilityOptions compatibility;
 
+		// Dehacked
+		private DehackedData dehackeddata;
+
         #endregion
 
         #region ================== Properties
@@ -352,6 +356,9 @@ namespace CodeImp.DoomBuilder.Config
 
 		// Compatibility options
 		public CompatibilityOptions Compatibility { get { return compatibility; } }
+
+		// Dehacked
+		public DehackedData DehackedData { get { return dehackeddata; } }
 		
 		#endregion
 
@@ -556,6 +563,9 @@ namespace CodeImp.DoomBuilder.Config
 
 			// Compatibility options
 			compatibility = new CompatibilityOptions(cfg);
+
+			// Dehacked
+			dehackeddata = new DehackedData(cfg, "dehacked");
 		}
 
 		// Destructor

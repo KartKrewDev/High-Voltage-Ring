@@ -484,6 +484,33 @@ namespace CodeImp.DoomBuilder.Data
 
 		#endregion
 
+		#region ================== DEHACKED
+
+		// This finds and returns DEHACKED streams
+		public override IEnumerable<TextResourceData> GetDehackedData(string pname)
+		{
+			// Error when suspended
+			if (issuspended) throw new Exception("Data reader is suspended");
+
+			List<TextResourceData> result = new List<TextResourceData>();
+			string[] allfilenames;
+
+			// Find in root directory
+			string filename = Path.GetFileName(pname);
+			string pathname = Path.GetDirectoryName(pname);
+
+			if (filename.IndexOf('.') > -1)
+			{
+				allfilenames = GetFileAtPath(filename, pathname, "DEHACKED");
+			}
+			else
+				allfilenames = GetAllFilesWithTitle(pathname, filename, false);
+
+			return result;
+		}
+
+		#endregion
+
 		#region ================== DECORATE
 
 		// This finds and returns DECORATE streams

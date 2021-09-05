@@ -54,6 +54,7 @@ namespace CodeImp.DoomBuilder.Config
 		FONTDEFS,
         ZSCRIPT,
 		DECALDEF,
+		DEHACKED,
 	}
 	
 	internal class ScriptConfiguration : IComparable<ScriptConfiguration>

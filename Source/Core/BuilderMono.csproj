@@ -938,6 +938,10 @@
     <Compile Include="Data\PK3StructuredReader.cs" />
     <Compile Include="Data\DynamicBitmapImage.cs" />
     <Compile Include="Data\VoxelImage.cs" />
+    <Compile Include="Dehacked\DehackedData.cs" />
+    <Compile Include="Dehacked\DehackedFrame.cs" />
+    <Compile Include="Dehacked\DehackedParser.cs" />
+    <Compile Include="Dehacked\DehackedThing.cs" />	
     <Compile Include="Editing\CustomThingsFilter.cs" />
     <Compile Include="General\CRC.cs" />
     <Compile Include="General\ErrorItem.cs" />

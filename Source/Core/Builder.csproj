@@ -204,6 +204,10 @@
     <Compile Include="Data\FlatImage.cs" />
     <Compile Include="Data\ImageLoadState.cs" />
     <Compile Include="Data\Scripting\ZScriptScriptHandler.cs" />
+    <Compile Include="Dehacked\DehackedData.cs" />
+    <Compile Include="Dehacked\DehackedFrame.cs" />
+    <Compile Include="Dehacked\DehackedParser.cs" />
+    <Compile Include="Dehacked\DehackedThing.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

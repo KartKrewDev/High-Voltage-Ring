@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using CodeImp.DoomBuilder.Data;
-using CodeImp.DoomBuilder.GZBuilder.Data;
+using CodeImp.DoomBuilder.Dehacked;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
@@ -479,6 +479,14 @@ namespace CodeImp.DoomBuilder.Config
             GC.SuppressFinalize(this);
 		}
 
+		internal ThingTypeInfo(ThingCategory cat, DehackedThing thing) : this(cat, thing.DoomEdNum, thing.Name)
+		{
+			category = cat;
+			bright = thing.Bright;
+
+			ModifyByDehackedThing(thing);
+		}
+
 		#endregion
 
 		#region ================== Methods
@@ -624,6 +632,67 @@ namespace CodeImp.DoomBuilder.Config
             // [ZZ]
             dynamiclighttype = GZGeneral.GetGZLightTypeByClass(actor);
         }
+
+		/// <summary>
+		/// Modifies the thing type info by the given Dehacked thing.
+		/// </summary>
+		/// <param name="thing">The Dehacked thing to modify the thing type info by</param>
+		internal void ModifyByDehackedThing(DehackedThing thing)
+		{
+			if(string.IsNullOrEmpty(thing.Sprite))
+				sprite = DataManager.INTERNAL_PREFIX + "unknownthing";
+			else
+				sprite = thing.Sprite;
+
+			title = thing.Name;
+			if (thing.Height != 0) height = thing.Height;
+			if (thing.Width != 0) radius = thing.Width;
+			blocking = thing.Bits.Contains("solid") ? 1 : 0;
+			hangs = thing.Bits.Contains("spawnceiling");
+
+			if (thing.Color >= 0 && thing.Color <= 19)
+				color = thing.Color;
+
+			spriteframe = new[] { new SpriteFrameInfo { Sprite = sprite, SpriteLongName = Lump.MakeLongName(sprite, true) } };
+		}
+
+		/// <summary>
+		/// Changes the sprite of the thing by Dehacked sprite replacements.
+		/// </summary>
+		/// <param name="texts">Dehacked sprite replacements</param>
+		internal void ModifyBySpriteReplacement(Dictionary<string, string> texts)
+		{
+			// Cut the sprite into the 4 character base sprite and the animation, then rebuild 
+			// the sprite with the sprite replacement if necessary...
+			if (sprite.Length >= 4)
+			{
+				string basesprite = sprite.Substring(0, 4);
+				string animation = sprite.Substring(4);
+
+				if (texts.ContainsKey(basesprite))
+				{
+					sprite = texts[basesprite] + animation;
+				}
+			}
+
+			// ... then do the same with every sprite frame
+			for (int i=0; i < spriteframe.Length; i++)
+			{
+				SpriteFrameInfo sfi = spriteframe[i];
+
+				if (sfi.Sprite.Length < 4)
+					continue;
+
+				string basesprite = sfi.Sprite.Substring(0, 4);
+				string animation = sfi.Sprite.Substring(4);
+
+				if (texts.ContainsKey(basesprite))
+				{
+					string newsprite = texts[basesprite] + animation;
+					spriteframe[i] = new SpriteFrameInfo { Sprite = newsprite, SpriteLongName = Lump.MakeLongName(newsprite, true) };
+				}
+			}
+		}
 
         //mxd. This tries to find all possible sprite rotations. Returns true when voxel substitute exists
         internal bool SetupSpriteFrame(HashSet<string> allspritenames, HashSet<string> allvoxelnames)
