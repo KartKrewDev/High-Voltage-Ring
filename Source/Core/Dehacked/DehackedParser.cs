@@ -29,7 +29,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Data;
 
@@ -53,6 +52,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 		private Dictionary<int, string> sprites;
 		private Dictionary<int, string> renamedsprites;
 		private Dictionary<int, string> newsprites;
+		private string[] supportedpatchversions = { "19", "21", "2021" };
 
 		#endregion
 
@@ -300,8 +300,8 @@ namespace CodeImp.DoomBuilder.Dehacked
 				LogError("Expected 'Doom version', but got '" + fieldkey + "'.");
 				return false;
 			}
-			else if (fieldvalue != "21" && fieldvalue != "2021")
-				LogWarning("Unexpected Doom version. Expected 21 or 2021, got " + fieldvalue + ". Parsing might not work correctly.");
+			else if (!supportedpatchversions.Contains(fieldvalue))
+				LogWarning("Unexpected Doom version. Expected one of " + string.Join(", ", supportedpatchversions) + ", got " + fieldvalue + ". Parsing might not work correctly");
 
 			// Skip all empty lines or comments
 			do
@@ -324,7 +324,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 				return false;
 			}
 			else if (fieldvalue != "6")
-				LogWarning("Unexpected patch format. Expected 6, got " + fieldvalue + ". Parsing might not work correctly.");
+				LogWarning("Unexpected patch format. Expected 6, got " + fieldvalue + ". Parsing might not work correctly");
 
 			return true;
 		}
@@ -500,7 +500,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 
 				if (fieldvalue.Length != 4)
 				{
-					LogWarning("New sprite name has to be 4 characters long, but is " + fieldvalue.Length + " characters long. Skipping.");
+					LogWarning("New sprite name has to be 4 characters long, but is " + fieldvalue.Length + " characters long. Skipping");
 					continue;
 				}
 
@@ -515,7 +515,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 				{
 					if (fieldkey.Length != 4)
 					{
-						LogWarning("Old sprite name has to be 4 characters long, but is " + fieldkey.Length + " characters long. Skipping.");
+						LogWarning("Old sprite name has to be 4 characters long, but is " + fieldkey.Length + " characters long. Skipping");
 						continue;
 					}
 
