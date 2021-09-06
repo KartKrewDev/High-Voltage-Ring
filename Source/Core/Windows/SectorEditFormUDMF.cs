@@ -298,6 +298,18 @@ namespace CodeImp.DoomBuilder.Windows
 
 			ceilingslopecontrol.PivotMode = (SlopePivotMode)General.Settings.ReadSetting("windows." + configname + ".ceilpivotmode", (int)SlopePivotMode.LOCAL);
 			floorslopecontrol.PivotMode = (SlopePivotMode)General.Settings.ReadSetting("windows." + configname + ".floorpivotmode", (int)SlopePivotMode.LOCAL);
+
+			// Diable brightness controls?
+			if(!General.Map.Config.DistinctSurfaceBrightness)
+			{
+				ceilBrightness.Enabled = false;
+				ceilLightAbsolute.Enabled = false;
+				resetceillight.Enabled = false;
+
+				floorBrightness.Enabled = false;
+				floorLightAbsolute.Enabled = false;
+				resetfloorlight.Enabled = false;
+			}
 		}
 
 		#endregion

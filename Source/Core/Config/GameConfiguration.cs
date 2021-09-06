@@ -110,6 +110,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly bool localsidedeftextureoffsets; //MaxW
 		private readonly bool effect3dfloorsupport;
 		private readonly bool planeequationsupport;
+		private readonly bool distinctsurfacebrightness;
 
 		// Skills
 		private readonly List<SkillInfo> skills;
@@ -282,6 +283,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool UseLocalSidedefTextureOffsets { get { return localsidedeftextureoffsets; } } //MaxW
 		public bool Effect3DFloorSupport { get { return effect3dfloorsupport; } }
 		public bool PlaneEquationSupport { get { return planeequationsupport; } }
+		public bool DistinctSurfaceBrightness { get { return distinctsurfacebrightness; } }
 
 		// Texture/flat/voxel sources
 		public IDictionary TextureRanges { get { return textureranges; } }
@@ -456,6 +458,7 @@ namespace CodeImp.DoomBuilder.Config
 			localsidedeftextureoffsets = (cfg.ReadSetting("localsidedeftextureoffsets", false)); //MaxW
 			effect3dfloorsupport = cfg.ReadSetting("effect3dfloorsupport", false);
 			planeequationsupport = cfg.ReadSetting("planeequationsupport", false);
+			distinctsurfacebrightness = cfg.ReadSetting("distinctsurfacebrightness", false);
 			for (int i = 0; i < Linedef.NUM_ARGS; i++) makedoorargs[i] = cfg.ReadSetting("makedoorarg" + i.ToString(CultureInfo.InvariantCulture), 0);
 
 			//mxd. Update map format flags

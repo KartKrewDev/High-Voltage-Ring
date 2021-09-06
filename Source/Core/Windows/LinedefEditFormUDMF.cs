@@ -237,6 +237,18 @@ namespace CodeImp.DoomBuilder.Windows
 				labelBackOffsetMid.Enabled = false;
 				labelBackOffsetBottom.Enabled = false;
 			}
+
+			// Diable brightness controls?
+			if(!General.Map.Config.DistinctSurfaceBrightness)
+			{
+				lightFront.Enabled = false;
+				cbLightAbsoluteFront.Enabled = false;
+				resetfrontlight.Enabled = false;
+
+				lightBack.Enabled = false;
+				cbLightAbsoluteBack.Enabled = false;
+				resetbacklight.Enabled = false;
+			}
 		}
 
 		#endregion
