@@ -82,7 +82,6 @@ namespace CodeImp.DoomBuilder.Data
             List<LogMessage> messages = new List<LogMessage>();
 			int[] columnumpatches = new int[width];
 			BitArray columnmasked = new BitArray(width, false);
-			bool hasnegativeoffsetpatch = false;
 			Dictionary<TexturePatch, Bitmap> patchbmps = new Dictionary<TexturePatch, Bitmap>();
 
 			bool fixnegativeoffsets = General.Map.Config.Compatibility.FixNegativePatchOffsets;
@@ -144,10 +143,6 @@ namespace CodeImp.DoomBuilder.Data
 						messages.Add(new LogMessage(ErrorType.Error, "Missing patch lump \"" + p.LumpName + "\" while loading texture \"" + this.Name + "\". Did you forget to include required resources?"));
 						missingpatches++; //mxd
 					}
-
-					// Check if there are any patches with negative vertical offsets
-					if (p.Y < 0)
-						hasnegativeoffsetpatch = true;
 				}
 
 				// There's a bug in vanilla Doom where negative patch offsets are ignored (the patch y offset is set to 0). If

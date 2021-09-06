@@ -92,7 +92,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		private Action addprogress;
 		private Action<string> showphase;
 		private Func<bool> checkcanelexport;
-		private bool cancelexport;
 
 		#endregion
 
@@ -111,7 +110,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			this.addprogress = addprogress;
 			this.showphase = showphase;
 			this.checkcanelexport = checkcanelexport;
-			cancelexport = false;
 		}
 
 		#endregion

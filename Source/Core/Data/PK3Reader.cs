@@ -586,7 +586,7 @@ namespace CodeImp.DoomBuilder.Data
 							{
 								entry.WriteTo(filedata);
 							}
-							catch(SharpCompress.Compressors.Deflate.ZlibException e)
+							catch(SharpCompress.Compressors.Deflate.ZlibException)
 							{
 								// This happens when the PK3 was modified externally and the resources were not reloaded
 								General.ErrorLogger.Add(ErrorType.Error, "Cannot load the file \"" + filename + "\" from archive \"" + location.GetDisplayName() + "\". Did you modify the archive without reloading the resouces?");

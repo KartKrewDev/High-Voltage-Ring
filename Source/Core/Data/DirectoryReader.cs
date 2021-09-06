@@ -532,7 +532,7 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				return files.GetFileInfo(filepathname).filepathname;
 			}
-			catch(KeyNotFoundException e)
+			catch(KeyNotFoundException)
 			{
 				return null;
 			}
