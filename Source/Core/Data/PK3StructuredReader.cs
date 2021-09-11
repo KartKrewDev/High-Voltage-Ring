@@ -504,7 +504,8 @@ namespace CodeImp.DoomBuilder.Data
 			else
 				allfilenames = GetAllFilesWithTitle(pathname, filename, false);
 
-			result.Add(new TextResourceData(this, LoadFile(allfilenames[allfilenames.Length - 1]), allfilenames[allfilenames.Length - 1], true));
+			if(allfilenames.Length > 0)
+				result.Add(new TextResourceData(this, LoadFile(allfilenames[allfilenames.Length - 1]), allfilenames[allfilenames.Length - 1], true));
 
 			return result;
 		}
