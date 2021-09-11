@@ -536,6 +536,21 @@ namespace CodeImp.DoomBuilder.Controls
 			return scriptedit.GetWordFromPosition(position);
 		}
 
+		// Save one undo checkpoint when making many changes in the editor.
+		public void UndoTransaction(Action callback)
+		{
+			scriptedit.BeginUndoAction();
+
+			try
+			{
+				callback.Invoke();
+			}
+			finally
+			{
+				scriptedit.EndUndoAction();
+			}
+		}
+
 		// Perform undo
 		public void Undo()
 		{
@@ -683,7 +698,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// Wrap around?
 			if(result == -1)
 			{
-				if(options.SearchMode != FindReplaceSearchMode.CURRENT_FILE 
+				if (options.WrapAroundDisabled)
+					return false;
+
+				if (options.SearchMode != FindReplaceSearchMode.CURRENT_FILE 
 					&& OnFindNextWrapAround != null && OnFindNextWrapAround(options))
 				{
 					return true;
