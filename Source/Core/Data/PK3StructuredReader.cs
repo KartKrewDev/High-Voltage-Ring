@@ -500,11 +500,11 @@ namespace CodeImp.DoomBuilder.Data
 			string pathname = Path.GetDirectoryName(pname);
 
 			if (filename.IndexOf('.') > -1)
-			{
 				allfilenames = GetFileAtPath(filename, pathname, "DEHACKED");
-			}
 			else
 				allfilenames = GetAllFilesWithTitle(pathname, filename, false);
+
+			result.Add(new TextResourceData(this, LoadFile(allfilenames[allfilenames.Length - 1]), allfilenames[allfilenames.Length - 1], true));
 
 			return result;
 		}

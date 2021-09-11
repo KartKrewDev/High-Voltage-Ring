@@ -30,6 +30,13 @@ using System.Collections.Generic;
 
 namespace CodeImp.DoomBuilder.Dehacked
 {
+	public enum ThingAngled
+	{
+		UNCHANGED,
+		YES,
+		NO
+	}
+
 	public class DehackedThing
 	{
 		#region ================== Variables
@@ -46,6 +53,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 		private string category;
 		private int color;
 		private bool bright;
+		private ThingAngled angled;
 
 		#endregion
 
@@ -63,6 +71,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 		public string Category { get { return category; } }
 		public int Color { get { return color; } }
 		public bool Bright { get { return bright; } }
+		public ThingAngled Angled { get { return angled; } }
 
 		#endregion
 
@@ -73,6 +82,8 @@ namespace CodeImp.DoomBuilder.Dehacked
 			this.number = number;
 			this.name = name;
 			color = -1;
+			sprite = null;
+			angled = ThingAngled.UNCHANGED;
 
 			props = new Dictionary<string, string>();
 			bits = new List<string>();
@@ -117,7 +128,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 						int.TryParse(value, out doomednum);
 						break;
 					case "initial frame":
-						if (int.TryParse(value, out initialframe))
+						if (sprite == null && int.TryParse(value, out initialframe))
 						{
 							if (frames.ContainsKey(initialframe))
 							{
@@ -174,13 +185,22 @@ namespace CodeImp.DoomBuilder.Dehacked
 								bits.Add(mnemonic.Trim().ToLowerInvariant());
 						}
 						break;
-					//case "$category":
-					//	category = value;
-					//	break;
-					//case "$color":
-					//	if (!int.TryParse(value, out color))
-					//		color = 18; // Default light brown
-					//	break;
+					case "$editor category":
+						category = value;
+						break;
+					case "$editor color id":
+						if (!int.TryParse(value, out color))
+							color = 18; // Default light brown
+						break;
+					case "$editor sprite":
+						sprite = value;
+						break;
+					case "$editor angled":
+						if (value.ToLowerInvariant() == "true")
+							angled = ThingAngled.YES;
+						else
+							angled = ThingAngled.NO;
+						break;
 				}
 			}
 		}

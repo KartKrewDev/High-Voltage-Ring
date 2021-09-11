@@ -650,6 +650,9 @@ namespace CodeImp.DoomBuilder.Config
 			blocking = thing.Bits.Contains("solid") ? 1 : 0;
 			hangs = thing.Bits.Contains("spawnceiling");
 
+			if (thing.Props.ContainsKey("$editor angled"))
+				arrow = thing.Angled == ThingAngled.YES;
+
 			if (thing.Color >= 0 && thing.Color <= 19)
 				color = thing.Color;
 

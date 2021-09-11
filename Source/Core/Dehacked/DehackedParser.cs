@@ -359,8 +359,11 @@ namespace CodeImp.DoomBuilder.Dehacked
 			{
 				line = GetLine();
 
-				if (string.IsNullOrWhiteSpace(line)) break;
-				if (line.StartsWith("#")) continue;
+				if (string.IsNullOrWhiteSpace(line))
+					break;
+				else if (line.StartsWith("#$"))
+					line = line.Substring(1);
+				else if (line.StartsWith("#")) continue;
 
 				if (!GetKeyValueFromLine(line, out fieldkey, out fieldvalue))
 					return false;
