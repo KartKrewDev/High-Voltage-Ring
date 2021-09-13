@@ -459,7 +459,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				// Change the sector brightness if the map is not in UDMF format, or this ceiling is part of 3D-floor,
 				// or the game configuration doesn't support distinct surfave brightnesses
-				if(!General.Map.UDMF || (level != null && Sector.Sector != level.sector) || !General.Map.Config.DistinctSurfaceBrightness) 
+				if(!General.Map.UDMF || (level != null && Sector.Sector != level.sector) || !General.Map.Config.DistinctFloorAndCeilingBrightness) 
 				{
 					base.OnChangeTargetBrightness(up);
 					return;

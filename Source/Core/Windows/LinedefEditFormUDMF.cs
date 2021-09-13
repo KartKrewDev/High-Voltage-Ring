@@ -239,7 +239,7 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			// Diable brightness controls?
-			if(!General.Map.Config.DistinctSurfaceBrightness)
+			if(!General.Map.Config.DistinctWallBrightness)
 			{
 				lightFront.Enabled = false;
 				cbLightAbsoluteFront.Enabled = false;

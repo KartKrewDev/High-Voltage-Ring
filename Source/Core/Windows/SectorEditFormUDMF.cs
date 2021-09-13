@@ -300,7 +300,7 @@ namespace CodeImp.DoomBuilder.Windows
 			floorslopecontrol.PivotMode = (SlopePivotMode)General.Settings.ReadSetting("windows." + configname + ".floorpivotmode", (int)SlopePivotMode.LOCAL);
 
 			// Diable brightness controls?
-			if(!General.Map.Config.DistinctSurfaceBrightness)
+			if(!General.Map.Config.DistinctFloorAndCeilingBrightness)
 			{
 				ceilBrightness.Enabled = false;
 				ceilLightAbsolute.Enabled = false;

@@ -1550,7 +1550,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public virtual void OnChangeTargetBrightness(bool up)
 		{
 			//mxd. Change UDMF wall light?
-			if(General.Map.UDMF && General.Map.Config.DistinctSurfaceBrightness)
+			if(General.Map.UDMF && General.Map.Config.DistinctWallBrightness)
 			{
 				int light = Sidedef.Fields.GetValue("light", 0);
 				bool absolute = Sidedef.Fields.GetValue("lightabsolute", false);
