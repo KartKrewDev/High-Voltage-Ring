@@ -42,7 +42,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if (string.IsNullOrWhiteSpace(value))
 				return new FindReplaceObject[] { };
 
-			ICollection<MapElement> list = withinselection ? (ICollection<MapElement>)General.Map.Map.GetSelectedThings(true) : (ICollection<MapElement>)General.Map.Map.Things;
+			ICollection<MapElement> list = withinselection ? new List<MapElement>(General.Map.Map.GetSelectedThings(true)) : (ICollection<MapElement>)General.Map.Map.Things;
 
 			return GetObjects(value, list);
 		}
