@@ -327,40 +327,71 @@ namespace CodeImp.DoomBuilder
 			General.Plugins.OnMapSaveBegin(SavePurpose.Testing);
 			if(General.Map.SaveMap(tempwad, SavePurpose.Testing))
 			{
+				bool canceled = false;
+
 				// No compiler errors?
-				if(General.Map.Errors.Count == 0)
+				if (General.Map.Errors.Count == 0)
 				{
-					// Make arguments
-					string args = ConvertParameters(General.Map.ConfigSettings.TestParameters, skill, General.Map.ConfigSettings.TestShortPaths, General.Map.ConfigSettings.TestLinuxPaths);
-
-					// Setup process info
-					ProcessStartInfo processinfo = new ProcessStartInfo();
-					processinfo.Arguments = args;
-					processinfo.FileName = General.Map.ConfigSettings.TestProgram;
-					processinfo.CreateNoWindow = false;
-					processinfo.ErrorDialog = false;
-					processinfo.UseShellExecute = true;
-					processinfo.WindowStyle = ProcessWindowStyle.Normal;
-					processinfo.WorkingDirectory = Path.GetDirectoryName(processinfo.FileName);
-
-					// Output info
-					General.WriteLogLine("Running test program: " + processinfo.FileName);
-					General.WriteLogLine("Program parameters:  " + processinfo.Arguments);
-					General.MainWindow.DisplayStatus(StatusType.Info, "Launching " + processinfo.FileName + "...");
-
-					try
+					// Check if there's a pre command to run, and try to execute it
+					if (!string.IsNullOrWhiteSpace(General.Map.Options.TestPreCommand.Commands))
 					{
-						// Start the program
-						Process process = Process.Start(processinfo);
-						process.EnableRaisingEvents = true; //mxd
-						process.Exited += ProcessOnExited; //mxd
-						processes.Add(process, tempwad); //mxd
-						Cursor.Current = oldcursor; //mxd
+						if (!General.Map.ExecuteExternalCommand(General.Map.Options.TestPreCommand, tempwad))
+						{
+							General.WriteLogLine("Testing was canceled when executing the testing pre command.");
+
+							// Reset status
+							General.MainWindow.DisplayStatus(StatusType.Warning, "Testing was canceled.");
+							canceled = true;
+						}
 					}
-					catch(Exception e)
+
+					if (!canceled)
 					{
-						// Unable to start the program
-						General.ShowErrorMessage("Unable to start the test program, " + e.GetType().Name + ": " + e.Message, MessageBoxButtons.OK);
+						// Make arguments
+						string args = ConvertParameters(General.Map.ConfigSettings.TestParameters, skill, General.Map.ConfigSettings.TestShortPaths, General.Map.ConfigSettings.TestLinuxPaths);
+
+						// Setup process info
+						ProcessStartInfo processinfo = new ProcessStartInfo();
+						processinfo.Arguments = args;
+						processinfo.FileName = General.Map.ConfigSettings.TestProgram;
+						processinfo.CreateNoWindow = false;
+						processinfo.ErrorDialog = false;
+						processinfo.UseShellExecute = true;
+						processinfo.WindowStyle = ProcessWindowStyle.Normal;
+						processinfo.WorkingDirectory = Path.GetDirectoryName(processinfo.FileName);
+
+						// Output info
+						General.WriteLogLine("Running test program: " + processinfo.FileName);
+						General.WriteLogLine("Program parameters:  " + processinfo.Arguments);
+						General.MainWindow.DisplayStatus(StatusType.Info, "Launching " + processinfo.FileName + "...");
+
+						try
+						{
+							// Start the program
+							Process process = Process.Start(processinfo);
+							process.EnableRaisingEvents = true; //mxd
+							process.Exited += ProcessOnExited; //mxd
+							processes.Add(process, tempwad); //mxd
+							Cursor.Current = oldcursor; //mxd
+						}
+						catch (Exception e)
+						{
+							// Unable to start the program
+							General.ShowErrorMessage("Unable to start the test program, " + e.GetType().Name + ": " + e.Message, MessageBoxButtons.OK);
+						}
+
+						// Check if there's a post command to run, and try to execute it
+						// TODO: currently modifying the commands is disabled since it'd have to be executed after the test program ends, which is not
+						// the case in the current situation, since this code here is reached immediately after launching the test program
+						/*
+						if (!string.IsNullOrWhiteSpace(General.Map.Options.TestPostCommand.Commands))
+						{
+							if (!General.Map.ExecuteExternalCommand(General.Map.Options.TestPostCommand, tempwad))
+							{
+								General.WriteLogLine("Failed to execute the test post command successfully.");
+							}
+						}
+						*/
 					}
 				}
 				else

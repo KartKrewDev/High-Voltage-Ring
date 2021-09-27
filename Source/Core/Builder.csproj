@@ -143,6 +143,7 @@
     <Compile Include="Compilers\AccCompiler.cs" />
     <Compile Include="Compilers\NodesCompiler.cs" />
     <Compile Include="Config\ArgumentInfo.cs" />
+    <Compile Include="Config\ExternalCommandSettings.cs" />
     <Compile Include="Config\StaticLimits.cs" />
     <Compile Include="Config\MapLumpInfo.cs" />
     <Compile Include="Config\ScriptConfiguration.cs" />
@@ -178,6 +179,12 @@
     </Compile>
     <Compile Include="Controls\ArgumentBox.Designer.cs">
       <DependentUpon>ArgumentBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ExternalCommandControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ExternalCommandControl.Designer.cs">
+      <DependentUpon>ExternalCommandControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\FolderSelectDialog.cs" />
     <Compile Include="Controls\Scripting\TextEditorControl.cs" />
@@ -262,6 +269,18 @@
     <Compile Include="Rendering\VertexBuffer.cs" />
     <Compile Include="Rendering\VisualSlopeHandle.cs" />
     <Compile Include="VisualModes\VisualSlope.cs" />
+    <Compile Include="Windows\PreAndPostCommandsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\PreAndPostCommandsForm.Designer.cs">
+      <DependentUpon>PreAndPostCommandsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\RunExternalCommandForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\RunExternalCommandForm.Designer.cs">
+      <DependentUpon>RunExternalCommandForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\ThingStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -637,8 +656,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\ExternalCommandControl.resx">
+      <DependentUpon>ExternalCommandControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\PairedFloatControl.resx">
       <DependentUpon>PairedFloatControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\PreAndPostCommandsForm.resx">
+      <DependentUpon>PreAndPostCommandsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\RunExternalCommandForm.resx">
+      <DependentUpon>RunExternalCommandForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\ThingStatisticsForm.resx">
       <DependentUpon>ThingStatisticsForm.cs</DependentUpon>

@@ -1053,7 +1053,7 @@ namespace CodeImp.DoomBuilder
 					filetitle = Path.GetFileName(filepathname);
 
 					// Reload resources
-					ReloadResources(true);
+					ReloadResources(true, false);
 				}
 
 				try 
@@ -2300,7 +2300,7 @@ namespace CodeImp.DoomBuilder
 			DebugConsole.Clear();
 #endif
 
-			ReloadResources(true);
+			ReloadResources(true, true);
 
 			if(General.ErrorLogger.IsErrorAdded)
 			{
@@ -2315,11 +2315,26 @@ namespace CodeImp.DoomBuilder
 
 		}
 
-		internal void ReloadResources(bool clearerrors) //mxd. clearerrors flag
+		internal void ReloadResources(bool clearerrors, bool runprepostcommands) //mxd. clearerrors flag
 		{
 			// Keep old display info
 			StatusInfo oldstatus = General.MainWindow.Status;
 			Cursor oldcursor = Cursor.Current;
+
+			// Check if there's a pre command to run, and try to execute it
+			if (runprepostcommands && !string.IsNullOrWhiteSpace(options.ReloadResourcePreCommand.Commands))
+			{
+				if(!ExecuteExternalCommand(options.ReloadResourcePreCommand))
+				{
+					General.WriteLogLine("Reloading resources was canceled when executing the reload resource pre command.");
+
+					// Reset status
+					General.MainWindow.DisplayStatus(StatusType.Warning, "Reloading resourcess was canceled.");
+					Cursor.Current = oldcursor;
+
+					return;
+				}
+			}
 
 			// Show status
 			General.MainWindow.DisplayStatus(StatusType.Busy, "Reloading data resources...");
@@ -2377,9 +2392,44 @@ namespace CodeImp.DoomBuilder
 			//mxd. Update script names
 			LoadACS();
 
+			// Check if there's a post command to run, and try to execute it
+			if (runprepostcommands && !string.IsNullOrWhiteSpace(options.ReloadResourcePostCommand.Commands))
+			{
+				if (!ExecuteExternalCommand(options.ReloadResourcePostCommand))
+				{
+					General.WriteLogLine("Failed to execute the reload resource post command successfully.");
+				}
+			}
+
 			// Reset status
 			General.MainWindow.DisplayStatus(oldstatus);
 			Cursor.Current = oldcursor;
+		}
+
+		public bool ExecuteExternalCommand(ExternalCommandSettings cmdsettings, string arguments = "")
+		{
+			string filename;
+
+			do
+			{
+				filename = Path.ChangeExtension(Path.GetTempFileName(), ".cmd");
+			}
+			while (File.Exists(filename));
+
+			File.WriteAllText(filename, cmdsettings.Commands);
+			
+			ProcessStartInfo startinfo = new ProcessStartInfo();
+			startinfo.FileName = "cmd.exe";
+			startinfo.Arguments = "/C " + filename + " " + arguments;
+			if(!string.IsNullOrWhiteSpace(cmdsettings.WorkingDirectory))
+				startinfo.WorkingDirectory = cmdsettings.WorkingDirectory;
+
+			RunExternalCommandForm f = new RunExternalCommandForm(startinfo, cmdsettings);
+			f.ShowDialog();
+
+			File.Delete(filename);
+
+			return f.DialogResult == DialogResult.OK;
 		}
 
 		// Game Configuration action
@@ -2475,7 +2525,7 @@ namespace CodeImp.DoomBuilder
 				map.UpdateCustomLinedefColors();
 
 				// Reload resources
-				ReloadResources(false);
+				ReloadResources(false, false);
 
 				// Update interface
 				General.MainWindow.SetupInterface();

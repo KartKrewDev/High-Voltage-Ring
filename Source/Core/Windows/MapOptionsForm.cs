@@ -34,6 +34,11 @@ namespace CodeImp.DoomBuilder.Windows
 		// Variables
 		private readonly MapOptions options;
 		private readonly bool newmap;
+		private ExternalCommandSettings reloadresourceprecommand;
+		private ExternalCommandSettings reloadresourcepostcommand;
+		private ExternalCommandSettings testprecommand;
+		private ExternalCommandSettings testpostcommand;
+		private bool prepostcommandsmodified;
 		
 		// Properties
 		public MapOptions Options { get { return options; } }
@@ -49,8 +54,14 @@ namespace CodeImp.DoomBuilder.Windows
 			// Keep settings
 			this.options = options;
 
+			prepostcommandsmodified = false;
+			reloadresourceprecommand = options.ReloadResourcePreCommand ;
+			reloadresourcepostcommand = options.ReloadResourcePostCommand ;
+			testprecommand = options.TestPreCommand ;
+			testpostcommand = options.TestPostCommand;
+
 			//mxd. Add script compilers
-			foreach(KeyValuePair<string, ScriptConfiguration> group in General.CompiledScriptConfigs)
+			foreach (KeyValuePair<string, ScriptConfiguration> group in General.CompiledScriptConfigs)
 			{
 				scriptcompiler.Items.Add(group.Value);
 			}
@@ -110,6 +121,8 @@ namespace CodeImp.DoomBuilder.Windows
 
 			// Fill the resources list
 			datalocations.EditResourceLocationList(options.Resources);
+
+			//reloadresourceprecmd.Text = options.ReloadResourcePreCommand;
 		}
 
 		// OK clicked
@@ -247,6 +260,15 @@ namespace CodeImp.DoomBuilder.Windows
 			options.StrictPatches = strictpatches.Checked;
 			options.CopyResources(datalocations.GetResources());
 
+			// Only store the pre and post commands in the map options if they were actually changed (i.e. the user pressed the OK button the the dialog)
+			if (prepostcommandsmodified)
+			{
+				options.ReloadResourcePreCommand = reloadresourceprecommand;
+				options.ReloadResourcePostCommand = reloadresourcepostcommand;
+				options.TestPreCommand = testprecommand;
+				options.TestPostCommand = testpostcommand;
+			}
+
 			//mxd. Store script compiler
 			if(scriptcompiler.Enabled) 
 			{
@@ -263,6 +285,8 @@ namespace CodeImp.DoomBuilder.Windows
 
 			//mxd. Use long texture names?
 			if(longtexturenames.Enabled) options.UseLongTextureNames = longtexturenames.Checked;
+
+			//options.ReloadResourcePreCommand = reloadresourceprecmd.Text;
 
 			// Hide window
 			this.DialogResult = DialogResult.OK;
@@ -346,6 +370,23 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			General.ShowHelp("w_mapoptions.html");
 			hlpevent.Handled = true;
+		}
+
+
+		private void prepostcommands_Click(object sender, EventArgs e)
+		{
+			PreAndPostCommandsForm papcf = new PreAndPostCommandsForm(reloadresourceprecommand, reloadresourcepostcommand, testprecommand, testpostcommand);
+			papcf.ShowDialog();
+
+			if (papcf.DialogResult == DialogResult.OK)
+			{
+				reloadresourceprecommand = papcf.GetReloadResourcePreCommand();
+				reloadresourcepostcommand = papcf.GetReloadResourcePostCommand();
+				testprecommand = papcf.GetTestPreCommand();
+				testpostcommand = papcf.GetTestPostCommand();
+
+				prepostcommandsmodified = true;
+			}
 		}
 	}
 }

@@ -47,6 +47,8 @@ namespace CodeImp.DoomBuilder.Windows
 			this.strictpatches = new System.Windows.Forms.CheckBox();
 			this.datalocations = new CodeImp.DoomBuilder.Controls.ResourceListEditor();
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
+			this.label5 = new System.Windows.Forms.Label();
+			this.prepostcommands = new System.Windows.Forms.Button();
 			label3 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label1 = new System.Windows.Forms.Label();
@@ -165,7 +167,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// apply
 			// 
 			this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.apply.Location = new System.Drawing.Point(179, 399);
+			this.apply.Location = new System.Drawing.Point(179, 429);
 			this.apply.Name = "apply";
 			this.apply.Size = new System.Drawing.Size(112, 25);
 			this.apply.TabIndex = 2;
@@ -177,7 +179,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(297, 399);
+			this.cancel.Location = new System.Drawing.Point(297, 429);
 			this.cancel.Name = "cancel";
 			this.cancel.Size = new System.Drawing.Size(112, 25);
 			this.cancel.TabIndex = 3;
@@ -229,13 +231,33 @@ namespace CodeImp.DoomBuilder.Windows
 			this.datalocations.Size = new System.Drawing.Size(368, 127);
 			this.datalocations.TabIndex = 0;
 			// 
+			// label5
+			// 
+			this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.label5.Location = new System.Drawing.Point(13, 423);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(396, 2);
+			this.label5.TabIndex = 21;
+			// 
+			// prepostcommands
+			// 
+			this.prepostcommands.Location = new System.Drawing.Point(247, 395);
+			this.prepostcommands.Name = "prepostcommands";
+			this.prepostcommands.Size = new System.Drawing.Size(162, 25);
+			this.prepostcommands.TabIndex = 20;
+			this.prepostcommands.Text = "Edit pre and post commands";
+			this.prepostcommands.UseVisualStyleBackColor = true;
+			this.prepostcommands.Click += new System.EventHandler(this.prepostcommands_Click);
+			// 
 			// MapOptionsForm
 			// 
 			this.AcceptButton = this.apply;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(421, 436);
+			this.ClientSize = new System.Drawing.Size(421, 466);
+			this.Controls.Add(this.label5);
+			this.Controls.Add(this.prepostcommands);
 			this.Controls.Add(this.panelres);
 			this.Controls.Add(this.cancel);
 			this.Controls.Add(this.apply);
@@ -272,7 +294,7 @@ namespace CodeImp.DoomBuilder.Windows
 		private System.Windows.Forms.Label examplelabel;
 		private System.Windows.Forms.CheckBox longtexturenames;
 		private System.Windows.Forms.ToolTip tooltip;
-
-
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.Button prepostcommands;
 	}
 }

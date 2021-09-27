@@ -132,7 +132,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// apply
 			// 
 			this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.apply.Location = new System.Drawing.Point(178, 513);
+			this.apply.Location = new System.Drawing.Point(178, 510);
 			this.apply.Name = "apply";
 			this.apply.Size = new System.Drawing.Size(112, 25);
 			this.apply.TabIndex = 3;
@@ -144,7 +144,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(296, 513);
+			this.cancel.Location = new System.Drawing.Point(296, 510);
 			this.cancel.Name = "cancel";
 			this.cancel.Size = new System.Drawing.Size(112, 25);
 			this.cancel.TabIndex = 4;
@@ -214,7 +214,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(420, 544);
+			this.ClientSize = new System.Drawing.Size(420, 541);
 			this.Controls.Add(this.scriptcompiler);
 			this.Controls.Add(this.scriptcompilerlabel);
 			this.Controls.Add(this.mapslist);
@@ -255,7 +255,5 @@ namespace CodeImp.DoomBuilder.Windows
 		private System.Windows.Forms.Label scriptcompilerlabel;
 		private System.Windows.Forms.CheckBox longtexturenames;
 		private System.Windows.Forms.ToolTip tooltip;
-
-
 	}
 }

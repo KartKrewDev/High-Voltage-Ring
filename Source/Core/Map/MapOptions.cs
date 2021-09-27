@@ -89,6 +89,11 @@ namespace CodeImp.DoomBuilder.Map
 		//mxd. Position and scale
 		private readonly Vector2D viewposition;
 		private readonly float viewscale;
+
+		private ExternalCommandSettings reloadresourceprecommand;
+		private ExternalCommandSettings reloadresourcepostcommand;
+		private ExternalCommandSettings testprecommand;
+		private ExternalCommandSettings testpostcommand;
 		
 		#endregion
 
@@ -147,6 +152,11 @@ namespace CodeImp.DoomBuilder.Map
 		public Vector2D ViewPosition { get { return viewposition; } }
 		public float ViewScale { get { return viewscale; } }
 
+		public ExternalCommandSettings ReloadResourcePreCommand { get { return reloadresourceprecommand; } internal set { reloadresourceprecommand = value; } }
+		public ExternalCommandSettings ReloadResourcePostCommand { get { return reloadresourcepostcommand; } internal set { reloadresourcepostcommand = value; } }
+		public ExternalCommandSettings TestPreCommand { get { return testprecommand; } internal set { testprecommand = value; } }
+		public ExternalCommandSettings TestPostCommand { get { return testpostcommand; } internal set { testpostcommand = value; } }
+
 		#endregion
 
 		#region ================== Constructor / Disposer
@@ -166,6 +176,11 @@ namespace CodeImp.DoomBuilder.Map
 			this.tagLabels = new Dictionary<int, string>(); //mxd
 			this.viewposition = new Vector2D(float.NaN, float.NaN); //mxd
 			this.viewscale = float.NaN; //mxd
+
+			reloadresourceprecommand = new ExternalCommandSettings();
+			reloadresourcepostcommand = new ExternalCommandSettings();
+			testprecommand = new ExternalCommandSettings();
+			testpostcommand = new ExternalCommandSettings();
 
 			//mxd. Sector drawing options
 			this.custombrightness = 196;
@@ -234,6 +249,12 @@ namespace CodeImp.DoomBuilder.Map
 
 			//mxd
 			uselongtexturenames = longtexturenamessupported && this.mapconfig.ReadSetting("uselongtexturenames", false);
+
+			// Load the pre and post commands
+			reloadresourceprecommand = new ExternalCommandSettings(mapconfig, "reloadresourceprecommand");
+			reloadresourcepostcommand= new ExternalCommandSettings(mapconfig, "reloadresourcepostcommand");
+			testprecommand = new ExternalCommandSettings(mapconfig, "testprecommand");
+			testpostcommand = new ExternalCommandSettings(mapconfig, "testpostcommand");
 
 			//mxd. Position and scale
 			float vpx = this.mapconfig.ReadSetting("viewpositionx", float.NaN);
@@ -386,8 +407,14 @@ namespace CodeImp.DoomBuilder.Map
 			foreach(ScriptDocumentSettings settings in scriptsettings.Values)
 				WriteScriptDocumentSettings(mapconfig, "scriptdocuments.document" + (sdcounter++), settings);
 
+			// Write pre and post commands
+			reloadresourceprecommand.WriteSettings(mapconfig, "reloadresourceprecommand");
+			reloadresourcepostcommand.WriteSettings(mapconfig, "reloadresourcepostcommand");
+			testprecommand.WriteSettings(mapconfig, "testprecommand");
+			testpostcommand.WriteSettings(mapconfig, "testpostcommand");
+
 			// Load the file or make a new file
-			if(File.Exists(settingsfile))
+			if (File.Exists(settingsfile))
 				wadcfg = new Configuration(settingsfile, true);
 			else
 				wadcfg = new Configuration(true);
