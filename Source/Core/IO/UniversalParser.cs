@@ -318,16 +318,6 @@ namespace CodeImp.DoomBuilder.IO
 							break;
 							
 						default: // Everything else
-							if(!topLevel && pos == 0) 
-							{
-								while(matches.ContainsKey(data[line])) 
-								{
-									cs.Add(matches[data[line]].Key, matches[data[line]].Value);
-									line++;
-									pos = -1;
-								}
-							}
-
 							// Add character to key
 							if(pos != -1) key.Append(c);
 
@@ -400,7 +390,6 @@ namespace CodeImp.DoomBuilder.IO
 								// Add it to struct
 								UniversalEntry entry = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), ival);
 								cs.Add(entry);
-								if(!matches.ContainsKey(data[line])) matches.Add(data[line], entry);
 							}
 							catch(OverflowException)
 							{
@@ -413,7 +402,6 @@ namespace CodeImp.DoomBuilder.IO
 									// Add it to struct
 									UniversalEntry entry = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), lval);
 									cs.Add(entry);
-									if(!matches.ContainsKey(data[line])) matches.Add(data[line], entry);
 								}
 								catch(OverflowException)
 								{
@@ -449,7 +437,6 @@ namespace CodeImp.DoomBuilder.IO
 							// Add it to struct
 							UniversalEntry entry = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), fval);
 							cs.Add(entry);
-							if(!matches.ContainsKey(data[line])) matches.Add(data[line], entry);
 						}
 						else
 						{
@@ -462,7 +449,6 @@ namespace CodeImp.DoomBuilder.IO
 								// Add it to struct
 								UniversalEntry entry = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), ival);
 								cs.Add(entry);
-								if(!matches.ContainsKey(data[line])) matches.Add(data[line], entry);
 							}
 							catch(OverflowException)
 							{
@@ -475,7 +461,6 @@ namespace CodeImp.DoomBuilder.IO
 									// Add it to struct
 									UniversalEntry entry = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), lval);
 									cs.Add(entry);
-									if(!matches.ContainsKey(data[line])) matches.Add(data[line], entry);
 								}
 								catch(OverflowException)
 								{
@@ -583,7 +568,6 @@ namespace CodeImp.DoomBuilder.IO
 							// Add string to struct
 							UniversalEntry entry = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), val.ToString());
 							cs.Add(entry);
-							if(!matches.ContainsKey(data[line])) matches.Add(data[line], entry);
 							
 							// End of assignment
 							pm = PM_ASSIGNMENT;
@@ -620,14 +604,12 @@ namespace CodeImp.DoomBuilder.IO
 								// Add boolean true
 								UniversalEntry t = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), true);
 								cs.Add(t);
-								if(!matches.ContainsKey(data[line])) matches.Add(data[line], t);
 								break;
 								
 							case "false":
 								// Add boolean false
 								UniversalEntry f = new UniversalEntry(key.ToString().Trim().ToLowerInvariant(), false);
 								cs.Add(f);
-								if(!matches.ContainsKey(data[line])) matches.Add(data[line], f);
 								break;
 
                             case "nan":
@@ -636,7 +618,6 @@ namespace CodeImp.DoomBuilder.IO
 								// Do not add NaN, just drop it with a warning
 								// cs.Add(nan);
 								warnings.Add("UDMF map data line " + (line+1) + ": value of field " + key.ToString().Trim().ToLowerInvariant() + " has a value of NaN (not a number). Field is being dropped permanently.");
-                                if (!matches.ContainsKey(data[line])) matches.Add(data[line], nan);
                                 break;
 
                             default:
