@@ -561,9 +561,9 @@ namespace CodeImp.DoomBuilder.Config
 				this.spritescale.Height = actor.GetPropertyValueFloat("yscale", 0);
 			
 			// Size
-			if(actor.HasPropertyWithValue("radius")) radius = actor.GetPropertyValueInt("radius", 0);
-			if(actor.HasPropertyWithValue("height")) height = actor.GetPropertyValueInt("height", 0);
-			if (actor.HasPropertyWithValue("renderradius")) renderradius = actor.GetPropertyValueInt("renderradius", 0);
+			if(actor.HasPropertyWithValue("radius")) radius = actor.GetPropertyValueFloat("radius", 0);
+			if(actor.HasPropertyWithValue("height")) height = actor.GetPropertyValueFloat("height", 0);
+			if (actor.HasPropertyWithValue("renderradius")) renderradius = actor.GetPropertyValueFloat("renderradius", 0);
 			if (renderradius == 0)
 				renderradius = radius;
 
