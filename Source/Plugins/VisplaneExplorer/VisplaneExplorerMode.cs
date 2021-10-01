@@ -330,6 +330,9 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 		public override void OnDisengage()
 		{
 			CleanUp();
+
+			BuilderPlug.InterfaceForm.OnVisplaneSettingsChanged -= OnVisplaneSettingsChanged;
+
 			base.OnDisengage();
 		}
 
