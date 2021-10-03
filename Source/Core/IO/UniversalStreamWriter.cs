@@ -114,7 +114,7 @@ namespace CodeImp.DoomBuilder.IO
 		// writenamespace may be null to omit writing the namespace to the stream
 		public void Write(MapSet map, Stream stream, string writenamespace)
 		{
-			Write(map.Vertices, map.Linedefs, map.Sidedefs, map.Sectors, map.Things, stream, writenamespace);
+			Write(map.Vertices, map.Linedefs, map.Sidedefs, map.Sectors, map.Things, map.UnknownUDMFData, stream, writenamespace);
 		}
 
 		// This writes the structures to a stream
@@ -123,12 +123,15 @@ namespace CodeImp.DoomBuilder.IO
 		// If there are missing sidedefs, their reference will be removed from the linedefs.
 		public void Write(ICollection<Vertex> vertices, ICollection<Linedef> linedefs,
 						  ICollection<Sidedef> sidedefs, ICollection<Sector> sectors,
-						  ICollection<Thing> things, Stream stream, string writenamespace)
+						  ICollection<Thing> things, ICollection<UniversalEntry> unknowndata, Stream stream, string writenamespace)
 		{
 			UniversalParser textmap = new UniversalParser();
 
 			// Begin with fields that must be at the top
 			if(writenamespace != null) textmap.Root.Add("namespace", writenamespace);
+
+			// Dump unknown fields at the top
+			WriteUnknownData(unknowndata, textmap);
 
 			Dictionary<Vertex, int> vertexids = new Dictionary<Vertex, int>(vertices.Count); //mxd
 			Dictionary<Sidedef, int> sidedefids = new Dictionary<Sidedef, int>(sidedefs.Count); //mxd
@@ -359,6 +362,31 @@ namespace CodeImp.DoomBuilder.IO
 
 				// Store
 				textmap.Root.Add("thing", coll);
+			}
+		}
+
+		/// <summary>
+		/// This writes UDMF data UDB doesn't know about to the map.
+		/// </summary>
+		/// <param name="data">Collection of universal entries.</param>
+		/// <param name="textmap">The map</param>
+		private void WriteUnknownData(ICollection<UniversalEntry> data, UniversalParser textmap)
+		{
+			foreach (UniversalEntry e in data)
+			{
+				if (e.Value is UniversalCollection)
+				{
+					UniversalCollection coll = new UniversalCollection();
+
+					foreach (UniversalEntry ie in (UniversalCollection)e.Value)
+						coll.Add(ie.Key, ie.Value);
+
+					textmap.Root.Add(e.Key, coll);
+				}
+				else
+				{
+					textmap.Root.Add(e);
+				}
 			}
 		}
 

@@ -94,6 +94,9 @@ namespace CodeImp.DoomBuilder.Map
 		private LinkedList<Sector> sel_sectors;
 		private LinkedList<Thing> sel_things;
 		private SelectionType sel_type;
+
+		// Unknown UDMF data that needs to be preserved
+		private List<UniversalEntry> unknownudmfdata;
 		
 		// Statics
 		private static long emptylongname;
@@ -164,6 +167,8 @@ namespace CodeImp.DoomBuilder.Map
 
 		internal bool AutoRemove { get { return autoremove; } set { autoremove = value; } }
 
+		internal List<UniversalEntry> UnknownUDMFData { get { return unknownudmfdata; } set { unknownudmfdata = value; } }
+
 		#endregion
 
 		#region ================== Constructor / Disposer
@@ -184,6 +189,7 @@ namespace CodeImp.DoomBuilder.Map
 			indexholes = new List<int>();
 			lastsectorindex = 0;
 			autoremove = true;
+			unknownudmfdata = new List<UniversalEntry>();
 			
 			// We have no destructor
 			GC.SuppressFinalize(this);
@@ -205,6 +211,7 @@ namespace CodeImp.DoomBuilder.Map
 			indexholes = new List<int>();
 			lastsectorindex = 0;
 			autoremove = true;
+			unknownudmfdata = new List<UniversalEntry>();
 
 			// Deserialize
 			Deserialize(stream);
@@ -387,6 +394,27 @@ namespace CodeImp.DoomBuilder.Map
 			// Remove clone references
 			foreach(Vertex v in vertices) v.Clone = null;
 			foreach(Sector s in sectors) s.Clone = null;
+
+			// Copy unknown UDMF data
+			newset.UnknownUDMFData = new List<UniversalEntry>();
+			foreach(UniversalEntry e in unknownudmfdata)
+			{
+				if(e.Value is UniversalCollection)
+				{
+					// The UniversalEntry value is a collection, so we have to copy all sub-elements
+					UniversalCollection uc = new UniversalCollection();
+
+					foreach(UniversalEntry ie in (UniversalCollection)e.Value)
+						uc.Add(ie.Key, ie.Value);
+
+					newset.UnknownUDMFData.Add(new UniversalEntry(e.Key, uc));
+				}
+				else
+				{
+					// Just a normal UniversalEntry
+					newset.UnknownUDMFData.Add(new UniversalEntry(e.Key, e.Value));
+				}
+			}
 			
 			// Return the new set
 			newset.EndAddRemove();

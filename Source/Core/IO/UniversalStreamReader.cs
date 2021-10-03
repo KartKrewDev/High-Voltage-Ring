@@ -163,6 +163,9 @@ namespace CodeImp.DoomBuilder.IO
 			Dictionary<int, Sector> sectorlink = ReadSectors(map, textmap);
 			ReadLinedefs(map, textmap, vertexlink, sectorlink);
 			ReadThings(map, textmap);
+
+			// Read all the stuff we don't know, but have to preserve
+			map.UnknownUDMFData = GetUnknownCollections(textmap.Root, new List<string>() { "namespace", "vertex", "sector", "linedef", "sidedef", "thing" });
 		}
 
 		// This reads the things
@@ -624,6 +627,25 @@ namespace CodeImp.DoomBuilder.IO
 			{
 				UniversalCollection uc = e.Value as UniversalCollection;
 				if(uc != null && e.Key == entryname) list.Add(uc);
+			}
+
+			return list;
+		}
+
+		/// <summary>
+		/// Get unknown fields and blocks from an universal collection.
+		/// </summary>
+		/// <param name="collection">Universal collection to get the fields and blocks from</param>
+		/// <param name="knowncollections">List of fields and block that are known and can be ignored</param>
+		/// <returns></returns>
+		private static List<UniversalEntry> GetUnknownCollections(UniversalCollection collection, List<string> knowncollections)
+		{
+			List<UniversalEntry> list = new List<UniversalEntry>();
+
+			// Make list
+			foreach (UniversalEntry e in collection)
+			{
+				if (!knowncollections.Contains(e.Key)) list.Add(e);
 			}
 
 			return list;
