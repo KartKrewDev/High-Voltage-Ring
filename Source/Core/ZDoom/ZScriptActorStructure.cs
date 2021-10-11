@@ -215,8 +215,9 @@ namespace CodeImp.DoomBuilder.ZDoom
                 if (statelabel == null)
                     return false;
 
-                // otherwise expect a colon
-                token = tokenizer.ExpectToken(ZScriptTokenType.Colon);
+				// otherwise expect a colon
+				tokenizer.SkipWhitespace(); // Skip whitepace because there might be whitepsace between the state label and the colon. See https://github.com/jewalky/UltimateDoomBuilder/issues/631
+				token = tokenizer.ExpectToken(ZScriptTokenType.Colon);
                 if (token == null || !token.IsValid)
                 {
                     parser.ReportError("Expected :, got " + ((Object)token ?? "<null>").ToString());

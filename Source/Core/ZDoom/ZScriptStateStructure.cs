@@ -107,7 +107,9 @@ namespace CodeImp.DoomBuilder.ZDoom
 
                         continue;
                     }
-                }
+
+					tokenizer.SkipWhitespace(); // Skip whitepace because there might be whitepsace between the state label and the colon. See https://github.com/jewalky/UltimateDoomBuilder/issues/631
+				}
 
                 // make sure it's not a label of the next state. if it is, break out.
                 long cpos2 = stream.Position; // local rewind point
