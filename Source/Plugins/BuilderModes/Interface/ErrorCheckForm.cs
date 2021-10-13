@@ -119,10 +119,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(checker.SkipCheck) continue;
 					
 					ErrorCheckerAttribute checkerattr = (attr[0] as ErrorCheckerAttribute);
-					
+
 					// Add the type to the checkbox list
+					string checkclassname = t.Name.ToLowerInvariant();
 					CheckBox c = checks.Add(checkerattr.DisplayName, t);
-					c.Checked = checkerattr.DefaultChecked;
+					c.Checked = General.Settings.ReadPluginSetting("errorchecks." + checkclassname, checkerattr.DefaultChecked);
 				}
 			}
 			checks.Sort(); //mxd
@@ -310,6 +311,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//mxd. Clear results 
 			resultslist.Clear();
 			results.Items.Clear();
+
+			// Write checked status of checks to the config
+			foreach(CheckBox c in checks.Checkboxes)
+			{
+				Type t = c.Tag as Type;
+
+				if (t != null)
+					General.Settings.WritePluginSetting("errorchecks." + t.Name.ToLowerInvariant(), c.Checked);
+			}
 
 			this.Hide();
 		}
