@@ -52,6 +52,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		public string FilePath { get { return tbExportPath.Text.Trim(); } }
 		public bool Floor { get { return rbFloor.Checked; } }
 		public bool Fullbright { get { return cbFullbright.Checked; } }
+		public bool ApplySectorColors { get { return cbApplySectorColors.Checked; } }
 		public bool Brightmap { get { return cbBrightmap.Checked; } }
 		public bool Tiles { get { return cbTiles.Checked; } }
 		public float ImageScale { get { return (float)Math.Pow(2, cbScale.SelectedIndex); } }
@@ -99,6 +100,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			}
 
 			cbFullbright.Checked = General.Settings.ReadPluginSetting("imageexportfullbright", true);
+			cbApplySectorColors.Checked = General.Settings.ReadPluginSetting("imageexportapplysectorcolors", true);
 			cbBrightmap.Checked = General.Settings.ReadPluginSetting("imageexportbrightmap", false);
 			cbTiles.Checked = General.Settings.ReadPluginSetting("imageexporttiles", false);
 			cbScale.SelectedIndex = General.Settings.ReadPluginSetting("imageexportscale", 0);
@@ -158,7 +160,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			export.Enabled = true;
 			export.Text = "Cancel";
 
-			ImageExportSettings settings = new ImageExportSettings(Path.GetDirectoryName(FilePath), Path.GetFileNameWithoutExtension(FilePath), Path.GetExtension(FilePath), Floor, Fullbright, Brightmap, Tiles, ImageScale, GetPixelFormat(), GetImageFormat());
+			ImageExportSettings settings = new ImageExportSettings(Path.GetDirectoryName(FilePath), Path.GetFileNameWithoutExtension(FilePath), Path.GetExtension(FilePath), Floor, Fullbright, ApplySectorColors, Brightmap, Tiles, ImageScale, GetPixelFormat(), GetImageFormat());
 
 			exportthread = new Thread(() => RunExport(settings));
 			exportthread.Name = "Image export";
@@ -319,6 +321,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			else
 			{
 				General.Settings.WritePluginSetting("imageexportfullbright", cbFullbright.Checked);
+				General.Settings.WritePluginSetting("imageexportapplysectorcolors", cbApplySectorColors.Checked);
 				General.Settings.WritePluginSetting("imageexportbrightmap", cbBrightmap.Checked);
 				General.Settings.WritePluginSetting("imageexporttiles", cbTiles.Checked);
 				General.Settings.WritePluginSetting("imageexportscale", cbScale.SelectedIndex);

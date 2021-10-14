@@ -47,6 +47,7 @@
 			this.label4 = new System.Windows.Forms.Label();
 			this.progress = new System.Windows.Forms.ProgressBar();
 			this.lbPhase = new System.Windows.Forms.Label();
+			this.cbApplySectorColors = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// tbExportPath
@@ -181,7 +182,7 @@
 			// cbBrightmap
 			// 
 			this.cbBrightmap.AutoSize = true;
-			this.cbBrightmap.Location = new System.Drawing.Point(279, 64);
+			this.cbBrightmap.Location = new System.Drawing.Point(279, 84);
 			this.cbBrightmap.Name = "cbBrightmap";
 			this.cbBrightmap.Size = new System.Drawing.Size(106, 17);
 			this.cbBrightmap.TabIndex = 15;
@@ -191,7 +192,7 @@
 			// cbTiles
 			// 
 			this.cbTiles.AutoSize = true;
-			this.cbTiles.Location = new System.Drawing.Point(279, 88);
+			this.cbTiles.Location = new System.Drawing.Point(279, 108);
 			this.cbTiles.Name = "cbTiles";
 			this.cbTiles.Size = new System.Drawing.Size(110, 17);
 			this.cbTiles.TabIndex = 16;
@@ -240,6 +241,18 @@
 			this.lbPhase.Text = "lbPhase";
 			this.lbPhase.Visible = false;
 			// 
+			// cbApplySectorColors
+			// 
+			this.cbApplySectorColors.AutoSize = true;
+			this.cbApplySectorColors.Checked = true;
+			this.cbApplySectorColors.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbApplySectorColors.Location = new System.Drawing.Point(279, 61);
+			this.cbApplySectorColors.Name = "cbApplySectorColors";
+			this.cbApplySectorColors.Size = new System.Drawing.Size(115, 17);
+			this.cbApplySectorColors.TabIndex = 14;
+			this.cbApplySectorColors.Text = "Apply sector colors";
+			this.cbApplySectorColors.UseVisualStyleBackColor = true;
+			// 
 			// ImageExportSettingsForm
 			// 
 			this.AcceptButton = this.export;
@@ -253,6 +266,7 @@
 			this.Controls.Add(this.cbScale);
 			this.Controls.Add(this.cbTiles);
 			this.Controls.Add(this.cbBrightmap);
+			this.Controls.Add(this.cbApplySectorColors);
 			this.Controls.Add(this.cbFullbright);
 			this.Controls.Add(this.rbCeiling);
 			this.Controls.Add(this.rbFloor);
@@ -297,5 +311,6 @@
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.ProgressBar progress;
 		private System.Windows.Forms.Label lbPhase;
+		private System.Windows.Forms.CheckBox cbApplySectorColors;
 	}
 }

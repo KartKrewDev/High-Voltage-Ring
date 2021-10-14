@@ -47,13 +47,14 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		public string Extension;
 		public bool Floor;
 		public bool Fullbright;
+		public bool ApplySectorColors;
 		public bool Brightmap;
 		public bool Tiles;
 		public PixelFormat PixelFormat;
 		public ImageFormat ImageFormat;
 		public float Scale;
 
-		public ImageExportSettings(string path, string name, string extension, bool floor, bool fullbright, bool brightmap, bool tiles, float scale, PixelFormat pformat, ImageFormat iformat)
+		public ImageExportSettings(string path, string name, string extension, bool floor, bool fullbright, bool applysectorcolors, bool brightmap, bool tiles, float scale, PixelFormat pformat, ImageFormat iformat)
 		{
 			Path = path;
 			Name = name;
@@ -62,6 +63,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			Brightmap = brightmap;
 			Tiles = tiles;
 			Fullbright = fullbright;
+			ApplySectorColors = applysectorcolors;
 			PixelFormat = pformat;
 			ImageFormat = iformat;
 			Scale = scale;
@@ -306,10 +308,13 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 							}
 
 							// Take sector colors into account
-							int lightcolor = s.Fields.GetValue("lightcolor", 0xffffff);
-							int surfacecolor = settings.Floor ? s.Fields.GetValue("color_floor", 0xffffff) : s.Fields.GetValue("color_ceiling", 0xffffff);
-							Rendering.Color4 color = Rendering.PixelColor.Modulate(Rendering.PixelColor.FromInt(lightcolor), Rendering.PixelColor.FromInt(surfacecolor)).ToColorValue();
-							Colorize(ref brushtexture, color.Red, color.Green, color.Blue);
+							if (settings.ApplySectorColors)
+							{
+								int lightcolor = s.Fields.GetValue("lightcolor", 0xffffff);
+								int surfacecolor = settings.Floor ? s.Fields.GetValue("color_floor", 0xffffff) : s.Fields.GetValue("color_ceiling", 0xffffff);
+								Rendering.Color4 color = Rendering.PixelColor.Modulate(Rendering.PixelColor.FromInt(lightcolor), Rendering.PixelColor.FromInt(surfacecolor)).ToColorValue();
+								Colorize(ref brushtexture, color.Red, color.Green, color.Blue);
+							}
 
 							if (scale > 1.0f)
 								ResizeImage(ref brushtexture, brushtexture.Width * (int)scale, brushtexture.Height * (int)scale);
