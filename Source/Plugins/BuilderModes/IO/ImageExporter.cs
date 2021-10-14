@@ -266,6 +266,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 								// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
 								texturescale.x = 1.0 / s.Fields.GetValue("xscalefloor", 1.0);
 								texturescale.y = 1.0 / s.Fields.GetValue("yscalefloor", 1.0);
+
+								// Take texture scale (for example from the TEXTURES lump) into account
+								texturescale *= 1.0 / imagedata.Scale;
 							}
 							else
 							{
@@ -280,6 +283,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 								// GZDoom uses bigger numbers for smaller scales (i.e. a scale of 2 will halve the size), so we need to change the scale
 								texturescale.x = 1.0 / s.Fields.GetValue("xscaleceiling", 1.0);
 								texturescale.y = 1.0 / s.Fields.GetValue("yscaleceiling", 1.0);
+
+								// Take texture scale (for example from the TEXTURES lump) into account
+								texturescale *= 1.0 / imagedata.Scale;
 							}
 
 							// Create the transformation matrix
@@ -288,7 +294,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 							matrix.Translate((float)(-offset.x * scale * rotationvector.x), (float)(offset.x * scale * rotationvector.y)); // Left/right offset from the map origin
 							matrix.Translate((float)(offset.y * scale * rotationvector.y), (float)(offset.y * scale * rotationvector.x)); // Up/down offset from the map origin
 							matrix.Translate(-(float)textureoffset.x, -(float)textureoffset.y); // Texture offset 
-							matrix.Scale((float)texturescale.x, (float)texturescale.y);
+
+							// Resize the brush texture if the texture is scaled
+							if (texturescale.x != 1.0 || texturescale.y != 1.0)
+								ResizeImage(ref brushtexture, (int)(brushtexture.Width * texturescale.x), (int)(brushtexture.Height * texturescale.y));
 
 							if (!settings.Fullbright)
 							{
