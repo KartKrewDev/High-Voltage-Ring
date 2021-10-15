@@ -2192,15 +2192,17 @@ namespace CodeImp.DoomBuilder
 				parser.NamedScripts.Sort(ScriptItem.SortByName);
 				parser.NumberedScripts.Sort(ScriptItem.SortByIndex);
 
+				// Add scripts, but only those the user didn't want to skip (using the //$Skip editor key)
 				foreach(ScriptItem item in parser.NamedScripts)
 				{
-					if(!namedscripts.ContainsKey(item.Name.ToLowerInvariant()))
+					if(!item.Skip && !namedscripts.ContainsKey(item.Name.ToLowerInvariant()))
 						namedscripts.Add(item.Name.ToLowerInvariant(), item);
 				}
 
-				foreach(ScriptItem item in parser.NumberedScripts)
+				// Add scripts, but only those the user didn't want to skip (using the //$Skip editor key)
+				foreach (ScriptItem item in parser.NumberedScripts)
 				{
-					if(!numberedscripts.ContainsKey(item.Index))
+					if(!item.Skip && !numberedscripts.ContainsKey(item.Index))
 						numberedscripts.Add(item.Index, item);
 				}
 			}

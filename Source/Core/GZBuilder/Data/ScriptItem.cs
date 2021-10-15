@@ -11,12 +11,14 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		private readonly int cursorposition;
 		private readonly bool isinclude;
 		private readonly bool customname;
+		private readonly bool skip;
 
 		internal string Name { get { return name; } }
 		internal int Index { get { return index; } }
 		internal int CursorPosition { get { return cursorposition; } }
 		internal bool IsInclude { get { return isinclude; } }
 		internal bool HasCustomName { get { return customname; } }
+		internal bool Skip { get { return skip; } } // Used to not display the script in the list of scripts in the action control
 
 		// Constructor for misc usage
 		internal ScriptItem(string name, int cursorposition, bool isinclude)
@@ -27,10 +29,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			this.cursorposition = cursorposition;
 			this.isinclude = isinclude;
 			this.customname = true;
+			this.skip = false;
 		}
 
 		// Constructor for numbered script
-		internal ScriptItem(int index, string name, List<string> argnames, int cursorposition, bool isinclude, bool customname)
+		internal ScriptItem(int index, string name, List<string> argnames, int cursorposition, bool isinclude, bool customname, bool skip)
 		{
 			this.name = name;
 			this.argnames = argnames;
@@ -38,10 +41,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			this.cursorposition = cursorposition;
 			this.isinclude = isinclude;
 			this.customname = customname;
+			this.skip = skip;
 		}
 
 		// Constructor for named script
-		internal ScriptItem(string name, List<string> argnames, int cursorposition, bool isinclude)
+		internal ScriptItem(string name, List<string> argnames, int cursorposition, bool isinclude, bool skip)
 		{
 			this.name = name;
 			this.argnames = argnames;
@@ -49,6 +53,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			this.cursorposition = cursorposition;
 			this.isinclude = isinclude;
 			this.customname = true;
+			this.skip = skip;
 		}
 
 		internal static int SortByIndex(ScriptItem i1, ScriptItem i2) 

@@ -82,6 +82,7 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
 		public bool Parse(TextResourceData data, HashSet<string> configincludes, bool processincludes, IncludeType includetype, bool clearerrors)
 		{
 			string source = data.Filename.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+			bool skipnextscript = false;
 
 			//INFO: files included or imported inside a library are not visible to the code outside it 
 			//and must be included/imported separately
@@ -124,6 +125,9 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
 
 				switch(token)
 				{
+					case "$skip":
+						skipnextscript = true;
+						break;
 					case "script":
 					{
 						SkipWhitespace(true);
@@ -145,7 +149,9 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
 							if(AddArgumentsToScriptNames) scriptname += " " + GetArgumentNames(args);
 
 							// Add to collection
-							namedscripts.Add(new ScriptItem(scriptname, argnames, startpos, includetype != IncludeType.NONE));
+							namedscripts.Add(new ScriptItem(scriptname, argnames, startpos, includetype != IncludeType.NONE, skipnextscript));
+
+							skipnextscript = false;
 						}
 						// Should be numbered script
 						else
@@ -187,7 +193,9 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
 								if(AddArgumentsToScriptNames) name += " " + GetArgumentNames(args);
 
 								// Add to collection
-								numberedscripts.Add(new ScriptItem(n, name, argnames, startpos, includetype != IncludeType.NONE, customname));
+								numberedscripts.Add(new ScriptItem(n, name, argnames, startpos, includetype != IncludeType.NONE, customname, skipnextscript));
+
+								skipnextscript = false;
 							}
 						}
 					}
@@ -210,7 +218,7 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
 						if(AddArgumentsToScriptNames) funcname += GetArgumentNames(args);
 
 						// Add to collection
-						functions.Add(new ScriptItem(funcname, argnames, startpos, includetype != IncludeType.NONE));
+						functions.Add(new ScriptItem(funcname, argnames, startpos, includetype != IncludeType.NONE, false));
 					}
 					break;
 
