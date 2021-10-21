@@ -76,19 +76,34 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			Vector2D vl, vr;
 
+			bool useuppertexture = (sourceside.Line.Args[2] & (int)Effect3DFloor.Flags.UseUpperTexture) == (int)Effect3DFloor.Flags.UseUpperTexture;
+			bool uselowertexture = (sourceside.Line.Args[2] & (int)Effect3DFloor.Flags.UseLowerTexture) == (int)Effect3DFloor.Flags.UseLowerTexture;
+
 			//mxd. lightfog flag support
 			int lightvalue;
 			bool lightabsolute;
 			GetLightValue(out lightvalue, out lightabsolute);
 
-			Vector2D tscale = new Vector2D(sourceside.Fields.GetValue("scalex_mid", 1.0),
-										   sourceside.Fields.GetValue("scaley_mid", 1.0));
-            Vector2D tscaleAbs = new Vector2D(Math.Abs(tscale.x), Math.Abs(tscale.y));
+			Vector2D tscale;
+			Vector2D toffset2 = new Vector2D(0.0, 0.0);
+
+			// If the upper or lower textures are used we have to take the scale of those, not of the source
+			if (useuppertexture)
+				tscale = new Vector2D(Sidedef.Fields.GetValue("scalex_top", 1.0), Sidedef.Fields.GetValue("scaley_top", 1.0));
+			else if (uselowertexture)
+				tscale = new Vector2D(Sidedef.Fields.GetValue("scalex_bottom", 1.0), Sidedef.Fields.GetValue("scaley_bottom", 1.0));
+			else
+			{
+				tscale = new Vector2D(sourceside.Fields.GetValue("scalex_mid", 1.0), sourceside.Fields.GetValue("scaley_mid", 1.0));
+
+				// The offset of the source side is only taken into account when not using the upper or lower textures
+				toffset2 = new Vector2D(sourceside.Fields.GetValue("offsetx_mid", 0.0), sourceside.Fields.GetValue("offsety_mid", 0.0));
+			}
+
+			Vector2D tscaleAbs = new Vector2D(Math.Abs(tscale.x), Math.Abs(tscale.y));
             Vector2D toffset1 = new Vector2D(Sidedef.Fields.GetValue("offsetx_mid", 0.0),
 											 Sidedef.Fields.GetValue("offsety_mid", 0.0));
-			Vector2D toffset2 = new Vector2D(sourceside.Fields.GetValue("offsetx_mid", 0.0),
-											 sourceside.Fields.GetValue("offsety_mid", 0.0));
-			
+		
 			// Left and right vertices for this sidedef
 			if(Sidedef.IsFront)
 			{
@@ -106,12 +121,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			
 			//mxd. which texture we must use?
 			long texturelong = 0;
-			if((sourceside.Line.Args[2] & (int)Effect3DFloor.Flags.UseUpperTexture) != 0) 
+			if(useuppertexture) 
 			{
 				if(Sidedef.LongHighTexture != MapSet.EmptyLongName)
 					texturelong = Sidedef.LongHighTexture;
 			} 
-			else if((sourceside.Line.Args[2] & (int)Effect3DFloor.Flags.UseLowerTexture) != 0) 
+			else if(uselowertexture) 
 			{
 				if(Sidedef.LongLowTexture != MapSet.EmptyLongName)
 					texturelong = Sidedef.LongLowTexture;
