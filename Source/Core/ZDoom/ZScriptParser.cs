@@ -826,6 +826,8 @@ namespace CodeImp.DoomBuilder.ZDoom
             // Cannot process?
             if (!base.Parse(data, clearerrors)) return false;
 
+			List<string> includes = new List<string>();
+
             // [ZZ] For whatever reason, the parser is closely tied to the tokenizer, and to the general scripting lumps framework (see scripttype).
             //      For this reason I have to still inherit the old tokenizer while only using the new one.
             //ReportError("found zscript? :)");
@@ -843,8 +845,17 @@ namespace CodeImp.DoomBuilder.ZDoom
                                                            ZScriptTokenType.BlockComment, ZScriptTokenType.LineComment,
                                                            ZScriptTokenType.Preprocessor);
 
-                if (token == null) // EOF reached, whatever.
-                    break;
+				if (token == null) // EOF reached
+				{
+					// Now parse all included files
+					foreach(string include in includes)
+					{
+						if (!ParseInclude(include))
+							return false;
+					}
+
+					break;
+				}
 
                 if (!token.IsValid)
                 {
@@ -895,8 +906,8 @@ namespace CodeImp.DoomBuilder.ZDoom
                                     return false;
                                 }
 
-                                if (!ParseInclude(include_name.Value))
-                                    return false;
+								// GZDoom parses includes *after* the rest of the file is parsed, so just store the files to include and parse them later
+								includes.Add(include_name.Value);
                             }
                             else if (d_value == "region")
                             {
