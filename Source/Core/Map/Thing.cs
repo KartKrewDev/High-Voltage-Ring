@@ -422,39 +422,41 @@ namespace CodeImp.DoomBuilder.Map
 		// NOTE: This does not update sector! (call DetermineSector)
 		public void Move(Vector3D newpos)
 		{
-			BeforePropsChange();
-			
-			// Change position
-			this.pos = newpos;
-			
-			if(type != General.Map.Config.Start3DModeThingType)
-				General.Map.IsChanged = true;
+			if (newpos != pos)
+			{
+				BeforePropsChange();
+
+				// Change position
+				this.pos = newpos;
+
+				if (type != General.Map.Config.Start3DModeThingType)
+					General.Map.IsChanged = true;
+			}
 		}
 
 		// This moves the thing
 		// NOTE: This does not update sector! (call DetermineSector)
 		public void Move(Vector2D newpos)
 		{
-			BeforePropsChange();
-			
-			// Change position
-			this.pos = new Vector3D(newpos.x, newpos.y, pos.z);
-			
-			if(type != General.Map.Config.Start3DModeThingType)
-				General.Map.IsChanged = true;
+			Vector3D p = new Vector3D(newpos.x, newpos.y, pos.z);
+
+			if (p != pos)
+			{
+				BeforePropsChange();
+
+				// Change position
+				this.pos = p;
+
+				if (type != General.Map.Config.Start3DModeThingType)
+					General.Map.IsChanged = true;
+			}
 		}
 
 		// This moves the thing
 		// NOTE: This does not update sector! (call DetermineSector)
 		public void Move(double x, double y, double zoffset)
 		{
-			BeforePropsChange();
-			
-			// Change position
-			this.pos = new Vector3D(x, y, zoffset);
-			
-			if(type != General.Map.Config.Start3DModeThingType)
-				General.Map.IsChanged = true;
+			Move(new Vector3D(x, y, zoffset));
 		}
 		
 		// This rotates the thing
