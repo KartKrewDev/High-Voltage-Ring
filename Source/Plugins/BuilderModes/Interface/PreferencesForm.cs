@@ -68,6 +68,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			eventlinelabelvisibility.SelectedIndex = General.Settings.ReadPluginSetting("eventlinelabelvisibility", 3);
 			eventlinelabelstyle.SelectedIndex = General.Settings.ReadPluginSetting("eventlinelabelstyle", 2);
 			useoppositesmartpivothandle.Checked = General.Settings.ReadPluginSetting("useoppositesmartpivothandle", true);
+			selectafterundoredo.Checked = General.Settings.ReadPluginSetting("selectchangedafterundoredo", false);
 		}
 
 		#endregion
@@ -99,6 +100,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Settings.WritePluginSetting("eventlinelabelvisibility", eventlinelabelvisibility.SelectedIndex);
 			General.Settings.WritePluginSetting("eventlinelabelstyle", eventlinelabelstyle.SelectedIndex);
 			General.Settings.WritePluginSetting("useoppositesmartpivothandle", useoppositesmartpivothandle.Checked);
+			General.Settings.WritePluginSetting("selectchangedafterundoredo", selectafterundoredo.Checked);
 			General.Settings.SwitchViewModes = switchviewmodes.Checked; //mxd
 			General.Settings.SplitLineBehavior = (SplitLineBehavior)splitbehavior.SelectedIndex;//mxd
 			

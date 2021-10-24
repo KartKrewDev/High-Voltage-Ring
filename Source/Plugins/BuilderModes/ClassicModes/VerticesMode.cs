@@ -569,6 +569,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Recreate the blockmap
 			CreateBlockmap();
+
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedafterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Vertices);
+			}
 		}
 
 		public override void OnRedoEnd()
@@ -577,6 +584,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Recreate the blockmap
 			CreateBlockmap();
+
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedafterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Vertices);
+			}
 		}
 
 		//mxd

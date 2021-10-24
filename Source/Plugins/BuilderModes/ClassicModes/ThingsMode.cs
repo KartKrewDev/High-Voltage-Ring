@@ -584,6 +584,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			base.OnUndoEnd();
 
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedafterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Things);
+			}
+
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)
 				highlightasso.Set(highlighted);
@@ -597,6 +604,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public override void OnRedoEnd()
 		{
 			base.OnRedoEnd();
+
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedafterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Things);
+			}
 
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)

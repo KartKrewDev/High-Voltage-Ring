@@ -1321,6 +1321,13 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			// Get all 3D floors in case th undo did affect them
 			threedfloors = BuilderPlug.GetThreeDFloors(General.Map.Map.Sectors.ToList());
 
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedAfterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Sectors);
+			}
+
 			// Clear labels
 			SetupLabels();
 			UpdateLabels();
@@ -1340,6 +1347,13 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		{
 			// Get all 3D floors in case th redo did affect them
 			threedfloors = BuilderPlug.GetThreeDFloors(General.Map.Map.Sectors.ToList());
+
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedAfterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Sectors);
+			}
 
 			// Clear labels
 			SetupLabels();

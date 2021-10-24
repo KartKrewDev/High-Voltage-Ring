@@ -863,6 +863,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Recreate the blockmap to not include the potentially un-done lines anymore
 			CreateBlockmap();
 
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedafterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Linedefs);
+			}
+
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)
 				highlightasso.Set(highlighted);
@@ -879,6 +886,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Recreate the blockmap to include the potentially re-done linedefs again
 			CreateBlockmap();
+
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedafterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Linedefs);
+			}
 
 			// If something is highlighted make sure to update the association so that it contains valid data
 			if (highlighted != null && !highlighted.IsDisposed)

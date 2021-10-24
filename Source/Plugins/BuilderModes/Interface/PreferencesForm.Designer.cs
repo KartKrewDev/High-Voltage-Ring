@@ -43,6 +43,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.defaultbrightness = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.selectafterundoredo = new System.Windows.Forms.CheckBox();
+			this.useoppositesmartpivothandle = new System.Windows.Forms.CheckBox();
 			this.additivepaintselect = new System.Windows.Forms.CheckBox();
 			this.switchviewmodes = new System.Windows.Forms.CheckBox();
 			this.autodrawonedit = new System.Windows.Forms.CheckBox();
@@ -78,7 +80,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.label10 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.heightbysidedef = new System.Windows.Forms.ComboBox();
-			this.useoppositesmartpivothandle = new System.Windows.Forms.CheckBox();
 			this.tabs.SuspendLayout();
 			this.taboptions.SuspendLayout();
 			this.groupBox5.SuspendLayout();
@@ -274,6 +275,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// 
 			// groupBox3
 			// 
+			this.groupBox3.Controls.Add(this.selectafterundoredo);
 			this.groupBox3.Controls.Add(this.useoppositesmartpivothandle);
 			this.groupBox3.Controls.Add(this.additivepaintselect);
 			this.groupBox3.Controls.Add(this.switchviewmodes);
@@ -294,10 +296,30 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = " Options ";
 			// 
+			// selectafterundoredo
+			// 
+			this.selectafterundoredo.AutoSize = true;
+			this.selectafterundoredo.Location = new System.Drawing.Point(13, 336);
+			this.selectafterundoredo.Name = "selectafterundoredo";
+			this.selectafterundoredo.Size = new System.Drawing.Size(246, 17);
+			this.selectafterundoredo.TabIndex = 12;
+			this.selectafterundoredo.Text = "Select changed map elements after undo/redo";
+			this.selectafterundoredo.UseVisualStyleBackColor = true;
+			// 
+			// useoppositesmartpivothandle
+			// 
+			this.useoppositesmartpivothandle.AutoSize = true;
+			this.useoppositesmartpivothandle.Location = new System.Drawing.Point(13, 313);
+			this.useoppositesmartpivothandle.Name = "useoppositesmartpivothandle";
+			this.useoppositesmartpivothandle.Size = new System.Drawing.Size(321, 17);
+			this.useoppositesmartpivothandle.TabIndex = 12;
+			this.useoppositesmartpivothandle.Text = "Opposite side/vertex is smart pivot handle on triangular sectors";
+			this.useoppositesmartpivothandle.UseVisualStyleBackColor = true;
+			// 
 			// additivepaintselect
 			// 
 			this.additivepaintselect.AutoSize = true;
-			this.additivepaintselect.Location = new System.Drawing.Point(13, 135);
+			this.additivepaintselect.Location = new System.Drawing.Point(13, 131);
 			this.additivepaintselect.Name = "additivepaintselect";
 			this.additivepaintselect.Size = new System.Drawing.Size(233, 17);
 			this.additivepaintselect.TabIndex = 11;
@@ -307,7 +329,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// switchviewmodes
 			// 
 			this.switchviewmodes.AutoSize = true;
-			this.switchviewmodes.Location = new System.Drawing.Point(13, 308);
+			this.switchviewmodes.Location = new System.Drawing.Point(13, 290);
 			this.switchviewmodes.Name = "switchviewmodes";
 			this.switchviewmodes.Size = new System.Drawing.Size(317, 17);
 			this.switchviewmodes.TabIndex = 10;
@@ -328,7 +350,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// syncSelection
 			// 
 			this.syncSelection.AutoSize = true;
-			this.syncSelection.Location = new System.Drawing.Point(13, 283);
+			this.syncSelection.Location = new System.Drawing.Point(13, 267);
 			this.syncSelection.Name = "syncSelection";
 			this.syncSelection.Size = new System.Drawing.Size(295, 17);
 			this.syncSelection.TabIndex = 9;
@@ -338,7 +360,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// dontMoveGeometryOutsideBounds
 			// 
 			this.dontMoveGeometryOutsideBounds.AutoSize = true;
-			this.dontMoveGeometryOutsideBounds.Location = new System.Drawing.Point(13, 258);
+			this.dontMoveGeometryOutsideBounds.Location = new System.Drawing.Point(13, 244);
 			this.dontMoveGeometryOutsideBounds.Name = "dontMoveGeometryOutsideBounds";
 			this.dontMoveGeometryOutsideBounds.Size = new System.Drawing.Size(323, 17);
 			this.dontMoveGeometryOutsideBounds.TabIndex = 8;
@@ -348,7 +370,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// autoaligntexturesoncreate
 			// 
 			this.autoaligntexturesoncreate.AutoSize = true;
-			this.autoaligntexturesoncreate.Location = new System.Drawing.Point(13, 233);
+			this.autoaligntexturesoncreate.Location = new System.Drawing.Point(13, 221);
 			this.autoaligntexturesoncreate.Name = "autoaligntexturesoncreate";
 			this.autoaligntexturesoncreate.Size = new System.Drawing.Size(233, 17);
 			this.autoaligntexturesoncreate.TabIndex = 7;
@@ -358,7 +380,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// autodragonpaste
 			// 
 			this.autodragonpaste.AutoSize = true;
-			this.autodragonpaste.Location = new System.Drawing.Point(13, 208);
+			this.autodragonpaste.Location = new System.Drawing.Point(13, 198);
 			this.autodragonpaste.Name = "autodragonpaste";
 			this.autodragonpaste.Size = new System.Drawing.Size(201, 17);
 			this.autodragonpaste.TabIndex = 6;
@@ -368,7 +390,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// visualmodeclearselection
 			// 
 			this.visualmodeclearselection.AutoSize = true;
-			this.visualmodeclearselection.Location = new System.Drawing.Point(13, 183);
+			this.visualmodeclearselection.Location = new System.Drawing.Point(13, 176);
 			this.visualmodeclearselection.Name = "visualmodeclearselection";
 			this.visualmodeclearselection.Size = new System.Drawing.Size(231, 17);
 			this.visualmodeclearselection.TabIndex = 5;
@@ -378,7 +400,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// autoclearselection
 			// 
 			this.autoclearselection.AutoSize = true;
-			this.autoclearselection.Location = new System.Drawing.Point(13, 158);
+			this.autoclearselection.Location = new System.Drawing.Point(13, 153);
 			this.autoclearselection.Name = "autoclearselection";
 			this.autoclearselection.Size = new System.Drawing.Size(241, 17);
 			this.autoclearselection.TabIndex = 4;
@@ -398,7 +420,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// editnewsector
 			// 
 			this.editnewsector.AutoSize = true;
-			this.editnewsector.Location = new System.Drawing.Point(13, 87);
+			this.editnewsector.Location = new System.Drawing.Point(13, 85);
 			this.editnewsector.Name = "editnewsector";
 			this.editnewsector.Size = new System.Drawing.Size(253, 17);
 			this.editnewsector.TabIndex = 2;
@@ -408,7 +430,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// additiveselect
 			// 
 			this.additiveselect.AutoSize = true;
-			this.additiveselect.Location = new System.Drawing.Point(13, 112);
+			this.additiveselect.Location = new System.Drawing.Point(13, 108);
 			this.additiveselect.Name = "additiveselect";
 			this.additiveselect.Size = new System.Drawing.Size(207, 17);
 			this.additiveselect.TabIndex = 3;
@@ -710,16 +732,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.heightbysidedef.Size = new System.Drawing.Size(309, 21);
 			this.heightbysidedef.TabIndex = 0;
 			// 
-			// useoppositesmartpivothandle
-			// 
-			this.useoppositesmartpivothandle.AutoSize = true;
-			this.useoppositesmartpivothandle.Location = new System.Drawing.Point(13, 333);
-			this.useoppositesmartpivothandle.Name = "useoppositesmartpivothandle";
-			this.useoppositesmartpivothandle.Size = new System.Drawing.Size(321, 17);
-			this.useoppositesmartpivothandle.TabIndex = 12;
-			this.useoppositesmartpivothandle.Text = "Opposite side/vertex is smart pivot handle on triangular sectors";
-			this.useoppositesmartpivothandle.UseVisualStyleBackColor = true;
-			// 
 			// PreferencesForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -799,5 +811,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private System.Windows.Forms.ComboBox eventlinelabelvisibility;
 		private System.Windows.Forms.ComboBox eventlinelabelstyle;
 		private System.Windows.Forms.CheckBox useoppositesmartpivothandle;
+		private System.Windows.Forms.CheckBox selectafterundoredo;
 	}
 }

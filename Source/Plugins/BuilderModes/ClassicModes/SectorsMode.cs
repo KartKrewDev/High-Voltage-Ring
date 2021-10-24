@@ -1522,6 +1522,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Recreate the blockmap to not include the potentially un-done sectors and things anymore
 			CreateBlockmap();
 
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedafterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Sectors);
+			}
+
 			// Clear the cache of things that already got their sector determined
 			determinedsectorthings = new ConcurrentDictionary<Thing, bool>();
 
@@ -1550,6 +1557,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			// Recreate the blockmap to include the potentially re-done sectors and things again
 			CreateBlockmap();
+
+			// Select changed map elements
+			if (BuilderPlug.Me.SelectChangedafterUndoRedo)
+			{
+				General.Map.Map.SelectMarkedGeometry(true, true);
+				General.Map.Map.ConvertSelection(SelectionType.Sectors);
+			}
 
 			// Clear the cache of things that already got their sector determined
 			determinedsectorthings = new ConcurrentDictionary<Thing, bool>();

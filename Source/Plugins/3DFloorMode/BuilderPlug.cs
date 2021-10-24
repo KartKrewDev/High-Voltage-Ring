@@ -93,6 +93,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 		private LabelDisplayOption sectorlabeldisplayoption;
 		private LabelDisplayOption slopevertexlabeldisplayoption;
 		private PreferencesForm preferencesform;
+		private bool selectchangedafterundoredo;
 
 		// TMP
 		public List<Line3D> drawlines;
@@ -124,6 +125,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
         public float HighlightSlopeRange { get { return highlightsloperange; } }
 		public List<SlopeVertexGroup> SlopeVertexGroups { get { return slopevertexgroups; } set { slopevertexgroups = value; } }
 		public float StitchRange { get { return stitchrange; } }
+		public bool SelectChangedAfterUndoRedo { get { return selectchangedafterundoredo; } internal set { selectchangedafterundoredo = value; } }
 
 		public Sector SlopeDataSector { get { return slopedatasector; } set { slopedatasector = value; } }
 
@@ -471,7 +473,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			stitchrange = (float)General.Settings.ReadPluginSetting("BuilderModes", "stitchrange", 20);
 			slopevertexlabeldisplayoption = (LabelDisplayOption)General.Settings.ReadPluginSetting("slopevertexlabeldisplayoption", (int)LabelDisplayOption.Always);
 			sectorlabeldisplayoption = (LabelDisplayOption)General.Settings.ReadPluginSetting("sectorlabeldisplayoption", (int)LabelDisplayOption.Always);
-			
+			selectchangedafterundoredo = General.Settings.ReadPluginSetting("BuilderModes", "selectchangedafterundoredo", false);
 		}
 
 		public void StoreSlopeVertexGroupsInSector()
