@@ -532,15 +532,19 @@ namespace CodeImp.DoomBuilder.ZDoom
             // this dict holds temporary user settings per field (function, etc)
             Dictionary<string, List<string>> var_props = new Dictionary<string, List<string>>();
 
-            // in the class definition, we can have the following:
-            // - Defaults block
-            // - States block
-            // - method signature: [native] [action] <type [, type [...]]> <name> (<arguments>);
-            // - method: <method signature (except native)> <block>
-            // - field declaration: [native] <type> <name>;
-            // - enum definition: enum <name> <block>;
-            // we are skipping everything, except Defaults and States.
-            while (true)
+			// in the class definition, we can have the following:
+			// - Defaults block
+			// - States block
+			// - method signature: [native] [action] <type [, type [...]]> <name> (<arguments>);
+			// - method: <method signature (except native)> <block>
+			// - field declaration: [native] <type> <name>;
+			// - arrays: <type> <name>[];
+			//           <type>[] <name>;
+			//           static const <type> <name>[] = { <values> };
+			//           static const <type>[] <name> = { <values> };
+			// - enum definition: enum <name> <block>;
+			// we are skipping everything, except Defaults and States.
+			while (true)
             {
                 var_props.Clear();
                 while (true)
@@ -627,9 +631,9 @@ namespace CodeImp.DoomBuilder.ZDoom
                 List<string> names = new List<string>();
                 List<List<int>> arraylens = new List<List<int>>();
                 List<ZScriptToken> args = null; // this is for the future
-                //List<ZScriptToken> body = null;
+				bool isarray = false;
 
-                while (true)
+				while (true)
                 {
                     tokenizer.SkipWhitespace();
                     long cpos = stream.Position;
@@ -700,6 +704,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                             if (typelens == null) // error
                                 return;
                             typearraylens[typearraylens.Count - 1] = typelens;
+							isarray = true;
                         }
                         break;
                     }
@@ -724,12 +729,25 @@ namespace CodeImp.DoomBuilder.ZDoom
                     // if it's a field and bmethod=true, report error.
                     tokenizer.SkipWhitespace();
                     long cpos = stream.Position;
-                    token = tokenizer.ExpectToken(ZScriptTokenType.Comma, ZScriptTokenType.OpenParen, ZScriptTokenType.OpenSquare, ZScriptTokenType.Semicolon);
-                    if (token == null || !token.IsValid)
-                    {
-                        parser.ReportError("Expected comma, ;, [, or argument list, got " + ((Object)token ?? "<null>").ToString());
-                        return;
-                    }
+
+					if (!isarray) // Not an array yet, so it *might* be an array
+					{
+						token = tokenizer.ExpectToken(ZScriptTokenType.Comma, ZScriptTokenType.OpenParen, ZScriptTokenType.OpenSquare, ZScriptTokenType.Semicolon);
+						if (token == null || !token.IsValid)
+						{
+							parser.ReportError("Expected comma, ;, [, or argument list, got " + ((Object)token ?? "<null>").ToString());
+							return;
+						}
+					}
+					else // It's an array, so it can not be defined as an array again
+					{
+						token = tokenizer.ExpectToken(ZScriptTokenType.Comma, ZScriptTokenType.Semicolon, ZScriptTokenType.OpAssign);
+						if (token == null || !token.IsValid)
+						{
+							parser.ReportError("Expected comma, ;, or =, got " + ((Object)token ?? "<null>").ToString());
+							return;
+						}
+					}
 
                     if (token.Type == ZScriptTokenType.OpenParen)
                     {
@@ -797,13 +815,17 @@ namespace CodeImp.DoomBuilder.ZDoom
                         }
 
                         // array
-                        if (token.Type == ZScriptTokenType.OpenSquare)
+                        if (token.Type == ZScriptTokenType.OpenSquare || token.Type == ZScriptTokenType.OpAssign)
                         {
                             stream.Position = cpos;
-                            lens = ParseArrayDimensions();
-                            if (lens == null) // error
-                                return;
 
+							// If it's not known to be an array yet check if it's an array
+							if (!isarray)
+							{
+								lens = ParseArrayDimensions();
+								if (lens == null) // error
+									return;
+							}
 
                             tokenizer.SkipWhitespace();
                             ZScriptTokenType[] expectTokens;
