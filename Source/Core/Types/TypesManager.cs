@@ -25,7 +25,7 @@ using CodeImp.DoomBuilder.Data.Scripting;
 
 namespace CodeImp.DoomBuilder.Types
 {
-	internal class TypesManager : IDisposable
+	public class TypesManager : IDisposable
 	{
 		#region ================== Constants
 

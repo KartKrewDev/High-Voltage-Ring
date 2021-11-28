@@ -57,7 +57,7 @@ namespace CodeImp.DoomBuilder.Config
 		DEHACKED,
 	}
 	
-	internal class ScriptConfiguration : IComparable<ScriptConfiguration>
+	public class ScriptConfiguration : IComparable<ScriptConfiguration>
 	{
 		#region ================== Constants
 

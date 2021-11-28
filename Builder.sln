@@ -37,6 +37,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuilderNative", "Source\Nat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreeDFloorMode", "Source\Plugins\3DFloorMode\ThreeDFloorMode.csproj", "{88CFD996-027B-4CBE-9828-26B2728B6127}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDBScript", "Source\Plugins\UDBScript\UDBScript.csproj", "{3088C327-5FFB-49A0-8D40-58E92D89DF07}"
+	ProjectSection(ProjectDependencies) = postProject
+		{818B3D10-F791-4C3F-9AF5-BB2D0079B63C} = {818B3D10-F791-4C3F-9AF5-BB2D0079B63C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug + Profiler|Any CPU = Debug + Profiler|Any CPU
@@ -341,6 +346,28 @@ Global
 		{88CFD996-027B-4CBE-9828-26B2728B6127}.Release|x64.Build.0 = Release|x64
 		{88CFD996-027B-4CBE-9828-26B2728B6127}.Release|x86.ActiveCfg = Release|x86
 		{88CFD996-027B-4CBE-9828-26B2728B6127}.Release|x86.Build.0 = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|Any CPU.ActiveCfg = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|Any CPU.Build.0 = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|x64.ActiveCfg = Debug|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|x64.Build.0 = Debug|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|x86.ActiveCfg = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|x86.Build.0 = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|x64.ActiveCfg = Debug|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|x64.Build.0 = Debug|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|x86.ActiveCfg = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|x86.Build.0 = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|Any CPU.ActiveCfg = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|Any CPU.Build.0 = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|x64.ActiveCfg = Release|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|x64.Build.0 = Release|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|x86.ActiveCfg = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|x86.Build.0 = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|Any CPU.ActiveCfg = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x64.ActiveCfg = Release|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x64.Build.0 = Release|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x86.ActiveCfg = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

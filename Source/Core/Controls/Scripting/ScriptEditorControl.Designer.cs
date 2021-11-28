@@ -1,6 +1,6 @@
 namespace CodeImp.DoomBuilder.Controls
 {
-	partial class ScriptEditorControl
+	public partial class ScriptEditorControl
 	{
 		/// <summary> 
 		/// Required designer variable.

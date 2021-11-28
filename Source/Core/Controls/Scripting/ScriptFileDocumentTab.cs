@@ -28,7 +28,7 @@ using CodeImp.DoomBuilder.Data;
 
 namespace CodeImp.DoomBuilder.Controls
 {
-	internal sealed class ScriptFileDocumentTab : ScriptDocumentTab
+	public sealed class ScriptFileDocumentTab : ScriptDocumentTab
 	{
 		#region ================== Constants
 

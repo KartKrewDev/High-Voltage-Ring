@@ -18,7 +18,7 @@ using ScintillaNET;
 namespace CodeImp.DoomBuilder.Data.Scripting
 {
 	[ScriptHandler(ScriptType.UNKNOWN)]
-	internal class ScriptHandler
+	public class ScriptHandler
 	{
 		#region ================== Constants
 

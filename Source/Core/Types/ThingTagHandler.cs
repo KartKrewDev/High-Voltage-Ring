@@ -42,7 +42,7 @@ namespace CodeImp.DoomBuilder.Types
 					if(t.Tag == 0 || tags.Contains(t.Tag)) continue;
 
 					// Check target class?
-					if(arginfo.TargetClasses.Count > 0)
+					if(arginfo != null && arginfo.TargetClasses.Count > 0)
 					{
 						ThingTypeInfo info = General.Map.Data.GetThingInfoEx(t.Type);
 						if(info != null && !arginfo.TargetClasses.Contains(info.ClassName))

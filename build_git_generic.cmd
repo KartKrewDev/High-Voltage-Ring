@@ -60,7 +60,11 @@ ECHO.
 ECHO Looking up current repository revision numbers...
 ECHO.
 IF EXIST "setenv.bat" DEL /F /Q "setenv.bat" > NUL
-VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat"
+IF DEFINED EXPERIMENTALNAME (
+	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat" -N %EXPERIMENTALNAME%
+) ELSE (
+	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat"
+)
 IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "setenv.bat" GOTO FILEFAIL
 
@@ -92,7 +96,12 @@ DEL /F /Q "setenv.bat"
 ECHO.
 ECHO Compiling Doom Builder...
 ECHO.
-msbuild.exe Builder.sln /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
+IF DEFINED EXPERIMENTALNAME (
+	echo ##### BUILDING EXPERIMENTAL VERSION %EXPERIMENTALNAME%
+	msbuild.exe Builder.sln /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal /p:DefineConstants="TRACE;NO_UPDATER"
+) ELSE (
+	msbuild.exe Builder.sln /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
+)
 IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "Build\Builder.exe" GOTO FILEFAIL
 IF NOT EXIST "Build\BuilderNative.dll" GOTO FILEFAIL

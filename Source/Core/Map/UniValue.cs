@@ -183,7 +183,7 @@ namespace CodeImp.DoomBuilder.Map
 					break;
 			}
 		}
-		
+
 		// This validates a UDMF field name and returns the valid part
 		public static string ValidateName(string name)
 		{

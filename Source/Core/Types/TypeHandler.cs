@@ -29,7 +29,7 @@ namespace CodeImp.DoomBuilder.Types
 	/// Type Handler base class. A Type Handler takes care of editing, validating and
 	/// displaying values of different types for UDMF fields and hexen arguments.
 	/// </summary>
-	internal abstract class TypeHandler
+	public abstract class TypeHandler
 	{
 		#region ================== Constants
 

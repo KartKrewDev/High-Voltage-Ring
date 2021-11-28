@@ -20,13 +20,13 @@
 
 namespace CodeImp.DoomBuilder.Windows
 {
-	internal enum FindReplaceSearchMode //mxd
+	public enum FindReplaceSearchMode //mxd
 	{
 		CURRENT_FILE,
 		OPENED_TABS_ALL_SCRIPT_TYPES
 	}
 	
-	internal struct FindReplaceOptions
+	public struct FindReplaceOptions
 	{
 		public string FindText;
 		public bool CaseSensitive;

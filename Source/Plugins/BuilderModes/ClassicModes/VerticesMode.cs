@@ -593,6 +593,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		public override void OnScriptRunEnd()
+		{
+			base.OnScriptRunEnd();
+
+			CreateBlockmap();
+
+			General.Interface.RedrawDisplay();
+		}
+
 		//mxd
 		protected override void BeginViewPan() 
 		{

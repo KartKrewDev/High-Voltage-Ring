@@ -1681,11 +1681,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// and uses the marks to check what needs to be reloaded.
 		protected override void ResourcesReloadedPartial()
 		{
-			if(General.Map.UndoRedo.GeometryChanged)
-			{
-				// Let the core do this (it will just dispose the sectors that were changed)
-				base.ResourcesReloadedPartial();
+			// Let the core do this (it will just dispose the sectors that were changed)
+			base.ResourcesReloadedPartial();
 
+			if (General.Map.UndoRedo.GeometryChanged)
+			{
 				// The base doesn't know anything about slobe handles, so we have to clear them up ourself
 				if (General.Map.UDMF)
 				{
@@ -1718,9 +1718,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else
 			{
 				bool sectorsmarked = false;
-				
+
 				// Neighbour sectors must be updated as well
-				foreach(Sector s in General.Map.Map.Sectors)
+				foreach (Sector s in General.Map.Map.Sectors)
 				{
 					if(s.Marked)
 					{
@@ -1813,7 +1813,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				visiblethings.Clear();
 				
 				// Make new blockmap
-				if(sectorsmarked || General.Map.UndoRedo.PopulationChanged)
+				if(sectorsmarked || General.Map.UndoRedo.PopulationChanged || General.Map.IsChanged)
 					FillBlockMap();
 				
 				RebuildElementData();
@@ -1907,6 +1907,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				BaseVisualSector vs = (BaseVisualSector)sector;
 				if(vs != null) vs.Rebuild();
+			}
+
+			RebuildSelectedObjectsList();
+		}
+
+		public override void OnScriptRunEnd()
+		{
+			base.OnScriptRunEnd();
+
+			FillBlockMap();
+
+			// Effects may've become invalid
+			if (sectordata != null && sectordata.Count > 0) RebuildElementData();
+
+			// As well as geometry...
+			foreach (VisualSector sector in visiblesectors)
+			{
+				BaseVisualSector vs = (BaseVisualSector)sector;
+				if (vs != null) vs.Rebuild();
 			}
 
 			RebuildSelectedObjectsList();

@@ -1,6 +1,6 @@
 namespace CodeImp.DoomBuilder.Windows
 {
-	partial class ScriptEditorForm
+	public partial class ScriptEditorForm
 	{
 		/// <summary>
 		/// Required designer variable.

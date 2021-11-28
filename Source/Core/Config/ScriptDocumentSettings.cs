@@ -15,7 +15,7 @@ namespace CodeImp.DoomBuilder.Config
 		public long Hash;
 	}
 
-	internal enum ScriptDocumentTabType
+	public enum ScriptDocumentTabType
 	{
 		LUMP,
 		RESOURCE,

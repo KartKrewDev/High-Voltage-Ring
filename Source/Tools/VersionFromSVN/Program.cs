@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -31,6 +32,7 @@ namespace mxd.VersionFromGIT
 			string shorthash = "";
 			string apppath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			string revisionoutputfile = "";
+			string experimentalname = "";
 
 			List<string> targetfiles = new List<string>();
 			Queue<string> queue = new Queue<string>(args);
@@ -65,6 +67,18 @@ namespace mxd.VersionFromGIT
 				{
 					dorevisionlookup = false;
 					reverttargets = true;
+				}
+				else if(string.Compare(arg, "-N", true) == 0)
+				{
+					if(queue.Count > 0)
+					{
+						experimentalname = queue.Dequeue();
+					}
+					else
+					{
+						showusageinfo = true;
+						break;
+					}
 				}
 				else
 				{
@@ -202,6 +216,11 @@ namespace mxd.VersionFromGIT
 								changed = true;
 							}
 						}
+						else if(!string.IsNullOrWhiteSpace(experimentalname) && (line.Trim().StartsWith("[assembly: AssemblyTitle") || line.Trim().StartsWith("[assembly: AssemblyProduct")))
+						{
+							// Add an experimental name to the program's title
+							contents[i] = Regex.Replace(line, "\"([^\"]+)\"", "\"$1 - " + experimentalname + "\"");
+						}
 					}
 
 					if(changed)
@@ -236,6 +255,9 @@ namespace mxd.VersionFromGIT
 
 			Console.WriteLine("-O filename");
 			Console.WriteLine("Creates a bath file, which sets REVISIONNUMBER environment variable to the GIT revision number and REVISIONHASH environment variable to the GIT revision short hash.\r\n");
+
+			Console.WriteLine("-N name");
+			Console.WriteLine("Adds the given name to the application's name. Used for experimental version to distinguish them from the regular versions.\r\n");
 
 			Console.WriteLine("Press any key to quit.");
 		}

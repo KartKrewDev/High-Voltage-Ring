@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -26,6 +27,17 @@ namespace CodeImp.DoomBuilder
 			for(int i = 0; i < data.Length; i++) hash.Append(data[i].ToString("x2"));
 
 			return hash.ToString();
+		}
+
+		/// <summary>
+		/// Computes the MD5 hash of a string.
+		/// </summary>
+		/// <param name="input">The string to compute the MD5 hash of</param>
+		/// <returns>The MD5 hash as a string</returns>
+		public static string Get(string input)
+		{
+			byte[] bytes = hasher.ComputeHash(Encoding.ASCII.GetBytes(input));
+			return string.Concat(Array.ConvertAll(bytes, x => x.ToString("x2")));
 		}
 	}
 }

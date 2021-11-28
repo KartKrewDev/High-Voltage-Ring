@@ -298,6 +298,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 			renderer.SetCrosshairBusy(false);
 		}
 
+		public override bool OnScriptRunBegin()
+		{
+			renderer.SetCrosshairBusy(true);
+			return base.OnScriptRunBegin();
+		}
+
+		public override void OnScriptRunEnd()
+		{
+			base.OnScriptRunEnd();
+			ResourcesReloadedPartial();
+			renderer.SetCrosshairBusy(false);
+		}
+
 		public override void OnReloadResources()
 		{
 			base.OnReloadResources();

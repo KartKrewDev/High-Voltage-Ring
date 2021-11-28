@@ -266,7 +266,7 @@ namespace CodeImp.DoomBuilder
 		public static HintsManager Hints { get { return hints; } } //mxd
 		internal static PluginManager Plugins { get { return plugins; } }
 		public static bool DebugBuild { get { return debugbuild; } }
-		internal static TypesManager Types { get { return types; } }
+		public static TypesManager Types { get { return types; } }
 		public static string AutoLoadFile { get { return autoloadfile; } }
 		public static string AutoLoadMap { get { return autoloadmap; } }
 		public static string AutoLoadConfig { get { return autoloadconfig; } }
@@ -783,8 +783,10 @@ namespace CodeImp.DoomBuilder
 				}
 
 				//mxd. Check for updates?
+#if !NO_UPDATER
 				if(General.Settings.CheckForUpdates) UpdateChecker.PerformCheck(false);
-				
+#endif
+
 				// Run application from the main window
 				Application.Run(mainwindow);
 			}
@@ -2198,6 +2200,11 @@ namespace CodeImp.DoomBuilder
                 return false;
             }
         }
+
+		public static List<Assembly> GetPluginAssemblies()
+		{
+			return plugins.GetPluginAssemblies();
+		}
 		
 #endregion
 

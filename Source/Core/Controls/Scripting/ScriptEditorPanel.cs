@@ -33,7 +33,7 @@ using ScintillaNET;
 
 namespace CodeImp.DoomBuilder.Controls
 {
-	internal partial class ScriptEditorPanel : UserControl
+	public partial class ScriptEditorPanel : UserControl
 	{
 		#region ================== Constants
 

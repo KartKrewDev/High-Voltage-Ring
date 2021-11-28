@@ -50,7 +50,7 @@ namespace CodeImp.DoomBuilder.Controls
 		Property = 8, //mxd
 	}
 	
-	internal partial class ScriptEditorControl : UserControl
+	public partial class ScriptEditorControl : UserControl
 	{
 		#region ================== Enums
 

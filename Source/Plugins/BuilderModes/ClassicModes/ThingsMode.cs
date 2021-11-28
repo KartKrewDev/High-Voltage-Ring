@@ -619,6 +619,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			SetupSectorLabels(); // And sector labels
 		}
 
+		public override void OnScriptRunEnd()
+		{
+			base.OnScriptRunEnd();
+
+			UpdateSelectionInfo();
+
+			General.Interface.RedrawDisplay();
+		}
+
 		//mxd. Otherwise event lines won't be drawn after panning finishes.
 		protected override void EndViewPan()
 		{

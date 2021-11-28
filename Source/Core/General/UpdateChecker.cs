@@ -22,6 +22,7 @@ namespace CodeImp.DoomBuilder
 #if NO_UPDATER
 		internal static void PerformCheck(bool verbosemode)
 		{
+			MessageBox.Show("Checking for updates is disabled in this version.");
 		}
 #else
 		private delegate DialogResult ShowWarningMessageDelegate(string message, MessageBoxButtons buttons);

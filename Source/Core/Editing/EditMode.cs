@@ -256,6 +256,10 @@ namespace CodeImp.DoomBuilder.Editing
 		//mxd. map testing events
 		public virtual bool OnMapTestBegin(bool testFromCurrentPosition) { return true; } //called before test map is launched. Returns false if map launch is impossible
 		public virtual void OnMapTestEnd(bool testFromCurrentPosition) { } //called after game engine is closed
+
+		// Script events
+		public virtual bool OnScriptRunBegin() { return true; }
+		public virtual void OnScriptRunEnd() { }
 		
 		#endregion
 	}
