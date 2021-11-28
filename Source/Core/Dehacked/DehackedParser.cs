@@ -99,34 +99,45 @@ namespace CodeImp.DoomBuilder.Dehacked
 
 			using (datareader = new StreamReader(data.Stream, Encoding.ASCII))
 			{
-				if (!ParseHeader())
-					return false;
+				//if (!ParseHeader())
+				//	return false;
 
 				while (!datareader.EndOfStream)
 				{
 					line = GetLine();
+					string lowerline = line.ToLowerInvariant();
 
 					// Skip blank lines and comments
 					if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
 						continue;
 
-					if (line.ToLowerInvariant().StartsWith("thing"))
+					if (lowerline.StartsWith("thing"))
 					{
 						if (!ParseThing(line))
 							return false;
 					}
-					else if (line.ToLowerInvariant().StartsWith("frame"))
+					else if (lowerline.StartsWith("frame"))
 					{
 						if (!ParseFrame(line))
 							return false;
 					}
-					else if (line.ToLowerInvariant().StartsWith("[sprites]"))
+					else if (lowerline.StartsWith("[sprites]"))
 					{
 						ParseSprites();
 					}
-					else if (line.ToLowerInvariant().StartsWith("text"))
+					else if (lowerline.StartsWith("text"))
 					{
 						if (!ParseText(line))
+							return false;
+					}
+					else if(lowerline.StartsWith("doom version"))
+					{
+						if (!ParseDoomVersion(line))
+							return false;
+					}
+					else if(lowerline.StartsWith("patch format"))
+					{
+						if (!ParsePatchFormat(line))
 							return false;
 					}
 					else
@@ -261,6 +272,46 @@ namespace CodeImp.DoomBuilder.Dehacked
 				if (string.IsNullOrWhiteSpace(line)) break;
 				if (line.StartsWith("#")) continue;
 			}
+		}
+
+		private bool ParseDoomVersion(string line)
+		{
+			string fieldkey = string.Empty;
+			string fieldvalue = string.Empty;
+
+			// We expect the "Doom version = xxx" string
+			if (!GetKeyValueFromLine(line, out fieldkey, out fieldvalue))
+				return false;
+
+			if (fieldkey != "doom version")
+			{
+				LogError("Expected 'Doom version', but got '" + fieldkey + "'.");
+				return false;
+			}
+			else if (!supportedpatchversions.Contains(fieldvalue))
+				LogWarning("Unexpected Doom version. Expected one of " + string.Join(", ", supportedpatchversions) + ", got " + fieldvalue + ". Parsing might not work correctly");
+
+			return true;
+		}
+
+		private bool ParsePatchFormat(string line)
+		{
+			string fieldkey = string.Empty;
+			string fieldvalue = string.Empty;
+
+			// We expect the "Patch format = xxx" string
+			if (!GetKeyValueFromLine(line, out fieldkey, out fieldvalue))
+				return false;
+
+			if (fieldkey != "patch format")
+			{
+				LogError("Expected 'Patch format', but got '" + fieldkey + "'.");
+				return false;
+			}
+			else if (fieldvalue != "6")
+				LogWarning("Unexpected patch format. Expected 6, got " + fieldvalue + ". Parsing might not work correctly");
+
+			return true;
 		}
 
 		/// <summary>
