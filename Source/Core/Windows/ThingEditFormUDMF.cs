@@ -207,8 +207,14 @@ namespace CodeImp.DoomBuilder.Windows
 
 			//mxd. User vars. Should be done before adding regular fields
 			ThingTypeInfo fti = General.Map.Data.GetThingInfoEx(ft.Type);
-			if(fti != null && fti.Actor != null && fti.Actor.UserVars.Count > 0)
-				fieldslist.SetUserVars(fti.Actor.UserVars, fti.Actor.UserVarDefaults, ft.Fields, true);
+			if (fti != null && fti.Actor != null)
+			{
+				Dictionary<string, UniversalType> uservars = fti.Actor.GetAllUserVars();
+				Dictionary<string, object> uservardefaults = fti.Actor.GetAllUserVarDefaults();
+
+				if (uservars.Count > 0)
+					fieldslist.SetUserVars(uservars, uservardefaults, ft.Fields, true);
+			}
 			thinginfo = fti; //mxd
 
 			// Custom fields
@@ -290,8 +296,14 @@ namespace CodeImp.DoomBuilder.Windows
 
 				//mxd. User vars. Should be done before adding regular fields
 				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
-				if(ti != null && ti.Actor != null && ti.Actor.UserVars.Count > 0)
-					fieldslist.SetUserVars(ti.Actor.UserVars, ti.Actor.UserVarDefaults, t.Fields, false);
+				if (ti != null && ti.Actor != null)
+				{
+					Dictionary<string, UniversalType> uservars = ti.Actor.GetAllUserVars();
+					Dictionary<string, object> uservardefaults = ti.Actor.GetAllUserVarDefaults();
+
+					if (uservars.Count > 0)
+						fieldslist.SetUserVars(uservars, uservardefaults, t.Fields, false);
+				}
 
 				//mxd. Custom fields
 				fieldslist.SetValues(t.Fields, false);
@@ -556,8 +568,13 @@ namespace CodeImp.DoomBuilder.Windows
 
 				//mxd. User vars. Should be called after fieldslist.Apply()
 				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
-				if(ti != null && ti.Actor != null && ti.Actor.UserVars.Count > 0)
-					fieldslist.ApplyUserVars(ti.Actor.UserVars, t.Fields);
+				if (ti != null && ti.Actor != null)
+				{
+					Dictionary<string, UniversalType> uservars = ti.Actor.GetAllUserVars();
+
+					if(uservars.Count > 0)
+						fieldslist.ApplyUserVars(uservars, t.Fields);
+				}
 
 				color.ApplyTo(t.Fields, t.Fields.GetValue("fillcolor", 0));
 

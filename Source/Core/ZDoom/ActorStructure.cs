@@ -194,7 +194,49 @@ namespace CodeImp.DoomBuilder.ZDoom
 				return fvalue;
 			return 0.0f;
 		}
-		
+
+		/// <summary>
+		/// Gets all user vars from this actor and all actors in the inheritance chain.
+		/// </summary>
+		/// <returns>Dictionary of all user vars</returns>
+		public Dictionary<string, UniversalType> GetAllUserVars()
+		{
+			Dictionary<string, UniversalType> result = new Dictionary<string, UniversalType>(uservars);
+			ActorStructure parent = baseclass;
+
+			while(parent != null)
+			{
+				foreach(string key in parent.UserVars.Keys)
+					if (!result.ContainsKey(key))
+						result[key] = parent.UserVars[key];
+
+				parent = parent.baseclass;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets all user var defauls from this actor and all actors in the inheritance chain.
+		/// </summary>
+		/// <returns>Dictionary of all user var defaults</returns>
+		public Dictionary<string, object> GetAllUserVarDefaults()
+		{
+			Dictionary<string, object> result = new Dictionary<string, object>(uservar_defaults);
+			ActorStructure parent = baseclass;
+
+			while (parent != null)
+			{
+				foreach (string key in parent.UserVarDefaults.Keys)
+					if (!result.ContainsKey(key))
+						result[key] = parent.UserVarDefaults[key];
+
+				parent = parent.baseclass;
+			}
+
+			return result;
+		}
+
 		/// <summary>
 		/// This returns the status of a flag.
 		/// </summary>
