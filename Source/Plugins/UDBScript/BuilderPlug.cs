@@ -380,7 +380,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 		private ScriptDirectoryStructure LoadScriptDirectoryStructure(string path)
 		{
 			string hash = SHA256Hash.Get(path);
-			bool expanded = General.Settings.ReadPluginSetting("directoryexpand." + hash, false);
+			bool expanded = General.Settings.ReadPluginSetting("directoryexpand." + hash, true);
 			string name = path.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).Last();
 			ScriptDirectoryStructure sds = new ScriptDirectoryStructure(name, expanded, hash);
 
