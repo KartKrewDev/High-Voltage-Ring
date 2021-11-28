@@ -1783,18 +1783,14 @@ namespace CodeImp.DoomBuilder.Data
 				availablesprites.UnionWith(dr.GetSpriteNames());
 			}
 
-			for(int i = containers.Count-1; i >= 0; i--)
+			foreach(DataReader dr in containers)
 			{
-				DataReader dr = containers[i];
+				List<TextResourceData> dehackedstreams = new List<TextResourceData>(dr.GetDehackedData());
 
-				List<TextResourceData> dehackedstreams = new List<TextResourceData>(dr.GetDehackedData("DEHACKED"));
-
-				if(dehackedstreams.Count > 0)
+				foreach(TextResourceData trd in dehackedstreams)
 				{
-					dehackedstreams[0].Stream.Seek(0, SeekOrigin.Begin);
-					dehacked.Parse(dehackedstreams[0], General.Map.Config.DehackedData, availablesprites);
-
-					break;
+					trd.Stream.Seek(0, SeekOrigin.Begin);
+					dehacked.Parse(trd, General.Map.Config.DehackedData, availablesprites);
 				}
 			}
 		}

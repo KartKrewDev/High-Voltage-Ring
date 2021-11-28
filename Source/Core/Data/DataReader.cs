@@ -228,7 +228,7 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Decorate, Modeldef, Mapinfo, Gldefs, etc...
 
 		// When implemented, this returns DEHACKED lumps
-		public abstract IEnumerable<TextResourceData> GetDehackedData(string pname);
+		public abstract IEnumerable<TextResourceData> GetDehackedData();
 
 		// When implemented, this returns DECORATE lumps
 		public abstract IEnumerable<TextResourceData> GetDecorateData(string pname);

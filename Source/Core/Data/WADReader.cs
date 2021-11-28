@@ -1011,10 +1011,11 @@ namespace CodeImp.DoomBuilder.Data
 
 		#region ================== Decorate, Gldefs, Mapinfo, etc...
 
-		public override IEnumerable<TextResourceData> GetDehackedData(string pname)
+		public override IEnumerable<TextResourceData> GetDehackedData()
 		{
 			if (issuspended) throw new Exception("Data reader is suspended");
-			return GetLastLumpData(pname);
+
+			return GetAllLumpsData("DEHACKED");
 		}
 
 		// This finds and returns DECORATE streams

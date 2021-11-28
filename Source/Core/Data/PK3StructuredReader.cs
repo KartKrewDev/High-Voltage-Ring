@@ -487,25 +487,25 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== DEHACKED
 
 		// This finds and returns DEHACKED streams
-		public override IEnumerable<TextResourceData> GetDehackedData(string pname)
+		public override IEnumerable<TextResourceData> GetDehackedData()
 		{
 			// Error when suspended
 			if (issuspended) throw new Exception("Data reader is suspended");
 
 			List<TextResourceData> result = new List<TextResourceData>();
-			string[] allfilenames;
 
-			// Find in root directory
-			string filename = Path.GetFileName(pname);
-			string pathname = Path.GetDirectoryName(pname);
+			// At least one of gldefs should be in the root folder
+			List<string> files = new List<string>();
 
-			if (filename.IndexOf('.') > -1)
-				allfilenames = GetFileAtPath(filename, pathname, "DEHACKED");
-			else
-				allfilenames = GetAllFilesWithTitle(pathname, filename, false);
+			// Can be several entries
+			files.AddRange(GetAllFilesWhichTitleStartsWith("", "DEHACKED", false));
 
-			if(allfilenames.Length > 0)
-				result.Add(new TextResourceData(this, LoadFile(allfilenames[allfilenames.Length - 1]), allfilenames[allfilenames.Length - 1], true));
+			// Add to collection
+			foreach (string s in files)
+				result.Add(new TextResourceData(this, LoadFile(s), s, true));
+
+			// Find in any of the wad files
+			foreach (WADReader wr in wads) result.AddRange(wr.GetDehackedData());
 
 			return result;
 		}
