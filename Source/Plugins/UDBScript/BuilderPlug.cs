@@ -226,11 +226,11 @@ namespace CodeImp.DoomBuilder.UDBScript
 		{
 			if(root.Expanded)
 			{
-				General.Settings.WritePluginSetting("directoryexpand." + root.Hash, true);
+				General.Settings.DeletePluginSetting("directoryexpand." + root.Hash);
 			}
 			else
 			{
-				General.Settings.DeletePluginSetting("directoryexpand." + root.Hash);
+				General.Settings.WritePluginSetting("directoryexpand." + root.Hash, false);
 			}
 
 			foreach (ScriptDirectoryStructure sds in root.Directories)
