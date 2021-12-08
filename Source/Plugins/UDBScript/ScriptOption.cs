@@ -88,7 +88,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 			this.enumvalues = enumvalues;
 
 			// If it's an enum try to get the default value from default value number
-			if(enumvalues.Count > 0)
+			if(enumvalues != null && enumvalues.Count > 0)
 			{
 				foreach (DictionaryEntry de in enumvalues)
 				{
