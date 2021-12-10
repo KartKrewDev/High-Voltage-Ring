@@ -71,11 +71,10 @@ let tags = Map.getMultipleNewTags(numnewtags);
 var p = new Pen();
 
 // Draw the closet
-p.setAngle(90 * ScriptOptions.direction);
-p.moveTo(basepos); p.drawVertex();
-p.moveForward(ScriptOptions.length); p.drawVertex(); p.turnRight();
-p.moveForward(closetwidth); p.drawVertex(); p.turnRight();
-p.moveForward(ScriptOptions.length); p.drawVertex();
+p.setAngle(90 * ScriptOptions.direction).moveTo(basepos).drawVertex()
+.moveForward(ScriptOptions.length).drawVertex().turnRight()
+.moveForward(closetwidth).drawVertex().turnRight()
+.moveForward(ScriptOptions.length).drawVertex();
 
 if(!p.finishDrawing(true))
 	throw "Something went wrong while drawing!";
@@ -87,9 +86,8 @@ sector.floorHeight = 0;
 sector.ceilingHeight = 56;
 
 // Draw the carrying line
-p.setAngle(90 * ScriptOptions.direction);
-p.moveTo(basepos); p.drawVertex();
-p.moveForward(32); p.drawVertex();
+p.setAngle(90 * ScriptOptions.direction).moveTo(basepos).drawVertex()
+.moveForward(32).drawVertex();
 
 if(!p.finishDrawing())
 	throw 'Something went wrong while drawing!';
@@ -106,11 +104,10 @@ newtagindex++;
 if(ScriptOptions.inactive)
 {
 	// Draw the blocking sector
-	p.setAngle(90 * ScriptOptions.direction);
-	p.moveTo(basepos);
-	p.moveForward(64); p.turnRight(); p.moveForward(16); p.drawVertex();
-	p.turnRight(); p.moveForward(8); p.drawVertex();
-	p.turnLeft(); p.moveForward(closetwidth - 32); p.drawVertex();
+	p.setAngle(90 * ScriptOptions.direction).moveTo(basepos)
+	.moveForward(64).turnRight().moveForward(16).drawVertex()
+	.turnRight().moveForward(8).drawVertex()
+	.turnLeft().moveForward(closetwidth - 32).drawVertex();
 	
 	if(!p.finishDrawing(true))
 		throw "Something went wrong while drawing!";
@@ -148,10 +145,9 @@ if(ScriptOptions.inactive)
 if(ScriptOptions.looping)
 {
 	// Create the teleport destination line
-	p.setAngle(90 * ScriptOptions.direction);
-	p.moveTo(basepos);
-	p.moveForward(32); p.turnRight(); p.moveForward(8); p.drawVertex();
-	p.moveForward(closetwidth - 16); p.drawVertex();
+	p.setAngle(90 * ScriptOptions.direction).moveTo(basepos)
+	.moveForward(32).turnRight().moveForward(8).drawVertex()
+	.moveForward(closetwidth - 16).drawVertex();
 
 	if(!p.finishDrawing())
 		throw 'Something went wrong while drawing!';
@@ -161,10 +157,10 @@ if(ScriptOptions.looping)
 	line.tag = tags[newtagindex];
 	
 	// Create the teleport line
-	p.setAngle(90 * ScriptOptions.direction);
-	p.moveTo(basepos);
-	p.moveForward(ScriptOptions.length - 32); p.turnRight(); p.moveForward(8); p.drawVertex();
-	p.moveForward(closetwidth - 16); p.drawVertex();
+	p.setAngle(90 * ScriptOptions.direction)
+	.moveTo(basepos)
+	.moveForward(ScriptOptions.length - 32).turnRight().moveForward(8).drawVertex()
+	.moveForward(closetwidth - 16).drawVertex();
 	
 	if(!p.finishDrawing())
 		throw 'Something went wrong while drawing!';

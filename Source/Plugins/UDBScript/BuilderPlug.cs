@@ -70,7 +70,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 		#region ================== Constants
 
 		private static readonly string SCRIPT_FOLDER = "udbscript";
-		public static readonly uint UDB_SCRIPT_VERSION = 1;
+		public static readonly uint UDB_SCRIPT_VERSION = 2;
 
 		#endregion
 

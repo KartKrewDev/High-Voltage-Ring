@@ -25,6 +25,9 @@ All files ending on .js in the `Scripts` directory (and its subdirectories) are 
 !!! tip
 	UDBScript does hot reloading, i.e. changes to the scripts, or copying new scripts into the directory structure will be shown immediately.
 
+!!! warning
+	UDBScript comes with multiple example scripts in the `.\UDBScript\Scripts\Examples` directory. Do not modify those scripts, since they will be overwritten when UDB is updated. If you want to use one of the example scripts as a bas copy it to another directory!
+
 ## Setting hotkeys to execute scripts
 
 Hotkeys to execute scripts can be set by going to `Tools` -> `Preferences` -> `Controls`, and then filtering by `execute`.

@@ -11,6 +11,8 @@ class Pen
     moveTo(pos)
     {
         this.curpos = new Vector2D(pos);
+
+        return this;
     }
 
     moveForward(distance)
@@ -19,6 +21,8 @@ class Pen
             this.curpos.x + Math.cos(this.angle) * distance,
             this.curpos.y + Math.sin(this.angle) * distance
         );
+
+        return this;
     }
 
     turnRightRadians(radians = Math.PI / 2)
@@ -26,7 +30,9 @@ class Pen
         this.angle -= radians;
 
         while(this.angle < 0)
-            this.angle += Math.PI * 2;        
+            this.angle += Math.PI * 2;
+
+        return this;
     }
 
     turnLeftRadians(radians = Math.PI / 2)
@@ -34,7 +40,9 @@ class Pen
         this.angle += radians;
 
         while(this.angle > Math.PI * 2)
-            this.angle -= Math.PI * 2;   
+            this.angle -= Math.PI * 2;
+
+        return this;
     }
 
     turnRight(degrees = 90.0)
@@ -43,6 +51,8 @@ class Pen
 
         while(this.angle < 0)
             this.angle += Math.PI * 2;
+
+        return this;
     }
 
     turnLeft(degrees = 90.0)
@@ -50,22 +60,30 @@ class Pen
         this.angle += degrees * Math.PI / 180.0;
 
         while(this.angle > Math.PI * 2)
-            this.angle -= Math.PI * 2;        
+            this.angle -= Math.PI * 2;
+
+        return this;
     }
 
     setAngleRadians(radians)
     {
-        this.angle = Math.PI / 2 - radians;        
+        this.angle = Math.PI / 2 - radians;
+
+        return this;
     }
 
     setAngle(degrees)
     {
         this.angle = (90 - degrees) * Math.PI / 180.0;
+
+        return this;
     }
 
     drawVertex()
     {
         this.vertices.push(this.curpos);
+
+        return this;
     }
 
     finishDrawing(close = false)
