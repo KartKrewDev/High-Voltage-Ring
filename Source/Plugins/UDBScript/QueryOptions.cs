@@ -42,6 +42,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 	/// let qo = new QueryOptions();
 	/// qo.addOption('length', 'Length of the sides', 0, 128);
 	/// qo.addOption('numsides', 'Number of sides', 0, 5);
+	/// qo.addOption('direction', 'Direction to go', 11, 1, { 1: 'Up', 2: 'Down' }); // Enumeration
 	/// qo.query();
 	/// 
 	/// showMessage('You want ' + qo.options.numsides + ' sides with a length of ' + qo.options.length);
