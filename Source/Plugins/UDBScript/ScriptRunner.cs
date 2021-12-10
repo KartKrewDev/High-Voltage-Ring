@@ -200,7 +200,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 
 			// If the script requires a higher version of UDBScript than this version ask the user if they want
 			// to execute it anyways. Remember the choice for this session if "yes" was selected.
-			if(scriptinfo.Version != BuilderPlug.UDB_SCRIPT_VERSION && !scriptinfo.IgnoreVersion)
+			if(scriptinfo.Version > BuilderPlug.UDB_SCRIPT_VERSION && !scriptinfo.IgnoreVersion)
 			{
 				if (MessageBox.Show("The script requires a higher version of the feature set than this version of UDBScript supports. Executing this script might fail\n\nRequired feature version: " + scriptinfo.Version + "\nUDBScript feature version: " + BuilderPlug.UDB_SCRIPT_VERSION + "\n\nExecute anyway?", "UDBScript feature version too low", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
 					return;
