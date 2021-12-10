@@ -512,6 +512,29 @@ namespace CodeImp.DoomBuilder.Data
 
 		#endregion
 
+		#region ================== IWADINFO
+
+		public override List<IWadInfo> GetIWadInfos()
+		{
+			IWadInfoParser parser = new IWadInfoParser();
+
+			// At least one of IWADINFO should be in the root folder
+			List<string> files = new List<string>();
+
+			// Can be several entries
+			files.AddRange(GetAllFilesWhichTitleStartsWith("", "IWADINFO", false));
+
+			foreach(string s in files)
+			{
+				parser.Parse(new TextResourceData(this, LoadFile(s), s, true), false);
+				if (parser.HasError) parser.LogError();
+			}
+
+			return parser.IWads;
+		}
+
+		#endregion
+
 		#region ================== DECORATE
 
 		// This finds and returns DECORATE streams

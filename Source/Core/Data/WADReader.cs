@@ -1018,6 +1018,23 @@ namespace CodeImp.DoomBuilder.Data
 			return GetAllLumpsData("DEHACKED");
 		}
 
+		#region ================== IWADINFO
+
+		public override List<IWadInfo> GetIWadInfos()
+		{
+			IWadInfoParser parser = new IWadInfoParser();
+
+			foreach (TextResourceData trd in GetAllLumpsData("IWADINFO"))
+			{
+				parser.Parse(trd, false);
+				if (parser.HasError) parser.LogError();
+			}
+
+			return parser.IWads;
+		}
+
+		#endregion
+
 		// This finds and returns DECORATE streams
 		public override IEnumerable<TextResourceData> GetDecorateData(string pname)
 		{

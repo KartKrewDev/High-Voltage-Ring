@@ -55,6 +55,7 @@ namespace CodeImp.DoomBuilder.Config
         ZSCRIPT,
 		DECALDEF,
 		DEHACKED,
+		IWADINFO,
 	}
 	
 	public class ScriptConfiguration : IComparable<ScriptConfiguration>

@@ -158,7 +158,7 @@ namespace CodeImp.DoomBuilder
 			foreach(DataLocation dl in locations)
 			{
 				// Location not the IWAD file?
-				if((dl.type != DataLocation.RESOURCE_WAD) || (dl.location != iwadloc.location))
+				if((dl.location != iwadloc.location))
 				{
 					// Location not included?
 					if(!dl.notfortesting)

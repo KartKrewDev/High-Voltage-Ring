@@ -254,6 +254,9 @@ namespace CodeImp.DoomBuilder.Data
 		//mxd. When implemented, this returns the voxel lump
 		public abstract Stream GetVoxelData(string name, ref string voxellocation);
 
+		// When implemented, this returns the list of IWAD infos
+		public abstract List<IWadInfo> GetIWadInfos();
+
 		#endregion
 
 		#region ================== Load/Save (mxd)

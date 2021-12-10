@@ -3071,7 +3071,7 @@ namespace CodeImp.DoomBuilder.Data
 
 		#region ================== Tools
 
-		// This finds the first IWAD resource
+		// This finds the first IWAD or IPK3 resource
 		// Returns false when not found
 		public bool FindFirstIWAD(out DataLocation result)
 		{
@@ -3087,6 +3087,15 @@ namespace CodeImp.DoomBuilder.Data
 					{
 						// Return location!
 						result = wr.Location;
+						return true;
+					}
+				}
+				else if(dr is PK3Reader)
+				{
+					PK3Reader pk3r = dr as PK3Reader;
+					if(pk3r.GetIWadInfos().Count == 1)
+					{
+						result = pk3r.Location;
 						return true;
 					}
 				}
