@@ -41,7 +41,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 		#region ================== Properties
 
-		internal override ScriptType ScriptType { get { return ScriptType.IWADINFO; } }
+		internal override ScriptType ScriptType { get { return ScriptType.UNKNOWN; } }
 		public List<IWadInfo> IWads { get { return iwads; } }
 
 		#endregion

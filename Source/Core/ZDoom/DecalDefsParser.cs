@@ -46,7 +46,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 		#region ================== Properties
 
-		internal override ScriptType ScriptType	{ get { return ScriptType.DECALDEF; } }
+		internal override ScriptType ScriptType	{ get { return ScriptType.UNKNOWN; } }
 		public Dictionary<string, DecalInfo> Decals { get { return decals; } }
 
 		#endregion

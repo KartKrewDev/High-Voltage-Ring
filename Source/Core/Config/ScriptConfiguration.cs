@@ -28,6 +28,9 @@ using ScintillaNET;
 namespace CodeImp.DoomBuilder.Config
 {
 	//mxd
+	// WARNING: if you add items here you also *must* add icons to the ScriptEditorPanel control (it's in Core\Controls\Scripting)!
+	//          Since this is apparently only used for the script editor (where nothing but DIALOG and ACS can be edited anymore) you
+	//          you can apparently just use UNKNOWN for the script type in classes derived from ZDTextParser
 	public enum ScriptType
 	{
 		UNKNOWN,
@@ -53,9 +56,6 @@ namespace CodeImp.DoomBuilder.Config
 		KEYCONF,
 		FONTDEFS,
         ZSCRIPT,
-		DECALDEF,
-		DEHACKED,
-		IWADINFO,
 	}
 	
 	public class ScriptConfiguration : IComparable<ScriptConfiguration>

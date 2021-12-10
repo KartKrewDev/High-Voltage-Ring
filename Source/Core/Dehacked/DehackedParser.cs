@@ -212,7 +212,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 
 			message = "Dehacked warning in \"" + errsource + "\" line " + linenumber + ". " + message + ".";
 
-			TextResourceErrorItem error = new TextResourceErrorItem(ErrorType.Warning, ScriptType.DEHACKED, datalocation, sourcename, sourcelumpindex, linenumber, message);
+			TextResourceErrorItem error = new TextResourceErrorItem(ErrorType.Warning, ScriptType.UNKNOWN, datalocation, sourcename, sourcelumpindex, linenumber, message);
 
 			General.ErrorLogger.Add(error);
 		}
@@ -228,7 +228,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 
 			message = "Dehacked error in \"" + errsource + "\" line " + linenumber + ". " + message + ".";
 
-			TextResourceErrorItem error = new TextResourceErrorItem(ErrorType.Error, ScriptType.DEHACKED, datalocation, sourcename, sourcelumpindex, linenumber, message);
+			TextResourceErrorItem error = new TextResourceErrorItem(ErrorType.Error, ScriptType.UNKNOWN, datalocation, sourcename, sourcelumpindex, linenumber, message);
 
 			General.ErrorLogger.Add(error);
 		}
