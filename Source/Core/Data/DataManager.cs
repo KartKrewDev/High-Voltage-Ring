@@ -3046,14 +3046,22 @@ namespace CodeImp.DoomBuilder.Data
 		internal TextResourceData GetTextResourceData(string name) 
 		{
 			// Filesystem path?
-			if(Path.IsPathRooted(name))
+			try
 			{
-				if(File.Exists(name))
+				if (Path.IsPathRooted(name))
 				{
-					DataLocation location = new DataLocation{ location = name, type = DataLocation.RESOURCE_DIRECTORY };
-					return new TextResourceData(File.OpenRead(name), location, name);
-				}
+					if (File.Exists(name))
+					{
+						DataLocation location = new DataLocation { location = name, type = DataLocation.RESOURCE_DIRECTORY };
+						return new TextResourceData(File.OpenRead(name), location, name);
+					}
 
+					return null;
+				}
+			}
+			catch (ArgumentException e)
+			{
+				// File and/or path contained illegal characters
 				return null;
 			}
 

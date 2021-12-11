@@ -2104,7 +2104,11 @@ namespace CodeImp.DoomBuilder
 							OnInclude = delegate(AcsParserSE se, string includefile, AcsParserSE.IncludeType includetype)
 							{
 								TextResourceData includedata = General.Map.Data.GetTextResourceData(includefile);
-								if(includedata == null) return false; // Fial
+								if (includedata == null)
+								{
+									General.ErrorLogger.Add(ErrorType.Error, "Could not find file to include while loading " + maplumpinfo.Name + ": " + includefile);
+									return false; // Fail
+								}
 								return se.Parse(includedata, true, includetype, false);
 							}
 						};
