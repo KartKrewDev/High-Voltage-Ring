@@ -97,6 +97,7 @@ namespace CodeImp.DoomBuilder.Config
 		private bool switchviewmodes; //mxd
 		private bool showfps;
 		private int[] colordialogcustomcolors;
+		private bool autolaunchontest;
 
 		//mxd. Script editor settings
 		private string scriptfontname;
@@ -207,6 +208,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool SplitJoinedSectors { get { return splitjoinedsectors; } internal set { splitjoinedsectors = value; } } //mxd
 		public bool ShowFPS { get { return showfps; } internal set { showfps = value; } }
 		public int[] ColorDialogCustomColors { get { return colordialogcustomcolors; } internal set { colordialogcustomcolors = value; } }
+		public bool AutoLaunchOnTest { get { return autolaunchontest; } internal set { autolaunchontest = value; } }
 
 		//mxd. Highlight mode
 		public bool UseHighlight
@@ -354,6 +356,7 @@ namespace CodeImp.DoomBuilder.Config
 				usehighlight = cfg.ReadSetting("usehighlight", true); //mxd
 				switchviewmodes = cfg.ReadSetting("switchviewmodes", false); //mxd
 				showfps = cfg.ReadSetting("showfps", false);
+				autolaunchontest = cfg.ReadSetting("autolaunchontest", false);
 
 				//mxd. Script editor
 				scriptfontname = cfg.ReadSetting("scriptfontname", "Courier New");
@@ -491,6 +494,7 @@ namespace CodeImp.DoomBuilder.Config
 			cfg.WriteSetting("usehighlight", usehighlight); //mxd
 			cfg.WriteSetting("switchviewmodes", switchviewmodes); //mxd
 			cfg.WriteSetting("showfps", showfps);
+			cfg.WriteSetting("autolaunchontest", autolaunchontest);
 
 			//mxd. Script editor
 			cfg.WriteSetting("scriptfontname", scriptfontname);

@@ -586,6 +586,9 @@ namespace CodeImp.DoomBuilder.Windows
 			this.DragEnter += OnDragEnter;
 			this.DragDrop += OnDragDrop;
 
+			// For checking if the drop down should really be closed
+			buttontest.DropDown.Closing += ButtonTestDropDown_Closing;
+
 			// Info panel state?
 			bool expandedpanel = General.Settings.ReadSetting("windows." + configname + ".expandedinfopanel", true);
 			if(expandedpanel != IsInfoPanelExpanded) ToggleInfoPanel();
@@ -1608,7 +1611,10 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			General.Map.ConfigSettings.CurrentEngineIndex = (int)(((ToolStripMenuItem)sender).Tag);
 			General.Map.ConfigSettings.Changed = true;
-			General.Map.Launcher.TestAtSkill(General.Map.ConfigSettings.TestSkill);
+
+			if(General.Settings.AutoLaunchOnTest)
+				General.Map.Launcher.TestAtSkill(General.Map.ConfigSettings.TestSkill);
+
 			UpdateSkills();
 		}
 		
@@ -1618,7 +1624,10 @@ namespace CodeImp.DoomBuilder.Windows
 			int skill = (int)((sender as ToolStripMenuItem).Tag);
 			General.Settings.TestMonsters = (skill > 0);
 			General.Map.ConfigSettings.TestSkill = Math.Abs(skill);
-			General.Map.Launcher.TestAtSkill(Math.Abs(skill));
+
+			if(General.Settings.AutoLaunchOnTest)
+				General.Map.Launcher.TestAtSkill(Math.Abs(skill));
+
 			UpdateSkills();
 		}
 		
@@ -2292,6 +2301,19 @@ namespace CodeImp.DoomBuilder.Windows
 				buttontogglevisualvertices.Visible = General.Map.UDMF;
 				buttontogglevisualvertices.Checked = General.Settings.GZShowVisualVertices;
 			} 
+		}
+
+		/// <summary>
+		/// Called when the test button drop down wants to close. Prevents closing when auto-launching is disabled
+		/// </summary>
+		/// <param name="sender">The sneder</param>
+		/// <param name="e">The event</param>
+		private void ButtonTestDropDown_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+		{
+			if (General.Settings.AutoLaunchOnTest == false && e.CloseReason == ToolStripDropDownCloseReason.ItemClicked)
+			{
+				e.Cancel = true;
+			}
 		}
 
 		#endregion

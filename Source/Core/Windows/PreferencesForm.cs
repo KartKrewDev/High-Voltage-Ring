@@ -96,6 +96,7 @@ namespace CodeImp.DoomBuilder.Windows
 			showtexturesizes.Checked = General.Settings.ShowTextureSizes;
             texturesizesbelow.Checked = General.Settings.TextureSizesBelow;
 			cbShowFPS.Checked = General.Settings.ShowFPS;
+			autolaunchontest.Checked = General.Settings.AutoLaunchOnTest;
 
 			//mxd
 			locatetexturegroup.Checked = General.Settings.LocateTextureGroup;
@@ -333,6 +334,7 @@ namespace CodeImp.DoomBuilder.Windows
 			General.Settings.MaxRecentFiles = recentFiles.Value; //mxd
 			General.Settings.ScreenshotsPath = screenshotsfolderpath.Text.Trim(); //mxd
 			General.Settings.ShowFPS = cbShowFPS.Checked;
+			General.Settings.AutoLaunchOnTest = autolaunchontest.Checked;
 
 			// Script settings
 			General.Settings.ScriptFontBold = scriptfontbold.Checked;
