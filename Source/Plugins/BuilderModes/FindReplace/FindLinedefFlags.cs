@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Map;
@@ -83,7 +84,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					f = f.Substring(1, f.Length - 1);
 				}
 
-				if(General.Map.Config.LinedefFlags.ContainsKey(f)) findflagslist.Add(f, setflag);
+				if(General.Map.Config.LinedefFlags.ContainsKey(f) || General.Map.Config.LinedefActivates.Any(la => la.Key == f)) findflagslist.Add(f, setflag);
 			}
 			if(findflagslist.Count == 0) 
 			{
@@ -106,7 +107,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						f = f.Substring(1, f.Length - 1);
 					}
 
-					if(!General.Map.Config.LinedefFlags.ContainsKey(f))
+					if(!General.Map.Config.LinedefFlags.ContainsKey(f) && !General.Map.Config.LinedefActivates.Any(la => la.Key == f))
 					{
 						MessageBox.Show("Invalid replace value \"" + f + "\" for this search type!", "Find and Replace", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						return objs.ToArray();
