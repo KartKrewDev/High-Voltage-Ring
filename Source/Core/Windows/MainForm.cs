@@ -1543,10 +1543,12 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			// Clear list
 			buttontest.DropDownItems.Clear();
-			
+
 			// Map loaded?
-			if(General.Map != null)
+			if (General.Map != null)
 			{
+				int maxwidth = 0;
+
 				// Make the new items list
 				List<ToolStripItem> items = new List<ToolStripItem>(General.Map.Config.Skills.Count * 2 + General.Map.ConfigSettings.TestEngines.Count + 2);
 				
@@ -1559,9 +1561,13 @@ namespace CodeImp.DoomBuilder.Windows
 					menuitem.Tag = si.Index;
 					menuitem.Checked = (General.Settings.TestMonsters && (General.Map.ConfigSettings.TestSkill == si.Index));
 					items.Add(menuitem);
+
+					int width = (int)MeasureString(si.ToString(), menuitem.Font).Width;
+					if (width > maxwidth)
+						maxwidth = width;
 				}
 
-				// Add seperator
+				// Add separator
 				items.Add(new ToolStripSeparator { Padding = new Padding(0, 3, 0, 3) });
 
 				// Negative skills are without monsters
@@ -1573,9 +1579,13 @@ namespace CodeImp.DoomBuilder.Windows
 					menuitem.Tag = -si.Index;
 					menuitem.Checked = (!General.Settings.TestMonsters && (General.Map.ConfigSettings.TestSkill == si.Index));
 					items.Add(menuitem);
+
+					int width = (int)MeasureString(si.ToString(), menuitem.Font).Width;
+					if (width > maxwidth)
+						maxwidth = width;
 				}
 
-				//mxd. Add seperator
+				//mxd. Add separator
 				items.Add(new ToolStripSeparator { Padding = new Padding(0, 3, 0, 3) });
 
 				//mxd. Add test engines
@@ -1588,8 +1598,26 @@ namespace CodeImp.DoomBuilder.Windows
 					menuitem.Tag = i;
 					menuitem.Checked = (i == General.Map.ConfigSettings.CurrentEngineIndex);
 					items.Add(menuitem);
+
+					int width = (int)MeasureString(General.Map.ConfigSettings.TestEngines[i].TestProgramName, menuitem.Font).Width;
+					if (width > maxwidth)
+						maxwidth = width;
 				}
-				
+
+				// Add separator
+				items.Add(new ToolStripSeparator { Padding = new Padding(0, 3, 0, 3) });
+
+				// Text box for additional parameters
+				PlaceholderToolStripTextBox ptstb = new PlaceholderToolStripTextBox();
+				ptstb.BorderStyle = BorderStyle.FixedSingle;
+				ptstb.PlaceholderText = "Additional parameters";
+				ptstb.AutoSize = false;
+				ptstb.Width = maxwidth;
+				ptstb.Text = General.Map.ConfigSettings.TestAdditionalParameters;
+				ptstb.TextChanged += (sender, e) => { General.Map.ConfigSettings.TestAdditionalParameters = ptstb.Text; };
+				ptstb.KeyDown += (sender, e) => { if(e.KeyCode == Keys.Enter) General.Map.Launcher.TestAtSkill(General.Map.ConfigSettings.TestSkill); };
+				items.Add(ptstb);
+
 				// Add to list
 				buttontest.DropDownItems.AddRange(items.ToArray());
 			}

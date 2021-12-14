@@ -350,6 +350,10 @@ namespace CodeImp.DoomBuilder
 						// Make arguments
 						string args = ConvertParameters(General.Map.ConfigSettings.TestParameters, skill, General.Map.ConfigSettings.TestShortPaths, General.Map.ConfigSettings.TestLinuxPaths);
 
+						// Add additional parameters
+						if (!string.IsNullOrWhiteSpace(General.Map.ConfigSettings.TestAdditionalParameters))
+							args += " " + General.Map.ConfigSettings.TestAdditionalParameters;
+
 						// Setup process info
 						ProcessStartInfo processinfo = new ProcessStartInfo();
 						processinfo.Arguments = args;

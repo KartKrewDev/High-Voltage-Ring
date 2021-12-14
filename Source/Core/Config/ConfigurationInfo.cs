@@ -92,6 +92,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool TestShortPaths { get { return testEngines[currentEngineIndex].TestShortPaths; } internal set { testEngines[currentEngineIndex].TestShortPaths = value; } }
 		public bool TestLinuxPaths { get { return testEngines[currentEngineIndex].TestLinuxPaths; } internal set { testEngines[currentEngineIndex].TestLinuxPaths = value; } }
 		public int TestSkill { get { return testEngines[currentEngineIndex].TestSkill; } internal set { testEngines[currentEngineIndex].TestSkill = value; } }
+		public string TestAdditionalParameters { get { return testEngines[currentEngineIndex].AdditionalParameters; } internal set { testEngines[currentEngineIndex].AdditionalParameters = value; } }
 		public bool CustomParameters { get { return testEngines[currentEngineIndex].CustomParameters; } internal set { testEngines[currentEngineIndex].CustomParameters = value; } }
 		public List<EngineInfo> TestEngines { get { return testEngines; } internal set { testEngines = value; } }
 		public int CurrentEngineIndex { get { return currentEngineIndex; } internal set { currentEngineIndex = value; } }
@@ -143,6 +144,7 @@ namespace CodeImp.DoomBuilder.Config
 				info.TestLinuxPaths = General.Settings.ReadSetting("configurations." + settingskey + ".testlinuxpaths", false);
 				info.CustomParameters = General.Settings.ReadSetting("configurations." + settingskey + ".customparameters", false);
 				info.TestSkill = General.Settings.ReadSetting("configurations." + settingskey + ".testskill", 3);
+				info.AdditionalParameters = General.Settings.ReadSetting("configurations." + settingskey + ".additionalparameters", "");
 				testEngines.Add(info);
 				currentEngineIndex = 0;
 			} 
@@ -160,6 +162,7 @@ namespace CodeImp.DoomBuilder.Config
 					info.TestLinuxPaths = General.Settings.ReadSetting(path + ".testlinuxpaths", false);
 					info.CustomParameters = General.Settings.ReadSetting(path + ".customparameters", false);
 					info.TestSkill = General.Settings.ReadSetting(path + ".testskill", 3);
+					info.AdditionalParameters = General.Settings.ReadSetting(path + ".additionalparameters", "");
 					testEngines.Add(info);
 				}
 
@@ -328,6 +331,7 @@ namespace CodeImp.DoomBuilder.Config
 				rlinfo.Add("testlinuxpaths", testEngines[i].TestShortPaths);
 				rlinfo.Add("customparameters", testEngines[i].CustomParameters);
 				rlinfo.Add("testskill", testEngines[i].TestSkill);
+				rlinfo.Add("additionalparameters", testEngines[i].AdditionalParameters);
 
 				// Add structure
 				resinfo.Add("engine" + i.ToString(CultureInfo.InvariantCulture), rlinfo);

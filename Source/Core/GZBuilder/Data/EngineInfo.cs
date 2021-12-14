@@ -22,6 +22,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		private string testprogramname;
 		private string testprogram;
 		private Bitmap icon;
+		private string additionalparameters;
+
 		public string TestParameters;
 		public bool CustomParameters;
 		public int TestSkill;
@@ -38,6 +40,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		public string TestProgramName { get { return testprogramname; } set { testprogramname = value; CheckProgramName(); } }
 		public string TestProgram { get { return testprogram; } set { testprogram = value; CheckProgramName(); } }
 		public Bitmap TestProgramIcon { get { if(icon == null) UpdateIcon(); return icon; } }
+		public string AdditionalParameters { get { return additionalparameters; } internal set { additionalparameters = value; } }
 
 		#endregion
 
@@ -57,6 +60,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			TestSkill = other.TestSkill;
 			TestShortPaths = other.TestShortPaths;
 			TestLinuxPaths = other.TestLinuxPaths;
+			additionalparameters = other.AdditionalParameters;
 
 			UpdateIcon();
 		}
