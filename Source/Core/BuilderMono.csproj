@@ -184,6 +184,9 @@
       <DependentUpon>ExternalCommandControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\FolderSelectDialog.cs" />
+    <Compile Include="Controls\PlaceholderToolStripTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\Scripting\TextEditorControl.cs" />
     <Compile Include="Controls\TransparentTrackBar.cs">
       <SubType>Component</SubType>
