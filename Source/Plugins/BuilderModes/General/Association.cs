@@ -31,31 +31,6 @@ using CodeImp.DoomBuilder.Windows;
 
 namespace CodeImp.DoomBuilder.BuilderModes
 {
-	public struct UDMFFieldAssociationX
-	{
-		public string Property;
-		public string Modify;
-		public UniValue Value;
-
-		public UDMFFieldAssociationX(string property, string modify, UniValue value)
-		{
-			Property = property;
-			Modify = modify;
-			Value = value;
-		}
-
-		public UniValue GetValue()
-		{
-			if(Value.Type == 0)
-			{
-				if (Modify == "abs")
-					return new UniValue(0, Math.Abs((int)Value.Value));
-			}
-
-			return new UniValue(0, 0);
-		}
-	}
-
 	public class Association
 	{
 		private HashSet<int> tags;
@@ -302,6 +277,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			bool haslinedeftags = actiontags.ContainsKey((int)UniversalType.LinedefTag);
 			bool hasthingtag = actiontags.ContainsKey((int)UniversalType.ThingTag);
 
+			Dictionary<UDMFFieldAssociation, List<Sector>> fieldassocsectors = new Dictionary<UDMFFieldAssociation, List<Sector>>();
+
 			// Process all sectors in the map
 			foreach (Sector s in General.Map.Map.Sectors)
 			{
@@ -350,10 +327,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								{
 									Vector2D sectorcenter = (s.Labels.Count > 0 ? s.Labels[0].position : new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2));
 
-									if(showforwardlabel && kvp.Value.NeverShowEventLines == false)
-										AddLineToAction(kvp.Key + ": " + uv.Value, center, sectorcenter);
-
 									sectors.Add(s);
+
+									if (!fieldassocsectors.ContainsKey(kvp.Value))
+										fieldassocsectors.Add(kvp.Value, new List<Sector>());
+
+									fieldassocsectors[kvp.Value].Add(s);
 								}
 							}
 						}
@@ -361,8 +340,29 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 			}
 
+			// Process sectors
+			foreach(UDMFFieldAssociation ufa in fieldassocsectors.Keys)
+			{
+				if(ufa.ConsolidateEventLines)
+				{
+					List<Sector> sl = new List<Sector>(fieldassocsectors[ufa]);
+
+					while(sl.Count > 0)
+					{
+						List<Sector> sgroup = GetTouchingSectors(sl);
+						Vector2D p = sgroup[0].Labels[0].position;
+
+						UniValue uv;
+						if (sgroup[0].Fields.TryGetValue(ufa.Property, out uv))
+						{
+							AddLineToAction(ufa.Property + ": " + uv.Value, center, GetCenterLabelFromSectors(sgroup));
+						}
+					}
+				}
+			}
+
 			// Process all linedefs in the map
-			foreach(Linedef ld in General.Map.Map.Linedefs)
+			foreach (Linedef ld in General.Map.Map.Linedefs)
 			{
 				bool addforward = false;
 				bool addreverse = false;
@@ -417,6 +417,74 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						AddLineToAction(showreverselabel ? GetActionDescription(t) : string.Empty, t.Position, center);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets a list of sectors that are connected to each other, starting from the first sector in the given list.
+		/// </summary>
+		/// <param name="sectors">List of sectors to check</param>
+		/// <returns>List of sectors that are connected</returns>
+		private List<Sector> GetTouchingSectors(List<Sector> sectors)
+		{
+			List<Sector> group = new List<Sector>();
+			List<Sector> sectorstocheck = new List<Sector>();
+
+			if (sectors.Count == 0)
+				return group;
+
+			sectorstocheck.Add(sectors[0]);
+
+			while(sectorstocheck.Count > 0)
+			{
+				Sector sector = sectorstocheck[0];
+
+				foreach(Sidedef sd in sector.Sidedefs)
+				{
+					if (sd.Other == null)
+						continue;
+
+					Sector oppositesector = sd.Other.Sector;
+
+					if (sectors.Contains(oppositesector) && !group.Contains(oppositesector) && !sectorstocheck.Contains(oppositesector))
+						sectorstocheck.Add(oppositesector);
+				}
+
+				sectorstocheck.Remove(sector);
+				sectors.Remove(sector);
+				group.Add(sector);
+			}
+
+			return group;
+		}
+
+		/// <summary>
+		/// Gets the position of the sector label that's closest to the center of the given sectors.
+		/// </summary>
+		/// <param name="sectors">List of sectors to get the position from</param>
+		/// <returns>Position of the label closest to the center of the given sectors</returns>
+		private Vector2D GetCenterLabelFromSectors(List<Sector> sectors)
+		{
+			if (sectors.Count == 0)
+				return new Vector2D(0, 0);
+
+			List<Vector2D> positions = new List<Vector2D>(sectors.Count);
+			Vector2D tl = new Vector2D(sectors[0].BBox.Left, sectors[0].BBox.Top);
+			Vector2D br = new Vector2D(sectors[0].BBox.Right, sectors[0].BBox.Bottom);
+
+			foreach(Sector s in sectors)
+			{
+				if (s.BBox.Left < tl.x) tl.x = s.BBox.Left;
+				if (s.BBox.Right > br.x) br.x = s.BBox.Right;
+				if (s.BBox.Top > tl.y) tl.y = s.BBox.Top;
+				if (s.BBox.Bottom < br.y) br.y = s.BBox.Bottom;
+
+				foreach(LabelPositionInfo lpi in s.Labels)
+					positions.Add(lpi.position);
+			}
+
+			Vector2D center = new Vector2D((tl.x + br.x) / 2, (tl.y + br.y) / 2);
+
+			return positions.OrderBy(p => Vector2D.Distance(p, center)).First();
 		}
 
 		/// <summary>

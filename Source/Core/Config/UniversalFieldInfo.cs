@@ -37,12 +37,14 @@ namespace CodeImp.DoomBuilder.Config
 		public string Property;
 		public UDMFFieldAssociationModifier Modify;
 		public bool NeverShowEventLines;
+		public bool ConsolidateEventLines;
 
-		public UDMFFieldAssociation(string property, UDMFFieldAssociationModifier modify, bool nevershoweventlines)
+		public UDMFFieldAssociation(string property, UDMFFieldAssociationModifier modify, bool nevershoweventlines, bool consolidateeventlines)
 		{
 			Property = property;
 			Modify = modify;
 			NeverShowEventLines = nevershoweventlines;
+			ConsolidateEventLines = consolidateeventlines;
 		}
 	}
 
@@ -130,6 +132,7 @@ namespace CodeImp.DoomBuilder.Config
 				string property = cfg.ReadSetting(setting + ".associations." + section.Key + ".property", string.Empty);
 				string modifystr = cfg.ReadSetting(setting + ".associations." + section.Key + ".modify", string.Empty);
 				bool nevershoweventlines = cfg.ReadSetting(setting + ".associations." + section.Key + ".nevershoweventlines", false);
+				bool consolidateeventlines = cfg.ReadSetting(setting + ".associations." + section.Key + ".consolidateeventlines", false);
 				UDMFFieldAssociationModifier ufam = UDMFFieldAssociationModifier.None;
 
 				if(!string.IsNullOrWhiteSpace(property))
@@ -141,7 +144,7 @@ namespace CodeImp.DoomBuilder.Config
 							break;
 					}
 
-					associations[property] = new UDMFFieldAssociation(property, ufam, nevershoweventlines);
+					associations[property] = new UDMFFieldAssociation(property, ufam, nevershoweventlines, consolidateeventlines);
 				}
 			}
 
