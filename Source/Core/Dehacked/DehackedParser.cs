@@ -489,6 +489,13 @@ namespace CodeImp.DoomBuilder.Dehacked
 			StringBuilder oldtext = new StringBuilder(textreplaceoldcount);
 			while (textreplaceoldcount > 0)
 			{
+				// Sanity check for malformed patches, for example in dbimpact.wad (see https://github.com/jewalky/UltimateDoomBuilder/issues/673)
+				if (datareader.EndOfStream)
+				{
+					LogError("Reached enexpected end of file when " + textreplaceoldcount + (textreplaceoldcount == 1 ? " more character was" : " more characters were") + " expected");
+					return false;
+				}
+
 				int c = datareader.Read();
 
 				// Dehacked patches use Windows style CRLF line endings, but text replacements
@@ -505,6 +512,13 @@ namespace CodeImp.DoomBuilder.Dehacked
 			StringBuilder newtext = new StringBuilder();
 			while (textreplacenewcount > 0)
 			{
+				// Sanity check for malformed patches, for example in dbimpact.wad (see https://github.com/jewalky/UltimateDoomBuilder/issues/673)
+				if (datareader.EndOfStream)
+				{
+					LogWarning("Reached unexpected end of file when " + textreplacenewcount + (textreplacenewcount == 1 ? " more character was" : " more characters were") + " expected");
+					break;
+				}
+
 				int c = datareader.Read();
 
 				// Dehacked patches use Windows style CRLF line endings, but text replacements
