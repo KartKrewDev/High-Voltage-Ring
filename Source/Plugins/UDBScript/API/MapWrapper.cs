@@ -924,9 +924,10 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 
 		/// <summary>
 		/// Gets all `Sidedef`s from the selected `Linedef`s.
+		/// In classic modes this will return both sidedefs of 2-sided lines, in visual mode it will only return the actually selected `Sidedef`.
 		/// </summary>
 		/// <param name="selected">`true` to get all `Sidedef`s of all selected `Linedef`s, `false` to get all `Sidedef`s of all unselected `Linedef`s</param>
-		/// <returns></returns>
+		/// <returns>`Array` of `Sidedef`</returns>
 		public SidedefWrapper[] getSidedefsFromSelectedLinedefs(bool selected = true)
 		{
 			List<SidedefWrapper> sidedefs = new List<SidedefWrapper>();
@@ -943,6 +944,32 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			{
 				foreach (Sidedef sd in General.Map.Map.GetSidedefsFromSelectedLinedefs(selected))
 					sidedefs.Add(new SidedefWrapper(sd));
+			}
+
+			return sidedefs.ToArray();
+		}
+
+		/// <summary>
+		/// Gets the `Sidedef`s of the currently selected `Linedef`s *or*, if no `Linede`f`s are selected, the `Sidedef`s of the currently highlighted `Linedef`.
+		/// In classic modes this will return both sidedefs of 2-sided lines, in visual mode it will only return the actually selected `Sidedef`.
+		/// </summary>
+		/// <returns>`Array` of `Sidedef`s</returns>
+		/// <version>3</version>
+		public SidedefWrapper[] getSidedefsFromSelectedOrHighlightedLinedefs()
+		{
+			List<SidedefWrapper> sidedefs = new List<SidedefWrapper>(getSidedefsFromSelectedLinedefs(true));
+
+			if(sidedefs.Count > 0)
+				return sidedefs.ToArray();
+
+			// Nothing selected, so let's see if anything is highlighted
+			LinedefWrapper highlight = getHighlightedLinedef();
+			if (highlight != null)
+			{
+				if (highlight.front != null)
+					sidedefs.Add(highlight.front);
+				if (highlight.back != null)
+					sidedefs.Add(highlight.back);
 			}
 
 			return sidedefs.ToArray();

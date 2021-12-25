@@ -3,6 +3,7 @@
 ## UDB script
 
 - [Getting started](gettingstarted.md)
+- [Changes](changes.md)
 
 ## API
 

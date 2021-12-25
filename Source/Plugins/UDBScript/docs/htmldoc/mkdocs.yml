@@ -1,12 +1,13 @@
-site_name: UDB Script
+site_name: UDBScript
 theme: readthedocs
 markdown_extensions:
   - admonition
   - footnotes
 nav:
-  - 'UDB Script':
+  - 'UDBScript':
     - Index: 'index.md'
     - 'Getting started': 'gettingstarted.md'
+    - 'Changes': 'changes.md'
   - 'API':
     - Angle2D: 'Angle2D.md'
     - Data: 'Data.md'

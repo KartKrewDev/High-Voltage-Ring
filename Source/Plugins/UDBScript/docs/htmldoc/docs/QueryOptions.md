@@ -14,12 +14,18 @@ qo.query();
 showMessage('You want ' + qo.options.numsides + ' sides with a length of ' + qo.options.length);
 ```
 ## Constructors
+
+---
 ### QueryOptions()
 Initializes a new `QueryOptions` object.
 ## Properties
+
+---
 ### options
 Object containing all the added options as properties.
 ## Methods
+
+---
 ### addOption(name, description, type, defaultvalue)
 Adds a parameter to query
 #### Parameters
@@ -27,6 +33,8 @@ Adds a parameter to query
 * description: Textual description of the parameter
 * type: UniversalType value of the parameter
 * defaultvalue: Default value of the parameter
+
+---
 ### addOption(name, description, type, defaultvalue, enumvalues)
 Adds a parameter to query
 #### Parameters
@@ -34,8 +42,12 @@ Adds a parameter to query
 * description: Textual description of the parameter
 * type: UniversalType value of the parameter
 * defaultvalue: Default value of the parameter
+
+---
 ### clear()
 Removes all parameters
+
+---
 ### query()
 Queries all parameters. Options a window where the user can enter values for the options added through `addOption()`.
 #### Return value

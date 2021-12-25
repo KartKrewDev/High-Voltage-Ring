@@ -2248,6 +2248,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			return sectors;
 		}
 
+		/// <summary>
+		/// Determines if the floor and/or ceiling of a sector is selected.
+		/// </summary>
+		/// <param name="sector">The sector to check</param>
+		/// <param name="floor">If floor is selected or not</param>
+		/// <param name="ceiling">If ceiling is selected or not</param>
+		public void GetSelectedSurfaceTypesBySector(Sector sector, out bool floor, out bool ceiling)
+		{
+			floor = ceiling = false;
+
+			foreach(IVisualEventReceiver i in selectedobjects)
+			{
+				if (i is VisualFloor && ((VisualFloor)i).Level.sector == sector)
+					floor = true;
+				else if (i is VisualCeiling && ((VisualCeiling)i).Level.sector == sector)
+					ceiling = true;
+			}
+		}
+
 		// This returns all selected linedefs, no doubles
 		public List<Linedef> GetSelectedLinedefs()
 		{
@@ -2277,6 +2296,28 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			return linedefs;
 		}
 
+		/// <summary>
+		/// Determines if the upper/middle/lower parts of a sidedef are selected.
+		/// </summary>
+		/// <param name="sidedef">The sidedef tzo check</param>
+		/// <param name="upper">If the upper part is selected</param>
+		/// <param name="middle">If the middle part is selected</param>
+		/// <param name="lower">If the lower part is selected</param>
+		public void GetSelectedSurfaceTypesBySidedef(Sidedef sidedef, out bool upper, out bool middle, out bool lower)
+		{
+			upper = middle = lower = false;
+
+			foreach(IVisualEventReceiver i in selectedobjects)
+			{
+				if (i is VisualUpper && ((VisualUpper)i).Sidedef == sidedef)
+					upper = true;
+				else if ((i is VisualMiddleSingle || i is VisualMiddleDouble || i is VisualMiddleBack) && ((BaseVisualGeometrySidedef)i).Sidedef == sidedef)
+					middle = true;
+				else if (i is VisualLower && ((VisualLower)i).Sidedef == sidedef)
+					lower = true;
+			}
+		}
+
 		// This returns all selected sidedefs, no doubles
 		public List<Sidedef> GetSelectedSidedefs()
 		{
@@ -2293,11 +2334,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// Add highlight?
+			/*
 			if((selectedobjects.Count == 0) && (target.picked is BaseVisualGeometrySidedef))
 			{
 				Sidedef sd = ((BaseVisualGeometrySidedef)target.picked).Sidedef;
 				if(!added.Contains(sd)) sidedefs.Add(sd);
 			}
+			*/
 
 			return sidedefs;
 		}

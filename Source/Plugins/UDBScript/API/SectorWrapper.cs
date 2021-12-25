@@ -27,8 +27,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
+using CodeImp.DoomBuilder.BuilderModes;
+using CodeImp.DoomBuilder.Editing;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
+using CodeImp.DoomBuilder.VisualModes;
 
 #endregion
 
@@ -195,6 +198,122 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 					if (sd.Line.Front != null) front = sd.Line.Front.Sector.Selected; else front = false;
 					if (sd.Line.Back != null) back = sd.Line.Back.Sector.Selected; else back = false;
 					sd.Line.Selected = front | back;
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sector`'s floor is selected or not. Will always return `true` in classic modes if the `Sector` is selected. Read-only.
+		/// </summary>
+		/// <version>3</version>
+		public bool floorSelected
+		{
+			get
+			{
+				if (sector.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sector is disposed, the floorSelected property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					bool f, c;
+
+					((BaseVisualMode)General.Editing.Mode).GetSelectedSurfaceTypesBySector(sector, out f, out c);
+
+					return f;
+				}
+				else
+				{
+					return sector.Selected;
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sector`'s floor is highlighted or not. Will always return `true` in classic modes if the `Sector` is highlighted. Read-only.
+		/// </summary>
+		/// <version>3</version>
+		public bool floorHighlighted
+		{
+			get
+			{
+				if (sector.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sector is disposed, the floorHighlighted property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					VisualGeometry vs = (VisualGeometry)((BaseVisualMode)General.Editing.Mode).Highlighted;
+
+					if (vs == null)
+						return false;
+
+					return (vs.Sector.Sector == sector && vs.GeometryType == VisualGeometryType.FLOOR);
+				}
+				else
+				{
+					Sector s = ((ClassicMode)General.Editing.Mode).HighlightedObject as Sector;
+
+					if(s == null)
+						return false;
+
+					return s == sector;
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sector`'s ceiling is selected or not. Will always return `true` in classic modes if the `Sector` is selected. Read-only.
+		/// </summary>
+		/// <version>3</version>
+		public bool ceilingSelected
+		{
+			get
+			{
+				if (sector.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sector is disposed, the ceilingSelected property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					bool f, c;
+
+					((BaseVisualMode)General.Editing.Mode).GetSelectedSurfaceTypesBySector(sector, out f, out c);
+
+					return c;
+				}
+				else
+				{
+					return sector.Selected;
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sector`'s ceiling is highlighted or not. Will always return `true` in classic modes if the `Sector` is highlighted. Read-only.
+		/// </summary>
+		/// <version>3</version>
+		public bool ceilingHighlighted
+		{
+			get
+			{
+				if (sector.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sector is disposed, the ceilingHighlighted property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					VisualGeometry vs = (VisualGeometry)((BaseVisualMode)General.Editing.Mode).Highlighted;
+
+					if (vs == null)
+						return false;
+
+					return (vs.Sector.Sector == sector && vs.GeometryType == VisualGeometryType.CEILING);
+				}
+				else
+				{
+					Sector s = ((ClassicMode)General.Editing.Mode).HighlightedObject as Sector;
+
+					if (s == null)
+						return false;
+
+					return s == sector;
 				}
 			}
 		}

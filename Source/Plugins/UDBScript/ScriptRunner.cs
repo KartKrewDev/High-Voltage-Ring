@@ -241,6 +241,14 @@ namespace CodeImp.DoomBuilder.UDBScript
 			engine.SetValue("UniValue", TypeReference.CreateTypeReference(engine, typeof(UniValue)));
 			engine.SetValue("Data", TypeReference.CreateTypeReference(engine, typeof(DataWrapper)));
 
+			// These can not be directly instanciated and don't have static method, but it's required to
+			// for example use "instanceof" in scripts
+			engine.SetValue("Linedef", TypeReference.CreateTypeReference(engine, typeof(LinedefWrapper)));
+			engine.SetValue("Sector", TypeReference.CreateTypeReference(engine, typeof(SectorWrapper)));
+			engine.SetValue("Sidedef", TypeReference.CreateTypeReference(engine, typeof(SidedefWrapper)));
+			engine.SetValue("Thing", TypeReference.CreateTypeReference(engine, typeof(ThingWrapper)));
+			engine.SetValue("Vertex", TypeReference.CreateTypeReference(engine, typeof(VertexWrapper)));
+
 #if DEBUG
 			engine.SetValue("log", new Action<object>(Console.WriteLine));
 #endif

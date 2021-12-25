@@ -27,8 +27,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
+using CodeImp.DoomBuilder.Editing;
+using CodeImp.DoomBuilder.BuilderModes;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
+using CodeImp.DoomBuilder.VisualModes;
 
 #endregion
 
@@ -318,6 +321,180 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 
 				// Make sure to update the used textures, so that they are shown immediately
 				General.Map.Data.UpdateUsedTextures();
+			}
+		}
+
+		/// <summary>
+		/// If the `Sidedef`'s upper part is selected or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+		/// </summary>
+		/// <version>3</version>
+		public bool upperSelected
+		{
+			get
+			{
+				if (sidedef.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sidedef is disposed, the upperSelected property can not be accessed.");
+
+				if(General.Editing.Mode is BaseVisualMode)
+				{
+					bool u, m, l;
+
+					((BaseVisualMode)General.Editing.Mode).GetSelectedSurfaceTypesBySidedef(sidedef, out u, out m, out l);
+
+					return u;
+				}
+				else
+				{
+					return sidedef.Line.Selected;
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sidedef`'s upper part is highlighted or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+		/// </summary>
+		/// <version>3</version>
+		public bool upperHighlighted
+		{
+			get
+			{
+				if (sidedef.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sidedef is disposed, the upperHighlighted property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					VisualGeometry vs = (VisualGeometry)((BaseVisualMode)General.Editing.Mode).Highlighted;
+
+					if (vs == null)
+						return false;
+
+					return (vs.Sidedef == sidedef && vs.GeometryType == VisualGeometryType.WALL_UPPER);
+				}
+				else
+				{
+					Linedef ld = ((ClassicMode)General.Editing.Mode).HighlightedObject as Linedef;
+
+					if (ld == null)
+						return false;
+
+					return (ld.Front == sidedef || (ld.Back != null && ld.Back == sidedef));
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sidedef`'s middle part is selected or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+		/// </summary>
+		/// <version>3</version>
+		public bool middleSelected
+		{
+			get
+			{
+				if (sidedef.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sidedef is disposed, the middleSelected property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					bool u, m, l;
+
+					((BaseVisualMode)General.Editing.Mode).GetSelectedSurfaceTypesBySidedef(sidedef, out u, out m, out l);
+
+					return m;
+				}
+				else
+				{
+					return sidedef.Line.Selected;
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sidedef`'s middle part is highlighted or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+		/// </summary>
+		/// <version>3</version>
+		public bool middleHighlighted
+		{
+			get
+			{
+				if (sidedef.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sidedef is disposed, the middleHighlighted property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					VisualGeometry vs = (VisualGeometry)((BaseVisualMode)General.Editing.Mode).Highlighted;
+
+					if (vs == null)
+						return false;
+
+					return (vs.Sidedef == sidedef && (vs.GeometryType == VisualGeometryType.WALL_MIDDLE || vs.GeometryType == VisualGeometryType.WALL_MIDDLE_3D));
+				}
+				else
+				{
+					Linedef ld = ((ClassicMode)General.Editing.Mode).HighlightedObject as Linedef;
+
+					if (ld == null)
+						return false;
+
+					return (ld.Front == sidedef || (ld.Back != null && ld.Back == sidedef));
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sidedef`'s lower part is selected or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+		/// </summary>
+		/// <version>3</version>
+		public bool lowerSelected
+		{
+			get
+			{
+				if (sidedef.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sidedef is disposed, the lowerSelected property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					bool u, m, l;
+
+					((BaseVisualMode)General.Editing.Mode).GetSelectedSurfaceTypesBySidedef(sidedef, out u, out m, out l);
+
+					return l;
+				}
+				else
+				{
+					return sidedef.Line.Selected;
+				}
+			}
+		}
+
+		/// <summary>
+		/// If the `Sidedef`'s lower part is highlighted or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+		/// </summary>
+		/// <version>3</version>
+		public bool lowerHighlighted
+		{
+			get
+			{
+				if (sidedef.IsDisposed)
+					throw BuilderPlug.Me.ScriptRunner.CreateRuntimeException("Sidedef is disposed, the lowerHighlighted property can not be accessed.");
+
+				if (General.Editing.Mode is BaseVisualMode)
+				{
+					VisualGeometry vs = (VisualGeometry)((BaseVisualMode)General.Editing.Mode).Highlighted;
+
+					if (vs == null)
+						return false;
+
+					return (vs.Sidedef == sidedef && vs.GeometryType == VisualGeometryType.WALL_LOWER);
+				}
+				else
+				{
+					Linedef ld = ((ClassicMode)General.Editing.Mode).HighlightedObject as Linedef;
+
+					if (ld == null)
+						return false;
+
+					return (ld.Front == sidedef || (ld.Back != null && ld.Back == sidedef));
+				}
 			}
 		}
 

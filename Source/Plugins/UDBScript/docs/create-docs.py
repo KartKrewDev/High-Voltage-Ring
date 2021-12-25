@@ -80,7 +80,11 @@ for topic in topics:
                     if texttype == 'global':
                         texts['global'] = f'{summary}\n'
                     else:
+                        commenttext += '\n---\n'
+                        if 'version' in d:
+                            commenttext += f'<span style="float:right;font-weight:normal;font-size:66%">Version: {d["version"]}</span>\n'
                         commenttext += f'### {signature}\n'
+
                         commenttext += f'{summary}\n'
                         if 'param' in d:
                             commenttext += '#### Parameters\n'

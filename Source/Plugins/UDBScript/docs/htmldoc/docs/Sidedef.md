@@ -1,10 +1,16 @@
 # Sidedef
 
 ## Properties
+
+---
 ### angle
 The `Sidedef`'s angle in degrees. Read-only.
+
+---
 ### angleRad
 The `Sidedef`'s angle in radians. Read-only.
+
+---
 ### fields
 UDMF fields. It's an object with the fields as properties.
 
@@ -33,6 +39,8 @@ To remove a field you have to assign `null` to it:
 ```js
 s.fields.user_myintfield = null;
 ```
+
+---
 ### flags
 `Sidedef` flags. It's an object with the flags as properties. Only available in UDMF.
 
@@ -41,23 +49,73 @@ s.fields.user_myintfield = null;
 s.flags['noattack'] = true; // Monsters in this sector don't attack
 s.flags.noattack = true; // Also works
 ```
+
+---
 ### index
 The `Sidedef`'s index. Read-only.
+
+---
 ### isFront
 `true` if this `Sidedef` is the front of its `Linedef`, otherwise `false`. Read-only.
+
+---
 ### line
 The `Linedef` the `Sidedef` belongs to. Read-only.
+
+---
+<span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
+### lowerHighlighted
+If the `Sidedef`'s lower part is highlighted or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+
+---
+<span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
+### lowerSelected
+If the `Sidedef`'s lower part is selected or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+
+---
 ### lowerTexture
 The `Sidedef`'s lower texture.
+
+---
+<span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
+### middleHighlighted
+If the `Sidedef`'s middle part is highlighted or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+
+---
+<span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
+### middleSelected
+If the `Sidedef`'s middle part is selected or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+
+---
 ### middleTexture
 The `Sidedef`'s middle texture.
+
+---
 ### offsetX
 The x offset of the `Sidedef`'s textures.
+
+---
 ### offsetY
 The y offset of the `Sidedef`'s textures.
+
+---
 ### other
 The `Sidedef` on the other side of this `Sidedef`'s `Linedef`. Returns `null` if there is no other. Read-only.
+
+---
 ### sector
 The `Sector` the `Sidedef` belongs to. Read-only.
+
+---
+<span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
+### upperHighlighted
+If the `Sidedef`'s upper part is highlighted or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+
+---
+<span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
+### upperSelected
+If the `Sidedef`'s upper part is selected or not. Will always return `true` in classic modes if the parent `Linedef` is selected.
+
+---
 ### upperTexture
 The `Sidedef`'s upper texture.

@@ -247,10 +247,14 @@ let v2 = new Vector2D(2, 3) * 3; // Results in new Vector(6, 9)
 
 ### Working with map elements
 
-Map elements (things, sectors, linedefs, sidedefs, vertices) can be accessed through the global `Map` object. This object has methods that return an array of map elements, for example `Map.getSectors()` returns an array of `Sector` objects, which are are all sectors in the map. There are also methods to get all selected (for example `Map.getSelectedSectors()`) and marked (for example `Map.getMarkedSectors()`) map elements. These map elements can then be modified, see the documentation for the particular map element type in the API section.
+Map elements (things, sectors, linedefs, sidedefs, vertices) can be accessed through the global `Map` object. This object has methods that return an array of map elements, for example `Map.getSectors()` returns an array of `Sector` objects, which are are all sectors in the map. There are also methods to get all selected (for example `Map.getSelectedSectors()`) and marked (for example `Map.getMarkedSectors()`), or the currently highlighted (for example `Map.getHighlightedSector()`) map elements. There are also methods to get either the currently selected map elements, *or* the currently highlighted map elements (for example `Map.getSelectedOrHighlightedSectors()`). These map elements can then be modified, see the documentation for the particular map element type in the API section.
 
 !!! note
     "Marking" a map element is a way to denote that something happened to this map element. For example when using the `Map.drawLines()` method all new geometry will be marked.
+
+!!! info
+    UDB differentiates between "selecting" and "highlighting" map elements. "Selecting" means clicking on the map element, "highlighting" means just hovering the mouse on (or near) a map element. All the `Map.getSelectedOrHighlighted...()` methods behave like UDB usually works, i.e. if at least one map element is selected, the selected map elements will be returned (and the highlighted map element will be ignored), if no map elements are selected the highlighted map element will be returned.
+	In most circumstances it is recommended to use the `Map.getSelectedOrHighlighted...()` to stay close to UDB's built-in actions.
 
 ### Creating new geometry
 
