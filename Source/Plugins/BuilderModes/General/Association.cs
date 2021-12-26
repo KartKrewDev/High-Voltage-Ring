@@ -709,8 +709,36 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				return description;
 			}
+			else if(se is Thing) // No action, but maybe the thing args are used directly
+			{
+				List<string> argdescription = new List<string>();
+				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(((Thing)se).Type);
 
-			return null;
+				for (int i = 0; i < 5; i++)
+				{
+					if (ti.Args[i].Used)
+					{
+						string argstring = "";
+
+						if (BuilderPlug.Me.EventLineLabelStyle == 2) // Label style: full arguments
+							argstring = ti.Args[i].Title + ": ";
+
+						EnumItem ei = ti.Args[i].Enum.GetByEnumIndex(actionargs[i].ToString());
+
+						if (ei != null && BuilderPlug.Me.EventLineLabelStyle == 2) // Label style: full arguments
+							argstring += ei.ToString();
+						else // Argument has no EnumItem or label style: short arguments
+							argstring += actionargs[i].ToString();
+
+						argdescription.Add(argstring);
+					}
+				}
+
+				if(argdescription.Count > 0)
+					return string.Join(", ", argdescription);
+			}
+
+			return string.Empty;
 		}
 
 		/// <summary>
