@@ -2966,7 +2966,7 @@ namespace CodeImp.DoomBuilder.Data
 			foreach(DataReader dr in containers)
 			{
 				currentreader = dr; // Why?
-				IEnumerable<TextResourceData> streams = dr.GetTextLumpData(ScriptType.UNKNOWN, false, false);
+				IEnumerable<TextResourceData> streams = dr.GetTextLumpData(ScriptType.DECALDEF, false, false);
 
 				// Parse the data
 				foreach(TextResourceData data in streams)

@@ -24,6 +24,14 @@ namespace CodeImp.DoomBuilder.Controls.Scripting
 			scriptgroupopeniconsoffset = icons.Images.Count - numicons;
 			scriptgroupiconsoffset = scriptgroupopeniconsoffset - numicons;
 			scripttypeiconsoffset = scriptgroupiconsoffset - numicons;
+
+			System.Drawing.Bitmap i = new System.Drawing.Bitmap(icons.Images[28]);
+			i.Save("c:\\users\\boris\\desktop\\group1.bmp");
+			i.Dispose();
+
+			i = new System.Drawing.Bitmap(icons.Images[51]);
+			i.Save("c:\\users\\boris\\desktop\\group2.bmp");
+			i.Dispose();
 		}
 
 		public int GetResourceIcon(int datalocationtype)

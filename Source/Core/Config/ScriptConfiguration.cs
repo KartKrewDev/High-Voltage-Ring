@@ -29,6 +29,8 @@ namespace CodeImp.DoomBuilder.Config
 {
 	//mxd
 	// WARNING: if you add items here you also *must* add icons to the ScriptEditorPanel control (it's in Core\Controls\Scripting)!
+	//          Icons required are for the script file itself, for the close group folder, and open group folder.
+	//          The icon must also be placed at the correct position (i.e. not just at the end), so that the order is correct.
 	//          Since this is apparently only used for the script editor (where nothing but DIALOG and ACS can be edited anymore) you
 	//          you can apparently just use UNKNOWN for the script type in classes derived from ZDTextParser
 	public enum ScriptType
@@ -56,6 +58,7 @@ namespace CodeImp.DoomBuilder.Config
 		KEYCONF,
 		FONTDEFS,
         ZSCRIPT,
+		DECALDEF
 	}
 	
 	public class ScriptConfiguration : IComparable<ScriptConfiguration>
