@@ -69,7 +69,9 @@ namespace CodeImp.DoomBuilder.Controls
 
 		private void UpdatePlaceholderText()
 		{
+			#if !MONO_WINFORMS
 			SendMessage(Control.Handle, EM_SETCUEBANNER, 0, placeholder);
+			#endif
 		}
 
 		#endregion
