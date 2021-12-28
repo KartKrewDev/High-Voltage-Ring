@@ -263,11 +263,17 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			try
 			{
 				Vector2D v = (Vector2D)BuilderPlug.Me.GetVectorFromObject(pos, false);
+				Linedef nearest = null;
 
 				if (double.IsNaN(maxrange))
-					return new LinedefWrapper(General.Map.Map.NearestLinedef(v));
+					nearest = General.Map.Map.NearestLinedef(v);
 				else
-					return new LinedefWrapper(General.Map.Map.NearestLinedefRange(v, maxrange));
+					nearest = General.Map.Map.NearestLinedefRange(v, maxrange);
+
+				if (nearest == null)
+					return null;
+
+				return new LinedefWrapper(nearest);
 			}
 			catch (CantConvertToVectorException e)
 			{
@@ -286,11 +292,17 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			try
 			{
 				Vector2D v = (Vector2D)BuilderPlug.Me.GetVectorFromObject(pos, false);
+				Thing nearest = null;
 
 				if (double.IsNaN(maxrange))
-					return new ThingWrapper(General.Map.Map.NearestThingSquareRange(v, double.MaxValue));
+					nearest = General.Map.Map.NearestThingSquareRange(v, double.MaxValue);
 				else
-					return new ThingWrapper(General.Map.Map.NearestThingSquareRange(v, maxrange));
+					nearest = General.Map.Map.NearestThingSquareRange(v, maxrange);
+
+				if (nearest == null)
+					return null;
+
+				return new ThingWrapper(nearest);
 			}
 			catch (CantConvertToVectorException e)
 			{
@@ -309,11 +321,17 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			try
 			{
 				Vector2D v = (Vector2D)BuilderPlug.Me.GetVectorFromObject(pos, false);
+				Vertex nearest = null;
 
 				if (double.IsNaN(maxrange))
-					return new VertexWrapper(General.Map.Map.NearestVertexSquareRange(v, double.MaxValue));
+					nearest = General.Map.Map.NearestVertexSquareRange(v, double.MaxValue);
 				else
-					return new VertexWrapper(General.Map.Map.NearestVertexSquareRange(v, maxrange));
+					nearest = General.Map.Map.NearestVertexSquareRange(v, maxrange);
+
+				if (nearest == null)
+					return null;
+
+				return new VertexWrapper(nearest);
 			}
 			catch (CantConvertToVectorException e)
 			{
@@ -332,8 +350,12 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			try
 			{
 				Vector2D v = (Vector2D)BuilderPlug.Me.GetVectorFromObject(pos, false);
+				Sidedef nearest = MapSet.NearestSidedef(General.Map.Map.Sidedefs, v);
 
-				return new SidedefWrapper(MapSet.NearestSidedef(General.Map.Map.Sidedefs, v));
+				if (nearest == null)
+					return null;
+
+				return new SidedefWrapper(nearest);
 			}
 			catch (CantConvertToVectorException e)
 			{
