@@ -23,6 +23,7 @@
 
 #region ================== Namespaces
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CodeImp.DoomBuilder.BuilderModes;
@@ -41,6 +42,7 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 
 		private MapSet map;
 		private VisualCameraWrapper visualcamera;
+		private Vector2D mousemappos;
 
 		#endregion
 
@@ -86,10 +88,7 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		{
 			get
 			{
-				if (General.Editing.Mode is ClassicMode)
-					return ((ClassicMode)General.Editing.Mode).MouseMapPos;
-				else
-					return ((VisualMode)General.Editing.Mode).GetHitPosition();
+				return mousemappos;
 			}
 		}
 
@@ -112,6 +111,11 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		{
 			map = General.Map.Map;
 			visualcamera = new VisualCameraWrapper();
+
+			if (General.Editing.Mode is ClassicMode)
+				mousemappos = ((ClassicMode)General.Editing.Mode).MouseMapPos;
+			else
+				mousemappos = ((VisualMode)General.Editing.Mode).GetHitPosition();
 		}
 
 		#endregion
@@ -416,8 +420,8 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			// Snap to map format accuracy
 			General.Map.Map.SnapAllToAccuracy();
 
-			// Update map
-			General.Map.Map.Update();
+			// Update map. This has to run on the UI thread
+			BuilderPlug.Me.ScriptRunnerForm.RunAction(() => General.Map.Map.Update());
 
 			// Update textures
 			General.Map.Data.UpdateUsedTextures();
@@ -1178,7 +1182,7 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 					sectors[i].Join(first);
 
 			// Update
-			General.Map.Map.Update();
+			BuilderPlug.Me.ScriptRunnerForm.RunAction(() => General.Map.Map.Update());
 		}
 
 		#endregion

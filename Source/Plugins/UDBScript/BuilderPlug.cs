@@ -97,6 +97,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 		private Dictionary<int, ScriptInfo> scriptslots;
 		private string editorexepath;
 		private PreferencesForm preferencesform;
+		private ScriptRunnerForm scriptrunnerform;
 
 		#endregion
 
@@ -108,6 +109,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 		internal ScriptRunner ScriptRunner { get { return scriptrunner; } }
 		internal ScriptDirectoryStructure ScriptDirectoryStructure { get { return scriptdirectorystructure; } }
 		internal string EditorExePath { get { return editorexepath; } }
+		public ScriptRunnerForm ScriptRunnerForm { get { return scriptrunnerform; } }
 
 		#endregion
 
@@ -137,6 +139,8 @@ namespace CodeImp.DoomBuilder.UDBScript
 			watcher.Renamed += OnWatcherEvent;
 
 			editorexepath = General.Settings.ReadPluginSetting("externaleditor", string.Empty);
+
+			scriptrunnerform = new ScriptRunnerForm();
 
 			FindEditor();
 		}
@@ -617,7 +621,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 				return;
 
 			scriptrunner = new ScriptRunner(currentscript);
-			scriptrunner.Run();
+			scriptrunnerform.ShowDialog();
 		}
 
 		[BeginAction("udbscriptexecuteslot1")]
@@ -665,7 +669,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 				if (scriptslots.ContainsKey(slot) && scriptslots[slot] != null)
 				{
 					scriptrunner = new ScriptRunner(scriptslots[slot]);
-					scriptrunner.Run();
+					scriptrunnerform.ShowDialog();
 				}
 			}
 		}

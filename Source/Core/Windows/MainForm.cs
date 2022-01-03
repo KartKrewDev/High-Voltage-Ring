@@ -180,6 +180,7 @@ namespace CodeImp.DoomBuilder.Windows
 		public StatusInfo Status { get { return status; } }
 		public static Size ScaledIconSize = new Size(16, 16); //mxd
 		public static SizeF DPIScaler = new SizeF(1.0f, 1.0f); //mxd
+		public int ProcessingCount { get { return processingcount; } }
 		
 		#endregion
 
@@ -1352,22 +1353,26 @@ namespace CodeImp.DoomBuilder.Windows
 			if(alt) mod |= (int)Keys.Alt;
 			if(shift) mod |= (int)Keys.Shift;
 			if(ctrl) mod |= (int)Keys.Control;
-			
-			// Scrollwheel up?
-			if(e.Delta > 0)
+
+			// Only send key events when the main window can be focused (i.e. no modal dialogs are open)
+			if (CanFocus)
 			{
-				// Invoke actions for scrollwheel
-				//for(int i = 0; i < e.Delta; i += 120)
-				General.Actions.KeyPressed((int)SpecialKeys.MScrollUp | mod);
-				General.Actions.KeyReleased((int)SpecialKeys.MScrollUp | mod);
-			}
-			// Scrollwheel down?
-			else if(e.Delta < 0)
-			{
-				// Invoke actions for scrollwheel
-				//for(int i = 0; i > e.Delta; i -= 120)
-				General.Actions.KeyPressed((int)SpecialKeys.MScrollDown | mod);
-				General.Actions.KeyReleased((int)SpecialKeys.MScrollDown | mod);
+				// Scrollwheel up?
+				if (e.Delta > 0)
+				{
+					// Invoke actions for scrollwheel
+					//for(int i = 0; i < e.Delta; i += 120)
+					General.Actions.KeyPressed((int)SpecialKeys.MScrollUp | mod);
+					General.Actions.KeyReleased((int)SpecialKeys.MScrollUp | mod);
+				}
+				// Scrollwheel down?
+				else if (e.Delta < 0)
+				{
+					// Invoke actions for scrollwheel
+					//for(int i = 0; i > e.Delta; i -= 120)
+					General.Actions.KeyPressed((int)SpecialKeys.MScrollDown | mod);
+					General.Actions.KeyReleased((int)SpecialKeys.MScrollDown | mod);
+				}
 			}
 			
 			// Let the base know
@@ -4394,7 +4399,7 @@ namespace CodeImp.DoomBuilder.Windows
                     OnMouseHWheel(delta);
 					m.Result = new IntPtr(delta);
 					break;
-					
+
 				default:
 					// Let the base handle the message
 					base.WndProc(ref m);

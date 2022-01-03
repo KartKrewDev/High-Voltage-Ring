@@ -101,6 +101,9 @@ namespace CodeImp.DoomBuilder.Map
 		// Statics
 		private static long emptylongname;
 		private static UniValue virtualsectorvalue;
+
+		// Concurrency
+		private bool issafetoaccess;
 		
 		// Disposing
 		private bool isdisposed;
@@ -169,6 +172,13 @@ namespace CodeImp.DoomBuilder.Map
 
 		internal List<UniversalEntry> UnknownUDMFData { get { return unknownudmfdata; } set { unknownudmfdata = value; } }
 
+		/// <summary>
+		/// If it's safe to access (either reading or modifying) the map data. May only be read or set from the UI thread to
+		/// avoid racing conditions. Code that wants to access the map data on on a timer or in another thread must honor
+		/// this setting to avoid exceptions
+		/// </summary>
+		public bool IsSafeToAccess { get { return issafetoaccess; } set { issafetoaccess = value; } }
+
 		#endregion
 
 		#region ================== Constructor / Disposer
@@ -190,6 +200,8 @@ namespace CodeImp.DoomBuilder.Map
 			lastsectorindex = 0;
 			autoremove = true;
 			unknownudmfdata = new List<UniversalEntry>();
+
+			issafetoaccess = true;
 			
 			// We have no destructor
 			GC.SuppressFinalize(this);
@@ -212,6 +224,8 @@ namespace CodeImp.DoomBuilder.Map
 			lastsectorindex = 0;
 			autoremove = true;
 			unknownudmfdata = new List<UniversalEntry>();
+
+			issafetoaccess = true;
 
 			// Deserialize
 			Deserialize(stream);
@@ -1077,9 +1091,14 @@ namespace CodeImp.DoomBuilder.Map
 			// Update all sectors
 			if(dosectors)
 			{
-				foreach(Sector s in sectors) s.Triangulate();
+				foreach (Sector s in sectors)
+				{
+					s.Triangulate();
+					s.UpdateBBox();
+				}
+
 				General.Map.CRenderer2D.Surfaces.AllocateBuffers();
-				foreach(Sector s in sectors) s.CreateSurfaces();
+				foreach (Sector s in sectors) s.CreateSurfaces();
 				General.Map.CRenderer2D.Surfaces.UnlockBuffers();
 			}
 		}

@@ -159,7 +159,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 		// This finds all comments and updates the list
 		public void UpdateList()
 		{
-			if(!preventupdate)
+			if(!preventupdate && General.Map.Map.IsSafeToAccess)
 			{
 				// Update vertices
 				Dictionary<string, CommentInfo> newcomments = new Dictionary<string, CommentInfo>(StringComparer.Ordinal);

@@ -42,6 +42,7 @@ namespace CodeImp.DoomBuilder.Windows
 		bool IsActiveWindow { get; }
 		string ActiveDockerTabName { get; } //mxd
 		RenderTargetControl Display { get; }
+		int ProcessingCount { get; }
 
 		//mxd. Events
 		event EventHandler OnEditFormValuesChanged;
