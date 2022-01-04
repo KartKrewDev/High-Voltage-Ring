@@ -113,15 +113,14 @@ GLRenderDevice::~GLRenderDevice()
 			glDeleteVertexArrays(1, &handle);
 		}
 
-		for (auto& it : mSamplers)
+		for (auto& it : mTextureUnit)
 		{
-			for (GLuint handle : it.second.WrapModes)
-			{
-				if (handle != 0)
-					glDeleteSamplers(1, &handle);
-			}
+		    GLuint &handle = it.SamplerHandle;
+		    if (handle != 0)
+		    {
+		        glDeleteSamplers(1, &handle);
+		    }
 		}
-
 
 		mShaderManager->ReleaseResources();
 		Context->ClearCurrent();
@@ -264,30 +263,49 @@ void GLRenderDevice::SetZWriteEnable(bool value)
 	}
 }
 
-void GLRenderDevice::SetTexture(Texture* texture)
+void GLRenderDevice::SetTexture(int unit, Texture* texture)
 {
-	if (mTextureUnit.Tex != texture)
+	if (mTextureUnit[unit].Tex != texture)
 	{
-		mTextureUnit.Tex = static_cast<GLTexture*>(texture);
+		mTextureUnit[unit].Tex = static_cast<GLTexture*>(texture);
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
 }
 
-void GLRenderDevice::SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
+void GLRenderDevice::SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
 {
-	SamplerFilterKey key;
-	key.MinFilter = GetGLMinFilter(minfilter, mipfilter);
-	key.MagFilter = (magfilter == TextureFilter::Nearest) ? GL_NEAREST : GL_LINEAR;
-	key.MaxAnisotropy = maxanisotropy;
-	if (mSamplerFilterKey != key)
-	{
-		mSamplerFilterKey = key;
-		mSamplerFilter = &mSamplers[mSamplerFilterKey];
+    bool dirty = false;
+    
+    if (mTextureUnit[unit].MinFilter != minfilter) 
+    {
+        mTextureUnit[unit].MinFilter = minfilter;
+        dirty = true;
+    }
+    
+    if (mTextureUnit[unit].MagFilter != magfilter) 
+    {
+        mTextureUnit[unit].MagFilter = magfilter;
+        dirty = true;
+    }
+    
+    if (mTextureUnit[unit].MipFilter != mipfilter) 
+    {
+        mTextureUnit[unit].MipFilter = mipfilter;
+        dirty = true;
+    }
 
-		mNeedApply = true;
-		mTexturesChanged = true;
-	}
+    if ( mTextureUnit[unit].MaxAnisotropy != maxanisotropy)
+    {    
+        mTextureUnit[unit].MaxAnisotropy = maxanisotropy;
+        dirty = true;        
+    }
+    
+    if (dirty)
+    {
+        mNeedApply = true;
+        mTexturesChanged = true;
+    }  
 }
 
 GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, MipmapFilter mipfilter)
@@ -315,11 +333,20 @@ GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, MipmapFilter mipfilte
 	}
 }
 
-void GLRenderDevice::SetSamplerState(TextureAddress address)
+GLRenderDevice::SamplerFilterKey GLRenderDevice::GetSamplerFilterKey(TextureFilter filter, MipmapFilter mipFilter, float maxAnisotropy)
 {
-	if (mTextureUnit.WrapMode != address)
+    SamplerFilterKey key;
+    key.MinFilter = GetGLMinFilter(filter, mipFilter);
+    key.MagFilter = (filter == TextureFilter::Linear) ? GL_LINEAR : GL_NEAREST;
+    key.MaxAnisotropy = maxAnisotropy;
+    return key;
+}
+
+void GLRenderDevice::SetSamplerState(int unit, TextureAddress address)
+{
+	if (mTextureUnit[unit].WrapMode != address)
 	{
-		mTextureUnit.WrapMode = address;
+		mTextureUnit[unit].WrapMode = address;
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -901,42 +928,47 @@ bool GLRenderDevice::ApplyUniforms()
 
 bool GLRenderDevice::ApplyTextures()
 {
-	glActiveTexture(GL_TEXTURE0);
-	if (mTextureUnit.Tex)
-	{
-		GLenum target = mTextureUnit.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+    bool hasError = false;
+    for (int index = 0; index < 10; index++)
+    {
+        TextureUnit &unit = mTextureUnit[index];
+        if (unit.Tex)
+        {
+            glActiveTexture(GL_TEXTURE0 + index);
+            GLenum target = unit.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+    
+            glBindTexture(target, unit.Tex->GetTexture(this));
 
-		glBindTexture(target, mTextureUnit.Tex->GetTexture(this));
+            SamplerFilterKey key = GetSamplerFilterKey(unit.MagFilter, unit.MipFilter, unit.MaxAnisotropy);
+            SamplerFilter &filter = mSamplers[key];
+            GLuint &samplerHandle = filter.WrapModes[(int)unit.WrapMode];
 
-		GLuint& samplerHandle = mSamplerFilter->WrapModes[(int)mTextureUnit.WrapMode];
-		if (samplerHandle == 0)
-		{
-			static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
+            if (samplerHandle == 0)
+            {
+                static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
 
-			glGenSamplers(1, &samplerHandle);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_MIN_FILTER, mSamplerFilterKey.MinFilter);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_MAG_FILTER, mSamplerFilterKey.MagFilter);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)mTextureUnit.WrapMode]);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)mTextureUnit.WrapMode]);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)mTextureUnit.WrapMode]);
-			if (mSamplerFilterKey.MaxAnisotropy > 0.0f)
-				glSamplerParameterf(samplerHandle, GL_TEXTURE_MAX_ANISOTROPY_EXT, mSamplerFilterKey.MaxAnisotropy);
-		}
-
-		if (mTextureUnit.SamplerHandle != samplerHandle)
-		{
-			mTextureUnit.SamplerHandle = samplerHandle;
-			glBindSampler(0, samplerHandle);
-		}
-	}
-	else
-	{
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	mTexturesChanged = false;
-
-	return CheckGLError();
+                glGenSamplers(1, &samplerHandle);
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_MIN_FILTER, key.MinFilter);
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_MAG_FILTER, key.MagFilter);
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)unit.WrapMode]);
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)unit.WrapMode]);
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)unit.WrapMode]);
+                if (key.MaxAnisotropy > 0.0f)
+                    glSamplerParameterf(samplerHandle, GL_TEXTURE_MAX_ANISOTROPY_EXT, key.MaxAnisotropy);
+            }
+        
+            if (unit.SamplerHandle != samplerHandle)
+            {
+                unit.SamplerHandle = samplerHandle;
+                glBindSampler(index, samplerHandle);
+            }
+        }
+        
+        hasError |= CheckGLError();
+    }
+    
+    mTexturesChanged = false;
+    return hasError;
 }
 
 std::mutex& GLRenderDevice::GetMutex()

@@ -16,6 +16,13 @@ uniforms
 	vec4 vertexColor;
 
 	sampler2D texture1;
+	sampler2D texture2;
+	sampler2D texture3;
+
+	// classic lighting related
+	int drawPaletted;
+	ivec2 colormapSize;
+	int lightLevel;
 
 	// dynamic light related
 	vec4 lightPosAndRadius[64];
@@ -32,6 +39,59 @@ uniforms
 
 functions
 {
+    vec4 getColorMappedColor(int entry, int depth)
+    {
+        vec2 uv = vec2((float(entry) + 0.5) / colormapSize.x, (float(depth) + 0.5) / colormapSize.y);
+        vec4 colormapColor = texture(texture2, uv);
+        return colormapColor;
+    }
+        
+    int classicLightLevelToColorMapOffset(int lightLevel, vec3 position, vec3 normal)
+    {
+        const int LIGHTLEVELS = 16;
+        const int LIGHTSEGSHIFT = 4;
+        const int NUMCOLORMAPS = 32;
+        const int MAXLIGHTSCALE = 48;
+        const int DISTMAP = 2;
+        
+        int scaledLightLevel = lightLevel >> LIGHTSEGSHIFT;
+        
+        bool isFlat = abs(dot(normal, vec3(0, 0, 1))) > 1e-3; 
+        
+        if (abs(dot(normal, vec3(0, 1, 0))) < 1e-3)
+        {
+            scaledLightLevel++;
+        }
+        else if (abs(dot(normal, vec3(1, 0, 0))) < 1e-3)
+        {
+            scaledLightLevel--;
+        }
+        
+        int level;
+        float dist = distance(position, campos.xyz);
+        
+        if (!isFlat) 
+        {
+            int startmap = int(((LIGHTLEVELS-1-scaledLightLevel)*2)*NUMCOLORMAPS/LIGHTLEVELS);
+            
+            // same calculation as Eternity Engine
+            int index = int(2560.0 / dist);
+            if (index >= MAXLIGHTSCALE) index = MAXLIGHTSCALE - 1;
+            level = startmap - index / DISTMAP;
+        }
+        else
+        {
+            // same calculation as Eternity Engine
+            float startmap = 2.0 * (30.0 - lightLevel / 8.0f);
+            level = int(startmap - (1280.0f / dist)) + 1;
+        }
+        
+        
+        if (level < 0) level = 0;
+        if (level >= NUMCOLORMAPS) level = NUMCOLORMAPS - 1;
+        return level;
+    }
+
 	// This adds fog color to current pixel color
 	vec4 getFogColor(vec3 PosW, vec4 color)
 	{
@@ -369,5 +429,68 @@ shader world3d_slope_handle extends world3d_vertex_color
 		gl_Position = projection * v2f.viewpos;
 		v2f.Color = in.Color * vertexColor;
 		v2f.UV = in.TextureCoordinate;
+	}
+}
+
+
+shader world3d_classic extends world3d_main
+{
+	fragment
+	{
+        vec4 pcolor;
+		 
+		if (bool(drawPaletted))
+		{
+		    vec4 color = texture(texture1, v2f.UV);
+		    int entry = int(color.r * 255);
+		    float alpha = color.a;
+            int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.Normal);
+            pcolor = getColorMappedColor(entry, colorMapOffset);
+            pcolor.a = alpha;
+		}
+		else
+		{
+            pcolor = texture(texture1, v2f.UV);
+		}
+		
+		out.FragColor = pcolor;
+		
+		#if defined(ALPHA_TEST)
+		if (out.FragColor.a < 0.5) discard;
+		#endif
+	}
+}
+
+shader world3d_classic_highlight extends world3d_main
+{
+	fragment
+	{
+		vec4 pcolor;
+		 
+		if (bool(drawPaletted))
+        {
+            vec4 color = texture(texture1, v2f.UV);
+            int entry = int(color.r * 255);
+            float alpha = color.a;
+            int modifiedLightLevel = max(lightLevel, 128);	
+            int colorMapOffset = classicLightLevelToColorMapOffset(modifiedLightLevel, v2f.PosW, v2f.Normal);
+            pcolor = getColorMappedColor(entry, colorMapOffset);
+            pcolor.a = alpha;
+        }
+        else
+        {
+            pcolor = texture(texture1, v2f.UV);
+        }
+		
+		out.FragColor = pcolor;
+		
+		if (pcolor.a > 0.0)
+		{
+			out.FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (pcolor.rgb - 0.4 * highlightcolor.a), max(pcolor.a + 0.25, 0.5));
+		}
+		
+		#if defined(ALPHA_TEST)
+		if (out.FragColor.a < 0.5) discard;
+		#endif
 	}
 }

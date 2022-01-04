@@ -1614,6 +1614,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This draws a frame
 		public override void OnRedrawDisplay()
 		{
+			renderer.SetClassicLightingColorMap(General.Map.Data.MainColorMap);
+
 			// Start drawing
 			if(renderer.Start())
 			{

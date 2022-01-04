@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System.Collections.Generic;
+using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.VisualModes;
@@ -45,7 +46,8 @@ namespace CodeImp.DoomBuilder.Rendering
 		// Rendering methods
 		int CalculateBrightness(int level);
 		int CalculateBrightness(int level, Sidedef sd); //mxd
-
+		
+		void SetClassicLightingColorMap(ColorMap colormap);
 		void SetHighlightedObject(IVisualPickable obj);
 		void AddSectorGeometry(VisualGeometry g);
 		void AddThingGeometry(VisualThing t);

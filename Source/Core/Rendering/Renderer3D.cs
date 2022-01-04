@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.GZBuilder.Data;
@@ -26,6 +27,7 @@ using CodeImp.DoomBuilder.GZBuilder.MD3;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.VisualModes;
 using CodeImp.DoomBuilder.GZBuilder;
+using ColorMap = System.Drawing.Imaging.ColorMap;
 
 #endregion
 
@@ -64,7 +66,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		//mxd
 		private VisualVertexHandle vertexhandle;
 		private int[] lightOffsets;
-
+		
+		private Data.ColorMap classicLightingColorMap = null;
+		private Texture classicLightingColorMapTex = null;
+		
 		// Slope handle
 		private VisualSlopeHandle visualslopehandle;
 
@@ -134,6 +139,11 @@ namespace CodeImp.DoomBuilder.Rendering
 		public bool DrawThingCages { get { return renderthingcages; } set { renderthingcages = value; } }
 		public bool ShowSelection { get { return showselection; } set { showselection = value; } }
 		public bool ShowHighlight { get { return showhighlight; } set { showhighlight = value; } }
+		
+		protected bool UseIndexedTexture
+		{
+			get { return General.Settings.ClassicRendering && !fullbrightness; }
+		}
 		
 		#endregion
 
@@ -294,6 +304,25 @@ namespace CodeImp.DoomBuilder.Rendering
 			billboard = Matrix.RotationZ((float)(anglexy + Angle2D.PI));
 		}
 		
+		
+		// volte: Set the active colormap for classic lighting
+		public void SetClassicLightingColorMap(Data.ColorMap colormap)
+		{
+			if (colormap == classicLightingColorMap) 
+			{
+				return;
+			}
+			classicLightingColorMap = colormap;
+			if (classicLightingColorMap == null)
+			{
+				classicLightingColorMapTex = null;
+			}
+			else 
+			{
+				classicLightingColorMapTex = new Texture(graphics, classicLightingColorMap.CreateBitmap());
+			}
+		}
+		
 		// This creates 2D view matrix
 		private void CreateMatrices2D()
 		{
@@ -302,7 +331,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			Matrix translate = Matrix.Translation(-(float)windowsize.Width * 0.5f, -(float)windowsize.Height * 0.5f, 0f);
 			view2d = translate * scaling;
 		}
-		
+
 		#endregion
 
 		#region ================== Start / Finish
@@ -327,13 +356,15 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
-            TextureFilter texFilter = General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Nearest;
-            graphics.SetSamplerFilter(texFilter, texFilter, MipmapFilter.Linear, General.Settings.FilterAnisotropy);
+            TextureFilter texFilter = (!General.Settings.ClassicRendering && General.Settings.VisualBilinear) ? TextureFilter.Linear : TextureFilter.Nearest;
+            MipmapFilter mipFilter = General.Settings.ClassicRendering ? MipmapFilter.None : MipmapFilter.Linear;
+            float aniso = General.Settings.ClassicRendering ? 0 : General.Settings.FilterAnisotropy;
+            graphics.SetSamplerFilter(texFilter, texFilter, mipFilter, aniso);
 
             // Texture addressing
             graphics.SetSamplerState(TextureAddress.Wrap);
 
-			// Matrices
+            // Matrices
 			world = Matrix.Identity;
             graphics.SetUniform(UniformName.projection, ref projection);
             graphics.SetUniform(UniformName.world, ref world);
@@ -352,7 +383,18 @@ namespace CodeImp.DoomBuilder.Rendering
 			}
 				
 			// Determine shader pass to use
-			shaderpass = (fullbrightness ? ShaderName.world3d_fullbright : ShaderName.world3d_main);
+			if (fullbrightness)
+			{
+				shaderpass = ShaderName.world3d_fullbright;
+			} 
+			else if (General.Settings.ClassicRendering)
+			{
+				shaderpass = ShaderName.world3d_classic;
+			} 
+			else
+			{
+				shaderpass = ShaderName.world3d_main;
+			}
 
 			// Create crosshair vertices
 			if(crosshairverts == null)
@@ -787,14 +829,25 @@ namespace CodeImp.DoomBuilder.Rendering
 
             bool hadlights = false;
 
+            // volte: Set textures for classic lighting
+            if (classicLightingColorMap != null)
+            {
+	            graphics.SetUniform(UniformName.colormapSize, new Vector2i(classicLightingColorMapTex.Width, classicLightingColorMapTex.Height));
+	            graphics.SetTexture(classicLightingColorMapTex, 1);
+	            graphics.SetSamplerFilter(TextureFilter.Nearest, TextureFilter.Nearest, MipmapFilter.None, 0, 1);
+	            graphics.SetSamplerState(TextureAddress.Clamp, 1);
+            }
+
             // Render the geometry collected
             foreach (KeyValuePair<ImageData, List<VisualGeometry>> group in geopass)
 			{
 				curtexture = group.Key;
 
-                // Apply texture
-                graphics.SetTexture(curtexture.Texture);
-				
+        // Apply texture
+        Texture texture = UseIndexedTexture ? curtexture.IndexedTexture : curtexture.Texture;
+        graphics.SetTexture(texture);
+        graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
+
 				//mxd. Sort geometry by sector index
 				group.Value.Sort((g1, g2) => g1.Sector.Sector.FixedIndex - g2.Sector.Sector.FixedIndex);
 
@@ -880,7 +933,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						ShaderName wantedshaderpass = (((g == highlighted) && showhighlight) || (g.Selected && showselection)) ? highshaderpass : shaderpass;
 
 						//mxd. Render fog?
-						if(General.Settings.GZDrawFog && !fullbrightness && sector.Sector.FogMode != SectorFogMode.NONE)
+						if(General.Settings.GZDrawFog && !fullbrightness && !General.Settings.ClassicRendering && sector.Sector.FogMode != SectorFogMode.NONE)
 							wantedshaderpass += 8;
 
 						// Switch shader pass?
@@ -895,6 +948,9 @@ namespace CodeImp.DoomBuilder.Rendering
                                 graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
                             }
 						}
+						
+						// volte: set sector light level for classic rendering mode
+						graphics.SetUniform(UniformName.lightLevel, sector.Sector.Brightness);
 
 						//mxd. Set variables for fog rendering?
 						if(wantedshaderpass > ShaderName.world3d_p7)
@@ -933,8 +989,10 @@ namespace CodeImp.DoomBuilder.Rendering
 					
 					curtexture = group.Key;
 
-                    // Apply texture
-                    graphics.SetTexture(curtexture.Texture);
+          // Apply texture
+          Texture texture = UseIndexedTexture ? curtexture.IndexedTexture : curtexture.Texture;
+          graphics.SetTexture(texture);
+          graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
 
 					// Render all things with this texture
 					foreach(VisualThing t in group.Value)
@@ -958,20 +1016,20 @@ namespace CodeImp.DoomBuilder.Rendering
 							ShaderName wantedshaderpass = (((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass;
 
 							//mxd. If fog is enagled, switch to shader, which calculates it
-							if(General.Settings.GZDrawFog && !fullbrightness && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
+							if(General.Settings.GZDrawFog && !fullbrightness && !General.Settings.ClassicRendering && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
 								wantedshaderpass += 8;
 
 							//mxd. Create the matrix for positioning 
 							world = CreateThingPositionMatrix(t);
 
 							//mxd. If current thing is light - set it's color to light color
-							if(t.LightType != null && t.LightType.LightInternal && !fullbrightness) 
+							if(t.LightType != null && t.LightType.LightInternal && !fullbrightness && !General.Settings.ClassicRendering) 
 							{
 								wantedshaderpass += 4; // Render using one of passes, which uses World3D.VertexColor
 								vertexcolor = t.LightColor;
 							}
 							//mxd. Check if Thing is affected by dynamic lights and set color accordingly
-							else if(General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0)
+							else if(General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && !General.Settings.ClassicRendering && lightthings.Count > 0)
 							{
 								Color4 litcolor = GetLitColorForThing(t);
 								if(litcolor.ToArgb() != 0)
@@ -1000,7 +1058,11 @@ namespace CodeImp.DoomBuilder.Rendering
 							}
 
 							// Set the colors to use
-							if(t.Thing.Sector != null) graphics.SetUniform(UniformName.sectorfogcolor, t.Thing.Sector.FogColor);
+							if (t.Thing.Sector != null)
+							{
+								graphics.SetUniform(UniformName.lightLevel, t.Thing.Sector.Brightness);
+								graphics.SetUniform(UniformName.sectorfogcolor, t.Thing.Sector.FogColor);
+							}
                             graphics.SetUniform(UniformName.vertexColor, vertexcolor);
                             graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
 
@@ -1162,8 +1224,11 @@ namespace CodeImp.DoomBuilder.Rendering
 				{
 					curtexture = g.Texture;
 
-                    // Apply texture
-                    graphics.SetTexture(curtexture.Texture);
+					// Apply texture
+					Texture texture = UseIndexedTexture ? curtexture.IndexedTexture : curtexture.Texture;
+					graphics.SetTexture(texture);
+					graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
+					
 					curtexturename = g.Texture.LongName;
 				}
 
@@ -1195,7 +1260,7 @@ namespace CodeImp.DoomBuilder.Rendering
                     ShaderName wantedshaderpass = (((g == highlighted) && showhighlight) || (g.Selected && showselection)) ? highshaderpass : shaderpass;
 
                     //mxd. Render fog?
-                    if (General.Settings.GZDrawFog && !fullbrightness && sector.Sector.FogMode != SectorFogMode.NONE)
+                    if (General.Settings.GZDrawFog && !fullbrightness && !General.Settings.ClassicRendering && sector.Sector.FogMode != SectorFogMode.NONE)
                         wantedshaderpass += 8;
 
                     // Switch shader pass?
@@ -1294,8 +1359,11 @@ namespace CodeImp.DoomBuilder.Rendering
 					{
 						curtexture = t.Texture;
 
-                        // Apply texture
-                        graphics.SetTexture(curtexture.Texture);
+						// Apply texture
+						Texture texture = UseIndexedTexture ? curtexture.IndexedTexture : curtexture.Texture;
+						graphics.SetTexture(texture);
+						graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
+						
 						curtexturename = t.Texture.LongName;
 					}
 
@@ -1306,20 +1374,20 @@ namespace CodeImp.DoomBuilder.Rendering
 						ShaderName wantedshaderpass = (((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass;
 
 						//mxd. if fog is enagled, switch to shader, which calculates it
-						if(General.Settings.GZDrawFog && !fullbrightness && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
+						if(General.Settings.GZDrawFog && !fullbrightness && !General.Settings.ClassicRendering && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
 							wantedshaderpass += 8;
 
 						//mxd. Create the matrix for positioning 
 						world = CreateThingPositionMatrix(t);
 
 						//mxd. If current thing is light - set it's color to light color
-						if(t.LightType != null && t.LightType.LightInternal && !fullbrightness)
+						if(t.LightType != null && t.LightType.LightInternal && !fullbrightness && !General.Settings.ClassicRendering)
 						{
 							wantedshaderpass += 4; // Render using one of passes, which uses World3D.VertexColor
 							vertexcolor = t.LightColor;
 						}
 						//mxd. Check if Thing is affected by dynamic lights and set color accordingly
-						else if(General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && lightthings.Count > 0)
+						else if(General.Settings.GZDrawLightsMode != LightRenderMode.NONE && !fullbrightness && !General.Settings.ClassicRendering && lightthings.Count > 0)
 						{
 							Color4 litcolor = GetLitColorForThing(t);
 							if(litcolor.ToArgb() != 0)
@@ -1506,7 +1574,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				ShaderName wantedshaderpass = ((((t == highlighted) && showhighlight) || (t.Selected && showselection)) ? highshaderpass : shaderpass);
 
 				// If fog is enagled, switch to shader, which calculates it
-				if (General.Settings.GZDrawFog && !fullbrightness && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
+				if (General.Settings.GZDrawFog && !fullbrightness && !General.Settings.ClassicRendering && t.Thing.Sector != null && t.Thing.Sector.FogMode != SectorFogMode.NONE)
 					wantedshaderpass += 8;
 
 				// Switch shader pass?
