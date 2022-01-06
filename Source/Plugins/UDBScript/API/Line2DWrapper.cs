@@ -56,8 +56,8 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// <summary>
 		/// Creates a new `Line2D` from two points.
 		/// ```
-		/// let line1 = new Line2D(new Vector2D(32, 64), new Vector2D(96, 128));
-		/// let line2 = new Line2D([ 32, 64 ], [ 96, 128 ]);
+		/// let line1 = new UDB.Line2D(new Vector2D(32, 64), new Vector2D(96, 128));
+		/// let line2 = new UDB.Line2D([ 32, 64 ], [ 96, 128 ]);
 		/// ```
 		/// </summary>
 		/// <param name="v1">First point</param>

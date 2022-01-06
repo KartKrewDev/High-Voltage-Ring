@@ -1,3 +1,5 @@
+`#version 4`;
+
 `#name Make Door`;
 
 `#description Creates a door from a selected sector. Functionality is the same as the built-in "make door" action.`;
@@ -24,21 +26,21 @@ ceilingtexture {
 
 `;
 
-let sectors = Map.getSelectedSectors();
+let sectors = UDB.Map.getSelectedOrHighlightedSectors();
 
 if(sectors.length == 0)
-    die('You need to select at least one sector!');
+    UDB.die('You need to select at least one sector!');
 
 sectors.forEach(s => {
     s.ceilingHeight = s.floorHeight;
-    s.ceilingTexture = ScriptOptions.ceilingtexture;
+    s.ceilingTexture = UDB.ScriptOptions.ceilingtexture;
 
     s.getSidedefs().forEach(sd => {
         if(sd.other == null) // 1-sided lines
         {
-            sd.middleTexture = ScriptOptions.doortrack;
+            sd.middleTexture = UDB.ScriptOptions.doortrack;
 
-            if(Map.isUDMF)
+            if(UDB.Map.isUDMF)
                 sd.line.flags.dontpegbottom = true;
             else
                 sd.line.flags['16'] = true;
@@ -50,10 +52,10 @@ sectors.forEach(s => {
             if(sd.isFront)
                 sd.line.flip();
 
-            sd.other.upperTexture = ScriptOptions.doortexture;
+            sd.other.upperTexture = UDB.ScriptOptions.doortexture;
 
             // Set the action
-            if(Map.isDoom)
+            if(UDB.Map.isDoom)
                 sd.line.action = 1;
             else
             {
@@ -63,7 +65,7 @@ sectors.forEach(s => {
                 sd.line.args[2] = 150; // Close delay
                 sd.line.args[3] = 0; // Light tag
                 
-                if(Map.isHexen)
+                if(UDB.Map.isHexen)
                 {
                     sd.line.activate = 1024; // Player presses use
                     sd.line.flags['512'] = true; // Can be used repeatedly

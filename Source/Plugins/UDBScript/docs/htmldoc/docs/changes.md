@@ -1,6 +1,11 @@
 # Changes
 This site lists all changes between different API version of UDBScript
 
+## Verstion 4
+
+- Moved all classes, object, and methods into the `UDB` namespace (everything has to be prefixed wiht `UDB.`)
+- Added methods to report progress for long running scripts and script log output. See [Communicating with the user](gettingstartet.md#communicating-with-the-user) for more information
+
 ## Version 3
 
 - Exported the classes `Linedef`, `Sector`, `Sidedef`, `Thing`, and `Vertex`, so that they can be used with `instanceof`

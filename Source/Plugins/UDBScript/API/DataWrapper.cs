@@ -34,7 +34,7 @@ using CodeImp.DoomBuilder.UDBScript.Wrapper;
 
 #endregion
 
-namespace CodeImp.DoomBuilder.UDBScript.API
+namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 {
 	class DataWrapper
 	{

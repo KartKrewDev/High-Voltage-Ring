@@ -78,6 +78,7 @@
     <Compile Include="API\DataWrapper.cs" />
     <Compile Include="API\GameConfigurationWrapper.cs" />
     <Compile Include="API\ImageInfo.cs" />
+    <Compile Include="API\UDBWrapper.cs" />
     <Compile Include="API\Vector3DWrapper.cs" />
     <Compile Include="API\VisualCameraWrapper.cs" />
     <Compile Include="BuilderPlug.cs" />

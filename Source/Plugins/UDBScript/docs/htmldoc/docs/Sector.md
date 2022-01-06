@@ -13,12 +13,12 @@ Ceiling height of the `Sector`.
 ---
 <span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
 ### ceilingHighlighted
-If the `Sector`'s ceiling is highlighted or not. Will always return `true` in classic modes if the `Sector` is highlighted.
+If the `Sector`'s ceiling is highlighted or not. Will always return `true` in classic modes if the `Sector` is highlighted. Read-only.
 
 ---
 <span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
 ### ceilingSelected
-If the `Sector`'s ceiling is selected or not. Will always return `true` in classic modes if the `Sector` is selected.
+If the `Sector`'s ceiling is selected or not. Will always return `true` in classic modes if the `Sector` is selected. Read-only.
 
 ---
 ### ceilingSlopeOffset
@@ -36,7 +36,7 @@ UDMF fields. It's an object with the fields as properties.
 s.fields.comment = 'This is a comment';
 s.fields['comment'] = 'This is a comment'; // Also  works
 s.fields.xscalefloor = 2.0;
-t.score = 100;
+t.fields.score = 100;
 ```
 It is also possible to define new fields:
 
@@ -50,7 +50,7 @@ There are some restrictions, though:
 * JavaScript does not distinguish between integer and floating point numbers, it only has floating point numbers (of double precision). For fields where UDB knows that they are integers this it not a problem, since it'll automatically convert the floating point numbers to integers (dropping the fractional part). However, if you need to specify an integer value for an unknown or custom field you have to work around this limitation, using the `UniValue` class:
 
 ```js
-s.fields.user_myintfield = new UniValue(0, 25); // Sets the 'user_myintfield' field to an integer value of 25
+s.fields.user_myintfield = new UDB.UniValue(0, 25); // Sets the 'user_myintfield' field to an integer value of 25
 ```
 To remove a field you have to assign `null` to it:
 
@@ -75,12 +75,12 @@ Floor height of the `Sector`.
 ---
 <span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
 ### floorHighlighted
-If the `Sector`'s floor is highlighted or not. Will always return `true` in classic modes if the `Sector` is highlighted.
+If the `Sector`'s floor is highlighted or not. Will always return `true` in classic modes if the `Sector` is highlighted. Read-only.
 
 ---
 <span style="float:right;font-weight:normal;font-size:66%">Version: 3</span>
 ### floorSelected
-If the `Sector`'s floor is selected or not. Will always return `true` in classic modes if the `Sector` is selected.
+If the `Sector`'s floor is selected or not. Will always return `true` in classic modes if the `Sector` is selected. Read-only.
 
 ---
 ### floorSlopeOffset
@@ -169,10 +169,10 @@ Checks if the given point is in this `Sector` or not. The given point can be a `
 
 ```js
 if(s.intersect(new Vector2D(32, 64)))
-	log('Point is in the sector!');
+	UDB.showMessage('Point is in the sector!');
 
 if(s.intersect([ 32, 64 ]))
-	log('Point is in the sector!');
+	UDB.showMessage('Point is in the sector!');
 ```
 #### Parameters
 * p: Point to test

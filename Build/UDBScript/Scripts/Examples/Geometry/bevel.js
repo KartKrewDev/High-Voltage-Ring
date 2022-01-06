@@ -1,5 +1,7 @@
 // Inspired by ribbiks's DBX Lua script: https://github.com/ribbiks/doom_lua/
 
+`#version 4`;
+
 `#name Bevel Linedefs`;
 
 `#description Bevels linedefs at their shared vertices. Only works when the vertices have only two linedefs connected`;
@@ -14,7 +16,7 @@ size
 }
 `;
 
-let lines = Map.getSelectedLinedefs();
+let lines = UDB.Map.getSelectedLinedefs();
 
 if(lines.length < 2)
     die('You need to select at least 2 connected linedefs');
@@ -35,9 +37,9 @@ vertices.forEach(v => {
     // Split all lines at the given size from the vertex away
     v.getLinedefs().forEach(ld => {
         if(ld.start == v)
-            ld.split(ld.line.getCoordinatesAt(1.0 / ld.length * ScriptOptions.size));
+            ld.split(ld.line.getCoordinatesAt(1.0 / ld.length * UDB.ScriptOptions.size));
         else
-            ld.split(ld.line.getCoordinatesAt(1.0 - (1.0 / ld.length * ScriptOptions.size)));
+            ld.split(ld.line.getCoordinatesAt(1.0 - (1.0 / ld.length * UDB.ScriptOptions.size)));
     });
 
     // Get one of the connected linedef...

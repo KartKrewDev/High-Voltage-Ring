@@ -7,7 +7,7 @@
 Creates a new `Vector2D` from a point.
 
 ```js
-let v = new Vector2D([ 32, 64 ]);
+let v = new UDB.Vector2D([ 32, 64 ]);
 ```
 #### Parameters
 * v: The vector to create the `Vector2D` from
@@ -17,7 +17,7 @@ let v = new Vector2D([ 32, 64 ]);
 Creates a new `Vector2D` from x and y coordinates
 
 ```js
-let v = new Vector2D(32, 64);
+let v = new UDB.Vector2D(32, 64);
 ```
 #### Parameters
 * x: The x coordinate

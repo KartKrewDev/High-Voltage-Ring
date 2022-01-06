@@ -1,26 +1,33 @@
 class Pen
 {
-    constructor(pos = new Vector2D(0, 0))
+    constructor(pos = [ 0, 0 ])
     {
         this.angle = Math.PI / 2;
         this.snaptogrid = false;
         this.vertices = [];
-        this.curpos = new Vector2D(pos);
+        this.curpos = this.makevector(pos);
     }
+
+    makevector(pos)
+    {
+        if(typeof UDB == 'undefined')
+            return new Vector2D(pos);
+        return new UDB.Vector2D(pos);
+    }    
 
     moveTo(pos)
     {
-        this.curpos = new Vector2D(pos);
+        this.curpos = this.makevector(pos);
 
         return this;
     }
 
     moveForward(distance)
     {
-        this.curpos = new Vector2D(
+        this.curpos = this.makevector([
             this.curpos.x + Math.cos(this.angle) * distance,
             this.curpos.y + Math.sin(this.angle) * distance
-        );
+        ]);
 
         return this;
     }
@@ -91,7 +98,12 @@ class Pen
         if(close)
             this.vertices.push(this.vertices[0]);
 
-        var result = Map.drawLines(this.vertices);
+        var result;
+        
+        if(typeof UDB == 'undefined')
+            result = Map.drawLines(this.vertices);
+        else
+            result = UDB.Map.drawLines(this.vertices);
 
         this.vertices = [];
 

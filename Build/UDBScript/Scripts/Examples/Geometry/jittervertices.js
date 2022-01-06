@@ -1,3 +1,5 @@
+`#version 4`;
+
 `#name Jitter Vertices`;
 
 `#description Jitters the selected vertices. If no vertices are selected all vertices in the map are jittered. Does not make sure that the resulting geometry is still valid.`;
@@ -26,16 +28,16 @@ function getRandomValue(min, max)
 }
 
 // Get selected vertices
-let vertices = Map.getSelectedVertices();
+let vertices = UDB.Map.getSelectedVertices();
 
 // No vertices selected? Get all vertices!
 if(vertices.length == 0)
-    vertices = Map.getVertices();
+    vertices = UDB.Map.getVertices();
 
 // Jitter each vertex
 vertices.forEach(v => {
     v.position += [
-        getRandomValue(ScriptOptions.min, ScriptOptions.max),
-        getRandomValue(ScriptOptions.min, ScriptOptions.max),
+        getRandomValue(UDB.ScriptOptions.min, UDB.ScriptOptions.max),
+        getRandomValue(UDB.ScriptOptions.min, UDB.ScriptOptions.max),
     ];
 });  

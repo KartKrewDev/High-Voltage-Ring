@@ -1,11 +1,13 @@
+`#version 4`;
+
 `#name Calculate sector area`;
 
 `#description Calculates the area of the selected sectors.`
 
-let sectors = Map.getSelectedSectors();
+let sectors = UDB.Map.getSelectedSectors();
 
 if(sectors.length == 0)
-    die('You need to select at least one sector.');
+UDB.die('You need to select at least one sector.');
 
 let area = 0;
 
@@ -15,4 +17,4 @@ sectors.forEach(s => {
     });
 });
 
-showMessage('The area of the selected sectors is ' + area + ' mu².');
+UDB.showMessage('The area of the selected sectors is ' + area + ' mu².');

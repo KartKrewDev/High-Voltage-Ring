@@ -1,11 +1,13 @@
+`#version 4`;
+
 `#name Select Connected Linedefs`;
 
 `#description Recursively selects all linedefs that are connected to the currently selected linedef(s).`;
 
-let lines = Map.getSelectedOrHighlightedLinedefs();
+let lines = UDB.Map.getSelectedOrHighlightedLinedefs();
 
 if(lines.length == 0)
-    die('You have to select at least one linedef!');
+    UDB.die('You have to select at least one linedef!');
 
 let vertices_to_check = [];
 let checked_vertices = [];

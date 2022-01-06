@@ -369,16 +369,16 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 
 		/// <summary>
 		/// Draws lines. Data has to be an `Array` of `Array` of numbers, `Vector2D`s, `Vector3D`s, or objects with x and y properties. Note that the first and last element have to be at the same positions to make a complete drawing.
-		/// ```
-		/// Map.drawLines([
-		///		new Vector2D(64, 0),
-		///		new Vector2D(128, 0),
-		///		new Vector2D(128, 64),
-		///		new Vector2D(64, 64),
-		///		new Vector2D(64, 0)
+		/// ```js
+		/// UDB.Map.drawLines([
+		///		new UDB.Vector2D(64, 0),
+		///		new UDB.Vector2D(128, 0),
+		///		new UDB.Vector2D(128, 64),
+		///		new UDB.Vector2D(64, 64),
+		///		new UDB.Vector2D(64, 0)
 		///	]);
 		///	
-		/// Map.drawLines([
+		/// UDB.Map.drawLines([
 		///		[ 0, 0 ],
 		///		[ 64, 0 ],
 		///		[ 64, 64 ],
@@ -976,7 +976,7 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		}
 
 		/// <summary>
-		/// Gets the `Sidedef`s of the currently selected `Linedef`s *or*, if no `Linede`f`s are selected, the `Sidedef`s of the currently highlighted `Linedef`.
+		/// Gets the `Sidedef`s of the currently selected `Linedef`s *or*, if no `Linedef`s are selected, the `Sidedef`s of the currently highlighted `Linedef`.
 		/// In classic modes this will return both sidedefs of 2-sided lines, in visual mode it will only return the actually selected `Sidedef`.
 		/// </summary>
 		/// <returns>`Array` of `Sidedef`s</returns>
@@ -1040,8 +1040,8 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// <summary>
 		/// Creates a new `Vertex` at the given position. The position can be a `Vector2D` or an `Array` of two numbers.
 		/// ```
-		/// var v1 = Map.createVertex(new Vector2D(32, 64));
-		/// var v2 = Map.createVertex([ 32, 64 ]);
+		/// var v1 = UDB.Map.createVertex(new Vector2D(32, 64));
+		/// var v2 = UDB.Map.createVertex([ 32, 64 ]);
 		/// ```
 		/// </summary>
 		/// <param name="pos">Position where the `Vertex` should be created at</param>
@@ -1067,10 +1067,10 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// <summary>
 		/// Creates a new `Thing` at the given position. The position can be a `Vector2D`, `Vector3D`, or an `Array` of two numbers or three numbers (note that the z position only works for game configurations that support vertical pos. A thing type can be supplied optionally.
 		/// ```
-		/// var t1 = Map.createThing(new Vector2D(32, 64));
-		/// var t2 = Map.createThing([ 32, 64 ]);
-		/// var t3 = Map.createThing(new Vector2D(32, 64), 3001); // Create an Imp
-		/// var t4 = Map.createThing([ 32, 64 ], 3001); // Create an Imp
+		/// var t1 = UDB.Map.createThing(new UDB.Vector2D(32, 64));
+		/// var t2 = UDB.Map.createThing([ 32, 64 ]);
+		/// var t3 = UDB.Map.createThing(new UDB.Vector2D(32, 64), 3001); // Create an Imp
+		/// var t4 = UDB.Map.createThing([ 32, 64 ], 3001); // Create an Imp
 		/// ```
 		/// </summary>
 		/// <param name="pos">Position where the `Thing` should be created at</param>

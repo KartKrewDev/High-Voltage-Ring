@@ -297,8 +297,8 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// ```
 		/// It's also possible to set all fields immediately by assigning either a `Vector2D`, `Vector3D`, or an array of numbers:
 		/// ```
-		/// t.position = new Vector2D(32, 64);
-		/// t.position = new Vector3D(32, 64, 128);
+		/// t.position = new UDB.Vector2D(32, 64);
+		/// t.position = new UDB.Vector3D(32, 64, 128);
 		/// t.position = [ 32, 64 ];
 		/// t.position = [ 32, 64, 128 ];
 		/// ```
@@ -452,7 +452,7 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// Gets the squared distance between this `Thing` and the given point.
 		/// The point can be either a `Vector2D` or an array of numbers.
 		/// ```
-		/// t.distanceToSq(new Vector2D(32, 64));
+		/// t.distanceToSq(new UDB.Vector2D(32, 64));
 		/// t.distanceToSq([ 32, 64 ]);
 		/// ```
 		/// </summary>
@@ -477,7 +477,7 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// <summary>
 		/// Gets the distance between this `Thing` and the given point. The point can be either a `Vector2D` or an array of numbers.
 		/// ```
-		/// t.distanceToSq(new Vector2D(32, 64));
+		/// t.distanceToSq(new UDB.Vector2D(32, 64));
 		/// t.distanceToSq([ 32, 64 ]);
 		/// ```
 		/// </summary>

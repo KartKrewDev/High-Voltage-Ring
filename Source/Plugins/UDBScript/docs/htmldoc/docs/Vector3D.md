@@ -7,7 +7,7 @@
 Creates a new `Vector3D` from a point.
 
 ```js
-let v = new Vector3D([ 32, 64, 128 ]);
+let v = new UDB.Vector3D([ 32, 64, 128 ]);
 ```
 #### Parameters
 * v: The vector to create the `Vector3D` from
@@ -17,7 +17,7 @@ let v = new Vector3D([ 32, 64, 128 ]);
 Creates a new `Vector3D` from x and y coordinates
 
 ```js
-let v = new Vector3D(32, 64, 128);
+let v = new UDB.Vector3D(32, 64, 128);
 ```
 #### Parameters
 * x: The x coordinate

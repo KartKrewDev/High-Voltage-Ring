@@ -553,10 +553,10 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// Checks if the given point is in this `Sector` or not. The given point can be a `Vector2D` or an `Array` of two numbers.
 		/// ```
 		/// if(s.intersect(new Vector2D(32, 64)))
-		///		log('Point is in the sector!');
+		///		UDB.showMessage('Point is in the sector!');
 		///		
 		/// if(s.intersect([ 32, 64 ]))
-		///		log('Point is in the sector!');
+		///		UDB.showMessage('Point is in the sector!');
 		///	```
 		/// </summary>
 		/// <param name="p">Point to test</param>

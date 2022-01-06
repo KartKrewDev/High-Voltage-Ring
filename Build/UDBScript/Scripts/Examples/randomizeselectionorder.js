@@ -1,17 +1,19 @@
+`#version 4`;
+
 `#name Randomize Selection Order`;
 
 `#description Randomize the selection order of the selected map elements.`;
 
 // Put all selected map elements into an array
 let elements = [
-    ...Map.getSelectedThings(),
-    ...Map.getSelectedVertices(),
-    ...Map.getSelectedLinedefs(),
-    ...Map.getSelectedSectors()
+    ...UDB.Map.getSelectedThings(),
+    ...UDB.Map.getSelectedVertices(),
+    ...UDB.Map.getSelectedLinedefs(),
+    ...UDB.Map.getSelectedSectors()
 ];
 
 // Clear current selection
-Map.clearAllSelected();
+UDB.Map.clearAllSelected();
 
 // Keep going as long as there are elements in the array
 while(elements.length > 0)

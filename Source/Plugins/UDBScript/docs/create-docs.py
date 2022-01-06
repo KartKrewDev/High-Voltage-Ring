@@ -37,9 +37,11 @@ topics = {
     'Sector': [ '../API/SectorWrapper.cs', '../API/MapElementWrapper.cs' ],
     'Sidedef': [ '../API/SidedefWrapper.cs', '../API/MapElementWrapper.cs' ],
     'Thing': [ '../API/ThingWrapper.cs', '../API/MapElementWrapper.cs' ],
+    'UDB': [ '../API/UDBWrapper.cs' ],
     'Vector2D': [ '../API/Vector2DWrapper.cs' ],
     'Vector3D': [ '../API/Vector3DWrapper.cs' ],
     'Vertex': [ '../API/VertexWrapper.cs', '../API/MapElementWrapper.cs' ],
+    'VisualCamera': [ '../API/VisualCameraWrapper.cs' ],
     'QueryOptions': [ '../QueryOptions.cs' ],
 }
 

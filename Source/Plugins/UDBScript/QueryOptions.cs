@@ -151,15 +151,11 @@ namespace CodeImp.DoomBuilder.UDBScript
 		/// <returns>True if OK was pressed, otherwise false</returns>
 		public bool query()
 		{
-			// Stop the timer so that the time spent in the dialog is not added to the script runtime constraint
-			BuilderPlug.Me.ScriptRunner.StopTimer();
-
-			DialogResult dr = form.ShowDialog();
-
-			// Start the timer again
-			BuilderPlug.Me.ScriptRunner.ResumeTimer();
-
-			return dr == DialogResult.OK;
+			return (bool)BuilderPlug.Me.ScriptRunnerForm.InvokePaused(new Func<bool>(() =>
+			{
+				DialogResult dr = form.ShowDialog();
+				return dr == DialogResult.OK;
+			}));
 		}
 
 		#endregion

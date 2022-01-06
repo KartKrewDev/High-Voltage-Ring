@@ -1,5 +1,7 @@
 // Inspired by ribbiks's DBX Lua script: https://github.com/ribbiks/doom_lua/
 
+`#version 4`;
+
 `#name Flank Linedefs`;
 
 `#description Flanks the selected linedefs with newly created linedefs at both ends. Texture changes are only applied to 1-sided lines`;
@@ -34,18 +36,18 @@ fixoriginaloffset
 }
 `;
 
-let lines = Map.getSelectedOrHighlightedLinedefs();
+let lines = UDB.Map.getSelectedOrHighlightedLinedefs();
 
 if(lines.length == 0)
     die('No linedefs selcted or highlighted');
 
 lines.forEach(ld => {
     // The line has to be long enough the flank it
-    if(ld.length < ScriptOptions.width * 2)
+    if(ld.length < UDB.ScriptOptions.width * 2)
         die(ld + ' is too short to flank');
 
     // Compute how far along the line the flank with is
-    let length = 1.0 / ld.length * ScriptOptions.width;
+    let length = 1.0 / ld.length * UDB.ScriptOptions.width;
 
     // Remember the original texture offset
     let origoffset = ld.front.offsetX;
@@ -67,23 +69,23 @@ lines.forEach(ld => {
     ld.split(v2);
     
     // Only do texture stuff to one-sided lines, and if a texture is set
-    if(ld.back == null && ScriptOptions.texture != '')
+    if(ld.back == null && UDB.ScriptOptions.texture != '')
     {
         // Loop through all marked lines (which is the original line and the newly created flanks)
-        Map.getMarkedLinedefs().forEach(ld => {
+        UDB.Map.getMarkedLinedefs().forEach(ld => {
             // Only apply the flank texture if the current linedef has one of the original vertices
             if(vertices.includes(ld.start) || vertices.includes(ld.end))
             {
-                ld.front.middleTexture = ScriptOptions.texture;
-                ld.front.offsetX = ScriptOptions.offset;
+                ld.front.middleTexture = UDB.ScriptOptions.texture;
+                ld.front.offsetX = UDB.ScriptOptions.offset;
             }
-            else if(ScriptOptions.fixoriginaloffset) // Fix original offset, if desired
+            else if(UDB.ScriptOptions.fixoriginaloffset) // Fix original offset, if desired
             {
-                ld.front.offsetX = origoffset + ScriptOptions.width;
+                ld.front.offsetX = origoffset + UDB.ScriptOptions.width;
             }
         });
     }
 
     // Clear all marks, since we'll need the correct marks in the next loop iteration
-    Map.clearAllMarks();
+    UDB.Map.clearAllMarks();
 });

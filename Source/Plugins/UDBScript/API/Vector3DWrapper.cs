@@ -119,7 +119,7 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// <summary>
 		/// Creates a new `Vector3D` from x and y coordinates
 		/// ```
-		/// let v = new Vector3D(32, 64, 128);
+		/// let v = new UDB.Vector3D(32, 64, 128);
 		/// ```
 		/// </summary>
 		/// <param name="x">The x coordinate</param>
@@ -136,7 +136,7 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// <summary>
 		/// Creates a new `Vector3D` from a point.
 		/// ```
-		/// let v = new Vector3D([ 32, 64, 128 ]);
+		/// let v = new UDB.Vector3D([ 32, 64, 128 ]);
 		/// ```
 		/// </summary>
 		/// <param name="v">The vector to create the `Vector3D` from</param>

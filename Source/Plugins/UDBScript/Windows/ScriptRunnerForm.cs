@@ -96,7 +96,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 		{
 			if (InvokeRequired)
 			{
-				return Invoke(new Action(() => InvokePaused(method)));
+				return Invoke(new Func<object>(() => InvokePaused(method)));
 			}
 			else
 			{
@@ -187,11 +187,11 @@ namespace CodeImp.DoomBuilder.UDBScript
 			running = true;
 
 			// Prepare running the script
-			BuilderPlug.Me.ScriptRunner.PreRun(cancellationtoken);
+			BuilderPlug.Me.ScriptRunner.PreRun(cancellationtoken, progress, status, log);
 
 			try
 			{
-				await Task.Run(() => BuilderPlug.Me.ScriptRunner.Run(progress, status, log));
+				await Task.Run(() => BuilderPlug.Me.ScriptRunner.Run());
 				stopwatch.Stop();
 			}
 			catch (Exception ex)

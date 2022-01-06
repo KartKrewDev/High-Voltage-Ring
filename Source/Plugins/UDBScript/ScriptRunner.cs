@@ -31,7 +31,6 @@ using System.Windows.Forms;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.UDBScript.Wrapper;
-using CodeImp.DoomBuilder.UDBScript.API;
 using Jint;
 using Jint.Runtime;
 using Jint.Runtime.Interop;
@@ -258,7 +257,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 		/// Sets everything up for running the script. This has to be done on the UI thread.
 		/// </summary>
 		/// <param name="cancellationtoken">Cancellation token to cancel the running script</param>
-		public void PreRun(CancellationToken cancellationtoken)
+		public void PreRun(CancellationToken cancellationtoken, IProgress<int> progress, IProgress<string> status, IProgress<string> log)
 		{
 			string importlibraryerrors;
 
@@ -287,28 +286,38 @@ namespace CodeImp.DoomBuilder.UDBScript
 
 			// Create the script engine
 			engine = new Engine(options);
-			engine.SetValue("showMessage", new Action<object>(ShowMessage));
-			engine.SetValue("showMessageYesNo", new Func<object, bool>(ShowMessageYesNo));
-			engine.SetValue("exit", new Action<string>(ExitScript));
-			engine.SetValue("die", new Action<string>(DieScript));
-			engine.SetValue("QueryOptions", TypeReference.CreateTypeReference(engine, typeof(QueryOptions)));
-			engine.SetValue("ScriptOptions", scriptinfo.GetScriptOptionsObject());
-			engine.SetValue("Map", new MapWrapper());
-			engine.SetValue("GameConfiguration", new GameConfigurationWrapper());
-			engine.SetValue("Angle2D", TypeReference.CreateTypeReference(engine, typeof(Angle2DWrapper)));
-			engine.SetValue("Vector3D", TypeReference.CreateTypeReference(engine, typeof(Vector3DWrapper)));
-			engine.SetValue("Vector2D", TypeReference.CreateTypeReference(engine, typeof(Vector2DWrapper)));
-			engine.SetValue("Line2D", TypeReference.CreateTypeReference(engine, typeof(Line2DWrapper)));
-			engine.SetValue("UniValue", TypeReference.CreateTypeReference(engine, typeof(UniValue)));
-			engine.SetValue("Data", TypeReference.CreateTypeReference(engine, typeof(DataWrapper)));
 
-			// These can not be directly instanciated and don't have static method, but it's required to
-			// for example use "instanceof" in scripts
-			engine.SetValue("Linedef", TypeReference.CreateTypeReference(engine, typeof(LinedefWrapper)));
-			engine.SetValue("Sector", TypeReference.CreateTypeReference(engine, typeof(SectorWrapper)));
-			engine.SetValue("Sidedef", TypeReference.CreateTypeReference(engine, typeof(SidedefWrapper)));
-			engine.SetValue("Thing", TypeReference.CreateTypeReference(engine, typeof(ThingWrapper)));
-			engine.SetValue("Vertex", TypeReference.CreateTypeReference(engine, typeof(VertexWrapper)));
+			// Scripts with API version smaller than 4 will use the old global objects, starting from API
+			// version 4 the new global "UDB" object
+			if (scriptinfo.Version < 4)
+			{
+				engine.SetValue("showMessage", new Action<object>(ShowMessage));
+				engine.SetValue("showMessageYesNo", new Func<object, bool>(ShowMessageYesNo));
+				engine.SetValue("exit", new Action<string>(ExitScript));
+				engine.SetValue("die", new Action<string>(DieScript));
+				engine.SetValue("QueryOptions", TypeReference.CreateTypeReference(engine, typeof(QueryOptions)));
+				engine.SetValue("ScriptOptions", scriptinfo.GetScriptOptionsObject());
+				engine.SetValue("Map", new MapWrapper());
+				engine.SetValue("GameConfiguration", new GameConfigurationWrapper());
+				engine.SetValue("Angle2D", TypeReference.CreateTypeReference(engine, typeof(Angle2DWrapper)));
+				engine.SetValue("Vector3D", TypeReference.CreateTypeReference(engine, typeof(Vector3DWrapper)));
+				engine.SetValue("Vector2D", TypeReference.CreateTypeReference(engine, typeof(Vector2DWrapper)));
+				engine.SetValue("Line2D", TypeReference.CreateTypeReference(engine, typeof(Line2DWrapper)));
+				engine.SetValue("UniValue", TypeReference.CreateTypeReference(engine, typeof(UniValue)));
+				engine.SetValue("Data", TypeReference.CreateTypeReference(engine, typeof(DataWrapper)));
+
+				// These can not be directly instanciated and don't have static method, but it's required to
+				// for example use "instanceof" in scripts
+				engine.SetValue("Linedef", TypeReference.CreateTypeReference(engine, typeof(LinedefWrapper)));
+				engine.SetValue("Sector", TypeReference.CreateTypeReference(engine, typeof(SectorWrapper)));
+				engine.SetValue("Sidedef", TypeReference.CreateTypeReference(engine, typeof(SidedefWrapper)));
+				engine.SetValue("Thing", TypeReference.CreateTypeReference(engine, typeof(ThingWrapper)));
+				engine.SetValue("Vertex", TypeReference.CreateTypeReference(engine, typeof(VertexWrapper)));
+			}
+			else
+			{
+				engine.SetValue("UDB", new UDBWrapper(engine, scriptinfo, progress, status, log));
+			}
 
 #if DEBUG
 			engine.SetValue("log", new Action<object>(Console.WriteLine));
@@ -336,9 +345,9 @@ namespace CodeImp.DoomBuilder.UDBScript
 		/// <summary>
 		/// Runs the script
 		/// </summary>
-		public void Run(IProgress<int> progress, IProgress<string> status, IProgress<string> log)
+		public void Run()
 		{
-			engine.SetValue("ProgressInfo", new ProgressInfo(progress, status, log));
+			//engine.SetValue("ProgressInfo", new ProgressInfo(progress, status, log));
 			// Read the current script file
 			string script = File.ReadAllText(scriptinfo.ScriptFile);
 

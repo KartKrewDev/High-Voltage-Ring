@@ -26,7 +26,7 @@ UDMF fields. It's an object with the fields as properties.
 s.fields.comment = 'This is a comment';
 s.fields['comment'] = 'This is a comment'; // Also  works
 s.fields.xscalefloor = 2.0;
-t.score = 100;
+t.fields.score = 100;
 ```
 It is also possible to define new fields:
 
@@ -40,7 +40,7 @@ There are some restrictions, though:
 * JavaScript does not distinguish between integer and floating point numbers, it only has floating point numbers (of double precision). For fields where UDB knows that they are integers this it not a problem, since it'll automatically convert the floating point numbers to integers (dropping the fractional part). However, if you need to specify an integer value for an unknown or custom field you have to work around this limitation, using the `UniValue` class:
 
 ```js
-s.fields.user_myintfield = new UniValue(0, 25); // Sets the 'user_myintfield' field to an integer value of 25
+s.fields.user_myintfield = new UDB.UniValue(0, 25); // Sets the 'user_myintfield' field to an integer value of 25
 ```
 To remove a field you have to assign `null` to it:
 
@@ -87,8 +87,8 @@ t.position.y = 64;
 It's also possible to set all fields immediately by assigning either a `Vector2D`, `Vector3D`, or an array of numbers:
 
 ```js
-t.position = new Vector2D(32, 64);
-t.position = new Vector3D(32, 64, 128);
+t.position = new UDB.Vector2D(32, 64);
+t.position = new UDB.Vector3D(32, 64, 128);
 t.position = [ 32, 64 ];
 t.position = [ 32, 64, 128 ];
 ```
@@ -129,7 +129,7 @@ Deletes the `Thing`.
 Gets the distance between this `Thing` and the given point. The point can be either a `Vector2D` or an array of numbers.
 
 ```js
-t.distanceToSq(new Vector2D(32, 64));
+t.distanceToSq(new UDB.Vector2D(32, 64));
 t.distanceToSq([ 32, 64 ]);
 ```
 #### Parameters
@@ -143,7 +143,7 @@ Gets the squared distance between this `Thing` and the given point.
 The point can be either a `Vector2D` or an array of numbers.
 
 ```js
-t.distanceToSq(new Vector2D(32, 64));
+t.distanceToSq(new UDB.Vector2D(32, 64));
 t.distanceToSq([ 32, 64 ]);
 ```
 #### Parameters

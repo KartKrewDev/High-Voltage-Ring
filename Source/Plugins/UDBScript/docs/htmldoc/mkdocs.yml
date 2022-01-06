@@ -20,8 +20,10 @@ nav:
     - Sector: 'Sector.md'
     - Sidedef: 'Sidedef.md'
     - Thing: 'Thing.md'
+    - UDB: 'UDB.md'
     - Vector2D: 'Vector2D.md'
     - Vector3D: 'Vector3D.md'
     - Vertex: 'Vertex.md'
+    - VisualCamera: 'VisualCamera.md'
   - 'Built-in libraries':
     - Pen: 'Pen.md'

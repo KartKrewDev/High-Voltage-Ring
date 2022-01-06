@@ -24,7 +24,7 @@
 #region ================== Namespaces
 #endregion
 
-namespace CodeImp.DoomBuilder.UDBScript.API
+namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 {
 	class GameConfigurationWrapper
 	{
