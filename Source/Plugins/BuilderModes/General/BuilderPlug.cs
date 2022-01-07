@@ -143,6 +143,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private bool eventlinedistinctcolors;
 		private bool useoppositesmartpivothandle;
 		private bool selectchangedafterundoredo;
+		private bool selectadjacentvisualvertexslopehandles;
 
 		#endregion
 
@@ -203,6 +204,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool EventLineDistinctColors { get { return eventlinedistinctcolors; } internal set { eventlinedistinctcolors = value; } }
 		public bool UseOppositeSmartPivotHandle { get { return useoppositesmartpivothandle; } internal set { useoppositesmartpivothandle = value; } }
 		public bool SelectChangedafterUndoRedo { get { return selectchangedafterundoredo; } internal set { selectchangedafterundoredo = value; } }
+		public bool SelectAdjacentVisualVertexSlopeHandles { get { return selectadjacentvisualvertexslopehandles; } internal set { selectadjacentvisualvertexslopehandles = value; } }
 
 		//mxd. "Make Door" action persistent settings
 		internal MakeDoorSettings MakeDoor;

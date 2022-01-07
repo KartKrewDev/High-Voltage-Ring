@@ -356,6 +356,70 @@ namespace CodeImp.DoomBuilder.VisualModes
 			mode.SetActionResult("Changed slope.");
 		}
 
+		public override void OnSelectEnd()
+		{
+			// The base's OnSelectEnd might not change the selection status if the user tries to select
+			// a pivot handle, so we have to check if the selection status changed
+			bool oldselected = selected;
+
+			base.OnSelectEnd();
+
+			if (selected != oldselected && BuilderPlug.Me.SelectAdjacentVisualVertexSlopeHandles)
+			{
+				HashSet<Sector> sectors = new HashSet<Sector>();
+
+				// Get the z position of this vertex slope handle. By comparing the t position of
+				// other vertex slope handles we can find the ones that are really adjacent, since
+				// there can be many vertex slope handles on one vertex on different heights especially 
+				// with 3D floors. The rounding is done since there can be the tiniest differences in
+				// the planes, which lead to different z positions even when they are the "same".
+				double z = Math.Round(level.plane.GetZ(vertex.Position), 5);
+
+				// Get all sectors around the this slope handle's vertex
+				foreach (Linedef ld in vertex.Linedefs)
+				{
+					if (ld.Front != null)
+						sectors.Add(ld.Front.Sector);
+					if (ld.Back != null)
+						sectors.Add(ld.Back.Sector);
+				}
+
+				foreach (Sector s in sectors)
+				{
+					foreach (VisualVertexSlope vs in mode.VertexSlopeHandles[s])
+					{
+						if (vs.vertex != vertex || vs == this)
+							continue;
+
+						// See above for the explanation of the rounding
+						double z1 = Math.Round(vs.level.plane.GetZ(vertex.Position), 5);
+
+						if (z == z1)
+						{
+							if (selected)
+							{
+								if (!vs.selected)
+								{
+									vs.selected = true;
+									mode.AddSelectedObject(vs);
+									mode.UsedSlopeHandles.Add(vs);
+								}
+							}
+							else
+							{
+								if (vs.selected)
+								{
+									vs.selected = false;
+									mode.RemoveSelectedObject(vs);
+									mode.UsedSlopeHandles.Remove(vs);
+								}
+							}
+						}
+					}
+				}
+			}
+		} 
+
 		#endregion
 	}
 }

@@ -4470,6 +4470,20 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		[BeginAction("togglevisualvertexslopeadjacentselection")]
+		public void ToggleVisualVertexSlopeAdjacentSelection()
+		{
+			if (!General.Map.UDMF)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Visual sloping is supported in UDMF only!");
+				return;
+			}
+
+			BuilderPlug.Me.SelectAdjacentVisualVertexSlopeHandles = !BuilderPlug.Me.SelectAdjacentVisualVertexSlopeHandles;
+
+			General.Interface.DisplayStatus(StatusType.Action, "Adjacant selection of visual vertex slop handles is " + (BuilderPlug.Me.SelectAdjacentVisualVertexSlopeHandles ? "ENABLED" : "DISABLED"));
+		}
+
 
 		[BeginAction("resetslope")]
 		public void ResetSlope()

@@ -44,7 +44,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		#region ================== Events
 
 		// Select or deselect
-		public void OnSelectEnd()
+		public virtual void OnSelectEnd()
 		{
 			if (this.selected)
 			{
