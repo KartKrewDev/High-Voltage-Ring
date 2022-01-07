@@ -259,9 +259,12 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// Adds a line to the script log. Also shows the script running dialog.
 		/// </summary>
 		/// <param name="text">Line to add to the script log</param>
-		public void log(string text)
+		public void log(object text)
 		{
-			logger.Report(text);
+			if (text == null)
+				return;
+
+			logger.Report(text.ToString());
 		}
 
 		/// <summary>
