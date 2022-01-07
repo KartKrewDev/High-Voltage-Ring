@@ -84,6 +84,8 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 				foreach (KeyValuePair<string, UniValue> f in element.Fields)
 					o.Add(f.Key, f.Value.Value);
 
+				AddManagedFields(o);
+
 				// Create event that gets called when a property is changed. This sets the flag
 				((INotifyPropertyChanged)eo).PropertyChanged += new PropertyChangedEventHandler((sender, ea) =>	{
 					PropertyChangedEventArgs pcea = ea as PropertyChangedEventArgs;
@@ -164,7 +166,9 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 						}
 						else
 						{
-							if (so[pname] is double && ufi.Default is double)
+							if (so[pname] == null)
+								newvalue = null;
+							else if (so[pname] is double && ufi.Default is double)
 								newvalue = (double)so[pname];
 							else if (so[pname] is double && ufi.Default is int)
 								newvalue = Convert.ToInt32((double)so[pname]);
@@ -179,19 +183,27 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 
 					element.Fields.BeforeFieldsChange();
 
-					if (newvalue == null) // Remove the field when null was passed
+					if (ProcessManagedField(element.Fields, pname, newvalue))
 					{
-						element.Fields.Remove(pname);
-						so.Remove(pname);
+						if (newvalue == null) // Remove the field when null was passed
+							so.Remove(pname);
 					}
-					else if (newvalue is double)
-						UniFields.SetFloat(element.Fields, pname, (double)newvalue);
-					else if (newvalue is int)
-						UniFields.SetInteger(element.Fields, pname, (int)newvalue);
-					else if (newvalue is string)
-						UniFields.SetString(element.Fields, pname, (string)newvalue, string.Empty);
-					else if (newvalue is bool)
-						element.Fields[pname] = new UniValue(UniversalType.Boolean, (bool)newvalue);
+					else
+					{
+						if (newvalue == null) // Remove the field when null was passed
+						{
+							element.Fields.Remove(pname);
+							so.Remove(pname);
+						}
+						else if (newvalue is double)
+							UniFields.SetFloat(element.Fields, pname, (double)newvalue);
+						else if (newvalue is int)
+							UniFields.SetInteger(element.Fields, pname, (int)newvalue);
+						else if (newvalue is string)
+							UniFields.SetString(element.Fields, pname, (string)newvalue, string.Empty);
+						else if (newvalue is bool)
+							element.Fields[pname] = new UniValue(UniversalType.Boolean, (bool)newvalue);
+					}
 
 					AfterFieldsUpdate();
 				});
@@ -213,7 +225,25 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 
 		#region ================== Methods
 
+		/// <summary>
+		/// Called after the UDMF fields were updated, so other changes can be made to the map element, if necessary.
+		/// </summary>
 		internal abstract void AfterFieldsUpdate();
+
+		/// <summary>
+		/// Adds fields to the dictionary that are handled directly by UDB, but changing them is emulated through the UDMF fields.
+		/// </summary>
+		/// <param name="fields">UniFields of the map element</param>
+		internal virtual void AddManagedFields(IDictionary<string, object> fields) { }
+
+		/// <summary>
+		/// Processed a managed UDMF field, setting the managed value to what the user set in the UDMF field.
+		/// </summary>
+		/// <param name="fields">UniFields of the map element</param>
+		/// <param name="pname">field property name</param>
+		/// <param name="newvalue">field value</param>
+		/// <returns>true if the field needed to be processed, false if it didn't</returns>
+		internal virtual bool ProcessManagedField(UniFields fields, string pname, object newvalue) { return false; }
 
 		#endregion
 	}

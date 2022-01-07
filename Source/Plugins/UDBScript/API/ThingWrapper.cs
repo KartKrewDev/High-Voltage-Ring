@@ -522,5 +522,46 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		}
 
 		#endregion
+
+		#region ================== Management
+
+		/// <summary>
+		/// Adds fields to the dictionary that are handled directly by UDB, but changing them is emulated through the UDMF fields.
+		/// </summary>
+		/// <param name="fields">UniFields of the map element</param>
+		internal override void AddManagedFields(IDictionary<string, object> fields)
+		{
+			if (thing.ScaleX != 1.0)
+				fields.Add("scalex", thing.ScaleX);
+
+			if (thing.ScaleY != 1.0)
+				fields.Add("scaley", thing.ScaleY);
+		}
+
+		/// <summary>
+		/// Processed a managed UDMF field, setting the managed value to what the user set in the UDMF field.
+		/// </summary>
+		/// <param name="fields">UniFields of the map element</param>
+		/// <param name="pname">field property name</param>
+		/// <param name="newvalue">field value</param>
+		/// <returns>true if the field needed to be processed, false if it didn't</returns>
+		internal override bool ProcessManagedField(UniFields fields, string pname, object newvalue)
+		{
+			switch(pname)
+			{
+				case "scalex":
+					if (newvalue == null) thing.SetScale(1.0, thing.ScaleY);
+					else thing.SetScale((double)newvalue, thing.ScaleY);
+					return true;
+				case "scaley":
+					if(newvalue == null) thing.SetScale(thing.ScaleX, 1.0);
+					else thing.SetScale(thing.ScaleX, (double)newvalue);
+					return true;
+			}
+
+			return false;
+		}
+
+		#endregion
 	}
 }
