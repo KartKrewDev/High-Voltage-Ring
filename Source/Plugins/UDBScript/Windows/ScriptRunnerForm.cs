@@ -208,6 +208,10 @@ namespace CodeImp.DoomBuilder.UDBScript
 			btnAction.Text = "Close";
 			btnAction.Enabled = true;
 
+			// Stop the progress bar from animating when the script finished
+			if (progressbar.Style == ProgressBarStyle.Marquee)
+				progressbar.Style = ProgressBarStyle.Continuous;
+
 			if (autoclose)
 			{
 				MakeInvisible();
