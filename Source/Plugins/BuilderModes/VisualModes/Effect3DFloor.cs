@@ -124,6 +124,30 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			switch (General.Map.Config.LinedefActions[linedef.Action].Id.ToLowerInvariant())
 			{
+				case "srb2_fofsolid":
+					alpha = General.Clamp(linedef.Args[1], 0, 255);
+					renderinside = (linedef.Args[3] & 4) == 4;
+					break;
+				case "srb2_fofwater":
+					alpha = General.Clamp(linedef.Args[1], 0, 255);
+					renderinside = true;
+					break;
+				case "srb2_fofcrumbling":
+					alpha = General.Clamp(linedef.Args[1], 0, 255);
+					renderinside = (linedef.Args[3] & 7) != 0;
+					break;
+				case "srb2_fofintangible":
+					alpha = General.Clamp(linedef.Args[1], 0, 255);
+					renderinside = (linedef.Args[3] & 4) != 4;
+					break;
+				case "srb2_fofbustable":
+				case "srb2_foflaser":
+					alpha = General.Clamp(linedef.Args[1], 0, 255);
+					break;
+				case "srb2_fofcustom":
+					alpha = General.Clamp(linedef.Args[1], 0, 255);
+					renderinside = (linedef.Args[3] & 1024) == 1024;
+					break;
 				case "sector_set3dfloor":
 					vavoomtype = linedef.Args[1] == (int)FloorTypes.VavoomStyle;
 					// For non-vavoom types, we must switch the level types
@@ -182,9 +206,34 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			bool disablelighting = false;
 			bool restrictlighting = false;
+			floor.resetlighting = false;
 
 			switch (General.Map.Config.LinedefActions[linedef.Action].Id.ToLowerInvariant())
 			{
+				case "srb2_fofsolid":
+					disablelighting = (linedef.Args[3] & 16) == 16;
+					break;
+				case "srb2_fofwater":
+					restrictlighting = (linedef.Args[3] & 2) == 2;
+					break;
+				case "srb2_fofcrumbling":
+					disablelighting = (linedef.Args[4] & 1) == 1;
+					break;
+				case "srb2_foflight":
+					restrictlighting = linedef.Args[1] != 0;
+					break;
+				case "srb2_foffog":
+				case "srb2_fofintangibleinvisible":
+				case "srb2_foflaser":
+					disablelighting = true;
+					break;
+				case "srb2_fofintangible":
+					disablelighting = (linedef.Args[3] & 16) == 16;
+					break;
+				case "srb2_fofcustom":
+					disablelighting = (linedef.Args[3] & 64) == 64;
+					restrictlighting = (linedef.Args[3] & 131072) == 131072;
+					break;
 				case "sector_set3dfloor":
 					// Do not adjust light? (works only for non-vavoom types)
 					if (!vavoomtype)

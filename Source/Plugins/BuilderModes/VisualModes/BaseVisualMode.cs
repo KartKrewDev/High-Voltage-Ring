@@ -1061,6 +1061,31 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 						break;
 
+					case "srb2_fofsolid":
+					case "srb2_fofwater":
+					case "srb2_fofsolidopaque":
+					case "srb2_fofcrumbling":
+					case "srb2_foflight":
+					case "srb2_foffog":
+					case "srb2_fofintangible":
+					case "srb2_fofintangibleinvisible":
+					case "srb2_fofbustable":
+					case "srb2_foflaser":
+					case "srb2_fofcustom":
+						if (l.Front != null)
+						{
+							if (sectortags.ContainsKey(l.Args[0]))
+							{
+								List<Sector> sectors = sectortags[l.Args[0]];
+								foreach (Sector s in sectors)
+								{
+									SectorData sd = GetSectorData(s);
+									sd.AddEffect3DFloor(l);
+								}
+							}
+						}
+						break;
+
 					// ========== Transfer Brightness (50) (see http://zdoom.org/wiki/ExtraFloor_LightOnly) =========
 					case "extrafloor_lightonly":
 						if(l.Front != null && sectortags.ContainsKey(l.Args[0]))
