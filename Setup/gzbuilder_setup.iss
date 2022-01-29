@@ -37,6 +37,7 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 Source: Setup\dotnetfx35setup.exe; DestDir: {tmp}; Flags: dontcopy
 Source: Setup\vcredist_x86.exe; DestDir: {tmp}; Flags: dontcopy
 Source: Builder.exe; DestDir: {app}; Flags: ignoreversion
+Source: Builder.exe.config; DestDir: {app}; Flags: ignoreversion
 Source: UDBuilder.default.cfg; DestDir: {app}; Flags: ignoreversion
 //Source: Updater.exe; DestDir: {app}; Flags: ignoreversion
 Source: Updater.ini; DestDir: {app}; Flags: ignoreversion
@@ -51,7 +52,11 @@ Source: Compilers\*; DestDir: {app}\Compilers; Flags: ignoreversion recursesubdi
 Source: Configurations\*; DestDir: {app}\Configurations; Flags: ignoreversion recursesubdirs
 Source: Scripting\*; DestDir: {app}\Scripting; Flags: ignoreversion recursesubdirs
 Source: Snippets\*; DestDir: {app}\Snippets; Flags: ignoreversion recursesubdirs
+Source: UDBScript\*; DestDir: {app}\UDBScript; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: Plugins\Dependencies\Esprima.dll; DestDir: {app}\Plugins\Dependencies; Flags: ignoreversion
+Source: Plugins\Dependencies\Jint.dll; DestDir: {app}\Plugins\Dependencies; Flags: ignoreversion
+Source: Plugins\AutomapMode.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\BuilderModes.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\BuilderEffects.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\ColorPicker.dll; DestDir: {app}\Plugins; Flags: ignoreversion
@@ -61,6 +66,8 @@ Source: Plugins\SoundPropagationMode.dll; DestDir: {app}\Plugins; Flags: ignorev
 Source: Plugins\StairSectorBuilder.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\TagExplorer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\TagRange.dll; DestDir: {app}\Plugins; Flags: ignoreversion
+Source: Plugins\ThreeDFloorMode.dll; DestDir: {app}\Plugins; Flags: ignoreversion
+Source: Plugins\UDBScript.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\VisplaneExplorer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\Loadorder.cfg; DestDir: {app}\Plugins; Flags: ignoreversion onlyifdoesntexist
 Source: Sprites\*; DestDir: {app}\Sprites; Flags: ignoreversion recursesubdirs
