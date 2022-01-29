@@ -970,6 +970,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			Dictionary<int, List<Sector>> sectortags = new Dictionary<int, List<Sector>>();
+			Dictionary<int, List<Thing>> thingtags = new Dictionary<int, List<Thing>>();
 			Dictionary<int, List<Linedef>> linetags = new Dictionary<int, List<Linedef>>();
 			sectordata = new Dictionary<Sector, SectorData>(General.Map.Map.Sectors.Count);
 			thingdata = new Dictionary<Thing, ThingData>(General.Map.Map.Things.Count);
@@ -1004,6 +1005,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(!sectortags.ContainsKey(tag)) sectortags[tag] = new List<Sector>();
 					sectortags[tag].Add(s);
 				}
+			}
+
+			foreach (Thing t in General.Map.Map.Things)
+			{
+				if (t.Type != 750) continue;
+				if (!thingtags.ContainsKey(t.Tag)) thingtags[t.Tag] = new List<Thing>();
+				thingtags[t.Tag].Add(t);
 			}
 
 			// Find interesting linedefs (such as line slopes)
@@ -1042,6 +1050,23 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					case "plane_copy":
 						slopelinedefpass[1].Add(l);
 						break;
+
+					case "srb2_vertexslope":
+					{
+						List<Thing> sourcethings = new List<Thing>();
+						if (!thingtags.ContainsKey(l.Args[1]) || thingtags[l.Args[1]].Count == 0)
+							break;
+						if (!thingtags.ContainsKey(l.Args[2]) || thingtags[l.Args[2]].Count == 0)
+							break;
+						if (!thingtags.ContainsKey(l.Args[3]) || thingtags[l.Args[3]].Count == 0)
+							break;
+						sourcethings.Add(thingtags[l.Args[1]][0]);
+						sourcethings.Add(thingtags[l.Args[2]][0]);
+						sourcethings.Add(thingtags[l.Args[3]][0]);
+						SectorData sd = GetSectorData((l.Args[0] < 2) ? l.Front.Sector : l.Back.Sector);
+						sd.AddEffectSRB2ThingVertexSlope(sourcethings, (l.Args[0] & 1) != 1);
+						break;
+					}
 
 					// ========== Sector 3D floor (160) (see http://zdoom.org/wiki/Sector_Set3dFloor) ==========
 					case "sector_set3dfloor":

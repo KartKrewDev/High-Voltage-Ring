@@ -197,6 +197,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			alleffects.Add(e);
 		}
 
+		// SRB2 thing vertex slope effect
+		public void AddEffectSRB2ThingVertexSlope(List<Thing> sourcethings, bool slopefloor)
+		{
+			EffectSRB2ThingVertexSlope e = new EffectSRB2ThingVertexSlope(this, sourcethings, slopefloor);
+			alleffects.Add(e);
+		}
+
 		//mxd. Add UDMF vertex offset effect
 		public void AddEffectVertexOffset() 
 		{
