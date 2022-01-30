@@ -763,7 +763,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 						else if(this is VisualMiddleDouble)
 						{
-							if(Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
+							if(Sidedef.Line.IsFlagSet(General.Map.Config.PegMidtextureFlag))
 								offsety = (options.Bounds.Y - Sidedef.GetHighHeight() - Sidedef.GetLowHeight()) * scaley - Sidedef.OffsetY;
 							else
 								offsety = options.Bounds.Y * scaley - Sidedef.OffsetY;

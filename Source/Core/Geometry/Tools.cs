@@ -1966,29 +1966,29 @@ namespace CodeImp.DoomBuilder.Geometry
 			double surfaceHeight;
 			if(side.Other != null && side.Other.Sector != null)
 			{
-				if(side.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag)) 
+				if(side.Line.IsFlagSet(General.Map.Config.PegMidtextureFlag))
 				{
-					// Double-sided with LowerUnpeggedFlag set
+					// Double-sided with PegMidtextureFlag set
 					surfaceHeight = (side.Sector.CeilHeight - Math.Max(side.Sector.FloorHeight, side.Other.Sector.FloorHeight)) * scaleY;
 				} 
 				else 
 				{
-					// Double-sided without LowerUnpeggedFlag
+					// Double-sided without PegMidtextureFlag
 					surfaceHeight = Math.Abs(side.Sector.CeilHeight - side.Other.Sector.CeilHeight) * scaleY;
 				}
 			}
 			else
 			{
-				if(side.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
+				if(side.Line.IsFlagSet(General.Map.Config.PegMidtextureFlag))
 				{
-					// Single-sided with LowerUnpeggedFlag set
+					// Single-sided with PegMidtextureFlag set
 					// Absolute value is used because ceiling height of vavoom-type 3d floors 
 					// is lower than floor height
 					surfaceHeight = (Math.Abs(side.Sector.CeilHeight - side.Sector.FloorHeight)) * scaleY;
 				}
 				else
 				{
-					// Single-sided without LowerUnpeggedFlag
+					// Single-sided without PegMidtextureFlag
 					return offset;
 				}
 			}

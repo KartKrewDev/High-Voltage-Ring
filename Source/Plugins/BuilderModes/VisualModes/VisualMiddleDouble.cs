@@ -159,8 +159,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			double geobottom = Math.Max(Sidedef.Sector.FloorHeight, Sidedef.Other.Sector.FloorHeight);
 			double zoffset = Sidedef.Sector.CeilHeight - Sidedef.Other.Sector.CeilHeight; //mxd
 
-			// When lower unpegged is set, the middle texture is bound to the bottom
-			if(Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag)) 
+			// When peg midtexture is set, the middle texture is bound to the bottom
+			if(Sidedef.Line.IsFlagSet(General.Map.Config.PegMidtextureFlag))
 				tp.tlt.y = tsz.y - (geotop - geobottom);
 			
 			if(zoffset > 0) tp.tlt.y -= zoffset; //mxd
@@ -222,7 +222,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				double textop;
 
 				// Determine top portion height
-				if(Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
+				if(Sidedef.Line.IsFlagSet(General.Map.Config.PegMidtextureFlag))
 					textop = geobottom + tof.y + Math.Abs(tsz.y);
 				else
 					textop = geotop + tof.y;
@@ -318,7 +318,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
             int oy;
             if (repeatmidtex)
             {
-                bool pegbottom = Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag);
+                bool pegbottom = Sidedef.Line.IsFlagSet(General.Map.Config.PegMidtextureFlag);
 				double zoffset = (pegbottom ? Sidedef.Sector.FloorHeight : Sidedef.Sector.CeilHeight);
                 oy = (int)Math.Floor(((pickintersect.z - zoffset) * UniFields.GetFloat(Sidedef.Fields, "scaley_mid", 1.0f) / texscale.y
                     - ((Sidedef.OffsetY - UniFields.GetFloat(Sidedef.Fields, "offsety_mid")) / imgscale.y))

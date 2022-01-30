@@ -5169,7 +5169,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 										offset += vheight * Math.Round(curoffset / vheight - 0.5f * Math.Sign(j.scaleY));
 
 										// Make sure the surface stays between floor and ceiling
-										if(j.sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag) || Math.Sign(j.scaleY) == -1)
+										if(j.sidedef.Line.IsFlagSet(General.Map.Config.PegMidtextureFlag) || Math.Sign(j.scaleY) == -1)
 										{
 											if(offset < -vheight)
 												offset += vheight;
@@ -5321,7 +5321,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 										offset += tex.Height * Math.Round(curoffset / vheight - 0.5f * Math.Sign(j.scaleY));
 
 										// Make sure the surface stays between floor and ceiling
-										if(j.sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag) || Math.Sign(j.scaleY) == -1)
+										if(j.sidedef.Line.IsFlagSet(General.Map.Config.PegMidtextureFlag) || Math.Sign(j.scaleY) == -1)
 										{
 											if(offset < -vheight)
 												offset += vheight;
