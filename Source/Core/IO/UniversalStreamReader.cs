@@ -194,11 +194,8 @@ namespace CodeImp.DoomBuilder.IO
 				double scale = GetCollectionEntry(c, "scale", false, 0.0, where); //mxd
 				int type = GetCollectionEntry(c, "type", true, 0, where);
 				int special = GetCollectionEntry(c, "special", false, 0, where);
-				args[0] = GetCollectionEntry(c, "arg0", false, 0, where);
-				args[1] = GetCollectionEntry(c, "arg1", false, 0, where);
-				args[2] = GetCollectionEntry(c, "arg2", false, 0, where);
-				args[3] = GetCollectionEntry(c, "arg3", false, 0, where);
-				args[4] = GetCollectionEntry(c, "arg4", false, 0, where);
+				for (int j = 0; j < args.Length; j++)
+					args[j] = GetCollectionEntry(c, "arg" + j, false, 0, where);
 
 				if(scale != 0) //mxd
 				{
@@ -256,11 +253,8 @@ namespace CodeImp.DoomBuilder.IO
 
 				int tag = GetCollectionEntry(lc, "id", false, 0, where);
 				int special = GetCollectionEntry(lc, "special", false, 0, where);
-				args[0] = GetCollectionEntry(lc, "arg0", false, 0, where);
-				args[1] = GetCollectionEntry(lc, "arg1", false, 0, where);
-				args[2] = GetCollectionEntry(lc, "arg2", false, 0, where);
-				args[3] = GetCollectionEntry(lc, "arg3", false, 0, where);
-				args[4] = GetCollectionEntry(lc, "arg4", false, 0, where);
+				for (int j = 0; j < args.Length; j++)
+					args[j] = GetCollectionEntry(lc, "arg" + j, false, 0, where);
 				int s1 = GetCollectionEntry(lc, "sidefront", false, -1, where);
 				int s2 = GetCollectionEntry(lc, "sideback", false, -1, where);
 

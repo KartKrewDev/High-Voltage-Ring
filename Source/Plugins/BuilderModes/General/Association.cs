@@ -525,7 +525,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				// Collect what map element the action arguments are referencing. Ignore the argument if it's 0, so that they
 				// are not associated to everything untagged
-				for (int i = 0; i < Linedef.NUM_ARGS; i++)
+				for (int i = 0; i < action.Args.Length; i++)
 				{
 					if ((action.Args[i].Type == (int)UniversalType.SectorTag ||
 						action.Args[i].Type == (int)UniversalType.LinedefTag ||
@@ -548,7 +548,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				if (ti != null && directlinktype >= 0 && Math.Abs(directlinktype) != t.Type)
 				{
-					for (int i = 0; i < Linedef.NUM_ARGS; i++)
+					for (int i = 0; i < ti.Args.Length; i++)
 					{
 						if ((ti.Args[i].Type == (int)UniversalType.SectorTag ||
 							ti.Args[i].Type == (int)UniversalType.LinedefTag ||
@@ -585,13 +585,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if ((linedef.Action > 0) && General.Map.Config.LinedefActions.ContainsKey(linedef.Action))
 			{
 				LinedefActionInfo action = General.Map.Config.LinedefActions[linedef.Action];
-				if (((action.Args[0].Type == (int)type) && (linedef.Args[0] != 0) && (tags.Contains(linedef.Args[0]))) ||
-					((action.Args[1].Type == (int)type) && (linedef.Args[1] != 0) && (tags.Contains(linedef.Args[1]))) ||
-					((action.Args[2].Type == (int)type) && (linedef.Args[2] != 0) && (tags.Contains(linedef.Args[2]))) ||
-					((action.Args[3].Type == (int)type) && (linedef.Args[3] != 0) && (tags.Contains(linedef.Args[3]))) ||
-					((action.Args[4].Type == (int)type) && (linedef.Args[4] != 0) && (tags.Contains(linedef.Args[4]))))
+				for (int i = 0; i < action.Args.Length; i++)
 				{
-					return true;
+					if ((action.Args[i].Type == (int)type) && (linedef.Args[i] != 0) && (tags.Contains(linedef.Args[i])))
+						return true;
 				}
 			}
 
@@ -617,13 +614,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					return false;
 
 				LinedefActionInfo action = General.Map.Config.LinedefActions[thing.Action];
-				if (((action.Args[0].Type == (int)type) && (tags.Contains(thing.Args[0]))) ||
-					 ((action.Args[1].Type == (int)type) && (tags.Contains(thing.Args[1]))) ||
-					 ((action.Args[2].Type == (int)type) && (tags.Contains(thing.Args[2]))) ||
-					 ((action.Args[3].Type == (int)type) && (tags.Contains(thing.Args[3]))) ||
-					 ((action.Args[4].Type == (int)type) && (tags.Contains(thing.Args[4]))))
+				for (int i = 0; i < ti.Args.Length; i++)
 				{
-					return true;
+					if ((action.Args[i].Type == (int)type) && (tags.Contains(thing.Args[i])))
+						return true;
 				}
 
 				//If there is a link setup on this thing, and it matches the association, then draw a direct link to any matching tag
@@ -639,13 +633,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// This prevents a reverse link to a thing via an argument, when it should be a direct tag-to-tag link instead.
 				if (ti != null && directlinktype >= 0 && Math.Abs(directlinktype) != thing.Type)
 				{
-					if (((ti.Args[0].Type == (int)type) && (tags.Contains(thing.Args[0]))) ||
-						 ((ti.Args[1].Type == (int)type) && (tags.Contains(thing.Args[1]))) ||
-						 ((ti.Args[2].Type == (int)type) && (tags.Contains(thing.Args[2]))) ||
-						 ((ti.Args[3].Type == (int)type) && (tags.Contains(thing.Args[3]))) ||
-						 ((ti.Args[4].Type == (int)type) && (tags.Contains(thing.Args[4]))))
+					for (int i = 0; i < ti.Args.Length; i++)
 					{
-						return true;
+						if ((ti.Args[i].Type == (int)type) && (tags.Contains(thing.Args[i])))
+							return true;
 					}
 				}
 			}

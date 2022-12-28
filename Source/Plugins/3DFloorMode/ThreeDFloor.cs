@@ -319,7 +319,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				{
 					sd.Line.Action = 0;
 
-					for (int i = 0; i < 5; i++)
+					for (int i = 0; i < sd.Line.Args.Length; i++)
 						sd.Line.Args[i] = 0;
 				}
 

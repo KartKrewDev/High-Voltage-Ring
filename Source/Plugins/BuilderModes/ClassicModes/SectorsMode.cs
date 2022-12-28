@@ -1884,7 +1884,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								}
 
 								// Set the linedef args
-								for(int i = 0; i < Linedef.NUM_ARGS; i++)
+								for(int i = 0; i < General.Map.Config.MakeDoorArgs.Length; i++)
 								{
 									// A -1 arg indicates that the arg must be set to the new sector tag
 									// and only in this case we set the tag on the sector, because only

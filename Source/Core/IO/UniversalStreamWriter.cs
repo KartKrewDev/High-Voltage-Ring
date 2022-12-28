@@ -224,11 +224,10 @@ namespace CodeImp.DoomBuilder.IO
 				
 				// Special
 				if(l.Action != 0) coll.Add("special", l.Action);
-				if(l.Args[0] != 0) coll.Add("arg0", l.Args[0]);
-				if(l.Args[1] != 0) coll.Add("arg1", l.Args[1]);
-				if(l.Args[2] != 0) coll.Add("arg2", l.Args[2]);
-				if(l.Args[3] != 0) coll.Add("arg3", l.Args[3]);
-				if(l.Args[4] != 0) coll.Add("arg4", l.Args[4]);
+				for (int i = 0; i < l.Args.Length; i++)
+				{
+					if (l.Args[i] != 0) coll.Add("arg" + i, l.Args[i]);
+				}
 
 				// Flags
 				foreach(KeyValuePair<string, bool> flag in l.Flags)
@@ -346,11 +345,10 @@ namespace CodeImp.DoomBuilder.IO
 				if(t.ScaleY != 0 && t.ScaleY != 1.0f) coll.Add("scaley", t.ScaleY); //mxd
 				coll.Add("type", t.Type);
 				if(t.Action != 0) coll.Add("special", t.Action);
-				if(t.Args[0] != 0) coll.Add("arg0", t.Args[0]);
-				if(t.Args[1] != 0) coll.Add("arg1", t.Args[1]);
-				if(t.Args[2] != 0) coll.Add("arg2", t.Args[2]);
-				if(t.Args[3] != 0) coll.Add("arg3", t.Args[3]);
-				if(t.Args[4] != 0) coll.Add("arg4", t.Args[4]);
+				for (int i = 0; i < t.Args.Length; i++)
+				{
+					if (t.Args[i] != 0) coll.Add("arg" + i, t.Args[i]);
+				}
 				coll.Comment = t.Index.ToString();
 
 				// Flags

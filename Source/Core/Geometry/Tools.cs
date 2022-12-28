@@ -2087,7 +2087,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				if(t.Marked)
 				{
 					t.Action = 0;
-					for(int i = 0; i < Thing.NUM_ARGS; i++) t.Args[i] = 0;
+					for(int i = 0; i < t.Args.Length; i++) t.Args[i] = 0;
 				}
 			}
 			
@@ -2097,7 +2097,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				if(l.Marked)
 				{
 					l.Action = 0;
-					for(int i = 0; i < Linedef.NUM_ARGS; i++) l.Args[i] = 0;
+					for(int i = 0; i < l.Args.Length; i++) l.Args[i] = 0;
 				}
 			}
 		}

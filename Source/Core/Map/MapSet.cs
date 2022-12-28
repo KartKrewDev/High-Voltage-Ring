@@ -3923,7 +3923,7 @@ namespace CodeImp.DoomBuilder.Map
 					if(t.Marked == marked)
 					{
 						LinedefActionInfo info = General.Map.Config.GetLinedefActionInfo(t.Action);
-						for(int i = 0; i < Thing.NUM_ARGS; i++)
+						for(int i = 0; i < info.Args.Length; i++)
 						{
 							if(info.Args[i].Used && CheckIsTagType(info.Args[i].Type))
 							{
@@ -3971,7 +3971,7 @@ namespace CodeImp.DoomBuilder.Map
 					if(l.Marked == marked)
 					{
 						LinedefActionInfo info = General.Map.Config.GetLinedefActionInfo(l.Action);
-						for(int i = 0; i < Linedef.NUM_ARGS; i++)
+						for(int i = 0; i < info.Args.Length; i++)
 						{
 							if(info.Args[i].Used && CheckIsTagType(info.Args[i].Type))
 							{

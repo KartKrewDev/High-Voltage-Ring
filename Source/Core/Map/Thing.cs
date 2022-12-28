@@ -220,7 +220,7 @@ namespace CodeImp.DoomBuilder.Map
 			s.rwDouble(ref scaleY); //mxd
 			s.rwInt(ref tag);
 			s.rwInt(ref action);
-			for(int i = 0; i < NUM_ARGS; i++) s.rwInt(ref args[i]);
+			for(int i = 0; i < args.Length; i++) s.rwInt(ref args[i]);
 
 			if(!s.IsWriting) 
 			{

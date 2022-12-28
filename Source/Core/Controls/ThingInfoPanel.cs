@@ -36,6 +36,8 @@ namespace CodeImp.DoomBuilder.Controls
 	{
 		private readonly int hexenformatwidth;
 		private readonly int doomformatwidth;
+		private Label[] arglabels;
+		private Label[] args;
 
 		// Constructor
 		public ThingInfoPanel()
@@ -47,6 +49,9 @@ namespace CodeImp.DoomBuilder.Controls
 			// Hide stuff when in Doom format
 			hexenformatwidth = infopanel.Width;
 			doomformatwidth = infopanel.Width - 190;
+
+			arglabels = new Label[] { arglbl1, arglbl2, arglbl3, arglbl4, arglbl5 };
+			args = new Label[] { arg1, arg2, arg3, arg4, arg5 };
 		}
 
 		// This shows the info
@@ -54,16 +59,11 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			// Show/hide stuff depending on format
 			bool hasArgs = General.Map.FormatInterface.HasActionArgs;
-			arglbl1.Visible = hasArgs;
-			arglbl2.Visible = hasArgs;
-			arglbl3.Visible = hasArgs;
-			arglbl4.Visible = hasArgs;
-			arglbl5.Visible = hasArgs;
-			arg1.Visible = hasArgs;
-			arg2.Visible = hasArgs;
-			arg3.Visible = hasArgs;
-			arg4.Visible = hasArgs;
-			arg5.Visible = hasArgs;
+			for (int i = 0; i < args.Length; i++)
+			{
+				arglabels[i].Visible = hasArgs;
+				args[i].Visible = hasArgs;
+			}
 			infopanel.Width = (hasArgs ? hexenformatwidth : doomformatwidth);
 
 			//mxd
@@ -158,9 +158,6 @@ namespace CodeImp.DoomBuilder.Controls
             }
 
             // Apply script args?
-            Label[] arglabels = { arglbl1, arglbl2, arglbl3, arglbl4, arglbl5 };
-            Label[] args = { arg1, arg2, arg3, arg4, arg5 };
-
             if (scriptitem != null)
             {
                 int first;
@@ -209,10 +206,8 @@ namespace CodeImp.DoomBuilder.Controls
             //mxd. Set argument value and label
             if (isarg0str) arg1.Text = arg0str;
             else SetArgumentText(act.Args[0], arg1, t.Args[0]);
-            SetArgumentText(arginfo[1], arg2, t.Args[1]);
-			SetArgumentText(arginfo[2], arg3, t.Args[2]);
-			SetArgumentText(arginfo[3], arg4, t.Args[3]);
-			SetArgumentText(arginfo[4], arg5, t.Args[4]);
+			for (int i = 1; i < args.Length; i++)
+				SetArgumentText(arginfo[i], args[i], t.Args[i]);
 
 			//mxd. Flags
 			flags.Items.Clear();

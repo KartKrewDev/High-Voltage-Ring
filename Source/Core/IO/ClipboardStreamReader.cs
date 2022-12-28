@@ -214,7 +214,7 @@ namespace CodeImp.DoomBuilder.IO
 				int s1 = reader.ReadInt32();
 				int s2 = reader.ReadInt32();
 				int special = reader.ReadInt32();
-				for(int a = 0; a < Linedef.NUM_ARGS; a++) args[a] = reader.ReadInt32();
+				for(int a = 0; a < args.Length; a++) args[a] = reader.ReadInt32();
 				int numtags = reader.ReadInt32(); //mxd
 				List<int> tags = new List<int>(numtags); //mxd
 				for(int a = 0; a < numtags; a++) tags.Add(reader.ReadInt32()); //mxd
@@ -362,7 +362,7 @@ namespace CodeImp.DoomBuilder.IO
 				double scaleY = reader.ReadDouble(); //mxd
 				int type = reader.ReadInt32();
 				int special = reader.ReadInt32();
-				for(int a = 0; a < Linedef.NUM_ARGS; a++) args[a] = reader.ReadInt32();
+				for(int a = 0; a < args.Length; a++) args[a] = reader.ReadInt32();
 
 				//flags
 				Dictionary<string, bool> stringflags = new Dictionary<string, bool>(StringComparer.Ordinal);

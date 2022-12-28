@@ -45,7 +45,9 @@ namespace CodeImp.DoomBuilder.Controls
 		private int action;
 		private ArgumentInfo[] arginfo;
 		private ArgZeroMode argzeromode;
-        private ArgZeroMode Arg0Mode
+		private Label[] labels;
+		private ArgumentBox[] args;
+		private ArgZeroMode Arg0Mode
         {
             get { return argzeromode; }
             set
@@ -64,13 +66,16 @@ namespace CodeImp.DoomBuilder.Controls
 			InitializeComponent();
 
             Reset();
+
+			labels = new Label[] { arg0label, arg1label, arg2label, arg3label, arg4label };
+			args = new ArgumentBox[] { arg0, arg1, arg2, arg3, arg4 };
 		}
 
-        #endregion
+		#endregion
 
-        #region ================== Setup
+		#region ================== Setup
 
-        public void Reset()
+		public void Reset()
         {
             // Only when running (this.DesignMode won't do when not this, but one of parent controls is in design mode)
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
@@ -89,7 +94,7 @@ namespace CodeImp.DoomBuilder.Controls
 			SetValue(t.Fields, t.Args, first);
 		}
 
-		private void SetValue(UniFields fields, int[] args, bool first)
+		private void SetValue(UniFields fields, int[] newargs, bool first)
 		{
 			if(first)
 			{
@@ -100,11 +105,8 @@ namespace CodeImp.DoomBuilder.Controls
 				}
 
 				// Update arguments
-				arg0.SetValue(args[0]);
-				arg1.SetValue(args[1]);
-				arg2.SetValue(args[2]);
-				arg3.SetValue(args[3]);
-				arg4.SetValue(args[4]);
+				for (int i = 0; i < args.Length; i++)
+					args[i].SetValue(newargs[i]);
 			}
 			else
 			{
@@ -118,11 +120,8 @@ namespace CodeImp.DoomBuilder.Controls
 				}
 
 				// Update arguments
-				if(!string.IsNullOrEmpty(arg0.Text) && args[0] != arg0.GetResult(int.MinValue)) arg0.ClearValue();
-				if(!string.IsNullOrEmpty(arg1.Text) && args[1] != arg1.GetResult(int.MinValue)) arg1.ClearValue();
-				if(!string.IsNullOrEmpty(arg2.Text) && args[2] != arg2.GetResult(int.MinValue)) arg2.ClearValue();
-				if(!string.IsNullOrEmpty(arg3.Text) && args[3] != arg3.GetResult(int.MinValue)) arg3.ClearValue();
-				if(!string.IsNullOrEmpty(arg4.Text) && args[4] != arg4.GetResult(int.MinValue)) arg4.ClearValue();
+				for (int i = 0; i < args.Length; i++)
+					if (!string.IsNullOrEmpty(args[i].Text) && newargs[i] != args[i].GetResult(int.MinValue)) args[i].ClearValue();
 			}
 		}
 
@@ -178,10 +177,8 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 
 			// Apply the rest of args
-			l.Args[1] = arg1.GetResult(l.Args[1], step);
-			l.Args[2] = arg2.GetResult(l.Args[2], step);
-			l.Args[3] = arg3.GetResult(l.Args[3], step);
-			l.Args[4] = arg4.GetResult(l.Args[4], step);
+			for (int i = 1; i < args.Length; i++)
+				l.Args[i] = args[i].GetResult(l.Args[i], step);
 		}
 
 		public void Apply(Thing t, int step)
@@ -231,11 +228,9 @@ namespace CodeImp.DoomBuilder.Controls
                 default: throw new NotImplementedException("Unknown ArgZeroMode");
             }
 
-            // Apply the rest of args
-            t.Args[1] = arg1.GetResult(t.Args[1], step);
-			t.Args[2] = arg2.GetResult(t.Args[2], step);
-			t.Args[3] = arg3.GetResult(t.Args[3], step);
-			t.Args[4] = arg4.GetResult(t.Args[4], step);
+			// Apply the rest of args
+			for (int i = 1; i < args.Length; i++)
+				t.Args[i] = args[i].GetResult(t.Args[i], step);
 		}
 
 		#endregion
@@ -269,30 +264,21 @@ namespace CodeImp.DoomBuilder.Controls
 			// Change the argument descriptions
 			this.BeginUpdate();
 
-			UpdateArgument(arg0, arg0label, arginfo[0]);
-			UpdateArgument(arg1, arg1label, arginfo[1]);
-			UpdateArgument(arg2, arg2label, arginfo[2]);
-			UpdateArgument(arg3, arg3label, arginfo[3]);
-			UpdateArgument(arg4, arg4label, arginfo[4]);
+			for (int i = 0; i < args.Length; i++)
+				UpdateArgument(args[i], labels[i], arginfo[i]);
 
 			if(!setuponly)
 			{
 				// Apply action's or thing's default arguments
 				if(showaction != 0 || info != null)
 				{
-					arg0.SetDefaultValue();
-                    arg1.SetDefaultValue();
-					arg2.SetDefaultValue();
-					arg3.SetDefaultValue();
-					arg4.SetDefaultValue();
+					for (int i = 0; i < args.Length; i++)
+						args[i].SetDefaultValue();
 				}
 				else //or set them to 0
 				{
-					arg0.SetValue(0);
-                    arg1.SetValue(0);
-					arg2.SetValue(0);
-					arg3.SetValue(0);
-					arg4.SetValue(0);
+					for (int i = 0; i < args.Length; i++)
+						args[i].SetValue(0);
 				}
                 // arg0str currently can't have any default
                 arg0named.Text = arg0strval = " ";
@@ -436,8 +422,6 @@ namespace CodeImp.DoomBuilder.Controls
 
 		private void UpdateScriptArguments(ScriptItem item)
 		{
-			Label[] labels = { arg0label, arg1label, arg2label, arg3label, arg4label };
-			ArgumentBox[] args = { arg0, arg1, arg2, arg3, arg4 };
 			if(item != null)
 			{
                 int first;

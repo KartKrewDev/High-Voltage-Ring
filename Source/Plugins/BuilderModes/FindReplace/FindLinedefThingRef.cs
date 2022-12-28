@@ -91,7 +91,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(info.IsKnown && !info.IsNull)
 					{
 						// Go for all args
-						for(int i = 0; i < Linedef.NUM_ARGS; i++)
+						for(int i = 0; i < info.Args.Length; i++)
 						{
 							// Argument type matches?
 							if(info.Args[i].Used && (info.Args[i].Type == (int)UniversalType.ThingTag))

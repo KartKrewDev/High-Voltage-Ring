@@ -36,7 +36,9 @@ namespace CodeImp.DoomBuilder.Controls
 	{
 		private readonly int hexenformatwidth;
 		private readonly int doomformatwidth;
-		
+		private Label[] arglabels;
+		private Label[] args;
+
 		// Constructor
 		public LinedefInfoPanel()
 		{
@@ -47,6 +49,9 @@ namespace CodeImp.DoomBuilder.Controls
 			// Hide stuff when in Doom format
 			hexenformatwidth = infopanel.Width;
 			doomformatwidth = infopanel.Width - 190;
+
+			arglabels = new Label[] { arglbl1, arglbl2, arglbl3, arglbl4, arglbl5 };
+			args = new Label[] { arg1, arg2, arg3, arg4, arg5 };
 
 			// We have to set the parernt (and subsequently the new location relative to the parent) here since
 			// we can't set the parent in the designer. And if the parent is not set to the ConfigurablePictureBox
@@ -78,36 +83,15 @@ namespace CodeImp.DoomBuilder.Controls
 		public void ShowInfo(Linedef l, Sidedef highlightside)
 		{
 			string peggedness;
-			
+
 			// Show/hide stuff depending on format
-			if(!General.Map.FormatInterface.HasActionArgs)
+			bool hasArgs = General.Map.FormatInterface.HasActionArgs;
+			for (int i = 0; i < args.Length; i++)
 			{
-				arglbl1.Visible = false;
-				arglbl2.Visible = false;
-				arglbl3.Visible = false;
-				arglbl4.Visible = false;
-				arglbl5.Visible = false;
-				arg1.Visible = false;
-				arg2.Visible = false;
-				arg3.Visible = false;
-				arg4.Visible = false;
-				arg5.Visible = false;
-				infopanel.Width = doomformatwidth;
+				arglabels[i].Visible = hasArgs;
+				args[i].Visible = hasArgs;
 			}
-			else
-			{
-				arglbl1.Visible = true;
-				arglbl2.Visible = true;
-				arglbl3.Visible = true;
-				arglbl4.Visible = true;
-				arglbl5.Visible = true;
-				arg1.Visible = true;
-				arg2.Visible = true;
-				arg3.Visible = true;
-				arg4.Visible = true;
-				arg5.Visible = true;
-				infopanel.Width = hexenformatwidth;
-			}
+			infopanel.Width = (hasArgs ? hexenformatwidth : doomformatwidth);
 
 			//mxd. Hide activation or tag and rearrange labels 
 			if(!General.Map.FormatInterface.HasBuiltInActivations && General.Map.FormatInterface.HasNumericLinedefActivations) //Hexen map format?
@@ -251,9 +235,6 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 
 			// Apply script args?
-			Label[] arglabels = { arglbl1, arglbl2, arglbl3, arglbl4, arglbl5 };
-			Label[] args = { arg1, arg2, arg3, arg4, arg5 };
-
 			if(scriptitem != null)
 			{
                 int first;
@@ -302,10 +283,8 @@ namespace CodeImp.DoomBuilder.Controls
 			//mxd. Set argument value and label
 			if(isarg0str) arg1.Text = arg0str;
 			else SetArgumentText(act.Args[0], arg1, l.Args[0]);
-			SetArgumentText(act.Args[1], arg2, l.Args[1]);
-			SetArgumentText(act.Args[2], arg3, l.Args[2]);
-			SetArgumentText(act.Args[3], arg4, l.Args[3]);
-			SetArgumentText(act.Args[4], arg5, l.Args[4]);
+			for (int i = 1; i < args.Length; i++)
+				SetArgumentText(act.Args[i], args[i], l.Args[i]);
 
 			// Front side available?
 			if(l.Front != null)

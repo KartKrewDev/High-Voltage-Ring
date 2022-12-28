@@ -122,7 +122,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.errorcheckerexemptions.FloorRaiseToHighest = cfg.ReadSetting(actionsetting + ".errorchecker.floorraisetohighest", false);
 
 			// Read the args
-			for (int i = 0; i < Linedef.NUM_ARGS; i++)
+			for (int i = 0; i < this.args.Length; i++)
 				this.args[i] = new ArgumentInfo(cfg, actionsetting, i, enums);
 			
 			// We have no destructor
@@ -138,7 +138,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.requiresactivation = true; //mxd. Unused, set for consistency sake.
 			this.title = title;
 			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
-			for(int i = 0; i < Linedef.NUM_ARGS; i++)
+			for(int i = 0; i < this.args.Length; i++)
 				this.args[i] = new ArgumentInfo(i);
 		}
 

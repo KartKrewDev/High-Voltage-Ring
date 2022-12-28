@@ -247,7 +247,7 @@ namespace CodeImp.DoomBuilder.Map
 				}
 			}
 
-			for(int i = 0; i < NUM_ARGS; i++) s.rwInt(ref args[i]);
+			for(int i = 0; i < args.Length; i++) s.rwInt(ref args[i]);
 
 			//mxd
 			if(!s.IsWriting) UpdateColorPreset();
