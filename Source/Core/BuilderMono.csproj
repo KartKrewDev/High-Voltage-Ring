@@ -266,6 +266,9 @@
     <Compile Include="Rendering\VertexBuffer.cs" />
     <Compile Include="Rendering\VisualSlopeHandle.cs" />
     <Compile Include="VisualModes\VisualSlope.cs" />
+    <Compile Include="Windows\ILinedefEditForm.cs" />
+    <Compile Include="Windows\ISectorEditForm.cs" />
+    <Compile Include="Windows\IThingEditForm.cs" />
     <Compile Include="Windows\PreAndPostCommandsForm.cs">
       <SubType>Form</SubType>
     </Compile>

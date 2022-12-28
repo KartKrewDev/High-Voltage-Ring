@@ -28,7 +28,7 @@ using CodeImp.DoomBuilder.Types;
 
 namespace CodeImp.DoomBuilder.Windows
 {
-	internal partial class LinedefEditForm : DelayedForm
+	internal partial class LinedefEditForm : DelayedForm, ILinedefEditForm
 	{
 		#region ================== Events
 
@@ -149,7 +149,7 @@ namespace CodeImp.DoomBuilder.Windows
 		#region ================== Methods
 
 		// This sets up the form to edit the given lines
-		public void Setup(ICollection<Linedef> lines)
+		public void Setup(ICollection<Linedef> lines, bool selectfront, bool selectback)
 		{
 			preventchanges = true;
 			oldmapischanged = General.Map.IsChanged;

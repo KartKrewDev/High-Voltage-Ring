@@ -33,7 +33,7 @@ namespace CodeImp.DoomBuilder.Windows
 	/// <summary>
 	/// Dialog window that allows viewing and editing of Thing properties.
 	/// </summary>
-	internal partial class ThingEditForm : DelayedForm
+	internal partial class ThingEditForm : DelayedForm, IThingEditForm
 	{
 		#region ================== Events
 

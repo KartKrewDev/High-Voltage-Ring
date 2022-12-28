@@ -27,7 +27,7 @@ using CodeImp.DoomBuilder.Types;
 
 namespace CodeImp.DoomBuilder.Windows
 {
-	internal partial class SectorEditForm : DelayedForm
+	internal partial class SectorEditForm : DelayedForm, ISectorEditForm
 	{
 		#region ================== Events
 

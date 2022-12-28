@@ -13,7 +13,7 @@ using CodeImp.DoomBuilder.Types;
 
 namespace CodeImp.DoomBuilder.Windows
 {
-	internal partial class SectorEditFormUDMF : DelayedForm
+	internal partial class SectorEditFormUDMF : DelayedForm, ISectorEditForm
 	{
 		#region ================== Events
 

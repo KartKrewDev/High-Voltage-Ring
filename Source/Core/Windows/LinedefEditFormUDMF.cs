@@ -29,7 +29,7 @@ using CodeImp.DoomBuilder.Types;
 
 namespace CodeImp.DoomBuilder.Windows
 {
-	internal partial class LinedefEditFormUDMF : DelayedForm
+	internal partial class LinedefEditFormUDMF : DelayedForm, ILinedefEditForm
 	{
 		#region ================== Events
 

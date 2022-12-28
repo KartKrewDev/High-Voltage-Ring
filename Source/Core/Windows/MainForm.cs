@@ -4144,157 +4144,115 @@ namespace CodeImp.DoomBuilder.Windows
 		// This shows the dialog to edit lines
 		public DialogResult ShowEditLinedefs(ICollection<Linedef> lines, bool selectfront, bool selectback)
 		{
-			DialogResult result;
-			
 			// Show line edit dialog
-			if(General.Map.UDMF) //mxd
+			ILinedefEditForm f = GetLinedefEditForm(selectfront, selectback);
+			DisableProcessing(); //mxd
+			#if NO_WIN32
+			BreakExclusiveMouseInput();
+			f.Closed += (object sender, EventArgs e) => {
+				ResumeExclusiveMouseInput();
+				EnableProcessing(); //mxd
+			};
+			#endif
+			f.Setup(lines, selectfront, selectback);
+			#if !NO_WIN32
+			EnableProcessing();
+			#endif
+			f.OnValuesChanged += EditForm_OnValuesChanged;
+			editformopen = true; //mxd
+			DialogResult result = f.ShowDialog(this);
+			editformopen = false; //mxd
+			f.Dispose();
+
+			return result;
+		}
+
+		private ILinedefEditForm GetLinedefEditForm(bool selectfront, bool selectback)
+		{
+			if (General.Map.UDMF)
 			{
-				LinedefEditFormUDMF f = new LinedefEditFormUDMF(selectfront, selectback);
-				DisableProcessing(); //mxd
-				#if NO_WIN32
-				BreakExclusiveMouseInput();
-				f.Closed += (object sender, EventArgs e) => {
-					ResumeExclusiveMouseInput();
-					EnableProcessing(); //mxd
-				};
-				#endif
-				f.Setup(lines, selectfront, selectback);
-				#if !NO_WIN32
-				EnableProcessing();
-				#endif
-				f.OnValuesChanged += EditForm_OnValuesChanged;
-				editformopen = true; //mxd
-				result = f.ShowDialog(this);
-				editformopen = false; //mxd
-				f.Dispose();
+				return new LinedefEditFormUDMF(selectfront, selectback);
 			}
 			else
 			{
-				LinedefEditForm f = new LinedefEditForm();
-				DisableProcessing(); //mxd
-				#if NO_WIN32
-				BreakExclusiveMouseInput();
-				f.Closed += (object sender, EventArgs e) => {
-					ResumeExclusiveMouseInput();
-					EnableProcessing(); //mxd
-				};
-				#endif
-				f.Setup(lines);
-				#if !NO_WIN32
-				EnableProcessing();
-				#endif
-				f.OnValuesChanged += EditForm_OnValuesChanged;
-				editformopen = true; //mxd
-				result = f.ShowDialog(this);
-				editformopen = false; //mxd
-				f.Dispose();
+				return new LinedefEditForm();
 			}
-
-			return result;
 		}
 
 		// This shows the dialog to edit sectors
 		public DialogResult ShowEditSectors(ICollection<Sector> sectors)
 		{
-			DialogResult result;
-
 			// Show sector edit dialog
-			if(General.Map.UDMF) //mxd
-			{ 
-				SectorEditFormUDMF f = new SectorEditFormUDMF();
-				DisableProcessing(); //mxd
-				#if NO_WIN32
-				BreakExclusiveMouseInput();
-				f.Closed += (object sender, EventArgs e) => {
-					ResumeExclusiveMouseInput();
-					EnableProcessing(); //mxd
-				};
-				#endif
-				f.Setup(sectors);
-				#if !NO_WIN32
+			ISectorEditForm f = GetSectorEditForm();
+			DisableProcessing(); //mxd
+			#if NO_WIN32
+			BreakExclusiveMouseInput();
+			f.Closed += (object sender, EventArgs e) => {
+				ResumeExclusiveMouseInput();
 				EnableProcessing(); //mxd
-				#endif
-				f.OnValuesChanged += EditForm_OnValuesChanged;
-				editformopen = true; //mxd
-				result = f.ShowDialog(this);
-				editformopen = false; //mxd
-				f.Dispose();
-			}
-			else
-			{
-				SectorEditForm f = new SectorEditForm();
-				DisableProcessing(); //mxd
-				#if NO_WIN32
-				BreakExclusiveMouseInput();
-				f.Closed += (object sender, EventArgs e) => {
-					ResumeExclusiveMouseInput();
-					EnableProcessing(); //mxd
-				};
-				#endif
-				f.Setup(sectors);
-				#if !NO_WIN32
-				EnableProcessing(); //mxd
-				#endif
-				f.OnValuesChanged += EditForm_OnValuesChanged;
-				editformopen = true; //mxd
-				result = f.ShowDialog(this);
-				editformopen = false; //mxd
-				f.Dispose();
-			}
+			};
+			#endif
+			f.Setup(sectors);
+			#if !NO_WIN32
+			EnableProcessing(); //mxd
+			#endif
+			f.OnValuesChanged += EditForm_OnValuesChanged;
+			editformopen = true; //mxd
+			DialogResult result = f.ShowDialog(this);
+			editformopen = false; //mxd
+			f.Dispose();
 
 			return result;
 		}
 
-		// This shows the dialog to edit things
-		public DialogResult ShowEditThings(ICollection<Thing> things) 
+		private ISectorEditForm GetSectorEditForm()
 		{
-			DialogResult result;
-
-			// Show thing edit dialog
-			if(General.Map.UDMF) 
+			if (General.Map.UDMF)
 			{
-				ThingEditFormUDMF f = new ThingEditFormUDMF();
-				DisableProcessing(); //mxd
-				#if NO_WIN32
-				BreakExclusiveMouseInput();
-				f.Closed += (object sender, EventArgs e) => {
-					ResumeExclusiveMouseInput();
-					EnableProcessing(); //mxd
-				};
-				#endif
-				f.Setup(things);
-				#if !NO_WIN32
-				EnableProcessing(); //mxd
-				#endif
-				f.OnValuesChanged += EditForm_OnValuesChanged;
-				editformopen = true; //mxd
-				result = f.ShowDialog(this);
-				editformopen = false; //mxd
-				f.Dispose();
-			} 
-			else 
-			{
-				ThingEditForm f = new ThingEditForm();
-				DisableProcessing(); //mxd
-				#if NO_WIN32
-				BreakExclusiveMouseInput();
-				f.Closed += (object sender, EventArgs e) => {
-					ResumeExclusiveMouseInput();
-					EnableProcessing(); //mxd
-				};
-				#endif
-				f.Setup(things);
-				#if !NO_WIN32
-				EnableProcessing(); //mxd
-				#endif
-				f.OnValuesChanged += EditForm_OnValuesChanged;
-				editformopen = true; //mxd
-				result = f.ShowDialog(this);
-				editformopen = false; //mxd
-				f.Dispose();
+				return new SectorEditFormUDMF();
 			}
+			else
+			{
+				return new SectorEditForm();
+			}
+		}
+
+		// This shows the dialog to edit things
+		public DialogResult ShowEditThings(ICollection<Thing> things)
+		{
+			// Show thing edit dialog
+			IThingEditForm f = GetThingEditForm();
+			DisableProcessing(); //mxd
+			#if NO_WIN32
+			BreakExclusiveMouseInput();
+			f.Closed += (object sender, EventArgs e) => {
+				ResumeExclusiveMouseInput();
+				EnableProcessing(); //mxd
+			};
+			#endif
+			f.Setup(things);
+			#if !NO_WIN32
+			EnableProcessing(); //mxd
+			#endif
+			f.OnValuesChanged += EditForm_OnValuesChanged;
+			editformopen = true; //mxd
+			DialogResult result = f.ShowDialog(this);
+			editformopen = false; //mxd
+			f.Dispose();
 
 			return result;
+		}
+
+		private IThingEditForm GetThingEditForm()
+		{
+			if (General.Map.UDMF)
+			{
+				return new ThingEditFormUDMF();
+			}
+			else
+			{
+				return new ThingEditForm();
+			}
 		}
 
 		//mxd
