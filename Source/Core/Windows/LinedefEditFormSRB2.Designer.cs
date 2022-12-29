@@ -34,6 +34,7 @@ namespace CodeImp.DoomBuilder.Windows
 			System.Windows.Forms.Label label12;
 			System.Windows.Forms.Label label6;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinedefEditFormSRB2));
+			System.Windows.Forms.Label executordelaylabel;
 			this.labelrenderstyle = new System.Windows.Forms.Label();
 			this.labelLightFront = new System.Windows.Forms.Label();
 			this.cancel = new System.Windows.Forms.Button();
@@ -120,10 +121,12 @@ namespace CodeImp.DoomBuilder.Windows
 			this.fieldslist = new CodeImp.DoomBuilder.Controls.FieldsEditorControl();
 			this.imagelist = new System.Windows.Forms.ImageList(this.components);
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
+			this.executordelay = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			label2 = new System.Windows.Forms.Label();
 			label11 = new System.Windows.Forms.Label();
 			label12 = new System.Windows.Forms.Label();
 			label6 = new System.Windows.Forms.Label();
+			executordelaylabel = new System.Windows.Forms.Label();
 			this.actiongroup.SuspendLayout();
 			this.flagsgroup.SuspendLayout();
 			this.tabs.SuspendLayout();
@@ -228,7 +231,9 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			this.actiongroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.actiongroup.Controls.Add(this.executordelay);
 			this.actiongroup.Controls.Add(this.argscontrol);
+			this.actiongroup.Controls.Add(executordelaylabel);
 			this.actiongroup.Controls.Add(this.actionhelp);
 			this.actiongroup.Controls.Add(label2);
 			this.actiongroup.Controls.Add(this.action);
@@ -244,7 +249,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			this.argscontrol.Location = new System.Drawing.Point(6, 44);
 			this.argscontrol.Name = "argscontrol";
-			this.argscontrol.Size = new System.Drawing.Size(521, 232);
+			this.argscontrol.Size = new System.Drawing.Size(521, 173);
 			this.argscontrol.TabIndex = 11;
 			this.argscontrol.Load += new System.EventHandler(this.argscontrol_Load);
 			// 
@@ -1322,6 +1327,34 @@ namespace CodeImp.DoomBuilder.Windows
 			this.imagelist.Images.SetKeyName(0, "Check.png");
 			this.imagelist.Images.SetKeyName(1, "SearchClear.png");
 			// 
+			// executordelaylabel
+			// 
+			executordelaylabel.AutoSize = true;
+			executordelaylabel.Location = new System.Drawing.Point(59, 229);
+			executordelaylabel.Name = "executordelaylabel";
+			executordelaylabel.Size = new System.Drawing.Size(80, 13);
+			executordelaylabel.TabIndex = 71;
+			executordelaylabel.Text = "Executor delay:";
+			// 
+			// executordelay
+			// 
+			this.executordelay.AllowDecimal = false;
+			this.executordelay.AllowExpressions = false;
+			this.executordelay.AllowNegative = false;
+			this.executordelay.AllowRelative = false;
+			this.executordelay.ButtonStep = 1;
+			this.executordelay.ButtonStepBig = 35F;
+			this.executordelay.ButtonStepFloat = 1F;
+			this.executordelay.ButtonStepSmall = 1F;
+			this.executordelay.ButtonStepsUseModifierKeys = true;
+			this.executordelay.ButtonStepsWrapAround = false;
+			this.executordelay.Location = new System.Drawing.Point(145, 224);
+			this.executordelay.Name = "executordelay";
+			this.executordelay.Size = new System.Drawing.Size(65, 24);
+			this.executordelay.StepValues = null;
+			this.executordelay.TabIndex = 72;
+			this.executordelay.WhenTextChanged += new System.EventHandler(this.executordelay_WhenTextChanged);
+			// 
 			// LinedefEditFormSRB2
 			// 
 			this.AcceptButton = this.apply;
@@ -1461,5 +1494,6 @@ namespace CodeImp.DoomBuilder.Windows
 		private System.Windows.Forms.Button resetfrontlight;
 		private System.Windows.Forms.Button resetbacklight;
 		private System.Windows.Forms.Button resetalpha;
+		private Controls.ButtonsNumericTextbox executordelay;
 	}
 }
