@@ -33,7 +33,7 @@ namespace CodeImp.DoomBuilder.Map
 		#region ================== Constants
 
 		public const double SIDE_POINT_DISTANCE = 0.01;
-		public const int NUM_ARGS = 5;
+		public const int NUM_ARGS = 10;
 		
 		#endregion
 

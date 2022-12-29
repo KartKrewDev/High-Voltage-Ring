@@ -180,6 +180,12 @@
     <Compile Include="Controls\ArgumentBox.Designer.cs">
       <DependentUpon>ArgumentBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ArgumentsControlSRB2.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ArgumentsControlSRB2.Designer.cs">
+      <DependentUpon>ArgumentsControlSRB2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ExternalCommandControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -277,6 +283,12 @@
     <Compile Include="Windows\ILinedefEditForm.cs" />
     <Compile Include="Windows\ISectorEditForm.cs" />
     <Compile Include="Windows\IThingEditForm.cs" />
+    <Compile Include="Windows\LinedefEditFormSRB2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\LinedefEditFormSRB2.Designer.cs">
+      <DependentUpon>LinedefEditFormSRB2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\PreAndPostCommandsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -666,11 +678,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\ArgumentsControlSRB2.resx">
+      <DependentUpon>ArgumentsControlSRB2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ExternalCommandControl.resx">
       <DependentUpon>ExternalCommandControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PairedFloatControl.resx">
       <DependentUpon>PairedFloatControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\LinedefEditFormSRB2.resx">
+      <DependentUpon>LinedefEditFormSRB2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\PreAndPostCommandsForm.resx">
       <DependentUpon>PreAndPostCommandsForm.cs</DependentUpon>

@@ -4171,7 +4171,14 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (General.Map.UDMF)
 			{
-				return new LinedefEditFormUDMF(selectfront, selectback);
+				if (General.Map.Config.EngineName == "srb2")
+				{
+					return new LinedefEditFormSRB2(selectfront, selectback);
+				}
+				else
+				{
+					return new LinedefEditFormUDMF(selectfront, selectback);
+				}
 			}
 			else
 			{

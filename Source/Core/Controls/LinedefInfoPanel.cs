@@ -239,14 +239,14 @@ namespace CodeImp.DoomBuilder.Controls
 			{
                 int first;
 				string[] argnames = scriptitem.GetArgumentsDescriptions(l.Action, out first);
-                for (int i = 0; i < first; i++)
+                for (int i = 0; i < Math.Min(args.Length, first); i++)
                 {
                     arglabels[i].Text = (isarg0str ? act.Args[i].TitleStr : act.Args[i].Title) + ":";
                     arglabels[i].Enabled = act.Args[i].Used;
                     args[i].Enabled = act.Args[i].Used;
                 }
 
-                for (int i = first; i < argnames.Length; i++)
+                for (int i = first; i < args.Length; i++)
 				{
 					if(!string.IsNullOrEmpty(argnames[i]))
 					{
@@ -264,7 +264,7 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 			else
 			{
-				for(int i = 0; i < act.Args.Length; i++)
+				for(int i = 0; i < args.Length; i++)
 				{
                     arglabels[i].Text = (isarg0str ? act.Args[i].TitleStr : act.Args[i].Title) + ":";
                     arglabels[i].Enabled = act.Args[i].Used;
