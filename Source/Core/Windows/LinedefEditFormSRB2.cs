@@ -226,6 +226,22 @@ namespace CodeImp.DoomBuilder.Windows
 				labelBackOffsetMid.Enabled = false;
 				labelBackOffsetBottom.Enabled = false;
 			}
+
+			pfcFrontScaleTop.Enabled = false;
+			pfcFrontScaleMid.Enabled = false;
+			pfcFrontScaleBottom.Enabled = false;
+
+			pfcBackScaleTop.Enabled = false;
+			pfcBackScaleMid.Enabled = false;
+			pfcBackScaleBottom.Enabled = false;
+
+			labelFrontScaleTop.Enabled = false;
+			labelFrontScaleMid.Enabled = false;
+			labelFrontScaleBottom.Enabled = false;
+
+			labelBackScaleTop.Enabled = false;
+			labelBackScaleMid.Enabled = false;
+			labelBackScaleBottom.Enabled = false;
 		}
 
 		#endregion
