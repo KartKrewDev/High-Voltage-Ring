@@ -4216,7 +4216,14 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (General.Map.UDMF)
 			{
-				return new SectorEditFormUDMF();
+				if (General.Map.Config.EngineName == "srb2")
+				{
+					return new SectorEditFormSRB2();
+				}
+				else
+				{
+					return new SectorEditFormUDMF();
+				}
 			}
 			else
 			{
