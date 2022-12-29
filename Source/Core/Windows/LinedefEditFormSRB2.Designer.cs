@@ -33,13 +33,15 @@ namespace CodeImp.DoomBuilder.Windows
 			System.Windows.Forms.Label label11;
 			System.Windows.Forms.Label label12;
 			System.Windows.Forms.Label label6;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinedefEditFormSRB2));
 			System.Windows.Forms.Label executordelaylabel;
+			System.Windows.Forms.Label labelRepeatcntFront;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinedefEditFormSRB2));
+			System.Windows.Forms.Label labelRepeatcntBack;
 			this.labelrenderstyle = new System.Windows.Forms.Label();
-			this.labelLightFront = new System.Windows.Forms.Label();
 			this.cancel = new System.Windows.Forms.Button();
 			this.apply = new System.Windows.Forms.Button();
 			this.actiongroup = new System.Windows.Forms.GroupBox();
+			this.executordelay = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.argscontrol = new CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2();
 			this.actionhelp = new CodeImp.DoomBuilder.Controls.ActionSpecialHelpButton();
 			this.action = new CodeImp.DoomBuilder.Controls.ActionSelectorControl();
@@ -76,11 +78,9 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pfcFrontOffsetMid = new CodeImp.DoomBuilder.Controls.PairedFieldsControl();
 			this.pfcFrontOffsetBottom = new CodeImp.DoomBuilder.Controls.PairedFieldsControl();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
-			this.resetfrontlight = new System.Windows.Forms.Button();
+			this.repeatcntFront = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.frontsector = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.customfrontbutton = new System.Windows.Forms.Button();
-			this.lightFront = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
-			this.cbLightAbsoluteFront = new System.Windows.Forms.CheckBox();
 			this.frontlow = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.frontmid = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.fronthigh = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
@@ -88,12 +88,8 @@ namespace CodeImp.DoomBuilder.Windows
 			this.backside = new System.Windows.Forms.CheckBox();
 			this.backgroup = new System.Windows.Forms.GroupBox();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
-			this.resetbacklight = new System.Windows.Forms.Button();
 			this.backsector = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.custombackbutton = new System.Windows.Forms.Button();
-			this.lightBack = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
-			this.labelLightBack = new System.Windows.Forms.Label();
-			this.cbLightAbsoluteBack = new System.Windows.Forms.CheckBox();
 			this.backflagsgroup = new System.Windows.Forms.GroupBox();
 			this.flagsBack = new CodeImp.DoomBuilder.Controls.CheckboxArrayControl();
 			this.backscalegroup = new System.Windows.Forms.GroupBox();
@@ -121,12 +117,14 @@ namespace CodeImp.DoomBuilder.Windows
 			this.fieldslist = new CodeImp.DoomBuilder.Controls.FieldsEditorControl();
 			this.imagelist = new System.Windows.Forms.ImageList(this.components);
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
-			this.executordelay = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+			this.repeatcntBack = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			label2 = new System.Windows.Forms.Label();
 			label11 = new System.Windows.Forms.Label();
 			label12 = new System.Windows.Forms.Label();
 			label6 = new System.Windows.Forms.Label();
 			executordelaylabel = new System.Windows.Forms.Label();
+			labelRepeatcntFront = new System.Windows.Forms.Label();
+			labelRepeatcntBack = new System.Windows.Forms.Label();
 			this.actiongroup.SuspendLayout();
 			this.flagsgroup.SuspendLayout();
 			this.tabs.SuspendLayout();
@@ -185,6 +183,24 @@ namespace CodeImp.DoomBuilder.Windows
 			label6.TabIndex = 17;
 			label6.Text = "Alpha:";
 			// 
+			// executordelaylabel
+			// 
+			executordelaylabel.AutoSize = true;
+			executordelaylabel.Location = new System.Drawing.Point(59, 229);
+			executordelaylabel.Name = "executordelaylabel";
+			executordelaylabel.Size = new System.Drawing.Size(80, 13);
+			executordelaylabel.TabIndex = 71;
+			executordelaylabel.Text = "Executor delay:";
+			// 
+			// labelRepeatcntFront
+			// 
+			labelRepeatcntFront.AutoSize = true;
+			labelRepeatcntFront.Location = new System.Drawing.Point(6, 52);
+			labelRepeatcntFront.Name = "labelRepeatcntFront";
+			labelRepeatcntFront.Size = new System.Drawing.Size(84, 13);
+			labelRepeatcntFront.TabIndex = 73;
+			labelRepeatcntFront.Text = "Texture repeats:";
+			// 
 			// labelrenderstyle
 			// 
 			this.labelrenderstyle.AutoSize = true;
@@ -193,16 +209,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.labelrenderstyle.Size = new System.Drawing.Size(69, 13);
 			this.labelrenderstyle.TabIndex = 11;
 			this.labelrenderstyle.Text = "Render style:";
-			// 
-			// labelLightFront
-			// 
-			this.labelLightFront.Location = new System.Drawing.Point(12, 53);
-			this.labelLightFront.Name = "labelLightFront";
-			this.labelLightFront.Size = new System.Drawing.Size(80, 14);
-			this.labelLightFront.TabIndex = 25;
-			this.labelLightFront.Tag = "";
-			this.labelLightFront.Text = "Brightness:";
-			this.labelLightFront.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// cancel
 			// 
@@ -244,6 +250,25 @@ namespace CodeImp.DoomBuilder.Windows
 			this.actiongroup.TabIndex = 1;
 			this.actiongroup.TabStop = false;
 			this.actiongroup.Text = " Action ";
+			// 
+			// executordelay
+			// 
+			this.executordelay.AllowDecimal = false;
+			this.executordelay.AllowExpressions = false;
+			this.executordelay.AllowNegative = false;
+			this.executordelay.AllowRelative = false;
+			this.executordelay.ButtonStep = 1;
+			this.executordelay.ButtonStepBig = 35F;
+			this.executordelay.ButtonStepFloat = 1F;
+			this.executordelay.ButtonStepSmall = 1F;
+			this.executordelay.ButtonStepsUseModifierKeys = true;
+			this.executordelay.ButtonStepsWrapAround = false;
+			this.executordelay.Location = new System.Drawing.Point(145, 224);
+			this.executordelay.Name = "executordelay";
+			this.executordelay.Size = new System.Drawing.Size(65, 24);
+			this.executordelay.StepValues = null;
+			this.executordelay.TabIndex = 72;
+			this.executordelay.WhenTextChanged += new System.EventHandler(this.executordelay_WhenTextChanged);
 			// 
 			// argscontrol
 			// 
@@ -722,29 +747,35 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// groupBox5
 			// 
-			this.groupBox5.Controls.Add(this.resetfrontlight);
+			this.groupBox5.Controls.Add(this.repeatcntFront);
+			this.groupBox5.Controls.Add(labelRepeatcntFront);
 			this.groupBox5.Controls.Add(this.frontsector);
 			this.groupBox5.Controls.Add(label11);
 			this.groupBox5.Controls.Add(this.customfrontbutton);
-			this.groupBox5.Controls.Add(this.lightFront);
-			this.groupBox5.Controls.Add(this.labelLightFront);
-			this.groupBox5.Controls.Add(this.cbLightAbsoluteFront);
 			this.groupBox5.Location = new System.Drawing.Point(12, 19);
 			this.groupBox5.Name = "groupBox5";
 			this.groupBox5.Size = new System.Drawing.Size(290, 117);
 			this.groupBox5.TabIndex = 42;
 			this.groupBox5.TabStop = false;
 			// 
-			// resetfrontlight
+			// repeatcntFront
 			// 
-			this.resetfrontlight.Image = global::CodeImp.DoomBuilder.Properties.Resources.Reset;
-			this.resetfrontlight.Location = new System.Drawing.Point(233, 50);
-			this.resetfrontlight.Name = "resetfrontlight";
-			this.resetfrontlight.Size = new System.Drawing.Size(23, 23);
-			this.resetfrontlight.TabIndex = 28;
-			this.tooltip.SetToolTip(this.resetfrontlight, "Reset Front Brightness");
-			this.resetfrontlight.UseVisualStyleBackColor = true;
-			this.resetfrontlight.Click += new System.EventHandler(this.resetfrontlight_Click);
+			this.repeatcntFront.AllowDecimal = false;
+			this.repeatcntFront.AllowExpressions = false;
+			this.repeatcntFront.AllowNegative = false;
+			this.repeatcntFront.AllowRelative = false;
+			this.repeatcntFront.ButtonStep = 1;
+			this.repeatcntFront.ButtonStepBig = 1F;
+			this.repeatcntFront.ButtonStepFloat = 1F;
+			this.repeatcntFront.ButtonStepSmall = 1F;
+			this.repeatcntFront.ButtonStepsUseModifierKeys = true;
+			this.repeatcntFront.ButtonStepsWrapAround = false;
+			this.repeatcntFront.Location = new System.Drawing.Point(96, 47);
+			this.repeatcntFront.Name = "repeatcntFront";
+			this.repeatcntFront.Size = new System.Drawing.Size(65, 24);
+			this.repeatcntFront.StepValues = null;
+			this.repeatcntFront.TabIndex = 74;
+			this.repeatcntFront.WhenTextChanged += new System.EventHandler(this.repeatcntFront_WhenTextChanged);
 			// 
 			// frontsector
 			// 
@@ -773,38 +804,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.customfrontbutton.Text = "Custom fields...";
 			this.customfrontbutton.UseVisualStyleBackColor = true;
 			this.customfrontbutton.Click += new System.EventHandler(this.customfrontbutton_Click);
-			// 
-			// lightFront
-			// 
-			this.lightFront.AllowDecimal = false;
-			this.lightFront.AllowExpressions = false;
-			this.lightFront.AllowNegative = true;
-			this.lightFront.AllowRelative = true;
-			this.lightFront.ButtonStep = 16;
-			this.lightFront.ButtonStepBig = 32F;
-			this.lightFront.ButtonStepFloat = 1F;
-			this.lightFront.ButtonStepSmall = 1F;
-			this.lightFront.ButtonStepsUseModifierKeys = true;
-			this.lightFront.ButtonStepsWrapAround = false;
-			this.lightFront.Location = new System.Drawing.Point(96, 49);
-			this.lightFront.Name = "lightFront";
-			this.lightFront.Size = new System.Drawing.Size(62, 24);
-			this.lightFront.StepValues = null;
-			this.lightFront.TabIndex = 26;
-			this.lightFront.Tag = "";
-			this.lightFront.WhenTextChanged += new System.EventHandler(this.lightFront_WhenTextChanged);
-			// 
-			// cbLightAbsoluteFront
-			// 
-			this.cbLightAbsoluteFront.AutoSize = true;
-			this.cbLightAbsoluteFront.Location = new System.Drawing.Point(164, 54);
-			this.cbLightAbsoluteFront.Name = "cbLightAbsoluteFront";
-			this.cbLightAbsoluteFront.Size = new System.Drawing.Size(67, 17);
-			this.cbLightAbsoluteFront.TabIndex = 27;
-			this.cbLightAbsoluteFront.Tag = "lightabsolute";
-			this.cbLightAbsoluteFront.Text = "Absolute";
-			this.cbLightAbsoluteFront.UseVisualStyleBackColor = true;
-			this.cbLightAbsoluteFront.CheckedChanged += new System.EventHandler(this.cbLightAbsoluteFront_CheckedChanged);
 			// 
 			// frontlow
 			// 
@@ -886,29 +885,16 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// groupBox4
 			// 
-			this.groupBox4.Controls.Add(this.resetbacklight);
+			this.groupBox4.Controls.Add(this.repeatcntBack);
+			this.groupBox4.Controls.Add(labelRepeatcntBack);
 			this.groupBox4.Controls.Add(this.backsector);
 			this.groupBox4.Controls.Add(label12);
 			this.groupBox4.Controls.Add(this.custombackbutton);
-			this.groupBox4.Controls.Add(this.lightBack);
-			this.groupBox4.Controls.Add(this.labelLightBack);
-			this.groupBox4.Controls.Add(this.cbLightAbsoluteBack);
 			this.groupBox4.Location = new System.Drawing.Point(12, 19);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(290, 117);
 			this.groupBox4.TabIndex = 46;
 			this.groupBox4.TabStop = false;
-			// 
-			// resetbacklight
-			// 
-			this.resetbacklight.Image = global::CodeImp.DoomBuilder.Properties.Resources.Reset;
-			this.resetbacklight.Location = new System.Drawing.Point(233, 50);
-			this.resetbacklight.Name = "resetbacklight";
-			this.resetbacklight.Size = new System.Drawing.Size(23, 23);
-			this.resetbacklight.TabIndex = 31;
-			this.tooltip.SetToolTip(this.resetbacklight, "Reset Back Brightness");
-			this.resetbacklight.UseVisualStyleBackColor = true;
-			this.resetbacklight.Click += new System.EventHandler(this.resetbacklight_Click);
 			// 
 			// backsector
 			// 
@@ -937,48 +923,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.custombackbutton.Text = "Custom fields...";
 			this.custombackbutton.UseVisualStyleBackColor = true;
 			this.custombackbutton.Click += new System.EventHandler(this.custombackbutton_Click);
-			// 
-			// lightBack
-			// 
-			this.lightBack.AllowDecimal = false;
-			this.lightBack.AllowExpressions = false;
-			this.lightBack.AllowNegative = true;
-			this.lightBack.AllowRelative = true;
-			this.lightBack.ButtonStep = 1;
-			this.lightBack.ButtonStepBig = 16F;
-			this.lightBack.ButtonStepFloat = 1F;
-			this.lightBack.ButtonStepSmall = 1F;
-			this.lightBack.ButtonStepsUseModifierKeys = true;
-			this.lightBack.ButtonStepsWrapAround = false;
-			this.lightBack.Location = new System.Drawing.Point(96, 49);
-			this.lightBack.Name = "lightBack";
-			this.lightBack.Size = new System.Drawing.Size(62, 24);
-			this.lightBack.StepValues = null;
-			this.lightBack.TabIndex = 29;
-			this.lightBack.Tag = "light";
-			this.lightBack.WhenTextChanged += new System.EventHandler(this.lightBack_WhenTextChanged);
-			// 
-			// labelLightBack
-			// 
-			this.labelLightBack.Location = new System.Drawing.Point(12, 53);
-			this.labelLightBack.Name = "labelLightBack";
-			this.labelLightBack.Size = new System.Drawing.Size(80, 14);
-			this.labelLightBack.TabIndex = 28;
-			this.labelLightBack.Tag = "";
-			this.labelLightBack.Text = "Brightness:";
-			this.labelLightBack.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// cbLightAbsoluteBack
-			// 
-			this.cbLightAbsoluteBack.AutoSize = true;
-			this.cbLightAbsoluteBack.Location = new System.Drawing.Point(164, 54);
-			this.cbLightAbsoluteBack.Name = "cbLightAbsoluteBack";
-			this.cbLightAbsoluteBack.Size = new System.Drawing.Size(67, 17);
-			this.cbLightAbsoluteBack.TabIndex = 30;
-			this.cbLightAbsoluteBack.Tag = "lightabsolute";
-			this.cbLightAbsoluteBack.Text = "Absolute";
-			this.cbLightAbsoluteBack.UseVisualStyleBackColor = true;
-			this.cbLightAbsoluteBack.CheckedChanged += new System.EventHandler(this.cbLightAbsoluteBack_CheckedChanged);
 			// 
 			// backflagsgroup
 			// 
@@ -1327,33 +1271,33 @@ namespace CodeImp.DoomBuilder.Windows
 			this.imagelist.Images.SetKeyName(0, "Check.png");
 			this.imagelist.Images.SetKeyName(1, "SearchClear.png");
 			// 
-			// executordelaylabel
+			// repeatcntBack
 			// 
-			executordelaylabel.AutoSize = true;
-			executordelaylabel.Location = new System.Drawing.Point(59, 229);
-			executordelaylabel.Name = "executordelaylabel";
-			executordelaylabel.Size = new System.Drawing.Size(80, 13);
-			executordelaylabel.TabIndex = 71;
-			executordelaylabel.Text = "Executor delay:";
+			this.repeatcntBack.AllowDecimal = false;
+			this.repeatcntBack.AllowExpressions = false;
+			this.repeatcntBack.AllowNegative = false;
+			this.repeatcntBack.AllowRelative = false;
+			this.repeatcntBack.ButtonStep = 1;
+			this.repeatcntBack.ButtonStepBig = 1F;
+			this.repeatcntBack.ButtonStepFloat = 1F;
+			this.repeatcntBack.ButtonStepSmall = 1F;
+			this.repeatcntBack.ButtonStepsUseModifierKeys = true;
+			this.repeatcntBack.ButtonStepsWrapAround = false;
+			this.repeatcntBack.Location = new System.Drawing.Point(96, 47);
+			this.repeatcntBack.Name = "repeatcntBack";
+			this.repeatcntBack.Size = new System.Drawing.Size(65, 24);
+			this.repeatcntBack.StepValues = null;
+			this.repeatcntBack.TabIndex = 76;
+			this.repeatcntBack.WhenTextChanged += new System.EventHandler(this.repeatcntBack_WhenTextChanged);
 			// 
-			// executordelay
+			// labelRepeatcntBack
 			// 
-			this.executordelay.AllowDecimal = false;
-			this.executordelay.AllowExpressions = false;
-			this.executordelay.AllowNegative = false;
-			this.executordelay.AllowRelative = false;
-			this.executordelay.ButtonStep = 1;
-			this.executordelay.ButtonStepBig = 35F;
-			this.executordelay.ButtonStepFloat = 1F;
-			this.executordelay.ButtonStepSmall = 1F;
-			this.executordelay.ButtonStepsUseModifierKeys = true;
-			this.executordelay.ButtonStepsWrapAround = false;
-			this.executordelay.Location = new System.Drawing.Point(145, 224);
-			this.executordelay.Name = "executordelay";
-			this.executordelay.Size = new System.Drawing.Size(65, 24);
-			this.executordelay.StepValues = null;
-			this.executordelay.TabIndex = 72;
-			this.executordelay.WhenTextChanged += new System.EventHandler(this.executordelay_WhenTextChanged);
+			labelRepeatcntBack.AutoSize = true;
+			labelRepeatcntBack.Location = new System.Drawing.Point(6, 52);
+			labelRepeatcntBack.Name = "labelRepeatcntBack";
+			labelRepeatcntBack.Size = new System.Drawing.Size(84, 13);
+			labelRepeatcntBack.TabIndex = 75;
+			labelRepeatcntBack.Text = "Texture repeats:";
 			// 
 			// LinedefEditFormSRB2
 			// 
@@ -1435,8 +1379,6 @@ namespace CodeImp.DoomBuilder.Windows
 		private System.Windows.Forms.Button custombackbutton;
 		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox frontsector;
 		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox backsector;
-		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox lightFront;
-		private System.Windows.Forms.CheckBox cbLightAbsoluteFront;
 		private CodeImp.DoomBuilder.Controls.PairedFieldsControl pfcFrontOffsetTop;
 		private CodeImp.DoomBuilder.Controls.PairedFieldsControl pfcFrontOffsetBottom;
 		private CodeImp.DoomBuilder.Controls.PairedFieldsControl pfcFrontOffsetMid;
@@ -1451,10 +1393,6 @@ namespace CodeImp.DoomBuilder.Windows
 		private CodeImp.DoomBuilder.Controls.PairedFieldsControl pfcBackOffsetTop;
 		private System.Windows.Forms.GroupBox groupsettings;
 		private System.Windows.Forms.ComboBox renderStyle;
-		private System.Windows.Forms.Label labelLightFront;
-		private System.Windows.Forms.CheckBox cbLightAbsoluteBack;
-		private System.Windows.Forms.Label labelLightBack;
-		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox lightBack;
 		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox alpha;
 		private CodeImp.DoomBuilder.Controls.PairedIntControl frontTextureOffset;
 		private CodeImp.DoomBuilder.Controls.PairedIntControl backTextureOffset;
@@ -1491,9 +1429,9 @@ namespace CodeImp.DoomBuilder.Windows
 		private CodeImp.DoomBuilder.Controls.CommentEditor commenteditor;
 		private CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2 argscontrol;
 		private CodeImp.DoomBuilder.Controls.TagsSelector tagsselector;
-		private System.Windows.Forms.Button resetfrontlight;
-		private System.Windows.Forms.Button resetbacklight;
 		private System.Windows.Forms.Button resetalpha;
 		private Controls.ButtonsNumericTextbox executordelay;
+		private Controls.ButtonsNumericTextbox repeatcntFront;
+		private Controls.ButtonsNumericTextbox repeatcntBack;
 	}
 }
