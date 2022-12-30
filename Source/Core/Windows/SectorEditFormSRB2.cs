@@ -221,6 +221,9 @@ namespace CodeImp.DoomBuilder.Windows
 				floorLightAbsolute.Enabled = false;
 				resetfloorlight.Enabled = false;
 			}
+
+			ceilScale.Enabled = false;
+			floorScale.Enabled = false;
 		}
 
 		#endregion
