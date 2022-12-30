@@ -176,10 +176,6 @@ namespace CodeImp.DoomBuilder.Windows
 				flags.Add(lf.Value, lf.Key);
 			flags.Enabled = General.Map.Config.SectorFlags.Count > 0;
 
-			// Fill effects list
-			effect.GeneralizedOptions = General.Map.Config.GenEffectOptions; //mxd
-			effect.AddInfo(General.Map.Config.SortedSectorEffects.ToArray());
-
 			// Fill damagetype list
 			damagetype.Items.Add(NO_DAMAGETYPE);
 			damagetype.Items.AddRange(General.Map.Data.DamageTypes);
@@ -259,7 +255,6 @@ namespace CodeImp.DoomBuilder.Windows
 				if(sc.Flags.ContainsKey(c.Tag.ToString())) c.Checked = sc.Flags[c.Tag.ToString()];
 
 			// Effects
-			effect.Value = sc.Effect;
 			brightness.Text = sc.Brightness.ToString();
 
 			// Floor/ceiling
@@ -330,7 +325,6 @@ namespace CodeImp.DoomBuilder.Windows
 				SetupFlags(flags, s);
 
 				// Effects
-				if(s.Effect != effect.Value) effect.Empty = true;
 				if(s.Brightness.ToString() != brightness.Text) brightness.Text = "";
 
 				// Floor/Ceiling
@@ -643,13 +637,6 @@ namespace CodeImp.DoomBuilder.Windows
 
 		private void apply_Click(object sender, EventArgs e) 
 		{
-			// Verify the effect
-			if((effect.Value < General.Map.FormatInterface.MinEffect) || (effect.Value > General.Map.FormatInterface.MaxEffect)) 
-			{
-				General.ShowWarningMessage("Sector effect must be between " + General.Map.FormatInterface.MinEffect + " and " + General.Map.FormatInterface.MaxEffect + ".", MessageBoxButtons.OK);
-				return;
-			}
-
 			MakeUndo(); //mxd
 
 			// Go for all sectors
@@ -657,9 +644,6 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				// Apply all flags
 				ApplyFlags(flags, s);
-
-				// Effects
-				if(!effect.Empty) s.Effect = effect.Value;
 
 				// Fields
 				fieldslist.Apply(s.Fields);
@@ -729,11 +713,6 @@ namespace CodeImp.DoomBuilder.Windows
 			// Be gone
 			this.DialogResult = DialogResult.Cancel;
 			this.Close();
-		}
-
-		private void browseeffect_Click(object sender, EventArgs e) 
-		{
-			effect.Value = EffectBrowserForm.BrowseEffect(this, effect.Value);
 		}
 
 		//mxd

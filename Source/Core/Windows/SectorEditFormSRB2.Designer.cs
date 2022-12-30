@@ -35,28 +35,25 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SectorEditFormSRB2));
 			System.Windows.Forms.Label label9;
 			System.Windows.Forms.Label label2;
-			System.Windows.Forms.Label label8;
 			System.Windows.Forms.GroupBox groupfloorceiling;
 			System.Windows.Forms.Label label15;
 			System.Windows.Forms.Label label6;
 			System.Windows.Forms.Label label5;
 			System.Windows.Forms.Label labelLightAlpha;
 			System.Windows.Forms.Label labelFadeAlpha;
-			System.Windows.Forms.GroupBox grouptriggers;
-			System.Windows.Forms.Label labelTriggerer;
 			System.Windows.Forms.Label labelTriggerTag;
+			System.Windows.Forms.Label labelTriggerer;
 			this.tagsselector = new CodeImp.DoomBuilder.Controls.TagsSelector();
 			this.resetdamagetype = new System.Windows.Forms.Button();
 			this.brightness = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.damagetype = new System.Windows.Forms.ComboBox();
 			this.gravity = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
-			this.browseeffect = new System.Windows.Forms.Button();
-			this.effect = new CodeImp.DoomBuilder.Controls.ActionSelectorControl();
 			this.heightoffset = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.ceilingheight = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.sectorheightlabel = new System.Windows.Forms.Label();
 			this.sectorheight = new System.Windows.Forms.Label();
 			this.floorheight = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+			this.triggerTag = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.triggerer = new System.Windows.Forms.ComboBox();
 			this.tabs = new System.Windows.Forms.TabControl();
 			this.tabproperties = new System.Windows.Forms.TabPage();
@@ -109,26 +106,22 @@
 			this.cancel = new System.Windows.Forms.Button();
 			this.apply = new System.Windows.Forms.Button();
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
-			this.triggerTag = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			groupaction = new System.Windows.Forms.GroupBox();
 			groupeffect = new System.Windows.Forms.GroupBox();
 			label16 = new System.Windows.Forms.Label();
 			label9 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
-			label8 = new System.Windows.Forms.Label();
 			groupfloorceiling = new System.Windows.Forms.GroupBox();
 			label15 = new System.Windows.Forms.Label();
 			label6 = new System.Windows.Forms.Label();
 			label5 = new System.Windows.Forms.Label();
 			labelLightAlpha = new System.Windows.Forms.Label();
 			labelFadeAlpha = new System.Windows.Forms.Label();
-			grouptriggers = new System.Windows.Forms.GroupBox();
-			labelTriggerer = new System.Windows.Forms.Label();
 			labelTriggerTag = new System.Windows.Forms.Label();
+			labelTriggerer = new System.Windows.Forms.Label();
 			groupaction.SuspendLayout();
 			groupeffect.SuspendLayout();
 			groupfloorceiling.SuspendLayout();
-			grouptriggers.SuspendLayout();
 			this.tabs.SuspendLayout();
 			this.tabproperties.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -167,6 +160,10 @@
 			// 
 			groupeffect.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			groupeffect.Controls.Add(labelTriggerer);
+			groupeffect.Controls.Add(this.triggerer);
+			groupeffect.Controls.Add(labelTriggerTag);
+			groupeffect.Controls.Add(this.triggerTag);
 			groupeffect.Controls.Add(label16);
 			groupeffect.Controls.Add(this.resetdamagetype);
 			groupeffect.Controls.Add(this.brightness);
@@ -174,9 +171,6 @@
 			groupeffect.Controls.Add(label9);
 			groupeffect.Controls.Add(this.gravity);
 			groupeffect.Controls.Add(label2);
-			groupeffect.Controls.Add(this.browseeffect);
-			groupeffect.Controls.Add(this.effect);
-			groupeffect.Controls.Add(label8);
 			groupeffect.Location = new System.Drawing.Point(7, 330);
 			groupeffect.Name = "groupeffect";
 			groupeffect.Size = new System.Drawing.Size(557, 109);
@@ -269,39 +263,6 @@
 			label2.TabIndex = 5;
 			label2.Text = "Gravity:";
 			label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// browseeffect
-			// 
-			this.browseeffect.Image = ((System.Drawing.Image)(resources.GetObject("browseeffect.Image")));
-			this.browseeffect.Location = new System.Drawing.Point(523, 16);
-			this.browseeffect.Name = "browseeffect";
-			this.browseeffect.Size = new System.Drawing.Size(28, 25);
-			this.browseeffect.TabIndex = 2;
-			this.browseeffect.Text = " ";
-			this.browseeffect.UseVisualStyleBackColor = true;
-			this.browseeffect.Click += new System.EventHandler(this.browseeffect_Click);
-			// 
-			// effect
-			// 
-			this.effect.BackColor = System.Drawing.Color.Transparent;
-			this.effect.Cursor = System.Windows.Forms.Cursors.Default;
-			this.effect.Empty = false;
-			this.effect.GeneralizedCategories = null;
-			this.effect.GeneralizedOptions = null;
-			this.effect.Location = new System.Drawing.Point(89, 18);
-			this.effect.Name = "effect";
-			this.effect.Size = new System.Drawing.Size(428, 21);
-			this.effect.TabIndex = 1;
-			this.effect.Value = 402;
-			// 
-			// label8
-			// 
-			label8.AutoSize = true;
-			label8.Location = new System.Drawing.Point(35, 22);
-			label8.Name = "label8";
-			label8.Size = new System.Drawing.Size(45, 13);
-			label8.TabIndex = 0;
-			label8.Text = "Special:";
 			// 
 			// groupfloorceiling
 			// 
@@ -446,24 +407,36 @@
 			labelFadeAlpha.TabIndex = 20;
 			labelFadeAlpha.Text = "Fade alpha:";
 			// 
-			// grouptriggers
+			// labelTriggerTag
 			// 
-			grouptriggers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			grouptriggers.Controls.Add(labelTriggerTag);
-			grouptriggers.Controls.Add(this.triggerTag);
-			grouptriggers.Controls.Add(labelTriggerer);
-			grouptriggers.Controls.Add(this.triggerer);
-			grouptriggers.Location = new System.Drawing.Point(287, 186);
-			grouptriggers.Name = "grouptriggers";
-			grouptriggers.Size = new System.Drawing.Size(254, 138);
-			grouptriggers.TabIndex = 8;
-			grouptriggers.TabStop = false;
-			grouptriggers.Text = "Triggers";
+			labelTriggerTag.Location = new System.Drawing.Point(9, 16);
+			labelTriggerTag.Name = "labelTriggerTag";
+			labelTriggerTag.Size = new System.Drawing.Size(74, 14);
+			labelTriggerTag.TabIndex = 21;
+			labelTriggerTag.Text = "Trigger tag:";
+			labelTriggerTag.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// triggerTag
+			// 
+			this.triggerTag.AllowDecimal = false;
+			this.triggerTag.AllowExpressions = false;
+			this.triggerTag.AllowNegative = false;
+			this.triggerTag.AllowRelative = false;
+			this.triggerTag.ButtonStep = 1;
+			this.triggerTag.ButtonStepBig = 1F;
+			this.triggerTag.ButtonStepFloat = 1F;
+			this.triggerTag.ButtonStepSmall = 1F;
+			this.triggerTag.ButtonStepsUseModifierKeys = true;
+			this.triggerTag.ButtonStepsWrapAround = false;
+			this.triggerTag.Location = new System.Drawing.Point(89, 11);
+			this.triggerTag.Name = "triggerTag";
+			this.triggerTag.Size = new System.Drawing.Size(81, 24);
+			this.triggerTag.StepValues = null;
+			this.triggerTag.TabIndex = 20;
 			// 
 			// labelTriggerer
 			// 
-			labelTriggerer.Location = new System.Drawing.Point(6, 48);
+			labelTriggerer.Location = new System.Drawing.Point(218, 16);
 			labelTriggerer.Name = "labelTriggerer";
 			labelTriggerer.Size = new System.Drawing.Size(74, 14);
 			labelTriggerer.TabIndex = 7;
@@ -473,7 +446,7 @@
 			// triggerer
 			// 
 			this.triggerer.FormattingEnabled = true;
-			this.triggerer.Location = new System.Drawing.Point(86, 44);
+			this.triggerer.Location = new System.Drawing.Point(298, 12);
 			this.triggerer.Name = "triggerer";
 			this.triggerer.Size = new System.Drawing.Size(167, 21);
 			this.triggerer.TabIndex = 8;
@@ -500,7 +473,6 @@
 			// 
 			// tabproperties
 			// 
-			this.tabproperties.Controls.Add(grouptriggers);
 			this.tabproperties.Controls.Add(this.groupBox3);
 			this.tabproperties.Controls.Add(groupaction);
 			this.tabproperties.Controls.Add(groupeffect);
@@ -705,7 +677,7 @@
 			// 
 			// floorAngleControl
 			// 
-			this.floorAngleControl.Angle = -2160;
+			this.floorAngleControl.Angle = -2250;
 			this.floorAngleControl.AngleOffset = 90;
 			this.floorAngleControl.DoomAngleClamping = false;
 			this.floorAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -902,7 +874,7 @@
 			// 
 			// ceilAngleControl
 			// 
-			this.ceilAngleControl.Angle = -2160;
+			this.ceilAngleControl.Angle = -2250;
 			this.ceilAngleControl.AngleOffset = 90;
 			this.ceilAngleControl.DoomAngleClamping = false;
 			this.ceilAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1167,33 +1139,6 @@
 			this.tooltip.InitialDelay = 10;
 			this.tooltip.ReshowDelay = 100;
 			// 
-			// triggerTag
-			// 
-			this.triggerTag.AllowDecimal = false;
-			this.triggerTag.AllowExpressions = false;
-			this.triggerTag.AllowNegative = false;
-			this.triggerTag.AllowRelative = false;
-			this.triggerTag.ButtonStep = 1;
-			this.triggerTag.ButtonStepBig = 1F;
-			this.triggerTag.ButtonStepFloat = 1F;
-			this.triggerTag.ButtonStepSmall = 1F;
-			this.triggerTag.ButtonStepsUseModifierKeys = true;
-			this.triggerTag.ButtonStepsWrapAround = false;
-			this.triggerTag.Location = new System.Drawing.Point(86, 14);
-			this.triggerTag.Name = "triggerTag";
-			this.triggerTag.Size = new System.Drawing.Size(81, 24);
-			this.triggerTag.StepValues = null;
-			this.triggerTag.TabIndex = 20;
-			// 
-			// labelTriggerTag
-			// 
-			labelTriggerTag.Location = new System.Drawing.Point(6, 19);
-			labelTriggerTag.Name = "labelTriggerTag";
-			labelTriggerTag.Size = new System.Drawing.Size(74, 14);
-			labelTriggerTag.TabIndex = 21;
-			labelTriggerTag.Text = "Trigger tag:";
-			labelTriggerTag.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
 			// SectorEditFormSRB2
 			// 
 			this.AcceptButton = this.apply;
@@ -1220,7 +1165,6 @@
 			groupeffect.PerformLayout();
 			groupfloorceiling.ResumeLayout(false);
 			groupfloorceiling.PerformLayout();
-			grouptriggers.ResumeLayout(false);
 			this.tabs.ResumeLayout(false);
 			this.tabproperties.ResumeLayout(false);
 			this.groupBox3.ResumeLayout(false);
@@ -1246,8 +1190,6 @@
 		private System.Windows.Forms.TabControl tabs;
 		private System.Windows.Forms.TabPage tabproperties;
 		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox brightness;
-		private System.Windows.Forms.Button browseeffect;
-		private CodeImp.DoomBuilder.Controls.ActionSelectorControl effect;
 		private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox ceilingheight;
 		private System.Windows.Forms.Label sectorheightlabel;
 		private System.Windows.Forms.Label sectorheight;
