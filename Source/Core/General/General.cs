@@ -164,7 +164,7 @@ namespace CodeImp.DoomBuilder
 		private const string LEGACY_SETTINGS_FILE = "GZBuilder.cfg"; // To make transision from GZDB* easier
 		private const string SETTINGS_FILE = "UDBuilder.cfg";
 		private const string DEFAULT_SETTINGS_FILE = "UDBuilder.default.cfg"; //mxd
-		private const string SETTINGS_DIR = "Doom Builder";
+		private const string SETTINGS_DIR = "Ultimate Zone Builder";
 		private const string LOG_FILE = "UDBuilder.log";
 		private const string GAME_CONFIGS_DIR = "Configurations";
 		private const string COMPILERS_DIR = "Compilers";

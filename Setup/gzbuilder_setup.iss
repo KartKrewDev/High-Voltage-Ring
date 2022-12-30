@@ -2,14 +2,14 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 [Setup]
-AppName=Ultimate Doom Builder
-AppVerName=Ultimate Doom Builder
-AppPublisher=ZZYZX
-AppPublisherURL=https://forum.zdoom.org/memberlist.php?mode=viewprofile&u=7527
-AppSupportURL=https://forum.zdoom.org/viewtopic.php?f=232&t=66745
-AppUpdatesURL=https://devbuilds.drdteam.org/ultimatedoombuilder/
-DefaultDirName={pf}\Ultimate Doom Builder
-DefaultGroupName=Ultimate Doom Builder
+AppName=Ultimate Zone Builder
+AppVerName=Ultimate Zone Builder
+AppPublisher=Sonic Team Junior
+AppPublisherURL=https://www.srb2.org/
+AppSupportURL=https://www.srb2.org/
+AppUpdatesURL=https://www.srb2.org/
+DefaultDirName={pf}\Ultimate Zone Builder
+DefaultGroupName=Ultimate Zone Builder
 AllowNoIcons=true
 LicenseFile=..\LICENSE.txt
 OutputDir=..\Release
@@ -18,7 +18,7 @@ Compression=lzma/ultra64
 SolidCompression=true
 SourceDir=..\Build
 SetupLogging=false
-AppMutex=ultimatedoombuilder
+AppMutex=ultimatezonebuilder
 PrivilegesRequired=admin
 ShowLanguageDialog=no
 LanguageDetectionMethod=none
@@ -74,9 +74,9 @@ Source: Sprites\*; DestDir: {app}\Sprites; Flags: ignoreversion recursesubdirs
 Source: Textures\*; DestDir: {app}\Textures; Flags: ignoreversion
 
 [Icons]
-Name: {group}\Ultimate Doom Builder; Filename: {app}\Builder.exe
-Name: {group}\{cm:UninstallProgram,Ultimate Doom Builder}; Filename: {uninstallexe}
-Name: {commondesktop}\Ultimate Doom Builder; Filename: {app}\Builder.exe; Tasks: desktopicon
+Name: {group}\Ultimate Zone Builder; Filename: {app}\Builder.exe
+Name: {group}\{cm:UninstallProgram,Ultimate Zone Builder}; Filename: {uninstallexe}
+Name: {commondesktop}\Ultimate Zone Builder; Filename: {app}\Builder.exe; Tasks: desktopicon
 
 [UninstallDelete]
 Name: {app}; Type: filesandordirs
@@ -86,7 +86,7 @@ Name: {app}\Builder.pdb; Type: files
 Name: {app}\Builder.xml; Type: files
 
 [Registry]
-Root: HKLM; Subkey: SOFTWARE\UDB\Ultimate Doom Builder\; ValueType: string; ValueName: Location; ValueData: {app}; Flags: uninsdeletevalue
+Root: HKLM; Subkey: SOFTWARE\UZB\Ultimate Zone Builder\; ValueType: string; ValueName: Location; ValueData: {app}; Flags: uninsdeletevalue
 
 [Messages]
 ReadyLabel2a=Continue to begin with the installation, or click Back if you want to review or change any settings.
