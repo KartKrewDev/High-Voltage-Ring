@@ -35,8 +35,8 @@ namespace CodeImp.DoomBuilder.Windows
 			System.Windows.Forms.Label label6;
 			System.Windows.Forms.Label executordelaylabel;
 			System.Windows.Forms.Label labelRepeatcntFront;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinedefEditFormSRB2));
 			System.Windows.Forms.Label labelRepeatcntBack;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinedefEditFormSRB2));
 			this.labelrenderstyle = new System.Windows.Forms.Label();
 			this.cancel = new System.Windows.Forms.Button();
 			this.apply = new System.Windows.Forms.Button();
@@ -88,6 +88,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.backside = new System.Windows.Forms.CheckBox();
 			this.backgroup = new System.Windows.Forms.GroupBox();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.repeatcntBack = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.backsector = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.custombackbutton = new System.Windows.Forms.Button();
 			this.backflagsgroup = new System.Windows.Forms.GroupBox();
@@ -117,7 +118,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.fieldslist = new CodeImp.DoomBuilder.Controls.FieldsEditorControl();
 			this.imagelist = new System.Windows.Forms.ImageList(this.components);
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
-			this.repeatcntBack = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			label2 = new System.Windows.Forms.Label();
 			label11 = new System.Windows.Forms.Label();
 			label12 = new System.Windows.Forms.Label();
@@ -200,6 +200,15 @@ namespace CodeImp.DoomBuilder.Windows
 			labelRepeatcntFront.Size = new System.Drawing.Size(84, 13);
 			labelRepeatcntFront.TabIndex = 73;
 			labelRepeatcntFront.Text = "Texture repeats:";
+			// 
+			// labelRepeatcntBack
+			// 
+			labelRepeatcntBack.AutoSize = true;
+			labelRepeatcntBack.Location = new System.Drawing.Point(6, 52);
+			labelRepeatcntBack.Name = "labelRepeatcntBack";
+			labelRepeatcntBack.Size = new System.Drawing.Size(84, 13);
+			labelRepeatcntBack.TabIndex = 75;
+			labelRepeatcntBack.Text = "Texture repeats:";
 			// 
 			// labelrenderstyle
 			// 
@@ -501,6 +510,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.frontflagsgroup.TabIndex = 45;
 			this.frontflagsgroup.TabStop = false;
 			this.frontflagsgroup.Text = " Flags ";
+			this.frontflagsgroup.Visible = false;
 			// 
 			// flagsFront
 			// 
@@ -896,6 +906,25 @@ namespace CodeImp.DoomBuilder.Windows
 			this.groupBox4.TabIndex = 46;
 			this.groupBox4.TabStop = false;
 			// 
+			// repeatcntBack
+			// 
+			this.repeatcntBack.AllowDecimal = false;
+			this.repeatcntBack.AllowExpressions = false;
+			this.repeatcntBack.AllowNegative = false;
+			this.repeatcntBack.AllowRelative = false;
+			this.repeatcntBack.ButtonStep = 1;
+			this.repeatcntBack.ButtonStepBig = 1F;
+			this.repeatcntBack.ButtonStepFloat = 1F;
+			this.repeatcntBack.ButtonStepSmall = 1F;
+			this.repeatcntBack.ButtonStepsUseModifierKeys = true;
+			this.repeatcntBack.ButtonStepsWrapAround = false;
+			this.repeatcntBack.Location = new System.Drawing.Point(96, 47);
+			this.repeatcntBack.Name = "repeatcntBack";
+			this.repeatcntBack.Size = new System.Drawing.Size(65, 24);
+			this.repeatcntBack.StepValues = null;
+			this.repeatcntBack.TabIndex = 76;
+			this.repeatcntBack.WhenTextChanged += new System.EventHandler(this.repeatcntBack_WhenTextChanged);
+			// 
 			// backsector
 			// 
 			this.backsector.AllowDecimal = false;
@@ -933,6 +962,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.backflagsgroup.TabIndex = 45;
 			this.backflagsgroup.TabStop = false;
 			this.backflagsgroup.Text = " Flags ";
+			this.backflagsgroup.Visible = false;
 			// 
 			// flagsBack
 			// 
@@ -1270,34 +1300,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.imagelist.TransparentColor = System.Drawing.Color.Transparent;
 			this.imagelist.Images.SetKeyName(0, "Check.png");
 			this.imagelist.Images.SetKeyName(1, "SearchClear.png");
-			// 
-			// repeatcntBack
-			// 
-			this.repeatcntBack.AllowDecimal = false;
-			this.repeatcntBack.AllowExpressions = false;
-			this.repeatcntBack.AllowNegative = false;
-			this.repeatcntBack.AllowRelative = false;
-			this.repeatcntBack.ButtonStep = 1;
-			this.repeatcntBack.ButtonStepBig = 1F;
-			this.repeatcntBack.ButtonStepFloat = 1F;
-			this.repeatcntBack.ButtonStepSmall = 1F;
-			this.repeatcntBack.ButtonStepsUseModifierKeys = true;
-			this.repeatcntBack.ButtonStepsWrapAround = false;
-			this.repeatcntBack.Location = new System.Drawing.Point(96, 47);
-			this.repeatcntBack.Name = "repeatcntBack";
-			this.repeatcntBack.Size = new System.Drawing.Size(65, 24);
-			this.repeatcntBack.StepValues = null;
-			this.repeatcntBack.TabIndex = 76;
-			this.repeatcntBack.WhenTextChanged += new System.EventHandler(this.repeatcntBack_WhenTextChanged);
-			// 
-			// labelRepeatcntBack
-			// 
-			labelRepeatcntBack.AutoSize = true;
-			labelRepeatcntBack.Location = new System.Drawing.Point(6, 52);
-			labelRepeatcntBack.Name = "labelRepeatcntBack";
-			labelRepeatcntBack.Size = new System.Drawing.Size(84, 13);
-			labelRepeatcntBack.TabIndex = 75;
-			labelRepeatcntBack.Text = "Texture repeats:";
 			// 
 			// LinedefEditFormSRB2
 			// 
