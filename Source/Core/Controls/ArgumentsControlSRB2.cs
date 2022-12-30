@@ -123,13 +123,8 @@ namespace CodeImp.DoomBuilder.Controls
 
 		#region ================== Update
 
-		public void UpdateAction(int action, bool setuponly)
-		{
-			UpdateAction(action, setuponly, null);
-		}
-
 		//TODO: Info for string args
-		public void UpdateAction(int action, bool setuponly, ThingTypeInfo info)
+		public void UpdateAction(int action, bool setuponly)
 		{
 			// Update arguments
 			int showaction = 0;
@@ -139,11 +134,7 @@ namespace CodeImp.DoomBuilder.Controls
 			if (General.Map.Config.LinedefActions.ContainsKey(action)) showaction = action;
 
 			// Update argument infos
-			if ((showaction == 0) && (info != null)) arginfo = info.Args;
-			else arginfo = General.Map.Config.LinedefActions[showaction].Args;
-
-			// Don't update action args when thing type is changed
-			if (info != null && showaction != 0 && this.action == showaction) return;
+			arginfo = General.Map.Config.LinedefActions[showaction].Args;
 
 			//mxd. Don't update action args when old and new argument infos match
 			if (arginfo != null && oldarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo)) return;
@@ -156,8 +147,8 @@ namespace CodeImp.DoomBuilder.Controls
 
 			if (!setuponly)
 			{
-				// Apply action's or thing's default arguments
-				if (showaction != 0 || info != null)
+				// Apply action's default arguments
+				if (showaction != 0)
 				{
 					for (int i = 0; i < args.Length; i++)
 						args[i].SetDefaultValue();
@@ -171,6 +162,38 @@ namespace CodeImp.DoomBuilder.Controls
 
 			// Store current action
 			this.action = showaction;
+
+			this.EndUpdate();
+		}
+
+		public void UpdateThingType(ThingTypeInfo info)
+		{
+			// Update arguments
+			ArgumentInfo[] oldarginfo = (arginfo != null ? (ArgumentInfo[])arginfo.Clone() : null); //mxd
+
+			// Update argument infos
+			arginfo = info.Args;
+
+			//mxd. Don't update args when old and new argument infos match
+			if (arginfo != null && oldarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo)) return;
+
+			// Change the argument descriptions
+			this.BeginUpdate();
+
+			for (int i = 0; i < args.Length; i++)
+				UpdateArgument(args[i], labels[i], arginfo[i]);
+
+			// Apply thing's default arguments
+			if (info != null)
+			{
+				for (int i = 0; i < args.Length; i++)
+					args[i].SetDefaultValue();
+			}
+			else //or set them to 0
+			{
+				for (int i = 0; i < args.Length; i++)
+					args[i].SetValue(0);
+			}
 
 			this.EndUpdate();
 		}
