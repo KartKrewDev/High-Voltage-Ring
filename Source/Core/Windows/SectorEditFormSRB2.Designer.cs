@@ -45,6 +45,7 @@
 			System.Windows.Forms.Label labelFadeAlpha;
 			System.Windows.Forms.Label labelFadeStart;
 			System.Windows.Forms.Label labelFadeEnd;
+			System.Windows.Forms.Label labelFriction;
 			this.tagsselector = new CodeImp.DoomBuilder.Controls.TagsSelector();
 			this.triggerer = new System.Windows.Forms.ComboBox();
 			this.triggerTag = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
@@ -63,6 +64,8 @@
 			this.flags = new CodeImp.DoomBuilder.Controls.CheckboxArrayControl();
 			this.tabColors = new System.Windows.Forms.TabPage();
 			this.groupBox8 = new System.Windows.Forms.GroupBox();
+			this.fadeEnd = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+			this.fadeStart = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.fadeAlpha = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.lightAlpha = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.lightColor = new CodeImp.DoomBuilder.Controls.ColorFieldsControl();
@@ -108,8 +111,7 @@
 			this.cancel = new System.Windows.Forms.Button();
 			this.apply = new System.Windows.Forms.Button();
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
-			this.fadeStart = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
-			this.fadeEnd = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+			this.friction = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			groupaction = new System.Windows.Forms.GroupBox();
 			groupeffect = new System.Windows.Forms.GroupBox();
 			labelTriggerer = new System.Windows.Forms.Label();
@@ -125,6 +127,7 @@
 			labelFadeAlpha = new System.Windows.Forms.Label();
 			labelFadeStart = new System.Windows.Forms.Label();
 			labelFadeEnd = new System.Windows.Forms.Label();
+			labelFriction = new System.Windows.Forms.Label();
 			groupaction.SuspendLayout();
 			groupeffect.SuspendLayout();
 			groupfloorceiling.SuspendLayout();
@@ -166,6 +169,8 @@
 			// 
 			groupeffect.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			groupeffect.Controls.Add(this.friction);
+			groupeffect.Controls.Add(labelFriction);
 			groupeffect.Controls.Add(labelTriggerer);
 			groupeffect.Controls.Add(this.triggerer);
 			groupeffect.Controls.Add(labelTriggerTag);
@@ -459,6 +464,26 @@
 			labelFadeAlpha.Text = "Fade alpha:";
 			labelFadeAlpha.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// labelFadeStart
+			// 
+			labelFadeStart.AutoSize = true;
+			labelFadeStart.Location = new System.Drawing.Point(11, 149);
+			labelFadeStart.Name = "labelFadeStart";
+			labelFadeStart.Size = new System.Drawing.Size(57, 13);
+			labelFadeStart.TabIndex = 22;
+			labelFadeStart.Text = "Fade start:";
+			labelFadeStart.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// labelFadeEnd
+			// 
+			labelFadeEnd.AutoSize = true;
+			labelFadeEnd.Location = new System.Drawing.Point(12, 177);
+			labelFadeEnd.Name = "labelFadeEnd";
+			labelFadeEnd.Size = new System.Drawing.Size(55, 13);
+			labelFadeEnd.TabIndex = 24;
+			labelFadeEnd.Text = "Fade end:";
+			labelFadeEnd.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// tabs
 			// 
 			this.tabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -547,6 +572,44 @@
 			this.groupBox8.TabIndex = 18;
 			this.groupBox8.TabStop = false;
 			this.groupBox8.Text = "Global sector colors";
+			// 
+			// fadeEnd
+			// 
+			this.fadeEnd.AllowDecimal = false;
+			this.fadeEnd.AllowExpressions = false;
+			this.fadeEnd.AllowNegative = false;
+			this.fadeEnd.AllowRelative = false;
+			this.fadeEnd.ButtonStep = 1;
+			this.fadeEnd.ButtonStepBig = 1F;
+			this.fadeEnd.ButtonStepFloat = 1F;
+			this.fadeEnd.ButtonStepSmall = 1F;
+			this.fadeEnd.ButtonStepsUseModifierKeys = true;
+			this.fadeEnd.ButtonStepsWrapAround = false;
+			this.fadeEnd.Location = new System.Drawing.Point(74, 172);
+			this.fadeEnd.Name = "fadeEnd";
+			this.fadeEnd.Size = new System.Drawing.Size(81, 24);
+			this.fadeEnd.StepValues = null;
+			this.fadeEnd.TabIndex = 25;
+			this.fadeEnd.WhenTextChanged += new System.EventHandler(this.fadeEnd_WhenTextChanged);
+			// 
+			// fadeStart
+			// 
+			this.fadeStart.AllowDecimal = false;
+			this.fadeStart.AllowExpressions = false;
+			this.fadeStart.AllowNegative = false;
+			this.fadeStart.AllowRelative = false;
+			this.fadeStart.ButtonStep = 1;
+			this.fadeStart.ButtonStepBig = 1F;
+			this.fadeStart.ButtonStepFloat = 1F;
+			this.fadeStart.ButtonStepSmall = 1F;
+			this.fadeStart.ButtonStepsUseModifierKeys = true;
+			this.fadeStart.ButtonStepsWrapAround = false;
+			this.fadeStart.Location = new System.Drawing.Point(74, 144);
+			this.fadeStart.Name = "fadeStart";
+			this.fadeStart.Size = new System.Drawing.Size(81, 24);
+			this.fadeStart.StepValues = null;
+			this.fadeStart.TabIndex = 23;
+			this.fadeStart.WhenTextChanged += new System.EventHandler(this.fadeStart_WhenTextChanged);
 			// 
 			// fadeAlpha
 			// 
@@ -689,7 +752,7 @@
 			// 
 			// floorAngleControl
 			// 
-			this.floorAngleControl.Angle = -2340;
+			this.floorAngleControl.Angle = -2430;
 			this.floorAngleControl.AngleOffset = 90;
 			this.floorAngleControl.DoomAngleClamping = false;
 			this.floorAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -886,7 +949,7 @@
 			// 
 			// ceilAngleControl
 			// 
-			this.ceilAngleControl.Angle = -2340;
+			this.ceilAngleControl.Angle = -2430;
 			this.ceilAngleControl.AngleOffset = 90;
 			this.ceilAngleControl.DoomAngleClamping = false;
 			this.ceilAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1151,64 +1214,32 @@
 			this.tooltip.InitialDelay = 10;
 			this.tooltip.ReshowDelay = 100;
 			// 
-			// fadeStart
+			// friction
 			// 
-			this.fadeStart.AllowDecimal = false;
-			this.fadeStart.AllowExpressions = false;
-			this.fadeStart.AllowNegative = false;
-			this.fadeStart.AllowRelative = false;
-			this.fadeStart.ButtonStep = 1;
-			this.fadeStart.ButtonStepBig = 1F;
-			this.fadeStart.ButtonStepFloat = 1F;
-			this.fadeStart.ButtonStepSmall = 1F;
-			this.fadeStart.ButtonStepsUseModifierKeys = true;
-			this.fadeStart.ButtonStepsWrapAround = false;
-			this.fadeStart.Location = new System.Drawing.Point(74, 144);
-			this.fadeStart.Name = "fadeStart";
-			this.fadeStart.Size = new System.Drawing.Size(81, 24);
-			this.fadeStart.StepValues = null;
-			this.fadeStart.TabIndex = 23;
-			this.fadeStart.WhenTextChanged += new System.EventHandler(this.fadeStart_WhenTextChanged);
-
+			this.friction.AllowDecimal = true;
+			this.friction.AllowExpressions = false;
+			this.friction.AllowNegative = true;
+			this.friction.AllowRelative = true;
+			this.friction.ButtonStep = 1;
+			this.friction.ButtonStepBig = 0.125F;
+			this.friction.ButtonStepFloat = 0.03125F;
+			this.friction.ButtonStepSmall = 0.03125F;
+			this.friction.ButtonStepsUseModifierKeys = true;
+			this.friction.ButtonStepsWrapAround = false;
+			this.friction.Location = new System.Drawing.Point(298, 74);
+			this.friction.Name = "friction";
+			this.friction.Size = new System.Drawing.Size(81, 24);
+			this.friction.StepValues = null;
+			this.friction.TabIndex = 23;
 			// 
-			// labelFadeStart
+			// labelFriction
 			// 
-			labelFadeStart.AutoSize = true;
-			labelFadeStart.Location = new System.Drawing.Point(11, 149);
-			labelFadeStart.Name = "labelFadeStart";
-			labelFadeStart.Size = new System.Drawing.Size(57, 13);
-			labelFadeStart.TabIndex = 22;
-			labelFadeStart.Text = "Fade start:";
-			labelFadeStart.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// fadeEnd
-			// 
-			this.fadeEnd.AllowDecimal = false;
-			this.fadeEnd.AllowExpressions = false;
-			this.fadeEnd.AllowNegative = false;
-			this.fadeEnd.AllowRelative = false;
-			this.fadeEnd.ButtonStep = 1;
-			this.fadeEnd.ButtonStepBig = 1F;
-			this.fadeEnd.ButtonStepFloat = 1F;
-			this.fadeEnd.ButtonStepSmall = 1F;
-			this.fadeEnd.ButtonStepsUseModifierKeys = true;
-			this.fadeEnd.ButtonStepsWrapAround = false;
-			this.fadeEnd.Location = new System.Drawing.Point(74, 172);
-			this.fadeEnd.Name = "fadeEnd";
-			this.fadeEnd.Size = new System.Drawing.Size(81, 24);
-			this.fadeEnd.StepValues = null;
-			this.fadeEnd.TabIndex = 25;
-			this.fadeEnd.WhenTextChanged += new System.EventHandler(this.fadeEnd_WhenTextChanged);
-			// 
-			// labelFadeEnd
-			// 
-			labelFadeEnd.AutoSize = true;
-			labelFadeEnd.Location = new System.Drawing.Point(12, 177);
-			labelFadeEnd.Name = "labelFadeEnd";
-			labelFadeEnd.Size = new System.Drawing.Size(55, 13);
-			labelFadeEnd.TabIndex = 24;
-			labelFadeEnd.Text = "Fade end:";
-			labelFadeEnd.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			labelFriction.Location = new System.Drawing.Point(218, 79);
+			labelFriction.Name = "labelFriction";
+			labelFriction.Size = new System.Drawing.Size(74, 14);
+			labelFriction.TabIndex = 22;
+			labelFriction.Text = "Friction:";
+			labelFriction.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// SectorEditFormSRB2
 			// 
@@ -1323,5 +1354,6 @@
 		private Controls.ButtonsNumericTextbox triggerTag;
 		private Controls.ButtonsNumericTextbox fadeEnd;
 		private Controls.ButtonsNumericTextbox fadeStart;
+		private Controls.ButtonsNumericTextbox friction;
 	}
 }

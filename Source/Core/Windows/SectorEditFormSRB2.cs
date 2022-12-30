@@ -300,6 +300,7 @@ namespace CodeImp.DoomBuilder.Windows
 
 			// Misc
 			gravity.Text = sc.Fields.GetValue("gravity", 1.0).ToString();
+			friction.Text = sc.Fields.GetValue("friction", 0.90625).ToString();
 			triggerTag.Text = sc.Fields.GetValue("triggertag", 0).ToString();
 			triggerer.Text = sc.Fields.GetValue("triggerer", TRIGGERER_DEFAULT);
 
@@ -391,7 +392,8 @@ namespace CodeImp.DoomBuilder.Windows
 					damagetype.SelectedIndex = -1;
 
 				// Misc
-				if(s.Fields.GetValue("gravity", 1.0).ToString() != gravity.Text) gravity.Text = "";
+				if (s.Fields.GetValue("gravity", 1.0).ToString() != gravity.Text) gravity.Text = "";
+				if (s.Fields.GetValue("friction", 0.90625).ToString() != friction.Text) friction.Text = "";
 				if (s.Fields.GetValue("triggertag", 0).ToString() != triggerTag.Text) triggerTag.Text = "";
 				if (triggerer.SelectedIndex > -1 && s.Fields.GetValue("triggerer", TRIGGERER_DEFAULT) != triggerer.Text)
 					triggerer.SelectedIndex = -1;
@@ -679,6 +681,9 @@ namespace CodeImp.DoomBuilder.Windows
 				// Misc
 				if(!string.IsNullOrEmpty(gravity.Text)) 
 					UniFields.SetFloat(s.Fields, "gravity", gravity.GetResultFloat(s.Fields.GetValue("gravity", 1.0)), 1.0);
+
+				if (!string.IsNullOrEmpty(friction.Text))
+					UniFields.SetFloat(s.Fields, "friction", friction.GetResultFloat(s.Fields.GetValue("friction", 0.90625)), 0.90625);
 
 				if (!string.IsNullOrEmpty(triggerTag.Text))
 					UniFields.SetInteger(s.Fields, "triggertag", triggerTag.GetResult(s.Fields.GetValue("triggertag", 0)), 0);

@@ -31,7 +31,7 @@ namespace CodeImp.DoomBuilder.Controls
 	{
 		#region ================== Constants
 
-		private const int ROUNDING_PRECISION = 4; //mxd
+		private const int ROUNDING_PRECISION = 5; //mxd
 
 		#endregion
 
