@@ -192,6 +192,9 @@ namespace CodeImp.DoomBuilder.Config
 		//mxd. Internal sounds. These logical sound names won't trigger a warning when they are not bound to actual sounds in SOUNDINFO.
 		private HashSet<string> internalsoundnames;
 
+		//Triggerer types
+		private HashSet<string> triggerertypes;
+
 		//mxd. Stuff to ignore
 		private HashSet<string> ignoreddirectories;
 		private HashSet<string> ignoredextensions;
@@ -347,6 +350,9 @@ namespace CodeImp.DoomBuilder.Config
 
 		//mxd. Internal sounds
 		internal HashSet<string> InternalSoundNames { get { return internalsoundnames; } }
+
+		//Triggerer types
+		internal IEnumerable<string> TriggererTypes { get { return triggerertypes; } }
 
 		//mxd. Stuff to ignore
 		internal HashSet<string> IgnoredFileExtensions { get { return ignoredextensions; } }
@@ -529,7 +535,8 @@ namespace CodeImp.DoomBuilder.Config
 			char[] splitter = {' '};
 			damagetypes = new HashSet<string>(cfg.ReadSetting("damagetypes", "None").Split(splitter, StringSplitOptions.RemoveEmptyEntries), StringComparer.OrdinalIgnoreCase);
 			internalsoundnames = new HashSet<string>(cfg.ReadSetting("internalsoundnames", string.Empty).Split(splitter, StringSplitOptions.RemoveEmptyEntries), StringComparer.OrdinalIgnoreCase);
-			
+			triggerertypes = new HashSet<string>(cfg.ReadSetting("triggerertypes", string.Empty).Split(splitter, StringSplitOptions.RemoveEmptyEntries), StringComparer.OrdinalIgnoreCase);
+
 			//mxd. Load stuff to ignore
 			ignoreddirectories = new HashSet<string>(cfg.ReadSetting("ignoreddirectories", string.Empty).Split(splitter, StringSplitOptions.RemoveEmptyEntries), StringComparer.OrdinalIgnoreCase);
 			ignoredextensions = new HashSet<string>(cfg.ReadSetting("ignoredextensions", string.Empty).Split(splitter, StringSplitOptions.RemoveEmptyEntries), StringComparer.OrdinalIgnoreCase);
