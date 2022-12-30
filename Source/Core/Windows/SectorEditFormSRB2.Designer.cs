@@ -31,6 +31,8 @@
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.GroupBox groupaction;
 			System.Windows.Forms.GroupBox groupeffect;
+			System.Windows.Forms.Label label16;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SectorEditFormSRB2));
 			System.Windows.Forms.Label label9;
 			System.Windows.Forms.Label label2;
 			System.Windows.Forms.Label label8;
@@ -38,10 +40,12 @@
 			System.Windows.Forms.Label label15;
 			System.Windows.Forms.Label label6;
 			System.Windows.Forms.Label label5;
-			System.Windows.Forms.Label label16;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SectorEditFormSRB2));
+			System.Windows.Forms.Label labelLightAlpha;
+			System.Windows.Forms.Label labelFadeAlpha;
 			this.tagsselector = new CodeImp.DoomBuilder.Controls.TagsSelector();
+			this.resetdamagetype = new System.Windows.Forms.Button();
 			this.brightness = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+			this.damagetype = new System.Windows.Forms.ComboBox();
 			this.gravity = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.browseeffect = new System.Windows.Forms.Button();
 			this.effect = new CodeImp.DoomBuilder.Controls.ActionSelectorControl();
@@ -52,12 +56,11 @@
 			this.floorheight = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.tabs = new System.Windows.Forms.TabControl();
 			this.tabproperties = new System.Windows.Forms.TabPage();
-			this.resetdamagetype = new System.Windows.Forms.Button();
-			this.damagetype = new System.Windows.Forms.ComboBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.flags = new CodeImp.DoomBuilder.Controls.CheckboxArrayControl();
 			this.tabColors = new System.Windows.Forms.TabPage();
 			this.groupBox8 = new System.Windows.Forms.GroupBox();
+			this.lightAlpha = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.lightColor = new CodeImp.DoomBuilder.Controls.ColorFieldsControl();
 			this.fadeColor = new CodeImp.DoomBuilder.Controls.ColorFieldsControl();
 			this.tabSurfaces = new System.Windows.Forms.TabPage();
@@ -101,8 +104,10 @@
 			this.cancel = new System.Windows.Forms.Button();
 			this.apply = new System.Windows.Forms.Button();
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
+			this.fadeAlpha = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			groupaction = new System.Windows.Forms.GroupBox();
 			groupeffect = new System.Windows.Forms.GroupBox();
+			label16 = new System.Windows.Forms.Label();
 			label9 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label8 = new System.Windows.Forms.Label();
@@ -110,7 +115,8 @@
 			label15 = new System.Windows.Forms.Label();
 			label6 = new System.Windows.Forms.Label();
 			label5 = new System.Windows.Forms.Label();
-			label16 = new System.Windows.Forms.Label();
+			labelLightAlpha = new System.Windows.Forms.Label();
+			labelFadeAlpha = new System.Windows.Forms.Label();
 			groupaction.SuspendLayout();
 			groupeffect.SuspendLayout();
 			groupfloorceiling.SuspendLayout();
@@ -169,6 +175,27 @@
 			groupeffect.TabStop = false;
 			groupeffect.Text = " Effects ";
 			// 
+			// label16
+			// 
+			label16.Location = new System.Drawing.Point(218, 50);
+			label16.Name = "label16";
+			label16.Size = new System.Drawing.Size(74, 14);
+			label16.TabIndex = 0;
+			label16.Text = "Damage:";
+			label16.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// resetdamagetype
+			// 
+			this.resetdamagetype.Image = ((System.Drawing.Image)(resources.GetObject("resetdamagetype.Image")));
+			this.resetdamagetype.Location = new System.Drawing.Point(471, 44);
+			this.resetdamagetype.Name = "resetdamagetype";
+			this.resetdamagetype.Size = new System.Drawing.Size(28, 25);
+			this.resetdamagetype.TabIndex = 2;
+			this.resetdamagetype.Text = " ";
+			this.tooltip.SetToolTip(this.resetdamagetype, "Reset");
+			this.resetdamagetype.UseVisualStyleBackColor = true;
+			this.resetdamagetype.Click += new System.EventHandler(this.resetdamagetype_Click);
+			// 
 			// brightness
 			// 
 			this.brightness.AllowDecimal = false;
@@ -187,6 +214,16 @@
 			this.brightness.StepValues = null;
 			this.brightness.TabIndex = 4;
 			this.brightness.WhenTextChanged += new System.EventHandler(this.brightness_WhenTextChanged);
+			// 
+			// damagetype
+			// 
+			this.damagetype.FormattingEnabled = true;
+			this.damagetype.Location = new System.Drawing.Point(298, 46);
+			this.damagetype.Name = "damagetype";
+			this.damagetype.Size = new System.Drawing.Size(167, 21);
+			this.damagetype.TabIndex = 1;
+			this.damagetype.TextChanged += new System.EventHandler(this.damagetype_TextChanged);
+			this.damagetype.MouseDown += new System.Windows.Forms.MouseEventHandler(this.damagetype_MouseDown);
 			// 
 			// label9
 			// 
@@ -382,14 +419,14 @@
 			this.floorheight.TabIndex = 3;
 			this.floorheight.WhenTextChanged += new System.EventHandler(this.floorheight_WhenTextChanged);
 			// 
-			// label16
+			// labelLightAlpha
 			// 
-			label16.Location = new System.Drawing.Point(218, 50);
-			label16.Name = "label16";
-			label16.Size = new System.Drawing.Size(74, 14);
-			label16.TabIndex = 0;
-			label16.Text = "Damage:";
-			label16.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			labelLightAlpha.AutoSize = true;
+			labelLightAlpha.Location = new System.Drawing.Point(6, 92);
+			labelLightAlpha.Name = "labelLightAlpha";
+			labelLightAlpha.Size = new System.Drawing.Size(62, 13);
+			labelLightAlpha.TabIndex = 18;
+			labelLightAlpha.Text = "Light alpha:";
 			// 
 			// tabs
 			// 
@@ -427,28 +464,6 @@
 			this.tabproperties.Text = "Properties";
 			this.tabproperties.UseVisualStyleBackColor = true;
 			// 
-			// resetdamagetype
-			// 
-			this.resetdamagetype.Image = ((System.Drawing.Image)(resources.GetObject("resetdamagetype.Image")));
-			this.resetdamagetype.Location = new System.Drawing.Point(471, 44);
-			this.resetdamagetype.Name = "resetdamagetype";
-			this.resetdamagetype.Size = new System.Drawing.Size(28, 25);
-			this.resetdamagetype.TabIndex = 2;
-			this.resetdamagetype.Text = " ";
-			this.tooltip.SetToolTip(this.resetdamagetype, "Reset");
-			this.resetdamagetype.UseVisualStyleBackColor = true;
-			this.resetdamagetype.Click += new System.EventHandler(this.resetdamagetype_Click);
-			// 
-			// damagetype
-			// 
-			this.damagetype.FormattingEnabled = true;
-			this.damagetype.Location = new System.Drawing.Point(298, 46);
-			this.damagetype.Name = "damagetype";
-			this.damagetype.Size = new System.Drawing.Size(167, 21);
-			this.damagetype.TabIndex = 1;
-			this.damagetype.TextChanged += new System.EventHandler(this.damagetype_TextChanged);
-			this.damagetype.MouseDown += new System.Windows.Forms.MouseEventHandler(this.damagetype_MouseDown);
-			// 
 			// groupBox3
 			// 
 			this.groupBox3.Controls.Add(this.flags);
@@ -485,6 +500,10 @@
 			// 
 			// groupBox8
 			// 
+			this.groupBox8.Controls.Add(this.fadeAlpha);
+			this.groupBox8.Controls.Add(labelFadeAlpha);
+			this.groupBox8.Controls.Add(this.lightAlpha);
+			this.groupBox8.Controls.Add(labelLightAlpha);
 			this.groupBox8.Controls.Add(this.lightColor);
 			this.groupBox8.Controls.Add(this.fadeColor);
 			this.groupBox8.Location = new System.Drawing.Point(3, 3);
@@ -493,6 +512,25 @@
 			this.groupBox8.TabIndex = 18;
 			this.groupBox8.TabStop = false;
 			this.groupBox8.Text = "Global sector colors";
+			// 
+			// lightAlpha
+			// 
+			this.lightAlpha.AllowDecimal = false;
+			this.lightAlpha.AllowExpressions = false;
+			this.lightAlpha.AllowNegative = false;
+			this.lightAlpha.AllowRelative = false;
+			this.lightAlpha.ButtonStep = 1;
+			this.lightAlpha.ButtonStepBig = 1F;
+			this.lightAlpha.ButtonStepFloat = 1F;
+			this.lightAlpha.ButtonStepSmall = 1F;
+			this.lightAlpha.ButtonStepsUseModifierKeys = true;
+			this.lightAlpha.ButtonStepsWrapAround = false;
+			this.lightAlpha.Location = new System.Drawing.Point(74, 87);
+			this.lightAlpha.Name = "lightAlpha";
+			this.lightAlpha.Size = new System.Drawing.Size(81, 24);
+			this.lightAlpha.StepValues = null;
+			this.lightAlpha.TabIndex = 19;
+			this.lightAlpha.WhenTextChanged += new System.EventHandler(this.lightAlpha_WhenTextChanged);
 			// 
 			// lightColor
 			// 
@@ -597,7 +635,7 @@
 			// 
 			// floorAngleControl
 			// 
-			this.floorAngleControl.Angle = -1800;
+			this.floorAngleControl.Angle = -1980;
 			this.floorAngleControl.AngleOffset = 90;
 			this.floorAngleControl.DoomAngleClamping = false;
 			this.floorAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -794,7 +832,7 @@
 			// 
 			// ceilAngleControl
 			// 
-			this.ceilAngleControl.Angle = -1800;
+			this.ceilAngleControl.Angle = -1980;
 			this.ceilAngleControl.AngleOffset = 90;
 			this.ceilAngleControl.DoomAngleClamping = false;
 			this.ceilAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1059,6 +1097,34 @@
 			this.tooltip.InitialDelay = 10;
 			this.tooltip.ReshowDelay = 100;
 			// 
+			// fadeAlpha
+			// 
+			this.fadeAlpha.AllowDecimal = false;
+			this.fadeAlpha.AllowExpressions = false;
+			this.fadeAlpha.AllowNegative = false;
+			this.fadeAlpha.AllowRelative = false;
+			this.fadeAlpha.ButtonStep = 1;
+			this.fadeAlpha.ButtonStepBig = 1F;
+			this.fadeAlpha.ButtonStepFloat = 1F;
+			this.fadeAlpha.ButtonStepSmall = 1F;
+			this.fadeAlpha.ButtonStepsUseModifierKeys = true;
+			this.fadeAlpha.ButtonStepsWrapAround = false;
+			this.fadeAlpha.Location = new System.Drawing.Point(74, 113);
+			this.fadeAlpha.Name = "fadeAlpha";
+			this.fadeAlpha.Size = new System.Drawing.Size(81, 24);
+			this.fadeAlpha.StepValues = null;
+			this.fadeAlpha.TabIndex = 21;
+			this.fadeAlpha.WhenTextChanged += new System.EventHandler(this.fadeAlpha_WhenTextChanged);
+			// 
+			// labelFadeAlpha
+			// 
+			labelFadeAlpha.AutoSize = true;
+			labelFadeAlpha.Location = new System.Drawing.Point(6, 118);
+			labelFadeAlpha.Name = "labelFadeAlpha";
+			labelFadeAlpha.Size = new System.Drawing.Size(63, 13);
+			labelFadeAlpha.TabIndex = 20;
+			labelFadeAlpha.Text = "Fade alpha:";
+			// 
 			// SectorEditFormSRB2
 			// 
 			this.AcceptButton = this.apply;
@@ -1090,6 +1156,7 @@
 			this.groupBox3.ResumeLayout(false);
 			this.tabColors.ResumeLayout(false);
 			this.groupBox8.ResumeLayout(false);
+			this.groupBox8.PerformLayout();
 			this.tabSurfaces.ResumeLayout(false);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
@@ -1167,5 +1234,7 @@
         private Controls.ColorFieldsControl fadeColor;
         private Controls.ColorFieldsControl lightColor;
         private System.Windows.Forms.GroupBox groupBox8;
-    }
+		private Controls.ButtonsNumericTextbox lightAlpha;
+		private Controls.ButtonsNumericTextbox fadeAlpha;
+	}
 }

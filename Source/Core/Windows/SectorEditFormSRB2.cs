@@ -56,6 +56,8 @@ namespace CodeImp.DoomBuilder.Windows
 			//UDMF stuff
 			public readonly int LightColor;
 			public readonly int FadeColor;
+			public readonly int LightAlpha;
+			public readonly int FadeAlpha;
 
 			//UDMF Ceiling
 			public readonly double CeilOffsetX;
@@ -98,6 +100,8 @@ namespace CodeImp.DoomBuilder.Windows
 				//UDMF stuff
 				LightColor = UniFields.GetInteger(s.Fields, "lightcolor", PixelColor.INT_WHITE_NO_ALPHA);
 				FadeColor = UniFields.GetInteger(s.Fields, "fadecolor", 0);
+				LightAlpha = UniFields.GetInteger(s.Fields, "lightalpha", General.Map.Config.MaxColormapAlpha);
+				FadeAlpha = UniFields.GetInteger(s.Fields, "fadealpha", General.Map.Config.MaxColormapAlpha);
 
 				//UDMF Ceiling
 				CeilOffsetX = UniFields.GetFloat(s.Fields, "xpanningceiling", 0.0);
@@ -293,9 +297,11 @@ namespace CodeImp.DoomBuilder.Windows
 			// Sector colors
 			fadeColor.SetValueFrom(sc.Fields, true);
 			lightColor.SetValueFrom(sc.Fields, true);
+			lightAlpha.Text = UniFields.GetInteger(sc.Fields, "lightalpha", General.Map.Config.MaxColormapAlpha).ToString();
+			fadeAlpha.Text = UniFields.GetInteger(sc.Fields, "fadealpha", General.Map.Config.MaxColormapAlpha).ToString();
 
-            // Slopes
-            SetupFloorSlope(sc, true);
+			// Slopes
+			SetupFloorSlope(sc, true);
 			SetupCeilingSlope(sc, true);
 
 			// Custom fields
@@ -381,8 +387,20 @@ namespace CodeImp.DoomBuilder.Windows
 				fadeColor.SetValueFrom(s.Fields, false);
 				lightColor.SetValueFrom(s.Fields, false);
 
-                // Slopes
-                SetupFloorSlope(s, false);
+				if (!string.IsNullOrEmpty(lightAlpha.Text))
+				{
+					int alpha = UniFields.GetInteger(s.Fields, "lightalpha", General.Map.Config.MaxColormapAlpha);
+					if (alpha != lightAlpha.GetResult(alpha)) lightAlpha.Text = string.Empty;
+				}
+
+				if (!string.IsNullOrEmpty(fadeAlpha.Text))
+				{
+					int alpha = UniFields.GetInteger(s.Fields, "fadealpha", General.Map.Config.MaxColormapAlpha);
+					if (alpha != fadeAlpha.GetResult(alpha)) fadeAlpha.Text = string.Empty;
+				}
+
+				// Slopes
+				SetupFloorSlope(s, false);
 				SetupCeilingSlope(s, false);
 
 				// Custom fields
@@ -982,6 +1000,60 @@ namespace CodeImp.DoomBuilder.Windows
 
 			General.Map.IsChanged = true;
 			if(OnValuesChanged != null)	OnValuesChanged(this, EventArgs.Empty);
+		}
+
+		private void lightAlpha_WhenTextChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			MakeUndo(); //mxd
+
+			// Reset increment steps, otherwise it's just keep counting and counting
+			lightAlpha.ResetIncrementStep();
+
+			//restore values
+			if (string.IsNullOrEmpty(lightAlpha.Text))
+			{
+				foreach (Sector s in sectors)
+					UniFields.SetInteger(s.Fields, "lightalpha", sectorprops[s].LightAlpha, General.Map.Config.MaxColormapAlpha);
+			}
+			else //update values
+			{
+				foreach (Sector s in sectors)
+				{
+					int alpha = General.Clamp(lightAlpha.GetResult(sectorprops[s].LightAlpha), 0, General.Map.Config.MaxColormapAlpha);
+					UniFields.SetInteger(s.Fields, "lightalpha", alpha, General.Map.Config.MaxColormapAlpha);
+				}
+			}
+
+			General.Map.IsChanged = true;
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+		}
+
+		private void fadeAlpha_WhenTextChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			MakeUndo(); //mxd
+
+			// Reset increment steps, otherwise it's just keep counting and counting
+			fadeAlpha.ResetIncrementStep();
+
+			//restore values
+			if (string.IsNullOrEmpty(fadeAlpha.Text))
+			{
+				foreach (Sector s in sectors)
+					UniFields.SetInteger(s.Fields, "fadealpha", sectorprops[s].FadeAlpha, General.Map.Config.MaxColormapAlpha);
+			}
+			else //update values
+			{
+				foreach (Sector s in sectors)
+				{
+					int alpha = General.Clamp(fadeAlpha.GetResult(sectorprops[s].FadeAlpha), 0, General.Map.Config.MaxColormapAlpha);
+					UniFields.SetInteger(s.Fields, "fadealpha", alpha, General.Map.Config.MaxColormapAlpha);
+				}
+			}
+
+			General.Map.IsChanged = true;
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
 		#endregion
