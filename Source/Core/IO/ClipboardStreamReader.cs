@@ -350,7 +350,7 @@ namespace CodeImp.DoomBuilder.IO
 			map.SetCapacity(0, 0, 0, 0, map.Things.Count + count);
 			for(int i = 0; i < count; i++) 
 			{
-				int[] args = new int[Linedef.NUM_ARGS];
+				int[] args = new int[Thing.NUM_ARGS];
 				int tag = reader.ReadInt32();
 				double x = reader.ReadDouble();
 				double y = reader.ReadDouble();

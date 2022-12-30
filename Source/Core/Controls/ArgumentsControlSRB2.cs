@@ -31,10 +31,11 @@ namespace CodeImp.DoomBuilder.Controls
 
 		private int action;
 		private ArgumentInfo[] arginfo;
+		private ArgumentInfo[] stringarginfo;
 		private Label[] labels;
 		private ArgumentBox[] args;
 		private Label[] stringlabels;
-		private System.Windows.Forms.TextBox[] stringargs;
+		private TextBox[] stringargs;
 
 		#endregion
 
@@ -129,21 +130,26 @@ namespace CodeImp.DoomBuilder.Controls
 			// Update arguments
 			int showaction = 0;
 			ArgumentInfo[] oldarginfo = (arginfo != null ? (ArgumentInfo[])arginfo.Clone() : null); //mxd
+			ArgumentInfo[] oldstringarginfo = (stringarginfo != null ? (ArgumentInfo[])stringarginfo.Clone() : null);
 
 			// Only when action type is known
 			if (General.Map.Config.LinedefActions.ContainsKey(action)) showaction = action;
 
 			// Update argument infos
 			arginfo = General.Map.Config.LinedefActions[showaction].Args;
+			stringarginfo = General.Map.Config.LinedefActions[showaction].StringArgs;
 
 			//mxd. Don't update action args when old and new argument infos match
-			if (arginfo != null && oldarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo)) return;
+			if (arginfo != null && oldarginfo != null && stringarginfo != null && oldstringarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo) && ArgumentInfosMatch(stringarginfo, oldstringarginfo)) return;
 
 			// Change the argument descriptions
 			this.BeginUpdate();
 
 			for (int i = 0; i < args.Length; i++)
 				UpdateArgument(args[i], labels[i], arginfo[i]);
+
+			for (int i = 0; i < stringargs.Length; i++)
+				UpdateStringArgument(stringargs[i], stringlabels[i], stringarginfo[i]);
 
 			if (!setuponly)
 			{
@@ -158,6 +164,9 @@ namespace CodeImp.DoomBuilder.Controls
 					for (int i = 0; i < args.Length; i++)
 						args[i].SetValue(0);
 				}
+
+				for (int i = 0; i < stringargs.Length; i++)
+					stringargs[i].Text = string.Empty;
 			}
 
 			// Store current action
@@ -170,18 +179,31 @@ namespace CodeImp.DoomBuilder.Controls
 		{
 			// Update arguments
 			ArgumentInfo[] oldarginfo = (arginfo != null ? (ArgumentInfo[])arginfo.Clone() : null); //mxd
+			ArgumentInfo[] oldstringarginfo = (stringarginfo != null ? (ArgumentInfo[])stringarginfo.Clone() : null);
 
 			// Update argument infos
-			arginfo = info.Args;
+			if (info != null)
+			{
+				arginfo = info.Args;
+				stringarginfo = info.StringArgs;
+			}
+			else
+			{
+				arginfo = General.Map.Config.LinedefActions[0].Args;
+				stringarginfo = General.Map.Config.LinedefActions[0].Args;
+			}
 
 			//mxd. Don't update args when old and new argument infos match
-			if (arginfo != null && oldarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo)) return;
+			if (arginfo != null && oldarginfo != null && stringarginfo != null && oldstringarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo) && ArgumentInfosMatch(stringarginfo, oldstringarginfo)) return;
 
 			// Change the argument descriptions
 			this.BeginUpdate();
 
 			for (int i = 0; i < args.Length; i++)
 				UpdateArgument(args[i], labels[i], arginfo[i]);
+
+			for (int i = 0; i < stringargs.Length; i++)
+				UpdateStringArgument(stringargs[i], stringlabels[i], stringarginfo[i]);
 
 			// Apply thing's default arguments
 			if (info != null)
@@ -194,6 +216,9 @@ namespace CodeImp.DoomBuilder.Controls
 				for (int i = 0; i < args.Length; i++)
 					args[i].SetValue(0);
 			}
+
+			for (int i = 0; i < stringargs.Length; i++)
+				stringargs[i].Text = string.Empty;
 
 			this.EndUpdate();
 		}
@@ -209,6 +234,16 @@ namespace CodeImp.DoomBuilder.Controls
 			label.Enabled = info.Used;
 			arg.ForeColor = (label.Enabled ? SystemColors.WindowText : SystemColors.GrayText);
 			arg.Setup(info);
+
+			// Update tooltip
+			UpdateToolTip(label, info);
+		}
+		private void UpdateStringArgument(TextBox arg, Label label, ArgumentInfo info)
+		{
+			// Update labels
+			label.Text = info.Title + ":";
+			label.Enabled = info.Used;
+			arg.ForeColor = (label.Enabled ? SystemColors.WindowText : SystemColors.GrayText);
 
 			// Update tooltip
 			UpdateToolTip(label, info);

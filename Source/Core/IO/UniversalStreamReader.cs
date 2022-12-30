@@ -180,7 +180,7 @@ namespace CodeImp.DoomBuilder.IO
 			{
 				// Read fields
 				UniversalCollection c = collections[i];
-				int[] args = new int[Linedef.NUM_ARGS];
+				int[] args = new int[Thing.NUM_ARGS];
 				string where = "thing " + i;
 				double x = GetCollectionEntry(c, "x", true, 0.0, where);
 				double y = GetCollectionEntry(c, "y", true, 0.0, where);

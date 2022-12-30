@@ -37,6 +37,7 @@ namespace CodeImp.DoomBuilder.Map
 		#region ================== Constants
 
 		public const int NUM_ARGS = 10;
+		public const int NUM_STRING_ARGS = 2;
 		public static readonly HashSet<ThingRenderMode> AlignableRenderModes = new HashSet<ThingRenderMode>
 		{
 			ThingRenderMode.FLATSPRITE, ThingRenderMode.WALLSPRITE, ThingRenderMode.MODEL

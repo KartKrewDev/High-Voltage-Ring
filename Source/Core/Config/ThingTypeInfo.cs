@@ -81,6 +81,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly bool fixedrotation; //mxd
 		private readonly ThingCategory category;
 		private readonly ArgumentInfo[] args;
+		private readonly ArgumentInfo[] stringargs;
 		private readonly bool isknown;
 		private readonly bool absolutez;
 		private bool xybillboard; //mxd
@@ -131,6 +132,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool FixedRotation { get { return fixedrotation; } } //mxd
 		public ThingCategory Category { get { return category; } }
 		public ArgumentInfo[] Args { get { return args; } }
+		public ArgumentInfo[] StringArgs { get { return stringargs; } }
 		public bool IsKnown { get { return isknown; } }
 		public bool IsNull { get { return (index == 0); } }
 		public bool IsObsolete { get { return obsolete; } } //mxd
@@ -189,7 +191,8 @@ namespace CodeImp.DoomBuilder.Config
 			this.fixedsize = false;
 			this.fixedrotation = false; //mxd
 			this.spriteframe = new[] { new SpriteFrameInfo { Sprite = sprite, SpriteLongName = Lump.MakeLongName(sprite, true) } }; //mxd
-			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
+			this.args = new ArgumentInfo[Thing.NUM_ARGS];
+			this.stringargs = new ArgumentInfo[Thing.NUM_STRING_ARGS];
 			this.isknown = false;
 			this.absolutez = false;
 			this.xybillboard = false;
@@ -210,7 +213,8 @@ namespace CodeImp.DoomBuilder.Config
 			// Initialize
 			this.index = index;
 			this.category = cat;
-			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
+			this.args = new ArgumentInfo[Thing.NUM_ARGS];
+			this.stringargs = new ArgumentInfo[Thing.NUM_STRING_ARGS];
 			this.isknown = true;
 			this.actor = null;
 			this.bright = false; //mxd
@@ -262,10 +266,12 @@ namespace CodeImp.DoomBuilder.Config
 			
 			// Read the args
 			for(int i = 0; i < this.args.Length; i++)
-				this.args[i] = new ArgumentInfo(cfg, "thingtypes." + cat.Name + "." + key, i, enums);
-			
+				this.args[i] = new ArgumentInfo(cfg, "thingtypes." + cat.Name + "." + key, i, false, enums);
+			for (int i = 0; i < this.stringargs.Length; i++)
+				this.stringargs[i] = new ArgumentInfo(cfg, "thingtypes." + cat.Name + "." + key, i, true, enums);
+
 			// Safety
-			if(this.radius < 4f || this.fixedsize) this.radius = THING_FIXED_SIZE;
+			if (this.radius < 4f || this.fixedsize) this.radius = THING_FIXED_SIZE;
 			if(this.hangs && this.absolutez) this.hangs = false; //mxd
 
 			//mxd. Create sprite frame
@@ -293,9 +299,11 @@ namespace CodeImp.DoomBuilder.Config
 			this.isknown = true;
 			this.bright = false; //mxd
 			this.distancechecksq = double.MaxValue;
-			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
-			for(int i = 0; i < this.args.Length; i++) this.args[i] = new ArgumentInfo(i);
-			
+			this.args = new ArgumentInfo[Thing.NUM_ARGS];
+			this.stringargs = new ArgumentInfo[Thing.NUM_STRING_ARGS];
+			for (int i = 0; i < this.args.Length; i++) this.args[i] = new ArgumentInfo(i, false);
+			for (int i = 0; i < this.stringargs.Length; i++) this.stringargs[i] = new ArgumentInfo(i, true);
+
 			// Read properties
 			this.sprite = cat.Sprite;
 			this.color = cat.Color;
@@ -340,9 +348,11 @@ namespace CodeImp.DoomBuilder.Config
 			this.isknown = true;
 			this.bright = false; //mxd
 			this.distancechecksq = double.MaxValue;
-			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
-			for(int i = 0; i < this.args.Length; i++) this.args[i] = new ArgumentInfo(i);
-			
+			this.args = new ArgumentInfo[Thing.NUM_ARGS];
+			this.stringargs = new ArgumentInfo[Thing.NUM_STRING_ARGS];
+			for (int i = 0; i < this.args.Length; i++) this.args[i] = new ArgumentInfo(i, false);
+			for (int i = 0; i < this.stringargs.Length; i++) this.stringargs[i] = new ArgumentInfo(i, true);
+
 			// Read properties
 			this.sprite = cat.Sprite;
 			this.color = cat.Color;
@@ -389,8 +399,10 @@ namespace CodeImp.DoomBuilder.Config
 			this.isknown = true;
 			this.bright = false; //mxd
 			this.distancechecksq = double.MaxValue;
-			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
-			for(int i = 0; i < this.args.Length; i++) this.args[i] = new ArgumentInfo(i);
+			this.args = new ArgumentInfo[Thing.NUM_ARGS];
+			this.stringargs = new ArgumentInfo[Thing.NUM_STRING_ARGS];
+			for (int i = 0; i < this.args.Length; i++) this.args[i] = new ArgumentInfo(i, false);
+			for (int i = 0; i < this.stringargs.Length; i++) this.stringargs[i] = new ArgumentInfo(i, true);
 
 			// Read properties
 			this.sprite = cat.Sprite;
@@ -437,9 +449,12 @@ namespace CodeImp.DoomBuilder.Config
 			this.actor = other.actor;
 			this.classname = other.classname; //mxd
 			this.isknown = true;
-			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
-			for(int i = 0; i < this.args.Length; i++)
+			this.args = new ArgumentInfo[Thing.NUM_ARGS];
+			this.stringargs = new ArgumentInfo[Thing.NUM_STRING_ARGS];
+			for (int i = 0; i < this.args.Length; i++)
 				this.args[i] = other.args[i];
+			for (int i = 0; i < this.stringargs.Length; i++)
+				this.stringargs[i] = other.stringargs[i];
 
 			// Copy properties
 			this.sprite = other.sprite;

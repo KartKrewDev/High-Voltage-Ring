@@ -94,20 +94,21 @@ namespace CodeImp.DoomBuilder.Config
 		#region ================== Constructor / Disposer
 
 		// Constructor for argument info from configuration
-		internal ArgumentInfo(Configuration cfg, string argspath, int argindex, IDictionary<string, EnumList> enums)
+		internal ArgumentInfo(Configuration cfg, string argspath, int argindex, bool isstringarg, IDictionary<string, EnumList> enums)
 		{
 			// Read
-			string istr = argindex.ToString(CultureInfo.InvariantCulture);
-			this.used = cfg.SettingExists(argspath + ".arg" + istr);
-			this.title = cfg.ReadSetting(argspath + ".arg" + istr + ".title", "Argument " + (argindex + 1));
-			this.tooltip = cfg.ReadSetting(argspath + ".arg" + istr + ".tooltip", string.Empty); //mxd
-			this.type = cfg.ReadSetting(argspath + ".arg" + istr + ".type", 0);
-            this.str = cfg.ReadSetting(argspath + ".arg" + istr + ".str", false);
-            this.titlestr = cfg.ReadSetting(argspath + ".arg" + istr + ".titlestr", this.title);
-            this.defaultvalue = cfg.ReadSetting(argspath + ".arg" + istr + ".default", 0);
+			string argtype = isstringarg ? ".stringarg" : ".arg";
+			string argpath = argspath + argtype + argindex.ToString(CultureInfo.InvariantCulture);
+			this.used = cfg.SettingExists(argpath);
+			this.title = cfg.ReadSetting(argpath + ".title", (isstringarg ? "String argument " : "Argument ") + (argindex + 1));
+			this.tooltip = cfg.ReadSetting(argpath + ".tooltip", string.Empty); //mxd
+			this.type = cfg.ReadSetting(argpath + ".type", 0);
+            this.str = cfg.ReadSetting(argpath + ".str", false);
+            this.titlestr = cfg.ReadSetting(argpath + ".titlestr", this.title);
+            this.defaultvalue = cfg.ReadSetting(argpath + ".default", 0);
 
             //mxd. Get rendering hint settings
-            string renderstyle = cfg.ReadSetting(argspath + ".arg" + istr + ".renderstyle", string.Empty);
+            string renderstyle = cfg.ReadSetting(argpath + ".renderstyle", string.Empty);
 			switch(renderstyle.ToLowerInvariant())
 			{
 				case "circle":
@@ -119,45 +120,45 @@ namespace CodeImp.DoomBuilder.Config
 				default:
 					this.renderstyle = ArgumentRenderStyle.NONE;
 					if(!string.IsNullOrEmpty(renderstyle))
-						General.ErrorLogger.Add(ErrorType.Error, "\"" + argspath + ".arg" + istr + "\": action argument \"" + this.title + "\" has unknown renderstyle \"" + renderstyle + "\"!");
+						General.ErrorLogger.Add(ErrorType.Error, "\"" + argpath + "\": action argument \"" + this.title + "\" has unknown renderstyle \"" + renderstyle + "\"!");
 					break;
 			}
 
 			if(this.renderstyle != ArgumentRenderStyle.NONE)
 			{
 				// Get rendercolor
-				string rendercolor = cfg.ReadSetting(argspath + ".arg" + istr + ".rendercolor", string.Empty);
+				string rendercolor = cfg.ReadSetting(argpath + ".rendercolor", string.Empty);
 				this.rendercolor = General.Colors.InfoLine;
 
 				if(!string.IsNullOrEmpty(rendercolor) && !ZDTextParser.GetColorFromString(rendercolor, out this.rendercolor))
-					General.ErrorLogger.Add(ErrorType.Error, "\"" + argspath + ".arg" + istr + "\": action argument \"" + this.title + "\": unable to get rendercolor from value \"" + rendercolor + "\"!");
+					General.ErrorLogger.Add(ErrorType.Error, "\"" + argpath + "\": action argument \"" + this.title + "\": unable to get rendercolor from value \"" + rendercolor + "\"!");
 
 				this.rendercolor.a = HELPER_SHAPE_ALPHA;
 
 				// Get minrange settings
-				string minrange = cfg.ReadSetting(argspath + ".arg" + istr + ".minrange", string.Empty);
+				string minrange = cfg.ReadSetting(argpath + ".minrange", string.Empty);
 				if(int.TryParse(minrange, NumberStyles.Integer, CultureInfo.InvariantCulture, out this.minrange) && this.minrange > 0f)
 				{
 					// Get minrangecolor
-					string minrangecolor = cfg.ReadSetting(argspath + ".arg" + istr + ".minrangecolor", string.Empty);
+					string minrangecolor = cfg.ReadSetting(argpath + ".minrangecolor", string.Empty);
 					this.minrangecolor = General.Colors.Indication;
 
 					if(!string.IsNullOrEmpty(minrangecolor) && !ZDTextParser.GetColorFromString(minrangecolor, out this.minrangecolor))
-						General.ErrorLogger.Add(ErrorType.Error, "\"" + argspath + ".arg" + istr + "\": action argument \"" + this.title + "\": unable to get minrangecolor from value \"" + minrangecolor + "\"!");
+						General.ErrorLogger.Add(ErrorType.Error, "\"" + argpath + "\": action argument \"" + this.title + "\": unable to get minrangecolor from value \"" + minrangecolor + "\"!");
 
 					this.minrangecolor.a = RANGE_SHAPE_ALPHA;
 				}
 
 				// Get maxrange settings
-				string maxrange = cfg.ReadSetting(argspath + ".arg" + istr + ".maxrange", string.Empty);
+				string maxrange = cfg.ReadSetting(argpath + ".maxrange", string.Empty);
 				if(int.TryParse(maxrange, NumberStyles.Integer, CultureInfo.InvariantCulture, out this.maxrange) && this.maxrange > 0f)
 				{
 					// Get minrangecolor
-					string maxrangecolor = cfg.ReadSetting(argspath + ".arg" + istr + ".maxrangecolor", string.Empty);
+					string maxrangecolor = cfg.ReadSetting(argpath + ".maxrangecolor", string.Empty);
 					this.maxrangecolor = General.Colors.Indication;
 
 					if(!string.IsNullOrEmpty(maxrangecolor) && !ZDTextParser.GetColorFromString(maxrangecolor, out this.maxrangecolor))
-						General.ErrorLogger.Add(ErrorType.Error, "\"" + argspath + ".arg" + istr + "\": action argument \"" + this.title + "\": unable to get maxrangecolor from value \"" + maxrangecolor + "\"!");
+						General.ErrorLogger.Add(ErrorType.Error, "\"" + argpath + "\": action argument \"" + this.title + "\": unable to get maxrangecolor from value \"" + maxrangecolor + "\"!");
 
 					this.maxrangecolor.a = RANGE_SHAPE_ALPHA;
 				}
@@ -180,7 +181,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.targetclasses = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 			if(this.type == (int)UniversalType.ThingTag)
 			{
-				string s = cfg.ReadSetting(argspath + ".arg" + istr + ".targetclasses", string.Empty);
+				string s = cfg.ReadSetting(argpath + ".targetclasses", string.Empty);
 				if(!string.IsNullOrEmpty(s))
 				{
 					foreach(string tclass in s.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)) 
@@ -189,7 +190,7 @@ namespace CodeImp.DoomBuilder.Config
 			}
 
 			// Determine enum type
-			IDictionary argdic = cfg.ReadSetting(argspath + ".arg" + istr, new Hashtable());
+			IDictionary argdic = cfg.ReadSetting(argpath, new Hashtable());
 			if(argdic.Contains("enum"))
 			{
 				// Enum fully specified?
@@ -208,7 +209,7 @@ namespace CodeImp.DoomBuilder.Config
 					}
 					else
 					{
-						General.ErrorLogger.Add(ErrorType.Warning, "\"" + argspath + ".arg" + istr + "\" references unknown enumeration \"" + argdic["enum"] + "\".");
+						General.ErrorLogger.Add(ErrorType.Warning, "\"" + argpath + "\" references unknown enumeration \"" + argdic["enum"] + "\".");
 					}
 				}
 			}
@@ -232,7 +233,7 @@ namespace CodeImp.DoomBuilder.Config
 					}
 					else
 					{
-						General.ErrorLogger.Add(ErrorType.Warning, "\"" + argspath + ".arg" + istr + "\" references unknown flags enumeration \"" + argdic["flags"] + "\".");
+						General.ErrorLogger.Add(ErrorType.Warning, "\"" + argpath + "\" references unknown flags enumeration \"" + argdic["flags"] + "\".");
 					}
 				}
 			}
@@ -397,10 +398,10 @@ namespace CodeImp.DoomBuilder.Config
 		}
 
 		// Constructor for unknown argument info
-		internal ArgumentInfo(int argindex)
+		internal ArgumentInfo(int argindex, bool isstringarg)
 		{
 			this.used = false;
-			this.title = "Argument " + (argindex + 1);
+			this.title = (isstringarg ? "String argument " : "Argument ") + (argindex + 1);
 			this.type = 0;
 			this.enumlist = new EnumList();
 			this.flagslist = new EnumList(); //mxd

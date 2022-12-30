@@ -58,6 +58,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly string title;
 		private readonly string id; //mxd. wiki-compatible name 
 		private readonly ArgumentInfo[] args;
+		private readonly ArgumentInfo[] stringargs;
 		private readonly bool isgeneralized;
 		private readonly bool isknown;
 		private readonly bool requiresactivation; //mxd
@@ -80,6 +81,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool IsNull { get { return (index == 0); } }
 		public bool RequiresActivation { get { return requiresactivation; } } //mxd
 		public ArgumentInfo[] Args { get { return args; } }
+		public ArgumentInfo[] StringArgs { get { return stringargs; } }
 		public bool LineToLineTag { get { return linetolinetag; } }
 		public bool LineToLineSameAction { get { return linetolinesameaction; } }
 		public ErrorCheckerExemptions ErrorCheckerExemptions { get { return errorcheckerexemptions; } }
@@ -97,6 +99,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.index = index;
 			this.category = categoryname;
 			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
+			this.stringargs = new ArgumentInfo[Linedef.NUM_STRING_ARGS];
 			this.isgeneralized = false;
 			this.isknown = true;
 			this.errorcheckerexemptions = new ErrorCheckerExemptions();
@@ -123,8 +126,10 @@ namespace CodeImp.DoomBuilder.Config
 
 			// Read the args
 			for (int i = 0; i < this.args.Length; i++)
-				this.args[i] = new ArgumentInfo(cfg, actionsetting, i, enums);
-			
+				this.args[i] = new ArgumentInfo(cfg, actionsetting, i, false, enums);
+			for (int i = 0; i < this.stringargs.Length; i++)
+				this.stringargs[i] = new ArgumentInfo(cfg, actionsetting, i, true, enums);
+
 			// We have no destructor
 			GC.SuppressFinalize(this);
 		}
@@ -138,8 +143,11 @@ namespace CodeImp.DoomBuilder.Config
 			this.requiresactivation = true; //mxd. Unused, set for consistency sake.
 			this.title = title;
 			this.args = new ArgumentInfo[Linedef.NUM_ARGS];
-			for(int i = 0; i < this.args.Length; i++)
-				this.args[i] = new ArgumentInfo(i);
+			this.stringargs = new ArgumentInfo[Linedef.NUM_STRING_ARGS];
+			for (int i = 0; i < this.args.Length; i++)
+				this.args[i] = new ArgumentInfo(i, false);
+			for (int i = 0; i < this.stringargs.Length; i++)
+				this.stringargs[i] = new ArgumentInfo(i, true);
 		}
 
 		#endregion
