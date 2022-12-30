@@ -59,6 +59,8 @@ namespace CodeImp.DoomBuilder.Windows
 			public readonly int FadeColor;
 			public readonly int LightAlpha;
 			public readonly int FadeAlpha;
+			public readonly int FadeStart;
+			public readonly int FadeEnd;
 
 			//UDMF Ceiling
 			public readonly double CeilOffsetX;
@@ -103,6 +105,8 @@ namespace CodeImp.DoomBuilder.Windows
 				FadeColor = UniFields.GetInteger(s.Fields, "fadecolor", 0);
 				LightAlpha = UniFields.GetInteger(s.Fields, "lightalpha", General.Map.Config.MaxColormapAlpha);
 				FadeAlpha = UniFields.GetInteger(s.Fields, "fadealpha", General.Map.Config.MaxColormapAlpha);
+				FadeStart = UniFields.GetInteger(s.Fields, "fadestart", 0);
+				FadeEnd = UniFields.GetInteger(s.Fields, "fadeend", General.Map.Config.NumBrightnessLevels - 1);
 
 				//UDMF Ceiling
 				CeilOffsetX = UniFields.GetFloat(s.Fields, "xpanningceiling", 0.0);
@@ -304,6 +308,8 @@ namespace CodeImp.DoomBuilder.Windows
 			lightColor.SetValueFrom(sc.Fields, true);
 			lightAlpha.Text = UniFields.GetInteger(sc.Fields, "lightalpha", General.Map.Config.MaxColormapAlpha).ToString();
 			fadeAlpha.Text = UniFields.GetInteger(sc.Fields, "fadealpha", General.Map.Config.MaxColormapAlpha).ToString();
+			fadeStart.Text = UniFields.GetInteger(sc.Fields, "fadestart", 0).ToString();
+			fadeEnd.Text = UniFields.GetInteger(sc.Fields, "fadeend", General.Map.Config.NumBrightnessLevels - 1).ToString();
 
 			// Slopes
 			SetupFloorSlope(sc, true);
@@ -404,6 +410,18 @@ namespace CodeImp.DoomBuilder.Windows
 				{
 					int alpha = UniFields.GetInteger(s.Fields, "fadealpha", General.Map.Config.MaxColormapAlpha);
 					if (alpha != fadeAlpha.GetResult(alpha)) fadeAlpha.Text = string.Empty;
+				}
+
+				if (!string.IsNullOrEmpty(fadeStart.Text))
+				{
+					int val = UniFields.GetInteger(s.Fields, "fadestart", 0);
+					if (val != fadeStart.GetResult(val)) fadeStart.Text = string.Empty;
+				}
+
+				if (!string.IsNullOrEmpty(fadeEnd.Text))
+				{
+					int val = UniFields.GetInteger(s.Fields, "fadeend", General.Map.Config.NumBrightnessLevels - 1);
+					if (val != fadeEnd.GetResult(val)) fadeEnd.Text = string.Empty;
 				}
 
 				// Slopes
@@ -1047,6 +1065,60 @@ namespace CodeImp.DoomBuilder.Windows
 				{
 					int alpha = General.Clamp(fadeAlpha.GetResult(sectorprops[s].FadeAlpha), 0, General.Map.Config.MaxColormapAlpha);
 					UniFields.SetInteger(s.Fields, "fadealpha", alpha, General.Map.Config.MaxColormapAlpha);
+				}
+			}
+
+			General.Map.IsChanged = true;
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+		}
+
+		private void fadeStart_WhenTextChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			MakeUndo(); //mxd
+
+			// Reset increment steps, otherwise it's just keep counting and counting
+			fadeStart.ResetIncrementStep();
+
+			//restore values
+			if (string.IsNullOrEmpty(fadeStart.Text))
+			{
+				foreach (Sector s in sectors)
+					UniFields.SetInteger(s.Fields, "fadestart", sectorprops[s].FadeStart, 0);
+			}
+			else //update values
+			{
+				foreach (Sector s in sectors)
+				{
+					int val = General.Clamp(fadeStart.GetResult(sectorprops[s].FadeStart), 0, General.Map.Config.NumBrightnessLevels - 2);
+					UniFields.SetInteger(s.Fields, "fadestart", val, 0);
+				}
+			}
+
+			General.Map.IsChanged = true;
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+		}
+
+		private void fadeEnd_WhenTextChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			MakeUndo(); //mxd
+
+			// Reset increment steps, otherwise it's just keep counting and counting
+			fadeEnd.ResetIncrementStep();
+
+			//restore values
+			if (string.IsNullOrEmpty(fadeEnd.Text))
+			{
+				foreach (Sector s in sectors)
+					UniFields.SetInteger(s.Fields, "fadeend", sectorprops[s].FadeEnd, General.Map.Config.NumBrightnessLevels - 1);
+			}
+			else //update values
+			{
+				foreach (Sector s in sectors)
+				{
+					int val = General.Clamp(fadeEnd.GetResult(sectorprops[s].FadeEnd), 1, General.Map.Config.NumBrightnessLevels - 1);
+					UniFields.SetInteger(s.Fields, "fadeend", val, General.Map.Config.NumBrightnessLevels - 1);
 				}
 			}
 

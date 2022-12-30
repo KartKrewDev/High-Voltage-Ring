@@ -31,6 +31,8 @@
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.GroupBox groupaction;
 			System.Windows.Forms.GroupBox groupeffect;
+			System.Windows.Forms.Label labelTriggerer;
+			System.Windows.Forms.Label labelTriggerTag;
 			System.Windows.Forms.Label label16;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SectorEditFormSRB2));
 			System.Windows.Forms.Label label9;
@@ -41,9 +43,11 @@
 			System.Windows.Forms.Label label5;
 			System.Windows.Forms.Label labelLightAlpha;
 			System.Windows.Forms.Label labelFadeAlpha;
-			System.Windows.Forms.Label labelTriggerTag;
-			System.Windows.Forms.Label labelTriggerer;
+			System.Windows.Forms.Label labelFadeStart;
+			System.Windows.Forms.Label labelFadeEnd;
 			this.tagsselector = new CodeImp.DoomBuilder.Controls.TagsSelector();
+			this.triggerer = new System.Windows.Forms.ComboBox();
+			this.triggerTag = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.resetdamagetype = new System.Windows.Forms.Button();
 			this.brightness = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.damagetype = new System.Windows.Forms.ComboBox();
@@ -53,8 +57,6 @@
 			this.sectorheightlabel = new System.Windows.Forms.Label();
 			this.sectorheight = new System.Windows.Forms.Label();
 			this.floorheight = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
-			this.triggerTag = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
-			this.triggerer = new System.Windows.Forms.ComboBox();
 			this.tabs = new System.Windows.Forms.TabControl();
 			this.tabproperties = new System.Windows.Forms.TabPage();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -106,8 +108,12 @@
 			this.cancel = new System.Windows.Forms.Button();
 			this.apply = new System.Windows.Forms.Button();
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
+			this.fadeStart = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+			this.fadeEnd = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			groupaction = new System.Windows.Forms.GroupBox();
 			groupeffect = new System.Windows.Forms.GroupBox();
+			labelTriggerer = new System.Windows.Forms.Label();
+			labelTriggerTag = new System.Windows.Forms.Label();
 			label16 = new System.Windows.Forms.Label();
 			label9 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
@@ -117,8 +123,8 @@
 			label5 = new System.Windows.Forms.Label();
 			labelLightAlpha = new System.Windows.Forms.Label();
 			labelFadeAlpha = new System.Windows.Forms.Label();
-			labelTriggerTag = new System.Windows.Forms.Label();
-			labelTriggerer = new System.Windows.Forms.Label();
+			labelFadeStart = new System.Windows.Forms.Label();
+			labelFadeEnd = new System.Windows.Forms.Label();
 			groupaction.SuspendLayout();
 			groupeffect.SuspendLayout();
 			groupfloorceiling.SuspendLayout();
@@ -177,6 +183,50 @@
 			groupeffect.TabIndex = 1;
 			groupeffect.TabStop = false;
 			groupeffect.Text = " Effects ";
+			// 
+			// labelTriggerer
+			// 
+			labelTriggerer.Location = new System.Drawing.Point(218, 16);
+			labelTriggerer.Name = "labelTriggerer";
+			labelTriggerer.Size = new System.Drawing.Size(74, 14);
+			labelTriggerer.TabIndex = 7;
+			labelTriggerer.Text = "Triggerer:";
+			labelTriggerer.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// triggerer
+			// 
+			this.triggerer.FormattingEnabled = true;
+			this.triggerer.Location = new System.Drawing.Point(298, 12);
+			this.triggerer.Name = "triggerer";
+			this.triggerer.Size = new System.Drawing.Size(167, 21);
+			this.triggerer.TabIndex = 8;
+			// 
+			// labelTriggerTag
+			// 
+			labelTriggerTag.Location = new System.Drawing.Point(9, 16);
+			labelTriggerTag.Name = "labelTriggerTag";
+			labelTriggerTag.Size = new System.Drawing.Size(74, 14);
+			labelTriggerTag.TabIndex = 21;
+			labelTriggerTag.Text = "Trigger tag:";
+			labelTriggerTag.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// triggerTag
+			// 
+			this.triggerTag.AllowDecimal = false;
+			this.triggerTag.AllowExpressions = false;
+			this.triggerTag.AllowNegative = false;
+			this.triggerTag.AllowRelative = false;
+			this.triggerTag.ButtonStep = 1;
+			this.triggerTag.ButtonStepBig = 1F;
+			this.triggerTag.ButtonStepFloat = 1F;
+			this.triggerTag.ButtonStepSmall = 1F;
+			this.triggerTag.ButtonStepsUseModifierKeys = true;
+			this.triggerTag.ButtonStepsWrapAround = false;
+			this.triggerTag.Location = new System.Drawing.Point(89, 11);
+			this.triggerTag.Name = "triggerTag";
+			this.triggerTag.Size = new System.Drawing.Size(81, 24);
+			this.triggerTag.StepValues = null;
+			this.triggerTag.TabIndex = 20;
 			// 
 			// label16
 			// 
@@ -397,6 +447,7 @@
 			labelLightAlpha.Size = new System.Drawing.Size(62, 13);
 			labelLightAlpha.TabIndex = 18;
 			labelLightAlpha.Text = "Light alpha:";
+			labelLightAlpha.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// labelFadeAlpha
 			// 
@@ -406,50 +457,7 @@
 			labelFadeAlpha.Size = new System.Drawing.Size(63, 13);
 			labelFadeAlpha.TabIndex = 20;
 			labelFadeAlpha.Text = "Fade alpha:";
-			// 
-			// labelTriggerTag
-			// 
-			labelTriggerTag.Location = new System.Drawing.Point(9, 16);
-			labelTriggerTag.Name = "labelTriggerTag";
-			labelTriggerTag.Size = new System.Drawing.Size(74, 14);
-			labelTriggerTag.TabIndex = 21;
-			labelTriggerTag.Text = "Trigger tag:";
-			labelTriggerTag.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// triggerTag
-			// 
-			this.triggerTag.AllowDecimal = false;
-			this.triggerTag.AllowExpressions = false;
-			this.triggerTag.AllowNegative = false;
-			this.triggerTag.AllowRelative = false;
-			this.triggerTag.ButtonStep = 1;
-			this.triggerTag.ButtonStepBig = 1F;
-			this.triggerTag.ButtonStepFloat = 1F;
-			this.triggerTag.ButtonStepSmall = 1F;
-			this.triggerTag.ButtonStepsUseModifierKeys = true;
-			this.triggerTag.ButtonStepsWrapAround = false;
-			this.triggerTag.Location = new System.Drawing.Point(89, 11);
-			this.triggerTag.Name = "triggerTag";
-			this.triggerTag.Size = new System.Drawing.Size(81, 24);
-			this.triggerTag.StepValues = null;
-			this.triggerTag.TabIndex = 20;
-			// 
-			// labelTriggerer
-			// 
-			labelTriggerer.Location = new System.Drawing.Point(218, 16);
-			labelTriggerer.Name = "labelTriggerer";
-			labelTriggerer.Size = new System.Drawing.Size(74, 14);
-			labelTriggerer.TabIndex = 7;
-			labelTriggerer.Text = "Triggerer:";
-			labelTriggerer.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// triggerer
-			// 
-			this.triggerer.FormattingEnabled = true;
-			this.triggerer.Location = new System.Drawing.Point(298, 12);
-			this.triggerer.Name = "triggerer";
-			this.triggerer.Size = new System.Drawing.Size(167, 21);
-			this.triggerer.TabIndex = 8;
+			labelFadeAlpha.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// tabs
 			// 
@@ -523,6 +531,10 @@
 			// 
 			// groupBox8
 			// 
+			this.groupBox8.Controls.Add(this.fadeEnd);
+			this.groupBox8.Controls.Add(labelFadeEnd);
+			this.groupBox8.Controls.Add(this.fadeStart);
+			this.groupBox8.Controls.Add(labelFadeStart);
 			this.groupBox8.Controls.Add(this.fadeAlpha);
 			this.groupBox8.Controls.Add(labelFadeAlpha);
 			this.groupBox8.Controls.Add(this.lightAlpha);
@@ -531,7 +543,7 @@
 			this.groupBox8.Controls.Add(this.fadeColor);
 			this.groupBox8.Location = new System.Drawing.Point(3, 3);
 			this.groupBox8.Name = "groupBox8";
-			this.groupBox8.Size = new System.Drawing.Size(277, 196);
+			this.groupBox8.Size = new System.Drawing.Size(277, 229);
 			this.groupBox8.TabIndex = 18;
 			this.groupBox8.TabStop = false;
 			this.groupBox8.Text = "Global sector colors";
@@ -677,7 +689,7 @@
 			// 
 			// floorAngleControl
 			// 
-			this.floorAngleControl.Angle = -2250;
+			this.floorAngleControl.Angle = -2340;
 			this.floorAngleControl.AngleOffset = 90;
 			this.floorAngleControl.DoomAngleClamping = false;
 			this.floorAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -874,7 +886,7 @@
 			// 
 			// ceilAngleControl
 			// 
-			this.ceilAngleControl.Angle = -2250;
+			this.ceilAngleControl.Angle = -2340;
 			this.ceilAngleControl.AngleOffset = 90;
 			this.ceilAngleControl.DoomAngleClamping = false;
 			this.ceilAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1139,6 +1151,65 @@
 			this.tooltip.InitialDelay = 10;
 			this.tooltip.ReshowDelay = 100;
 			// 
+			// fadeStart
+			// 
+			this.fadeStart.AllowDecimal = false;
+			this.fadeStart.AllowExpressions = false;
+			this.fadeStart.AllowNegative = false;
+			this.fadeStart.AllowRelative = false;
+			this.fadeStart.ButtonStep = 1;
+			this.fadeStart.ButtonStepBig = 1F;
+			this.fadeStart.ButtonStepFloat = 1F;
+			this.fadeStart.ButtonStepSmall = 1F;
+			this.fadeStart.ButtonStepsUseModifierKeys = true;
+			this.fadeStart.ButtonStepsWrapAround = false;
+			this.fadeStart.Location = new System.Drawing.Point(74, 144);
+			this.fadeStart.Name = "fadeStart";
+			this.fadeStart.Size = new System.Drawing.Size(81, 24);
+			this.fadeStart.StepValues = null;
+			this.fadeStart.TabIndex = 23;
+			this.fadeStart.WhenTextChanged += new System.EventHandler(this.fadeStart_WhenTextChanged);
+
+			// 
+			// labelFadeStart
+			// 
+			labelFadeStart.AutoSize = true;
+			labelFadeStart.Location = new System.Drawing.Point(11, 149);
+			labelFadeStart.Name = "labelFadeStart";
+			labelFadeStart.Size = new System.Drawing.Size(57, 13);
+			labelFadeStart.TabIndex = 22;
+			labelFadeStart.Text = "Fade start:";
+			labelFadeStart.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// fadeEnd
+			// 
+			this.fadeEnd.AllowDecimal = false;
+			this.fadeEnd.AllowExpressions = false;
+			this.fadeEnd.AllowNegative = false;
+			this.fadeEnd.AllowRelative = false;
+			this.fadeEnd.ButtonStep = 1;
+			this.fadeEnd.ButtonStepBig = 1F;
+			this.fadeEnd.ButtonStepFloat = 1F;
+			this.fadeEnd.ButtonStepSmall = 1F;
+			this.fadeEnd.ButtonStepsUseModifierKeys = true;
+			this.fadeEnd.ButtonStepsWrapAround = false;
+			this.fadeEnd.Location = new System.Drawing.Point(74, 172);
+			this.fadeEnd.Name = "fadeEnd";
+			this.fadeEnd.Size = new System.Drawing.Size(81, 24);
+			this.fadeEnd.StepValues = null;
+			this.fadeEnd.TabIndex = 25;
+			this.fadeEnd.WhenTextChanged += new System.EventHandler(this.fadeEnd_WhenTextChanged);
+			// 
+			// labelFadeEnd
+			// 
+			labelFadeEnd.AutoSize = true;
+			labelFadeEnd.Location = new System.Drawing.Point(12, 177);
+			labelFadeEnd.Name = "labelFadeEnd";
+			labelFadeEnd.Size = new System.Drawing.Size(55, 13);
+			labelFadeEnd.TabIndex = 24;
+			labelFadeEnd.Text = "Fade end:";
+			labelFadeEnd.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// SectorEditFormSRB2
 			// 
 			this.AcceptButton = this.apply;
@@ -1250,5 +1321,7 @@
 		private Controls.ButtonsNumericTextbox fadeAlpha;
 		private System.Windows.Forms.ComboBox triggerer;
 		private Controls.ButtonsNumericTextbox triggerTag;
+		private Controls.ButtonsNumericTextbox fadeEnd;
+		private Controls.ButtonsNumericTextbox fadeStart;
 	}
 }

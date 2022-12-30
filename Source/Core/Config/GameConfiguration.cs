@@ -114,6 +114,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly bool distinctfloorandceilingbrightness;
 		private readonly bool distinctwallbrightness;
 		private readonly int maxcolormapalpha;
+		private readonly int numbrightnesslevels;
 
 		// Skills
 		private readonly List<SkillInfo> skills;
@@ -293,6 +294,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool DistinctFloorAndCeilingBrightness { get { return distinctfloorandceilingbrightness; } }
 		public bool DistinctWallBrightness { get { return distinctwallbrightness; } }
 		public int MaxColormapAlpha { get { return maxcolormapalpha; } }
+		public int NumBrightnessLevels { get { return numbrightnesslevels; } }
 
 		// Texture/flat/voxel sources
 		public IDictionary TextureRanges { get { return textureranges; } }
@@ -473,6 +475,7 @@ namespace CodeImp.DoomBuilder.Config
 			distinctfloorandceilingbrightness = cfg.ReadSetting("distinctfloorandceilingbrightness", false);
 			distinctwallbrightness = cfg.ReadSetting("distinctwallbrightness", false);
 			maxcolormapalpha = cfg.ReadSetting("maxcolormapalpha", 25);
+			numbrightnesslevels = cfg.ReadSetting("numbrightnesslevels", 32);
 			for (int i = 0; i < makedoorargs.Length; i++) makedoorargs[i] = cfg.ReadSetting("makedoorarg" + i.ToString(CultureInfo.InvariantCulture), 0);
 
 			//mxd. Update map format flags
