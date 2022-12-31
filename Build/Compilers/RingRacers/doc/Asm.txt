@@ -1,0 +1,1985 @@
+###############################################################################
+Assembly Language Specification
+###############################################################################
+
+This file describes the assembly language used by gdcc-as. By necessity it also
+describes the intermediary representation system of GDCC, as the assembler is a
+direct interface to it.
+
+===============================================================================
+Declarations
+===============================================================================
+
+Syntax:
+  assembly-unit:
+    declaration(opt) assembly-unit(opt)
+
+  declaration:
+    djump-declaration
+    function-declaration
+    glyph-declaration
+    import-declaration
+    macro-declaration
+    object-declaration
+    space-declaration
+    strent-declaration
+
+Semantics:
+  An assembly file is a series of declarations.
+
+===========================================================
+Dynamic Jump Targets
+===========================================================
+
+Syntax:
+  djump-declaration:
+    <DJump> string ( djump-argument-sequence(opt) )
+
+  djump-argument-sequence:
+    djump-argument
+    djump-argument-sequence djump-argument
+
+  djump-argument:
+    <alloc> = expression
+    <defin> = expression
+    <label> = string
+    <value> = expression
+
+Semantics:
+  Defines a dynamic jump target.
+
+-----------------------------------------------------------
+alloc
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the dynamic jump target will be given a generated value if needed.
+
+-----------------------------------------------------------
+defin
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the dynamic jump target is considered defined. Otherwise, it is
+  considered external and needing import.
+
+-----------------------------------------------------------
+label
+-----------------------------------------------------------
+
+Semantics:
+  Sets the dynamic jump target's label.
+
+-----------------------------------------------------------
+value
+-----------------------------------------------------------
+
+Semantics:
+  Sets the dynamic jump target's integer value.
+
+===========================================================
+Functions
+===========================================================
+
+Syntax:
+  function-declaration:
+    <Function> string ( function-argument-sequence(opt) )
+
+  function-argument-sequence:
+    function-argument
+    function-argument-sequence function-argument
+
+  function-argument:
+    <allocAut> = expression
+    <alloc> = expression
+    <block> ( statement-sequence(opt) )
+    <ctype> = call-type-specifier
+    <defin> = expression
+    <label> = string
+    <linka> = linkage-specifier
+    <localArr> [ expression ] = expression
+    <localArs> = expression
+    <localReg> = expression
+    <param> = expression
+    <retrn> = expression
+    <stype> ( string-sequence(opt) )
+    <valueInt> = expression
+    <valueStr> = string
+
+  statement-sequence:
+    statement
+    statement-sequence statement
+
+  string-sequence:
+    string
+    string-sequence string
+
+Semantics:
+  Defines a function. This includes ACS scripts, which are distinguished by the
+  call type.
+
+  Any string in the function argument sequence that is prefixed with a : will
+  have the function's name prepended to it.
+
+-----------------------------------------------------------
+allocAut
+-----------------------------------------------------------
+
+Semantics:
+  Size of automatic storage allocation.
+
+-----------------------------------------------------------
+alloc (boolean)
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the function will be given a generated valueInt if needed.
+
+-----------------------------------------------------------
+block
+-----------------------------------------------------------
+
+Semantics:
+  Sets the block of statements associated with the function.
+
+-----------------------------------------------------------
+ctype
+-----------------------------------------------------------
+
+Semantics:
+  Sets the function's call type.
+
+-----------------------------------------------------------
+defin (boolean)
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the function is considered defined. Otherwise, it is considered
+  external and needing import.
+
+-----------------------------------------------------------
+label
+-----------------------------------------------------------
+
+Semantics:
+  Sets the label for the function's entry point. The label will be used for the
+  function's first statement and must not be explicitly defined.
+
+-----------------------------------------------------------
+linka
+-----------------------------------------------------------
+
+Semantics:
+  Sets the function's linkage.
+
+-----------------------------------------------------------
+localArr
+-----------------------------------------------------------
+
+Semantics:
+  Sets the number of words to allocate for a specified local array.
+
+-----------------------------------------------------------
+localArs
+-----------------------------------------------------------
+
+Semantics:
+  Sets the number of words to allocate for addressable locals.
+
+-----------------------------------------------------------
+localReg
+-----------------------------------------------------------
+
+Semantics:
+  Sets the number of words to allocate for register locals.
+
+  This must include register locals that are also function arguments, but does
+  not need to include function arguments that are not register locals.
+
+-----------------------------------------------------------
+param
+-----------------------------------------------------------
+
+Semantics:
+  Sets the number of parameter words.
+
+-----------------------------------------------------------
+retrn
+-----------------------------------------------------------
+
+Semantics:
+  Sets the number of return words.
+
+-----------------------------------------------------------
+sflagClS (boolean)
+-----------------------------------------------------------
+
+Semantics:
+  Sets the "clientside" script flag.
+
+-----------------------------------------------------------
+sflagNet (boolean)
+-----------------------------------------------------------
+
+Semantics:
+  Sets the "net" script flag.
+
+-----------------------------------------------------------
+stype
+-----------------------------------------------------------
+
+Semantics:
+  Sets the script type of the function.
+
+-----------------------------------------------------------
+valueInt
+-----------------------------------------------------------
+
+Semantics:
+  Sets the function's integer value. Usually the index or ACS script number.
+
+-----------------------------------------------------------
+valueStr
+-----------------------------------------------------------
+
+Semantics:
+  Sets the function's string value. Only meaningful for ACS named scripts.
+
+===========================================================
+Glyphs
+===========================================================
+
+Syntax:
+  glyph-declaration:
+    <Glyph> string ( glyph-argument-sequence(opt) )
+
+  glyph-argument-sequence:
+    glyph-argument
+    glyph-argument-sequence glyph-argument
+
+  glyph-argument:
+    <type> = type
+    <value> = expression
+
+-----------------------------------------------------------
+type
+-----------------------------------------------------------
+
+Semantics:
+  Sets the glyph's type.
+
+-----------------------------------------------------------
+value
+-----------------------------------------------------------
+
+Semantics:
+  Sets the glyph's value. The type of the expression must match the glyph's type.
+
+===========================================================
+Imports
+===========================================================
+
+Syntax:
+  import-declaration:
+    <Import> string ( )
+
+Semantics:
+  Specifies a library to link with at load-time.
+
+===========================================================
+Macros
+===========================================================
+
+Syntax:
+  macro-declaration:
+    <Macro> string ( statement-sequence(opt) )
+
+Semantics:
+  Defines a macro that can be used to insert a statement list into another
+  statement list. Any arguments in the macro of type Cpy are replaced by the
+  numbered argument to the macro invocation.
+
+  Macros are not part of the Intermediary Representation and exist only during
+  assembling. Thus, their names have no linkage.
+
+===========================================================
+Objects
+===========================================================
+
+Syntax:
+  object-declaration:
+    <Object> string ( object-argument-sequence(opt) )
+
+  object-argument-sequence:
+    object-argument
+    object-argument-sequence object-argument
+
+  object-argument:
+    <alias> = expression
+    <alloc> = expression
+    <defin> = expression
+    <initi> = expression
+    <linka> = linkage-specifier
+    <space> = address-specifier string
+    <value> = expression
+    <words> = expression
+
+-----------------------------------------------------------
+alias (boolean)
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the object may share an address with an object or sub-object with
+  equivalent initializer.
+
+-----------------------------------------------------------
+alloc
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the object will be given a generated value if needed.
+
+-----------------------------------------------------------
+defin (boolean)
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the object is considered defined. Otherwise, it is considered
+  external and needing import.
+
+-----------------------------------------------------------
+initi
+-----------------------------------------------------------
+
+Semantics:
+  Sets the initial state of the object.
+
+-----------------------------------------------------------
+linka
+-----------------------------------------------------------
+
+Semantics:
+  Sets the object's linkage.
+
+-----------------------------------------------------------
+value
+-----------------------------------------------------------
+
+Semantics:
+  Sets the objects's integer value. Usually the starting memory index.
+
+-----------------------------------------------------------
+words
+-----------------------------------------------------------
+
+Semantics:
+  Sets the number of words needed for the object.
+
+===========================================================
+Spaces
+===========================================================
+
+Syntax:
+  space-declaration:
+    <Space> address-specifier string ( space-argument-sequence )
+
+  space-argument-sequence:
+    space-argument
+    space-argument-sequence space-argument
+
+  space-argument:
+    <alloc> = expression
+    <defin> = expression
+    <linka> = linkage-specifier
+    <value> = expression
+    <words> = expression
+
+Semantics:
+  Defines an address space to contain objects.
+
+-----------------------------------------------------------
+alloc
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the space will be given a generated value if needed.
+
+-----------------------------------------------------------
+defin
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the space is considered defined. Otherwise, it is considered
+  external and needing import.
+
+-----------------------------------------------------------
+linka
+-----------------------------------------------------------
+
+Semantics:
+  Sets the space's linkage.
+
+-----------------------------------------------------------
+value
+-----------------------------------------------------------
+
+Semantics:
+  Sets the space's integer value. Usually the index.
+
+-----------------------------------------------------------
+words
+-----------------------------------------------------------
+
+Semantics:
+  Sets the number of words needed for the space.
+
+===========================================================
+String Entries
+===========================================================
+
+Syntax:
+  strent-declaration:
+    <StrEnt> string ( strent-argument-sequence(opt) )
+
+  strent-argument-sequence:
+    strent-argument
+    strent-argument-sequence strent-argument
+
+  strent-argument:
+    <alias> = expression
+    <alloc> = expression
+    <defin> = expression
+    <valueInt> = expression
+    <valueStr> = string
+
+Semantics:
+  Defines a target string table entry.
+
+-----------------------------------------------------------
+alias
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the string entry may share an address with an equivalent string
+  entry.
+
+-----------------------------------------------------------
+alloc
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the string entry will be given a generated value if needed.
+
+-----------------------------------------------------------
+defin
+-----------------------------------------------------------
+
+Semantics:
+  If 1, then the string entry is considered defined. Otherwise, it is
+  considered external and needing import.
+
+-----------------------------------------------------------
+valueInt
+-----------------------------------------------------------
+
+Semantics:
+  Sets the string entry's integer value.
+
+-----------------------------------------------------------
+valueStr
+-----------------------------------------------------------
+
+Semantics:
+  Sets the string entry's string value.
+
+===============================================================================
+Statements
+===============================================================================
+
+Syntax:
+  statement:
+    string-sequence(opt) statement-name statement-type(opt) argument-size(opt)
+      ( argument-sequence(opt) )
+    string-sequence(opt) ! string argument-size(opt) ( argument-sequence(opt) )
+
+  statement-type:
+    : identifier
+
+  argument-sequence:
+    argument
+    argument-sequence argument
+
+Semantics:
+  A statement is the IR's instruction. The argument size is used for top level
+  arguments without a specified size. The preceding string sequences are used
+  to add labels to the statement.
+
+  Statements starting with a ! are a macro invocation.
+
+===========================================================
+Statement Names
+===========================================================
+
+Syntax:
+  statement-name:
+    <Nop>
+    <Add>
+    <AddX>
+    <BAnd>
+    <BNot>
+    <BOrI>
+    <BOrX>
+    <Call>
+    <Casm>
+    <CmpEQ>
+    <CmpGE>
+    <CmpGT>
+    <CmpLE>
+    <CmpLT>
+    <CmpNE>
+    <Cnat>
+    <Copy>
+    <Cscr_IA>
+    <Cscr_IS>
+    <Cscr_SA>
+    <Cscr_SS>
+    <Cspe>
+    <Div>
+    <DivX>
+    <Jcnd_Nil>
+    <Jcnd_Tab>
+    <Jcnd_Tru>
+    <Jdyn>
+    <Jfar_Pro>
+    <Jfar_Set>
+    <Jfar_Sta>
+    <Jump>
+    <LAnd>
+    <LNot>
+    <LOrI>
+    <Mod>
+    <Move>
+    <Mul>
+    <MulX>
+    <Neg>
+    <Pltn>
+    <Retn>
+    <Rjnk>
+    <ShL>
+    <ShR>
+    <Sub>
+    <SubX>
+    <Swap>
+
+-----------------------------------------------------------
+Nop (No Operation)
+-----------------------------------------------------------
+
+Arguments:
+  Nop()
+
+Semantics:
+  Does nothing.
+
+-----------------------------------------------------------
+Add (Add)
+-----------------------------------------------------------
+
+Arguments:
+  Add(dst, lop, rop)
+
+Semantics:
+  Adds rop to lop and stores the result in dst.
+
+-----------------------------------------------------------
+AddX (Expanding Add)
+-----------------------------------------------------------
+
+Arguments:
+  AddX(dst, lop, rop)
+  AddX(dst, carry, lop, rop)
+
+Semantics:
+  Adds rop to lop and stores the result with carry in dst.
+
+  If carry provided, it is also added to lop.
+
+-----------------------------------------------------------
+BAnd (Bitwise And)
+-----------------------------------------------------------
+
+Arguments:
+  BAnd(dst, lop, rop)
+
+Semantics:
+  Bitwise ands lop with rop and stores the result in dst.
+
+-----------------------------------------------------------
+BNot (Bitwise Invert)
+-----------------------------------------------------------
+
+Argument:
+  BNot(dst, src)
+
+Semantics:
+  Bitwise inverts src and stores the result in dst.
+
+-----------------------------------------------------------
+BOrI (Bitwise Inclusive Or)
+-----------------------------------------------------------
+
+Arguments:
+  BOrI(dst, lop, rop)
+
+Semantics:
+  Bitwise inclusive ors lop with rop and stores the result in dst.
+
+-----------------------------------------------------------
+BOrX (Bitwise Exclusive Or)
+-----------------------------------------------------------
+
+Arguments:
+  BOrX(dst, lop, rop)
+
+Semantics:
+  Bitwise exclusive ors lop with rop and stores the result in dst.
+
+-----------------------------------------------------------
+Call (Call Function)
+-----------------------------------------------------------
+
+Arguments:
+  Call(dst, src, ...)
+
+Semantics:
+  Calls a function at src and stores the result in dst. Each additional
+  argument is passed to the called function.
+
+  This instruction is meant to map to the typical function dispatch method for
+  the target.
+
+-----------------------------------------------------------
+Casm (Call Assembly Function)
+-----------------------------------------------------------
+
+Arguments:
+  Casm(dst, src, ...)
+
+Semantics:
+  Calls a function at src and stores the result in dst. Each additional
+  argument is passed to the called function.
+
+  This instruction is meant to map to functions implemented as an instruction.
+
+  For ZDACS targets, all arguments must have Lit type. src is used as an
+  instruction number and the other arguments are immediate operands.
+
+-----------------------------------------------------------
+Cmp* (Compare)
+-----------------------------------------------------------
+
+Arguments:
+  Cmp(dst, lop, rop)
+
+Semantics:
+  EQ, GE, GT, LE, LT, NE variants compare if lop is equal, greater or equal,
+  greater, less or equal, less, or unequal to rop, respectively. If the
+  comparison is true, 1 is stored in dst. Otherwise, 0 is stored.
+
+-----------------------------------------------------------
+Cnat (Call Native Function)
+-----------------------------------------------------------
+
+Arguments:
+  Cnat(dst, src, ...)
+
+Semantics:
+  Calls a function at src and stores the result in dst. Each additional
+  argument is passed to the called function.
+
+  This instruction is meant to map to the native/builtin function dispatch
+  method for the target.
+
+-----------------------------------------------------------
+Copy (Copy Data)
+-----------------------------------------------------------
+
+Arguments:
+  Copy(dst, src)
+
+Semantics:
+  Copies data from src to dst.
+
+-----------------------------------------------------------
+Cscr_IA (Call Script Function, Integer Asynchronous)
+Cscr_IS (Call Script Function, Integer Synchronous)
+Cscr_SA (Call Script Function, String Asynchronous)
+Cscr_SS (Call Script Function, String Synchronous)
+-----------------------------------------------------------
+
+Arguments:
+  Cscr_IA(dst, src, ...)
+  Cscr_IS(dst, src, tmp, ...)
+  Cscr_SA(dst, src, ...)
+  Cscr_SS(dst, src, tmp, ...)
+
+Semantics:
+  Calls a function at src and stores the result in dst. Each additional
+  argument is passed to the called function.
+
+  This instruction is meant to map to the ZDACS script dispatch method and may
+  not be meaningful for other targets.
+
+  The tmp argument is used for return data and should have type Aut and be one
+  word larger than dst.
+
+-----------------------------------------------------------
+Cspe (Call Special Function)
+-----------------------------------------------------------
+
+Arguments:
+  Cspe(dst, src, ...)
+
+Semantics:
+  Calls a function at src and stores the result in dst. Each additional
+  argument is passed to the called function.
+
+  This instruction is meant to map to the ZDACS line special dispatch method
+  and may not be meaningful for other targets.
+
+-----------------------------------------------------------
+Div (Divide)
+-----------------------------------------------------------
+
+Argument:
+  Div(dst, lop, rop)
+
+Semantics:
+  Divides lop by rop and stores the quotient in dst.
+
+-----------------------------------------------------------
+DivX (Expanding Divide)
+-----------------------------------------------------------
+
+Argument:
+  DivX(dst, lop, rop)
+
+Semantics:
+  Divides lop by rop and stores the quotient and remainder in dst.
+
+-----------------------------------------------------------
+Jcnd_Nil (Conditional Jump, Nil)
+Jcnd_Tru (Conditional Jump, True)
+-----------------------------------------------------------
+
+Arguments:
+  Jcnd_Nil(src, addr)
+  Jcnd_Tru(src, addr)
+
+Semantics:
+  Jcnd_Nil checks if src is zero.
+
+  Jcnd_Tru checks if src is nonzero.
+
+  If condition passes, branches execution to addr.
+
+-----------------------------------------------------------
+Jcnd_Tab (Conditional Jump Table)
+-----------------------------------------------------------
+
+Arguments:
+  Jcnd_Tab(src, ...)
+
+Semantics:
+  Specifies a jump table of value-address pairs. If no jump is made and src is
+  Stk, then the value is left on the stack.
+
+-----------------------------------------------------------
+Jdyn (Dynamic Jump)
+-----------------------------------------------------------
+
+Arguments:
+  Jdyn(addr)
+
+Semantics:
+  Branches execution to dynamic jump target addr.
+
+-----------------------------------------------------------
+Jfar_Pro (Far Jump Propagate)
+-----------------------------------------------------------
+
+Arguments:
+  Jfar_Pro(addr, drop)
+
+Semantics:
+  Checks for an ongoing far jump. If there is not one, then no further action
+  is taken. Otherwise, the instruction drops drop from the stack and
+  performs far jump propagation as described below.
+
+  The instruction checks if the jump target is in the current function. If so,
+  the jump result is pushed and the jump target is branched to. Otherwise, addr
+  is branched to.
+
+-----------------------------------------------------------
+Jfar_Set (Far Jump Set)
+-----------------------------------------------------------
+
+Arguments:
+  Jfar_Set(addr, jmpbuf)
+
+Semantics:
+  Stores far jump information in jmpbuf and pushes 0 to stack.
+
+-----------------------------------------------------------
+Jfar_Sta (Far Jump Start)
+-----------------------------------------------------------
+
+Arguments:
+  Jfar_Sta(addr, jmpbuf, result)
+
+Semantics:
+  Initiates a far jump by setting global state and then performs propagation as
+  described in Jfar_Pro.
+
+-----------------------------------------------------------
+Jump (Unconditional Jump)
+-----------------------------------------------------------
+
+Arguments:
+  Jump(addr)
+
+Semantics:
+  Branches execution to addr.
+
+-----------------------------------------------------------
+LAnd (Logical And)
+-----------------------------------------------------------
+
+Arguments:
+  LAnd(dst, lop, rop)
+
+Semantics:
+  Logically ands lop with rop and stores the result in dst.
+
+-----------------------------------------------------------
+LNot (Logical Invert)
+-----------------------------------------------------------
+
+Arguments:
+  LNot(dst, src)
+
+Semantics:
+  Logically inverts src and stores the result in dst.
+
+-----------------------------------------------------------
+LOrI (Logical Inclusive Or)
+-----------------------------------------------------------
+
+Arguments:
+  LOrI(dst, lop, rop)
+
+Semantics:
+  Logically inclusive ors lop with rop and stores the result in dst.
+
+-----------------------------------------------------------
+Mod (Modulus)
+-----------------------------------------------------------
+
+Argument:
+  Mod(dst, lop, rop)
+
+Semantics:
+  Divides lop by rop and stores the remainder in dst.
+
+-----------------------------------------------------------
+Move (Move)
+-----------------------------------------------------------
+
+Arguments:
+  Move(dst, src)
+
+Semantics:
+  Moves data from src to dst.
+
+-----------------------------------------------------------
+Mul (Multiply)
+-----------------------------------------------------------
+
+Arguments:
+  Mul(dst, lop, rop)
+
+Semantics:
+  Multiplies lop by rop and stores the truncated result in dst.
+
+-----------------------------------------------------------
+MulX (Expanding Multiply)
+-----------------------------------------------------------
+
+Arguments:
+  MulX(dst, lop, rop)
+
+Semantics:
+  Multiplies lop by rop and stores the full result in dst.
+
+-----------------------------------------------------------
+Neg (Negate)
+-----------------------------------------------------------
+
+Arguments:
+  Neg(dst, src)
+
+Semantics:
+  Negates src and stores the result in dst.
+
+-----------------------------------------------------------
+Pltn (Pointer, Local To Near)
+-----------------------------------------------------------
+
+Arguments:
+  Pltn(dst, src)
+
+Semantics:
+  Converts from a Aut pointer in src to a Sta pointer in dst.
+
+-----------------------------------------------------------
+Retn (Return)
+Rjnk (Return Junk)
+-----------------------------------------------------------
+
+Arguments:
+  Retn()
+  Retn(src)
+  Rjnk()
+  Rjnk(src)
+
+Semantics:
+  Returns control to the caller with the data in src. If src is omitted, no
+  data is returned.
+
+  Rjnk does the same, but may discard the data in src and only use it for its
+  size.
+
+-----------------------------------------------------------
+ShL (Shift Left)
+-----------------------------------------------------------
+
+Arguments:
+  ShL(dst, lop, rop)
+
+Semantics:
+  Left-shifts lop by rop and stores the result in dst.
+
+  For float ops, this adds to the exponent.
+
+-----------------------------------------------------------
+ShR (Shift Right)
+-----------------------------------------------------------
+
+Arguments:
+  ShR(dst, lop, rop)
+
+Semantics:
+  Right-shifts lop by rop and stores the result in dst.
+
+  For float ops, this subtracts from the exponent.
+
+  For signed fixed-point ops, this may sign-extend.
+
+-----------------------------------------------------------
+Sub (Subtract)
+-----------------------------------------------------------
+
+Arguments:
+  Sub(dst, lop, rop)
+
+Semantics:
+  Subtracts rop from lop and stores the result in dst.
+
+-----------------------------------------------------------
+SubX (Expanding Subtract)
+-----------------------------------------------------------
+
+Arguments:
+  SuXU_W(dst, lop, rop)
+  SuXU_W(dst, carry, lop, rop)
+
+Semantics:
+  Subtracts rop from lop and stores the result with carry in dst.
+
+  If carry provided, it is also added to lop.
+
+-----------------------------------------------------------
+Swap (Swap Data)
+-----------------------------------------------------------
+
+Arguments:
+  Swap(lop, rop)
+
+Semantics:
+  Swaps lop with rop.
+
+===========================================================
+Arguments
+===========================================================
+
+Syntax:
+  argument:
+    <Aut> argument-size(opt) ( argument expression(opt) )
+    <Cpy> argument-size(opt) ( expression(opt) )
+    <Far> argument-size(opt) ( argument expression(opt) )
+    <GblArr> argument-size(opt) ( argument argument expression(opt) )
+    <GblArs> argument-size(opt) ( argument expression(opt) )
+    <GblReg> argument-size(opt) ( argument expression(opt) )
+    <Gen> argument-size(opt) ( argument expression(opt) )
+    <HubArr> argument-size(opt) ( argument argument expression(opt) )
+    <HubArs> argument-size(opt) ( argument expression(opt) )
+    <HubReg> argument-size(opt) ( argument expression(opt) )
+    <Lit> argument-size(opt) ( expression expression(opt) )
+    <LocReg> argument-size(opt) ( argument expression(opt) )
+    <ModArr> argument-size(opt) ( argument argument expression(opt) )
+    <ModArs> argument-size(opt) ( argument expression(opt) )
+    <ModReg> argument-size(opt) ( argument expression(opt) )
+    <Nul> argument-size(opt) ( )
+    <Sta> argument-size(opt) ( argument expression(opt) )
+    <Stk> argument-size(opt) ( )
+    <StrArr> argument-size(opt) ( argument argument expression(opt) )
+    <StrArs> argument-size(opt) ( argument expression(opt) )
+    <Vaa> argument-size(opt) ( argument expression(opt) )
+
+  argument-size:
+    <B> expression(opt)
+    <W> expression(opt)
+    expression
+
+Semantics:
+  If the argument size starts with W, the expression is multiplied by the word
+  size of the target. Otherwise, the expression is taken as a number of bytes.
+  If the expression is omitted, then W uses a single word and B uses a single
+  byte.
+
+  If the argument size is omitted, then top level arguments use the size of the
+  statement. If the statement has no size, then the size is a single word.
+  Other arguments will use the size appropriate to the containing argument.
+
+===============================================================================
+Expressions
+===============================================================================
+
+Syntax:
+  expression:
+    aggregate
+    aggregate-string
+    number
+    string
+    value
+    <Add> ( expression expression )
+    <AddPtrRaw> ( expression expression )
+    <BitAnd> ( expression expression )
+    <BitOrI> ( expression expression )
+    <BitOrX> ( expression expression )
+    <CmpEQ> ( expression expression )
+    <CmpGE> ( expression expression )
+    <CmpGT> ( expression expression )
+    <CmpLE> ( expression expression )
+    <CmpLT> ( expression expression )
+    <CmpNE> ( expression expression )
+    <Cnd> ( expression expression expression )
+    <Cst> ( type expression )
+    <Div> ( expression expression )
+    <Inv> ( expression )
+    <LogAnd> ( expression expression )
+    <LogOrI> ( expression expression )
+    <LogOrX> ( expression expression )
+    <Mod> ( expression expression )
+    <Mul> ( expression expression )
+    <Neg> ( expression )
+    <Not> ( expression )
+    <ShL> ( expression expression )
+    <ShR> ( expression expression )
+    <Sub> ( expression expression )
+    <W>
+    -- expression
+    ~ expression
+    ! expression
+    * expression expression
+    / expression expression
+    % expression expression
+    + expression expression
+    - expression expression
+    << expression expression
+    >> expression expression
+    < expression expression
+    > expression expression
+    <= expression expression
+    >= expression expression
+    == expression expression
+    != expression expression
+    & expression expression
+    ^ expression expression
+    | expression expression
+    && expression expression
+    ^^ expression expression
+    || expression expression
+    ? expression expression expression
+
+  type:
+    type-Array
+    type-Assoc
+    type-Empty
+    type-Fixed
+    type-Float
+    type-Funct
+    type-Point
+    type-StrEn
+    type-Tuple
+    type-Union
+
+  type-Array:
+    <Array> ( type expression )
+
+  type-Assoc:
+    <Assoc> ( type-assoc-sequence(opt) )
+
+  type-Empty:
+    <Empty> ( )
+
+  type-Fixed:
+    <Fixed> ( expression expression expression expression )
+
+  type-Float:
+    <Float> ( expression expression expression expression )
+
+  type-Funct:
+    <Funct> ( call-type-specifier )
+
+  type-Point:
+    <Point> ( address-specifier string expression expression )
+
+  type-StrEn:
+    <StrEn> ( )
+
+  type-Tuple:
+    <Tuple> ( type-sequence(opt) )
+
+  type-Union:
+    <Union> ( type-sequence(opt) )
+
+  type-assoc-sequence:
+    type-assoc
+    type-assoc-sequence type-assoc
+
+  type-assoc:
+    type string expression
+
+  type-sequence:
+    type
+    type-sequence type
+
+===========================================================
+Aggregates
+===========================================================
+
+Syntax:
+  aggregate:
+    <Tuple> ( expression-sequence(opt) )
+    { expression-sequence(opt) }
+    [ expression-sequence(opt) ]
+
+  expression-sequence:
+    expression
+    expression-sequence expression
+
+Semantics:
+  Results in a multi-part value. Each sub-expression has its own type.
+
+  In the first and second forms, expression evaluation is deferred. In the
+  third form, expressions are evaluated immediately and cannot contain unbacked
+  glyphs.
+
+===========================================================
+Aggregate Strings
+===========================================================
+
+Syntax:
+  aggregate-string:
+    <string> type-Fixed(opt) string
+
+Semantics:
+  Results in a multi-part value comprised of the characters in the string. The
+  type of each element is determined by an explicit type or a target-dependent
+  default.
+
+===========================================================
+Numbers
+===========================================================
+
+Syntax:
+  number:
+    decimal-number number-suffix(opt)
+    hexadecimal-number number-suffix(opt)
+    octal-number number-suffix(opt)
+
+  decimal-number:
+    decimal-base decimal-fractional(opt) decimal-exponent(opt)
+    decimal-integral(opt) decimal-fractional decimal-exponent(opt)
+
+  hexadecimal-number:
+    hexadecimal-base hexadecimal-fractional(opt) hexadecimal-exponent(opt)
+
+  octal-number:
+    octal-base decimal-exponent(opt)
+
+  number-suffix:
+    _ number-suffix-f(opt) number-suffix-s(opt) decimal-integral
+      decimal-fractional number-suffix-s(opt)
+
+  number-suffix-f: one of
+    <F> <f>
+
+  number-suffix-s: one of
+    <S> <s>
+
+  decimal-base:
+    decimal-prefix decimal-integral(opt)
+
+  decimal-fractional:
+    . decimal-integral(opt)
+
+  decimal-exponent:
+    <E> sign(opt) decimal-integral
+    <e> sign(opt) decimal-integral
+    hexadecimal-exponent
+
+  decimal-integral:
+    digit decimal-integral(opt)
+
+  digit: one of
+    0 1 2 3 4 5 6 7 8 9
+
+  decimal-prefix: one of
+    1 2 3 4 5 6 7 8 9
+
+  hexadecimal-base:
+    hexadecimal-prefix hexadecimal-integral(opt)
+
+  hexadecimal-fractional:
+    . hexadecimal-integral(opt)
+
+  hexadecimal-exponent:
+    <P> sign(opt) decimal-integral
+    <p> sign(opt) decimal-integral
+
+  hexadecimal-integral:
+    hexadecimal-digit hexadecimal-integral(opt)
+
+  hexadecimal-digit: one of
+    0 1 2 3 4 5 6 7 8 9 A B C D E F a b c d e f
+
+  octal-base:
+    octal-prefix octal-integral(opt)
+
+  octal-prefix:
+    0
+
+  octal-integral:
+    octal-digit octal-integral(opt)
+
+  octal-digit: one of
+    0 1 2 3 4 5 6 7
+
+  sign: one of
+    + -
+
+===========================================================
+Strings
+===========================================================
+
+Syntax:
+  string:
+    " char-sequence(opt) "
+
+  char-sequence:
+    char char-sequence(opt)
+
+  char:
+    any character except double-quote, backslash, or new-line
+    escape-sequence
+
+  escape-sequence:
+    hexadecimal-escape-sequence
+    octal-escape-sequence
+    simple-escape-sequence
+
+  hexadecimal-escape-sequence:
+    \x hexadecimal-digit
+    hexadecimal-escape-sequence hexadecimal-digit
+
+  octal-escape-sequence:
+    \ octal-digit
+    \ octal-digit octal-digit
+    \ octal-digit octal-digit octal-digit
+
+  simple-escape-sequence: one of
+    \' \" \? \\ \a \b \f \n \r \t \v
+
+Semantics:
+  As an expression, a string indicates a glyph to be resolved.
+
+===========================================================
+Values
+===========================================================
+
+Syntax:
+  value:
+    <Value> value-Array
+    <Value> value-Assoc
+    <Value> value-Empty
+    <Value> value-Funct
+    <Value> value-Point
+    <Value> value-StrEn
+    <Value> value-Tuple
+    <Value> value-Union
+
+-----------------------------------------------------------
+Array
+-----------------------------------------------------------
+
+Syntax:
+  value-Array:
+    type-Array ( expression-sequence(opt) )
+
+-----------------------------------------------------------
+Assoc
+-----------------------------------------------------------
+
+Syntax:
+  value-Assoc:
+    type-Assoc ( expression-sequence(opt) )
+
+-----------------------------------------------------------
+Empty
+-----------------------------------------------------------
+
+Syntax:
+  value-Empty:
+    type-Empty ( )
+
+-----------------------------------------------------------
+Funct
+-----------------------------------------------------------
+
+Syntax:
+  value-Funct:
+    type-Funct ( expression )
+
+-----------------------------------------------------------
+Point
+-----------------------------------------------------------
+
+Syntax:
+  value-Point:
+    type-Point ( expression address-specifier string )
+
+-----------------------------------------------------------
+StrEn
+-----------------------------------------------------------
+
+Syntax:
+  value-StrEn:
+    type-StrEn ( expression )
+
+-----------------------------------------------------------
+Tuple
+-----------------------------------------------------------
+
+Syntax:
+  value-Tuple:
+    type-Tuple ( expression-sequence(opt) )
+
+-----------------------------------------------------------
+Union
+-----------------------------------------------------------
+
+Syntax:
+  value-Union:
+    type-Union ( expression )
+
+===============================================================================
+Specifiers
+===============================================================================
+
+Syntax:
+  address-specifier:
+    <Aut>
+    <Cpy>
+    <Far>
+    <GblArr>
+    <GblArs>
+    <GblReg>
+    <Gen>
+    <HubArr>
+    <HubArs>
+    <HubReg>
+    <Lit>
+    <LocReg>
+    <ModArr>
+    <ModArs>
+    <ModReg>
+    <Nul>
+    <Sta>
+    <Stk>
+    <StrArr>
+    <StrArs>
+    <Vaa>
+
+  call-type-specifier:
+    <Action>
+    <AsmFunc>
+    <LangACS>
+    <LangASM>
+    <LangAXX>
+    <LangC>
+    <LangCXX>
+    <LangDS>
+    <Native>
+    <Script>
+    <ScriptI>
+    <ScriptS>
+    <Special>
+    <StdCall>
+    <StkCall>
+
+  linkage-specifier:
+    <ExtACS>
+    <ExtASM>
+    <ExtC>
+    <ExtCXX>
+    <ExtDS>
+    <IntC>
+    <IntCXX>
+
+===============================================================================
+Grammar
+===============================================================================
+
+  assembly-unit:
+    declaration(opt) assembly-unit(opt)
+
+  declaration:
+    djump-declaration
+    function-declaration
+    glyph-declaration
+    import-declaration
+    macro-declaration
+    object-declaration
+    space-declaration
+    strent-declaration
+
+  djump-declaration:
+    <DJump> string ( djump-argument-sequence(opt) )
+
+  djump-argument-sequence:
+    djump-argument
+    djump-argument-sequence djump-argument
+
+  djump-argument:
+    <alloc> = expression
+    <defin> = expression
+    <label> = string
+    <value> = expression
+
+  function-declaration:
+    <Function> string ( function-argument-sequence(opt) )
+
+  function-argument-sequence:
+    function-argument
+    function-argument-sequence function-argument
+
+  function-argument:
+    <allocAut> = expression
+    <alloc> = expression
+    <block> ( statement-sequence(opt) )
+    <ctype> = call-type-specifier
+    <defin> = expression
+    <label> = string
+    <linka> = linkage-specifier
+    <localArr> [ expression ] = expression
+    <localArs> = expression
+    <localReg> = expression
+    <param> = expression
+    <retrn> = expression
+    <stype> ( string-sequence(opt) )
+    <valueInt> = expression
+    <valueStr> = string
+
+  statement-sequence:
+    statement
+    statement-sequence statement
+
+  string-sequence:
+    string
+    string-sequence string
+
+  glyph-declaration:
+    <Glyph> string ( glyph-argument-sequence(opt) )
+
+  glyph-argument-sequence:
+    glyph-argument
+    glyph-argument-sequence glyph-argument
+
+  glyph-argument:
+    <type> = type
+    <value> = expression
+
+  import-declaration:
+    <Import> string ( )
+
+  macro-declaration:
+    <Macro> string ( statement-sequence(opt) )
+
+  object-declaration:
+    <Object> string ( object-argument-sequence(opt) )
+
+  object-argument-sequence:
+    object-argument
+    object-argument-sequence object-argument
+
+  object-argument:
+    <alias> = expression
+    <alloc> = expression
+    <defin> = expression
+    <initi> = expression
+    <linka> = linkage-specifier
+    <space> = address-specifier string
+    <value> = expression
+    <words> = expression
+
+  space-declaration:
+    <Space> address-specifier string ( space-argument-sequence )
+
+  space-argument-sequence:
+    space-argument
+    space-argument-sequence space-argument
+
+  space-argument:
+    <alloc> = expression
+    <defin> = expression
+    <linka> = linkage-specifier
+    <value> = expression
+    <words> = expression
+
+  strent-declaration:
+    <StrEnt> string ( strent-argument-sequence(opt) )
+
+  strent-argument-sequence:
+    strent-argument
+    strent-argument-sequence strent-argument
+
+  strent-argument:
+    <alias> = expression
+    <alloc> = expression
+    <defin> = expression
+    <valueInt> = expression
+    <valueStr> = string
+
+  statement:
+    string-sequence(opt) statement-name statement-type(opt) argument-size(opt)
+      ( argument-sequence(opt) )
+    string-sequence(opt) ! string argument-size(opt) ( argument-sequence(opt) )
+
+  statement-type:
+    : identifier
+
+  argument-sequence:
+    argument
+    argument-sequence argument
+
+  statement-name:
+    <Nop>
+    <Add>
+    <AddX>
+    <BAnd>
+    <BNot>
+    <BOrI>
+    <BOrX>
+    <Call>
+    <Casm>
+    <CmpEQ>
+    <CmpGE>
+    <CmpGT>
+    <CmpLE>
+    <CmpLT>
+    <CmpNE>
+    <Cnat>
+    <Copy>
+    <Cscr_IA>
+    <Cscr_IS>
+    <Cscr_SA>
+    <Cscr_SS>
+    <Cspe>
+    <Div>
+    <DivX>
+    <Jcnd_Nil>
+    <Jcnd_Tab>
+    <Jcnd_Tru>
+    <Jdyn>
+    <Jfar_Pro>
+    <Jfar_Set>
+    <Jfar_Sta>
+    <Jump>
+    <LAnd>
+    <LNot>
+    <LOrI>
+    <Mod>
+    <Move>
+    <Mul>
+    <MulX>
+    <Neg>
+    <Pltn>
+    <Retn>
+    <Rjnk>
+    <ShL>
+    <ShR>
+    <Sub>
+    <SubX>
+    <Swap>
+
+  argument:
+    <Aut> argument-size(opt) ( argument expression(opt) )
+    <Cpy> argument-size(opt) ( expression(opt) )
+    <Far> argument-size(opt) ( argument expression(opt) )
+    <GblArr> argument-size(opt) ( argument argument expression(opt) )
+    <GblArs> argument-size(opt) ( argument expression(opt) )
+    <GblReg> argument-size(opt) ( argument expression(opt) )
+    <Gen> argument-size(opt) ( argument expression(opt) )
+    <HubArr> argument-size(opt) ( argument argument expression(opt) )
+    <HubArs> argument-size(opt) ( argument expression(opt) )
+    <HubReg> argument-size(opt) ( argument expression(opt) )
+    <Lit> argument-size(opt) ( expression expression(opt) )
+    <LocReg> argument-size(opt) ( argument expression(opt) )
+    <ModArr> argument-size(opt) ( argument argument expression(opt) )
+    <ModArs> argument-size(opt) ( argument expression(opt) )
+    <ModReg> argument-size(opt) ( argument expression(opt) )
+    <Nul> argument-size(opt) ( )
+    <Sta> argument-size(opt) ( argument expression(opt) )
+    <Stk> argument-size(opt) ( )
+    <StrArr> argument-size(opt) ( argument argument expression(opt) )
+    <StrArs> argument-size(opt) ( argument expression(opt) )
+    <Vaa> argument-size(opt) ( argument expression(opt) )
+
+  argument-size:
+    <B> expression(opt)
+    <W> expression(opt)
+    expression
+
+  expression:
+    aggregate
+    aggregate-string
+    number
+    string
+    value
+    <Add> ( expression expression )
+    <AddPtrRaw> ( expression expression )
+    <BitAnd> ( expression expression )
+    <BitOrI> ( expression expression )
+    <BitOrX> ( expression expression )
+    <CmpEQ> ( expression expression )
+    <CmpGE> ( expression expression )
+    <CmpGT> ( expression expression )
+    <CmpLE> ( expression expression )
+    <CmpLT> ( expression expression )
+    <CmpNE> ( expression expression )
+    <Cnd> ( expression expression expression )
+    <Cst> ( type expression )
+    <Div> ( expression expression )
+    <Inv> ( expression )
+    <LogAnd> ( expression expression )
+    <LogOrI> ( expression expression )
+    <LogOrX> ( expression expression )
+    <Mod> ( expression expression )
+    <Mul> ( expression expression )
+    <Neg> ( expression )
+    <Not> ( expression )
+    <ShL> ( expression expression )
+    <ShR> ( expression expression )
+    <Sub> ( expression expression )
+    <W>
+    -- expression
+    ~ expression
+    ! expression
+    * expression expression
+    / expression expression
+    % expression expression
+    + expression expression
+    - expression expression
+    << expression expression
+    >> expression expression
+    < expression expression
+    > expression expression
+    <= expression expression
+    >= expression expression
+    == expression expression
+    != expression expression
+    & expression expression
+    ^ expression expression
+    | expression expression
+    && expression expression
+    ^^ expression expression
+    || expression expression
+    ? expression expression expression
+
+  type:
+    type-Array
+    type-Assoc
+    type-Empty
+    type-Fixed
+    type-Float
+    type-Funct
+    type-Point
+    type-StrEn
+    type-Tuple
+    type-Union
+
+  type-Array:
+    <Array> ( type expression )
+
+  type-Assoc:
+    <Assoc> ( type-assoc-sequence(opt) )
+
+  type-Empty:
+    <Empty> ( )
+
+  type-Fixed:
+    <Fixed> ( expression expression expression expression )
+
+  type-Float:
+    <Float> ( expression expression expression expression )
+
+  type-Funct:
+    <Funct> ( call-type-specifier )
+
+  type-Point:
+    <Point> ( address-specifier string expression expression )
+
+  type-StrEn:
+    <StrEn> ( )
+
+  type-Tuple:
+    <Tuple> ( type-sequence(opt) )
+
+  type-Union:
+    <Union> ( type-sequence(opt) )
+
+  type-assoc-sequence:
+    type-assoc
+    type-assoc-sequence type-assoc
+
+  type-assoc:
+    type string expression
+
+  type-sequence:
+    type
+    type-sequence type
+
+  aggregate:
+    <Tuple> ( expression-list(opt) )
+    { expression-list(opt) }
+    [ expression-list(opt) ]
+
+  expression-list:
+    expression
+    expression , expression-list
+
+  aggregate-string:
+    <string> type-Fixed(opt) string
+
+  number:
+    decimal-number number-suffix(opt)
+    hexadecimal-number number-suffix(opt)
+    octal-number number-suffix(opt)
+
+  decimal-number:
+    decimal-base decimal-fractional(opt) decimal-exponent(opt)
+    decimal-integral(opt) decimal-fractional decimal-exponent(opt)
+
+  hexadecimal-number:
+    hexadecimal-base hexadecimal-fractional(opt) hexadecimal-exponent(opt)
+
+  octal-number:
+    octal-base decimal-exponent(opt)
+
+  number-suffix:
+    _ number-suffix-f(opt) number-suffix-s(opt) decimal-integral
+      decimal-fractional number-suffix-s(opt)
+
+  number-suffix-f: one of
+    <F> <f>
+
+  number-suffix-s: one of
+    <S> <s>
+
+  decimal-base:
+    decimal-prefix decimal-integral(opt)
+
+  decimal-fractional:
+    . decimal-integral(opt)
+
+  decimal-exponent:
+    <E> sign(opt) decimal-integral
+    <e> sign(opt) decimal-integral
+    hexadecimal-exponent
+
+  decimal-integral:
+    digit decimal-integral(opt)
+
+  digit: one of
+    0 1 2 3 4 5 6 7 8 9
+
+  decimal-prefix: one of
+    1 2 3 4 5 6 7 8 9
+
+  hexadecimal-base:
+    hexadecimal-prefix hexadecimal-integral(opt)
+
+  hexadecimal-fractional:
+    . hexadecimal-integral(opt)
+
+  hexadecimal-exponent:
+    <P> sign(opt) decimal-integral
+    <p> sign(opt) decimal-integral
+
+  hexadecimal-integral:
+    hexadecimal-digit hexadecimal-integral(opt)
+
+  hexadecimal-digit: one of
+    0 1 2 3 4 5 6 7 8 9 A B C D E F a b c d e f
+
+  octal-base:
+    octal-prefix octal-integral(opt)
+
+  octal-prefix:
+    0
+
+  octal-integral:
+    octal-digit octal-integral(opt)
+
+  octal-digit: one of
+    0 1 2 3 4 5 6 7
+
+  sign: one of
+    + -
+
+  string:
+    " char-sequence(opt) "
+
+  char-sequence:
+    char char-sequence(opt)
+
+  char:
+    any character except double-quote, backslash, or new-line
+    escape-sequence
+
+  escape-sequence:
+    hexadecimal-escape-sequence
+    octal-escape-sequence
+    simple-escape-sequence
+
+  hexadecimal-escape-sequence:
+    \x hexadecimal-digit
+    hexadecimal-escape-sequence hexadecimal-digit
+
+  octal-escape-sequence:
+    \ octal-digit
+    \ octal-digit octal-digit
+    \ octal-digit octal-digit octal-digit
+
+  simple-escape-sequence: one of
+    \' \" \? \\ \a \b \f \n \r \t \v
+
+  value:
+    <Value> value-Array
+    <Value> value-Assoc
+    <Value> value-Empty
+    <Value> value-Funct
+    <Value> value-Point
+    <Value> value-StrEn
+    <Value> value-Tuple
+    <Value> value-Union
+
+  value-Array:
+    type-Array ( expression-sequence(opt) )
+
+  value-Assoc:
+    type-Assoc ( expression-sequence(opt) )
+
+  value-Empty:
+    type-Empty ( )
+
+  value-Funct:
+    type-Funct ( expression )
+
+  value-Point:
+    type-Point ( expression , address-specifier string )
+
+  value-StrEn:
+    type-StrEn ( expression )
+
+  value-Tuple:
+    type-Tuple ( expression-sequence(opt) )
+
+  value-Union:
+    type-Union ( expression )
+
+  address-specifier:
+    <Aut>
+    <Cpy>
+    <Far>
+    <GblArr>
+    <GblArs>
+    <GblReg>
+    <Gen>
+    <HubArr>
+    <HubArs>
+    <HubReg>
+    <Lit>
+    <LocReg>
+    <ModArr>
+    <ModArs>
+    <ModReg>
+    <Nul>
+    <Sta>
+    <Stk>
+    <StrArr>
+    <StrArs>
+    <Vaa>
+
+  call-type-specifier:
+    <Action>
+    <AsmFunc>
+    <LangACS>
+    <LangASM>
+    <LangAXX>
+    <LangC>
+    <LangCXX>
+    <LangDS>
+    <Native>
+    <Script>
+    <ScriptI>
+    <ScriptS>
+    <Special>
+    <StdCall>
+    <StkCall>
+
+  linkage-specifier:
+    <ExtACS>
+    <ExtASM>
+    <ExtC>
+    <ExtCXX>
+    <ExtDS>
+    <IntC>
+    <IntCXX>
+
+###############################################################################
+EOF
+###############################################################################
+

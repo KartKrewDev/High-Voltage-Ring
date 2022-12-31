@@ -1,0 +1,796 @@
+//-----------------------------------------------------------------------------
+//
+// Copyright(C) 2015-2017 David Hill
+//
+// See COPYLIB for license information.
+//
+//-----------------------------------------------------------------------------
+//
+// Header for target library libacs.
+//
+// Special functions from ZDoom's ACS.
+//
+//-----------------------------------------------------------------------------
+
+#ifndef __GDCC_Header__ACS__zspecial_acs__
+#define __GDCC_Header__ACS__zspecial_acs__
+
+
+//----------------------------------------------------------------------------|
+// Macros                                                                     |
+//
+
+#define ACS_ExecuteWait(num, ...) \
+   do \
+   { \
+      int __execute_wait_num = (num); \
+      ACS_Execute(__execute_wait_num, __VA_ARGS__); \
+      ScriptWait(__execute_wait_num); \
+   } \
+   while(0)
+
+#define ACS_NamedExecuteWait(name, ...) \
+   do \
+   { \
+      str __execute_wait_name = (name); \
+      ACS_NamedExecute(__execute_wait_name, __VA_ARGS__); \
+      NamedScriptWait(__execute_wait_name); \
+   } \
+   while(0)
+
+#define ACS_PrintPropertyBase() \
+   (char): PrintChar, \
+   (str):  PrintString, \
+   \
+   a(global): PrintGlobalCharArray, \
+   a(global): PrintGlobalCharRange, \
+   a(local):  PrintLocalCharArray, \
+   a(local):  PrintLocalCharRange, \
+   a(module): PrintModuleCharArray, \
+   a(module): PrintModuleCharRange, \
+   a(world):  PrintWorldCharArray, \
+   a(world):  PrintWorldCharRange, \
+   \
+   b: PrintBinary, \
+   c: PrintChar, \
+   d: PrintInt, \
+   f: PrintFixed, \
+   i: PrintInt, \
+   k: PrintBind, \
+   l: PrintLocalized, \
+   n: PrintName, \
+   s: PrintString, \
+   x: PrintHex
+
+#pragma state save
+#pragma define raw ON
+#define suspend do (__suspend()); while(0)
+#pragma state restore
+
+
+//----------------------------------------------------------------------------|
+// Functions                                                                  |
+//
+
+special
+// int   1:Polyobj_StartLine,
+   int   2:Polyobj_RotateLeft(3),
+   int   3:Polyobj_RotateRight(3),
+   int   4:Polyobj_Move(4),
+// int   5:Polyobj_ExplicitLine,
+   int   6:Polyobj_MoveTimes8(4),
+   int   7:Polyobj_DoorSwing(4),
+   int   8:Polyobj_DoorSlide(5),
+   int   9:Line_Horizon(0),
+   int  10:Door_Close(2,3),
+   int  11:Door_Open(2,3),
+   int  12:Door_Raise(3,4),
+   int  13:Door_LockedRaise(4,5),
+   int  14:Door_Animated(3,4),
+   int  15:Autosave(0),
+// int  16:Transfer_WallLight,
+   int  17:Thing_Raise(1,2),
+   int  18:StartConversation(1,2),
+   int  19:Thing_Stop(1),
+   int  20:Floor_LowerByValue(3),
+   int  21:Floor_LowerToLowest(2),
+   int  22:Floor_LowerToNearest(2),
+   int  23:Floor_RaiseByValue(3),
+   int  24:Floor_RaiseToHighest(2),
+   int  25:Floor_RaiseToNearest(2),
+   int  26:Stairs_BuildDown(5),
+   int  27:Stairs_BuildUp(5),
+   int  28:Floor_RaiseAndCrush(3,4),
+   int  29:Pillar_Build(3),
+   int  30:Pillar_Open(4),
+   int  31:Stairs_BuildDownSync(4),
+   int  32:Stairs_BuildUpSync(4),
+   int  33:ForceField(0),
+   int  34:ClearForceField(1),
+   int  35:Floor_RaiseByValueTimes8(3),
+   int  36:Floor_LowerByValueTimes8(3),
+   int  37:Floor_MoveToValue(3,4),
+   int  38:Ceiling_Waggle(5),
+   int  39:Teleport_ZombieChanger(2),
+   int  40:Ceiling_LowerByValue(3),
+   int  41:Ceiling_RaiseByValue(3),
+   int  42:Ceiling_CrushAndRaise(3,4),
+   int  43:Ceiling_LowerAndCrush(3,4),
+   int  44:Ceiling_CrushStop(1),
+   int  45:Ceiling_CrushRaiseAndStay(3,4),
+   int  46:Floor_CrushStop(1),
+   int  47:Ceiling_MoveToValue(3,4),
+// int  48:Sector_Attach3dMidtex,
+   int  49:GlassBreak(0,2),
+// int  50:ExtraFloor_LightOnly,
+   int  51:Sector_SetLink(4),
+   int  52:Scroll_Wall(5),
+   int  53:Line_SetTextureOffset(5),
+   int  54:Sector_ChangeFlags(3),
+   int  55:Line_SetBlocking(3),
+   int  56:Line_SetTextureScale(5),
+// int  57:Sector_SetPortal,
+// int  58:Sector_CopyScroller,
+   int  59:Polyobj_OR_MoveToSpot(3),
+   int  60:Plat_PerpetualRaise(3),
+   int  61:Plat_Stop(1),
+   int  62:Plat_DownWaitUpStay(3),
+   int  63:Plat_DownByValue(4),
+   int  64:Plat_UpWaitDownStay(3),
+   int  65:Plat_UpByValue(4),
+   int  66:Floor_LowerInstant(3),
+   int  67:Floor_RaiseInstant(3),
+   int  68:Floor_MoveToValueTimes8(4),
+   int  69:Ceiling_MoveToValueTimes8(4),
+   int  70:Teleport(1,3),
+   int  71:Teleport_NoFog(1,4),
+   int  72:ThrustThing(2,4),
+   int  73:DamageThing(1,2),
+   int  74:Teleport_NewMap(2,3),
+   int  75:Teleport_EndGame(0),
+   int  76:TeleportOther(3),
+   int  77:TeleportGroup(5),
+   int  78:TeleportInSector(4,5),
+   int  79:Thing_SetConversation(2),
+   int  80:ACS_Execute(2,5),
+   int  81:ACS_Suspend(2),
+   int  82:ACS_Terminate(2),
+   int  83:ACS_LockedExecute(5),
+   int  84:ACS_ExecuteWithResult(1,5),
+   int  85:ACS_LockedExecuteDoor(5),
+   int  86:Polyobj_MoveToSpot(3),
+   int  87:Polyobj_Stop(1),
+   int  88:Polyobj_MoveTo(4),
+   int  89:Polyobj_OR_MoveTo(4),
+   int  90:Polyobj_OR_RotateLeft(3),
+   int  91:Polyobj_OR_RotateRight(3),
+   int  92:Polyobj_OR_Move(4),
+   int  93:Polyobj_OR_MoveTimes8(4),
+   int  94:Pillar_BuildAndCrush(4,5),
+   int  95:FloorAndCeiling_LowerByValue(3),
+   int  96:FloorAndCeiling_RaiseByValue(3),
+   int  97:Ceiling_LowerAndCrushDist(3,5),
+   int  98:Sector_SetTranslucent(3,4),
+   int  99:Floor_RaiseAndCrushDoom(3,4),
+// int 100:Scroll_Texture_Left,
+// int 101:Scroll_Texture_Right,
+// int 102:Scroll_Texture_Up,
+// int 103:Scroll_Texture_Down,
+   int 104:Ceiling_CrushAndRaiseSilentDist(4,5),
+
+   int 107:Line_SetPortalTarget(2),
+
+   int 109:Light_ForceLightning(1),
+   int 110:Light_RaiseByValue(2),
+   int 111:Light_LowerByValue(2),
+   int 112:Light_ChangeToValue(2),
+   int 113:Light_Fade(3),
+   int 114:Light_Glow(4),
+   int 115:Light_Flicker(3),
+   int 116:Light_Strobe(5),
+   int 117:Light_Stop(1),
+// int 118:Plane_Copy,
+   int 119:Thing_Damage(2,3),
+   int 120:Radius_Quake(5),
+// int 121:Line_SetIdentification,
+
+   int 125:Thing_Move(2,3),
+
+   int 127:Thing_SetSpecial(5),
+   int 128:ThrustThingZ(4),
+// int 129:UsePuzzleItem,
+   int 130:Thing_Activate(1),
+   int 131:Thing_Deactivate(1),
+   int 132:Thing_Remove(1),
+   int 133:Thing_Destroy(1,3),
+   int 134:Thing_Projectile(5),
+   int 135:Thing_Spawn(3,4),
+   int 136:Thing_ProjectileGravity(5),
+   int 137:Thing_SpawnNoFog(3,4),
+   int 138:Floor_Waggle(5),
+   int 139:Thing_SpawnFacing(2,4),
+   int 140:Sector_ChangeSound(2),
+
+   int 143:Player_RemoveItem(2),
+   int 144:Player_GiveItem(2),
+   int 145:Player_SetTeam(1),
+
+   int 152:Team_Score(2),
+   int 153:Team_GivePoints(3),
+   int 154:Teleport_NoStop(2, 3),
+
+   int 157:SetGlobalFogParameter(2),
+   int 158:FS_Execute(1,4),
+   int 159:Sector_SetPlaneReflection(3),
+// int 160:Sector_Set3DFloor,
+// int 161:Sector_SetContents,
+
+   int 168:Ceiling_CrushAndRaiseDist(3,5),
+   int 169:Generic_Crusher2(5),
+   int 170:Sector_SetCeilingScale2(3),
+   int 171:Sector_SetFloorScale2(3),
+   int 172:Plat_UpNearestWaitDownStay(3),
+   int 173:NoiseAlert(2),
+   int 174:SendToCommunicator(4),
+   int 175:Thing_ProjectileIntercept(5),
+   int 176:Thing_ChangeTID(2),
+   int 177:Thing_Hate(2,3),
+   int 178:Thing_ProjectileAimed(4,5),
+   int 179:ChangeSkill(1),
+   int 180:Thing_SetTranslation(2),
+// int 181:Plane_Align,
+   int 182:Line_Mirror(0),
+   int 183:Line_AlignCeiling(2),
+   int 184:Line_AlignFloor(2),
+   int 185:Sector_SetRotation(3),
+   int 186:Sector_SetCeilingPanning(5),
+   int 187:Sector_SetFloorPanning(5),
+   int 188:Sector_SetCeilingScale(5),
+   int 189:Sector_SetFloorScale(5),
+
+   int 191:SetPlayerProperty(3),
+   int 192:Ceiling_LowerToHighestFloor(2),
+   int 193:Ceiling_LowerInstant(3),
+   int 194:Ceiling_RaiseInstant(3),
+   int 195:Ceiling_CrushRaiseAndStayA(4,5),
+   int 196:Ceiling_CrushAndRaiseA(4,5),
+   int 197:Ceiling_CrushAndRaiseSilentA(4,5),
+   int 198:Ceiling_RaiseByValueTimes8(3),
+   int 199:Ceiling_LowerByValueTimes8(3),
+   int 200:Generic_Floor(5),
+   int 201:Generic_Ceiling(5),
+   int 202:Generic_Door(5),
+   int 203:Generic_Lift(5),
+   int 204:Generic_Stairs(5),
+   int 205:Generic_Crusher(5),
+   int 206:Plat_DownWaitUpStayLip(4,5),
+   int 207:Plat_PerpetualRaiseLip(4),
+   int 208:TranslucentLine(2,3),
+// int 209:Transfer_Heights,
+// int 210:Transfer_FloorLight,
+// int 211:Transfer_CeilingLight,
+   int 212:Sector_SetColor(4,5),
+   int 213:Sector_SetFade(4),
+   int 214:Sector_SetDamage(3),
+   int 215:Teleport_Line(2),
+   int 216:Sector_SetGravity(3),
+   int 217:Stairs_BuildUpDoom(5),
+   int 218:Sector_SetWind(4),
+   int 219:Sector_SetFriction(2),
+   int 220:Sector_SetCurrent(4),
+   int 221:Scroll_Texture_Both(5),
+// int 222:Scroll_Texture_Model,
+   int 223:Scroll_Floor(4),
+   int 224:Scroll_Ceiling(4),
+// int 225:Scroll_Texture_Offsets,
+   int 226:ACS_ExecuteAlways(2,5),
+// int 227:PointPush_SetForce,
+   int 228:Plat_RaiseAndStayTx0(2,3),
+   int 229:Thing_SetGoal(3,4),
+   int 230:Plat_UpByValueStayTx(3),
+   int 231:Plat_ToggleCeiling(1),
+   int 232:Light_StrobeDoom(3),
+   int 233:Light_MinNeighbor(1),
+   int 234:Light_MaxNeighbor(1),
+   int 235:Floor_TransferTrigger(1),
+   int 236:Floor_TransferNumeric(1),
+   int 237:ChangeCamera(3),
+   int 238:Floor_RaiseToLowestCeiling(2),
+   int 239:Floor_RaiseByValueTxTy(3),
+   int 240:Floor_RaiseByTexture(2),
+   int 241:Floor_LowerToLowestTxTy(2),
+   int 242:Floor_LowerToHighest(3,4),
+   int 243:Exit_Normal(1),
+   int 244:Exit_Secret(1),
+   int 245:Elevator_RaiseToNearest(2),
+   int 246:Elevator_MoveToFloor(2),
+   int 247:Elevator_LowerToNearest(2),
+   int 248:HealThing(1,2),
+   int 249:Door_CloseWaitOpen(3,4),
+   int 250:Floor_Donut(3),
+   int 251:FloorAndCeiling_LowerRaise(3,4),
+   int 252:Ceiling_RaiseToNearest(2),
+   int 253:Ceiling_LowerToLowest(2),
+   int 254:Ceiling_LowerToFloor(2),
+   int 255:Ceiling_CrushRaiseAndStaySilA(4,5),
+   int 256:Floor_LowerToHighestEE(2,3),
+   int 257:Floor_RaiseToLowest(2,3),
+   int 258:Floor_LowerToLowestCeiling(2,3),
+   int 259:Floor_RaiseToCeiling(2,5),
+   int 260:Floor_ToCeilingInstant(1,4),
+   int 261:Floor_LowerByTexture(2,3),
+   int 262:Ceiling_RaiseToHighest(2,3),
+   int 263:Ceiling_ToHighestInstant(1,3),
+   int 264:Ceiling_LowerToNearest(2,4),
+   int 265:Ceiling_RaiseToLowest(2,3),
+   int 266:Ceiling_RaiseToHighestFloor(2,3),
+   int 267:Ceiling_ToFloorInstant(1,4),
+   int 268:Ceiling_RaiseByTexture(2,3),
+   int 269:Ceiling_LowerByTexture(2,4),
+   int 270:Stairs_BuildDownDoom(5),
+   int 271:Stairs_BuildUpDoomSync(4),
+   int 272:Stairs_BuildDownDoomSync(4),
+   int 273:Stairs_BuildUpDoomCrush(5),
+   int 274:Door_AnimatedClose(2),
+   int 275:Floor_Stop(1),
+   int 276:Ceiling_Stop(1),
+   int 277:Sector_SetFloorGlow(5),
+   int 278:Sector_SetCeilingGlow(5),
+
+// int 300:Portal_Define(5),
+// int 301:Line_QuickPortal(1),
+
+   // internal functions have negative values
+   int     -1:GetLineUDMFInt(2, int, str),
+   fixed   -2:GetLineUDMFFixed(2, int, str),
+   int     -3:GetThingUDMFInt(2, int, str),
+   fixed   -4:GetThingUDMFFixed(2, int, str),
+   int     -5:GetSectorUDMFInt(2, int, str),
+   fixed   -6:GetSectorUDMFFixed(2, int, str),
+   int     -7:GetSideUDMFInt(3, int, int, str),
+   fixed   -8:GetSideUDMFFixed(3, int, int, str),
+   fixed   -9:GetActorVelX(1, int),
+   fixed  -10:GetActorVelY(1, int),
+   fixed  -11:GetActorVelZ(1, int),
+   int    -12:SetActivator(1, int, int),
+   int    -13:SetActivatorToTarget(1, int),
+   fixed  -14:GetActorViewHeight(1, int),
+   int    -15:GetChar(2, str, int),
+   int    -16:GetAirSupply(1, int),
+   int    -17:SetAirSupply(2, int, int),
+   int    -18:SetSkyScrollSpeed(2, int, fixed),
+   int    -19:GetArmorType(2, str, int),
+   int    -20:SpawnSpotForced(4, str, int, int, int),
+   int    -21:SpawnSpotFacingForced(3, str, int, int),
+   int    -22:CheckActorProperty(3, int, int, int),
+   int    -22:CheckActorPropertyFixed(3, int, int, fixed),
+   int    -22:CheckActorPropertyString(3, int, int, str),
+   int    -23:SetActorVelocity(6, int, fixed, fixed, fixed, int, int),
+   int    -24:SetUserVariable(3, int, str, int),
+   int    -24:SetUserVariableFixed(3, int, str, fixed),
+   int    -25:GetUserVariable(2, int, str),
+   fixed  -25:GetUserVariableFixed(2, int, str),
+   str    -25:GetUserVariableString(2, int, str),
+   int    -26:Radius_Quake2(6, int, int, int, int, int, str),
+   int    -27:CheckActorClass(2, int, str),
+   int    -28:SetUserArray(4, int, str, int, int),
+   int    -28:SetUserArrayFixed(4, int, str, int, fixed),
+   int    -29:GetUserArray(3, int, str, int),
+   fixed  -29:GetUserArrayFixed(3, int, str, int),
+   str    -29:GetUserArrayString(3, int, str, int),
+   int    -30:SoundSequenceOnActor(2, int, str),
+   int    -31:SoundSequenceOnSector(3, int, str, int),
+   int    -32:SoundSequenceOnPolyobj(2, int, str),
+   fixed  -33:GetPolyobjX(1, int),
+   fixed  -34:GetPolyobjY(1, int),
+   int    -35:CheckSight(3, int, int, int),
+   int    -36:SpawnForced(4, str, fixed, fixed, fixed, int, int),
+   int    -37:AnnouncerSound(2, str, int),
+   int    -38:SetPointer(2, int, int, int, int),
+   int    -39:ACS_NamedExecute(2, str, int, int, int, int),
+   int    -40:ACS_NamedSuspend(2, str, int),
+   int    -41:ACS_NamedTerminate(2, str, int),
+   int    -42:ACS_NamedLockedExecute(5, str, int, int, int, int),
+   int    -43:ACS_NamedLockedExecuteDoor(5, str, int, int, int, int),
+   int    -44:ACS_NamedExecuteWithResult(1, str, int, int, int, int),
+   int    -45:ACS_NamedExecuteAlways(2, str, int, int, int, int),
+   int    -46:UniqueTID(0, int, int),
+   int    -47:IsTIDUsed(1, int),
+   int    -48:Sqrt(1, int),
+   fixed  -49:FixedSqrt(1, fixed),
+   fixed  -50:VectorLength(2, fixed, fixed),
+   int    -51:SetHUDClipRect(4, int, int, int, int, int, int),
+   int    -52:SetHUDWrapWidth(1, int),
+   int    -53:SetCVar(2, str, int),
+   int    -53:SetCVarFixed(2, str, fixed),
+   int    -54:GetUserCVar(2, int, str),
+   fixed  -54:GetUserCVarFixed(2, int, str),
+   int    -55:SetUserCVar(3, int, str, int),
+   int    -55:SetUserCVarFixed(3, int, str, fixed),
+   str    -56:GetCVarString(1, str),
+   int    -57:SetCVarString(2, str, str),
+   str    -58:GetUserCVarString(2, int, str),
+   int    -59:SetUserCVarString(3, int, str, str),
+   int    -60:LineAttack(4, int, fixed, fixed, int, str, str, fixed, int, int),
+   int    -61:PlaySound(2, int, str, int, fixed, int, fixed, int),
+   int    -62:StopSound(1, int, int),
+   int    -63:StrCmp(2, str, str, int),
+   int    -64:StrICmp(2, str, str, int),
+   int    -64:StrCaseCmp(2, str, str, int),
+   str    -65:StrLeft(2, str, int),
+   str    -66:StrRight(2, str, int),
+   str    -67:StrMid(3, str, int, int),
+   str    -68:GetActorClass(1, int),
+   str    -69:GetWeapon(0),
+   int    -70:SoundVolume(int, int, fixed),
+   int    -71:PlayActorSound(2, int, int, int, fixed, int, fixed),
+   int    -72:SpawnDecal(2, int, str, int, fixed, fixed, fixed),
+   int    -73:CheckFont(1, str),
+   int    -74:DropItem(2, int, str, int, int),
+   int    -75:CheckFlag(2, int, str),
+   int    -76:SetLineActivation(2, int, int),
+   int    -77:GetLineActivation(1, int),
+   int    -78:GetActorPowerupTics(2, int, str),
+   int    -79:ChangeActorAngle(2, int, fixed, int),
+   int    -80:ChangeActorPitch(2, int, fixed, int),
+   int    -81:GetArmorInfo(1, int),
+   fixed  -81:GetArmorInfoFixed(1, int),
+   str    -81:GetArmorInfoString(1, int),
+   int    -82:DropInventory(2, int, str),
+   int    -83:PickActor(5, int, fixed, fixed, fixed, int, int, int, int),
+   int    -84:IsPointerEqual(2, int, int, int, int),
+   int    -85:CanRaiseActor(1, int),
+   int    -86:SetActorTeleFog(3, int, str, str),
+   int    -87:SwapActorTeleFog(1, int),
+   int    -88:SetActorRoll(2, int, fixed),
+   int    -89:ChangeActorRoll(2, int, fixed, int),
+   fixed  -90:GetActorRoll(1, int),
+   int    -91:QuakeEx(8, int, int, int, int, int, int, int, str, int, fixed, fixed, fixed),
+   int    -92:Warp(6, int, fixed, fixed, fixed, fixed, int, str, int, fixed, fixed, fixed),
+   int    -93:GetMaxInventory(2, int, str),
+   int    -94:SetSectorDamage(2, int, int, str, int, int),
+   int    -95:SetSectorTerrain(3, int, int, str),
+   int    -96:SpawnParticle(1, int, int, int, int, fixed, fixed, fixed, fixed, fixed, fixed, fixed, fixed, fixed, int, int),
+   int    -97:SetMusicVolume(1, fixed),
+   int    -98:CheckProximity(3, int, str, fixed, int, int, int),
+   int    -99:CheckActorState(2, int, str, int),
+
+   // Zandronum's
+   int   -100:ResetMap(0),
+   int   -101:PlayerIsSpectator(1, int),
+   int   -102:ConsolePlayerNumber(0),
+   int   -103:GetTeamProperty(2, int, int),
+   fixed -103:GetTeamPropertyFixed(2, int, int),
+   str   -103:GetTeamPropertyString(2, int, int),
+   int   -104:GetPlayerLivesLeft(1, int),
+   int   -105:SetPlayerLivesLeft(2, int, int),
+   int   -106:KickFromGame(2, int, str),
+   int   -107:GetGamemodeState(0),
+   int   -108:SetDBEntry(3, str, str, int),
+   int   -108:SetDBEntryFixed(3, str, str, fixed),
+   int   -109:GetDBEntry(2, str, str),
+   fixed -109:GetDBEntryFixed(2, str, str),
+   int   -110:SetDBEntryString(3, str, str, str),
+   str   -111:GetDBEntryString(2, str, str),
+   int   -112:IncrementDBEntry(3, str, str, int),
+   int   -112:IncrementDBEntryFixed(3, str, str, fixed),
+   int   -113:PlayerIsLoggedIn(1, int),
+   str   -114:GetPlayerAccountName(1, int),
+   int   -115:SortDBEntries(4, str, int, int, int),
+   int   -116:CountDBResults(1, int),
+   int   -117:FreeDBResults(1, int),
+   str   -118:GetDBResultKeyString(2, int, int),
+   str   -119:GetDBResultValueString(2, int, int),
+   int   -120:GetDBResultValue(2, int, int),
+   fixed -120:GetDBResultValueFixed(2, int, int),
+   int   -121:GetDBEntryRank(3, str, str, int),
+   int   -122:RequestScriptPuke(4, int, int, int, int, int),
+   int   -123:BeginDBTransaction(0),
+   int   -124:EndDBTransaction(0),
+   int   -125:GetDBEntries(1, str),
+   int   -126:NamedRequestScriptPuke(1, str, int, int, int ,int),
+   int   -127:SystemTime(0),
+   int   -128:GetTimeProperty(2, int, int, int),
+   int   -129:Strftime(2, int, str, int),
+
+   // ZDoom's (continued)
+   int   -200:CheckClass(1, str, int, int),
+   int   -201:DamageActor(6, int, int, int, int, int, str),
+   int   -202:SetActorFlag(3, int, str, int),
+   int   -203:SetTranslation(2, int, str),
+   str   -204:GetActorFloorTexture(1, int),
+   str   -205:GetActorFloorTerrain(1, int),
+   int   -206:StrArg(1, str),
+   fixed -207:Floor(1, fixed),
+   fixed -208:Round(1, fixed),
+   fixed -209:Ceil(1, fixed),
+   int   -210:ScriptCall(2, str, str, ...),
+   fixed -210:ScriptCallFixed(2, str, str, ...),
+   str   -210:ScriptCallString(2, str, str, ...),
+
+   // Eternity's
+   fixed -300:GetLineX(3, int, fixed, fixed),
+   fixed -301:GetLineY(3, int, fixed, fixed),
+
+   // GZDoom's
+   int   -400:SetSectorGlow(6, int, int, int, int, int, int),
+   int   -401:SetFogDensity(2, int, int),
+
+   // ZDaemon's
+   int -19260:GetTeamScore(1),
+   int -19261:SetTeamScore(2),
+
+   void  {  2     }:__suspend(void),
+
+   void  { 55,  56}:Delay(int),
+   int   { 57,  58}:Random(int, int),
+   fixed { 57,  58}:RandomFixed(fixed, fixed),
+   int   { 59,  60}:ThingCount(int, int),
+   void  { 61,  62}:TagWait(int),
+   void  { 63,  64}:PolyWait(int),
+   void  { 65,  66}:ChangeFloor(int, str),
+   void  { 67,  68}:ChangeCeiling(int, str),
+
+   int   { 80     }:LineSide(void),
+   void  { 81,  82}:ScriptWait(int),
+   void  { 83     }:ClearLineSpecial(void),
+
+   void  { 85     }:BeginPrint(void),
+   void  { 85     }:BeginPrintBold(void),
+   void  { 85     }:BeginHudMessage(void),
+   void  { 85     }:BeginHudMessageBold(void),
+   void  { 85     }:BeginLog(void),
+   void  { 85     }:BeginStrParam(void),
+   void  { 86     }:EndPrint(void),
+   void  { 87     }:PrintString(str),
+   void  { 88     }:PrintInt(int),
+   void  { 88     }:PrintNumber(int),
+   void  { 89     }:PrintChar(int),
+   int   { 90     }:PlayerCount(void),
+   int   { 91     }:GameType(void),
+   int   { 92     }:GameSkill(void),
+   int   { 93     }:Timer(void),
+   void  { 94     }:SectorSound(str, int),
+   void  { 95     }:AmbientSound(str, int),
+   void  { 96     }:SoundSequence(str),
+   void  { 97     }:SetLineTexture(int, int, int, str),
+   void  { 98     }:SetLineBlocking(int, int),
+   void  { 99     }:SetLineSpecial(2, int, int, int, int, int, int, int),
+   void  {100     }:ThingSound(int, str, int),
+   void  {101     }:EndPrintBold(void),
+   void  {102     }:ActivatorSound(str, int),
+   void  {103     }:LocalAmbientSound(str, int),
+   void  {104     }:SetLineMonsterBlocking(int, int),
+
+   int   {118     }:IsMultiplayer(void),
+   int   {118     }:IsNetworkGame(void),
+   int   {119     }:PlayerTeam(void),
+   int   {120     }:PlayerHealth(void),
+   int   {121     }:PlayerArmorPoints(void),
+   int   {122     }:PlayerFrags(void),
+
+   int   {124     }:BlueTeamCount(void),
+   int   {125     }:RedTeamCount(void),
+   int   {126     }:BlueTeamScore(void),
+   int   {127     }:RedTeamScore(void),
+   int   {128     }:IsOneFlagCTF(void),
+   int   {129     }:GetInvasionWave(void),
+   int   {130     }:GetInvasionState(void),
+   void  {131     }:PrintName(int),
+   void  {132     }:Music_Change(str, int),
+   void  {134, 133}:ConsoleCommand(1, str, int, int),
+   int   {135     }:SinglePlayer(void),
+   int   {136     }:FixedMul(int, int),
+   int   {137     }:FixedDiv(int, int),
+   void  {138, 139}:SetGravity(fixed),
+   void  {140, 141}:SetAirControl(fixed),
+   void  {142     }:ClearInventory(void),
+   void  {143, 144}:GiveInventory(str, int),
+   void  {145, 146}:TakeInventory(str, int),
+   int   {147, 148}:CheckInventory(str),
+   int   {149, 150}:Spawn(4, str, fixed, fixed, fixed, int, int),
+   int   {151, 152}:SpawnSpot(2, str, int, int, int),
+   void  {153, 154}:SetMusic(1, str, int, int),
+   void  {155, 156}:LocalSetMusic(1, str, int, int),
+   void  {157     }:PrintFixed(fixed),
+   void  {158     }:PrintLocalized(str),
+   void  {159     }:MoreHudMessage(void),
+   void  {160     }:OptHudMessage(int, int, int, fixed, fixed, fixed),
+   void  {160     }:OptHudMessageS(int, int, str, fixed, fixed, fixed),
+   void  {161     }:EndHudMessage(...),
+   void  {161     }:EndHudMessageX(fixed),
+   void  {161     }:EndHudMessageXX(fixed, fixed),
+   void  {161     }:EndHudMessageXXX(fixed, fixed, fixed),
+   void  {162     }:EndHudMessageBold(...),
+   void  {162     }:EndHudMessageBoldX(fixed),
+   void  {162     }:EndHudMessageBoldXX(fixed, fixed),
+   void  {162     }:EndHudMessageBoldXXX(fixed, fixed, fixed),
+
+   void  {165, 166}:SetFont(str),
+
+   void  {180     }:SetThingSpecial(2, int, int, int, int, int, int, int),
+
+   void  {190     }:FadeTo(int, int, int, fixed, fixed),
+   void  {191     }:FadeRange(int, int, int, fixed, int, int, int, fixed, fixed),
+   void  {192     }:CancelFade(void),
+   int   {193     }:PlayMovie(str),
+   void  {194     }:SetFloorTrigger(3, int, int, int, int, int, int, int, int),
+   void  {195     }:SetCeilingTrigger(3, int, int, int, int, int, int, int, int),
+   fixed {196     }:GetActorX(int),
+   fixed {197     }:GetActorY(int),
+   fixed {198     }:GetActorZ(int),
+   void  {199     }:CreateTranslationStart(int),
+   void  {200     }:CreateTranslationPalette(int, int, int, int),
+   void  {201     }:CreateTranslationRGB(int, int, int, int, int, int, int, int),
+   void  {202     }:CreateTranslationEnd(void),
+
+   fixed {220     }:Sin(fixed),
+   fixed {221     }:Cos(fixed),
+   fixed {222     }:VectorAngle(fixed, fixed),
+   int   {223     }:CheckWeapon(str),
+   int   {224     }:SetWeapon(str),
+
+   void  {244     }:SetMarineWeapon(int, int),
+   void  {245     }:SetActorProperty(int, int, int),
+   void  {245     }:SetActorPropertyFixed(int, int, fixed),
+   void  {245     }:SetActorPropertyString(int, int, str),
+   int   {246     }:GetActorProperty(int, int),
+   fixed {246     }:GetActorPropertyFixed(int, int),
+   str   {246     }:GetActorPropertyString(int, int),
+   int   {247     }:PlayerNumber(void),
+   int   {248     }:ActivatorTID(void),
+   void  {249     }:SetMarineSprite(int, str),
+   int   {250     }:GetScreenWidth(void),
+   int   {251     }:GetScreenHeight(void),
+   void  {252     }:Thing_Projectile2(4, int, int, int, int, int, int, int),
+   int   {253     }:StrLen(str),
+   void  {254     }:SetHudSize(2, int, int, int),
+   int   {255     }:GetCVar(str),
+   fixed {255     }:GetCVarFixed(str),
+
+   void  {257     }:SetResultValue(int),
+   void  {257     }:SetResultValueFixed(fixed),
+   int   {258     }:GetLineRowOffset(void),
+   fixed {259     }:GetActorFloorZ(int),
+   fixed {260     }:GetActorAngle(int),
+   fixed {261     }:GetSectorFloorZ(int, int, int),
+   fixed {262     }:GetSectorCeilingZ(int, int, int),
+
+   int   {264     }:GetSigilPieces(void),
+   int   {265     }:GetLevelInfo(int),
+   void  {266     }:ChangeSky(str, str),
+   int   {267     }:PlayerInGame(int),
+   int   {268     }:PlayerIsBot(int),
+   void  {269     }:SetCameraToTexture(int, str, int),
+   void  {270     }:EndLog(void),
+   int   {271     }:GetAmmoCapacity(str),
+   void  {272     }:SetAmmoCapacity(str, int),
+   void  {273     }:PrintModuleCharArray(int, int),
+   void  {274     }:PrintWorldCharArray(int, int),
+   void  {275     }:PrintGlobalCharArray(int, int),
+   void  {276     }:SetActorAngle(int, fixed),
+
+   void  {280     }:SpawnProjectile(int, str, int, int, int, int, int),
+   int   {281     }:GetSectorLightLevel(int),
+   fixed {282     }:GetActorCeilingZ(int),
+   int   {283     }:SetActorPosition(4, int, fixed, fixed, fixed, int),
+   void  {284     }:ClearActorInventory(int),
+   void  {285     }:GiveActorInventory(int, str, int),
+   void  {286     }:TakeActorInventory(int, str, int),
+   int   {287     }:CheckActorInventory(int, str),
+   int   {288     }:ThingCountName(str, int),
+   int   {289     }:SpawnSpotFacing(2, str, int, int),
+   int   {290     }:PlayerClass(int),
+
+   int   {326     }:GetPlayerInfo(int, int),
+   void  {327     }:ChangeLevel(str, int, int, int),
+   void  {328     }:SectorDamage(int, int, str, str, int),
+   void  {329     }:ReplaceTextures(2, str, str, int),
+
+   fixed {331     }:GetActorPitch(int),
+   void  {332     }:SetActorPitch(int, fixed),
+   void  {333     }:PrintBind(str),
+   int   {334     }:SetActorState(2, int, str, int),
+   int   {335     }:Thing_Damage2(int, int, str),
+   int   {336     }:UseInventory(str),
+   int   {337     }:UseActorInventory(int, str),
+   int   {338     }:CheckActorCeilingTexture(int, str),
+   int   {339     }:CheckActorFloorTexture(int, str),
+   int   {340     }:GetActorLightLevel(int),
+   void  {341     }:SetMugShotState(str),
+   int   {342     }:ThingCountSector(int, int, int),
+   int   {343     }:ThingCountNameSector(str, int, int),
+   int   {344     }:CheckPlayerCamera(int),
+   int   {345     }:MorphActor(int, str, str, int, int, str, str),
+   int   {346     }:UnMorphActor(1, int, int),
+   int   {347     }:GetPlayerInput(int, int),
+   fixed {347     }:GetPlayerInputFixed(int, int),
+   int   {348     }:ClassifyActor(int),
+   void  {349     }:PrintBinary(int),
+   void  {350     }:PrintHex(int),
+
+   str   {352     }:EndStrParam(void),
+   void  {353     }:PrintModuleCharRange(int, int, int, int),
+   void  {354     }:PrintWorldCharRange(int, int, int, int),
+   void  {355     }:PrintGlobalCharRange(int, int, int, int),
+   int   {356     }:StrCpyToModuleCharRange(int, int, int, int, str, int),
+   int   {357     }:StrCpyToWorldCharRange(int, int, int, int, str, int),
+   int   {358     }:StrCpyToGlobalCharRange(int, int, int, int, str, int),
+
+   void  {361     }:NamedScriptWait(str),
+   void  {362     }:CreateTranslationDesat(int, int, fixed, fixed, fixed, fixed, fixed, fixed),
+
+   void  {378     }:PrintLocalCharArray(int, int),
+   void  {379     }:PrintLocalCharRange(int, int, int, int),
+   int   {380     }:StrCpyToLocalCharRange(int, int, int, int, str, int);
+
+createtranslation __CreateTranslation
+(
+   (begin): CreateTranslationStart,
+   (end):   CreateTranslationEnd,
+
+   (1:1=1:1): CreateTranslationPalette,
+   (1:1=3:3): CreateTranslationRGB,
+
+   %(1:1=3:3): CreateTranslationDesat
+);
+
+print __HudMessage
+(
+   (begin): BeginHudMessage,
+   (end):   EndHudMessage,
+   (more):  MoreHudMessage,
+   (opt):   OptHudMessage,
+
+   ACS_PrintPropertyBase()
+);
+
+print __HudMessageBold
+(
+   (begin): BeginHudMessageBold,
+   (end):   EndHudMessageBold,
+   (more):  MoreHudMessage,
+   (opt):   OptHudMessage,
+
+   ACS_PrintPropertyBase()
+);
+
+print __Log
+(
+   (begin): BeginLog,
+   (end):   EndLog,
+
+   ACS_PrintPropertyBase()
+);
+
+print __Print
+(
+   (begin): BeginPrint,
+   (end):   EndPrint,
+
+   ACS_PrintPropertyBase()
+);
+
+print __PrintBold
+(
+   (begin): BeginPrintBold,
+   (end):   EndPrintBold,
+
+   ACS_PrintPropertyBase()
+);
+
+print __StrParam
+(
+   (begin): BeginStrParam,
+   (end):   EndStrParam,
+
+   ACS_PrintPropertyBase()
+);
+
+print PrintRaw
+(
+   ACS_PrintPropertyBase()
+);
+
+#endif//__GDCC_Header__ACS__zspecial_acs__
+

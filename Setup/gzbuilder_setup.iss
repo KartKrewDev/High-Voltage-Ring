@@ -2,14 +2,14 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 [Setup]
-AppName=Ultimate Zone Builder
-AppVerName=Ultimate Zone Builder
-AppPublisher=Sonic Team Junior
-AppPublisherURL=https://www.srb2.org/
-AppSupportURL=https://www.srb2.org/
-AppUpdatesURL=https://www.srb2.org/
-DefaultDirName={pf}\Ultimate Zone Builder
-DefaultGroupName=Ultimate Zone Builder
+AppName=High Voltage Ring
+AppVerName=High Voltage Ring
+AppPublisher=Kart Krew
+AppPublisherURL=https://www.kartkrew.org/
+AppSupportURL=https://www.kartkrew.org/
+AppUpdatesURL=https://www.kartkrew.org/
+DefaultDirName={pf}\High Voltage Ring
+DefaultGroupName=High Voltage Ring
 AllowNoIcons=true
 LicenseFile=..\LICENSE.txt
 OutputDir=..\Release
@@ -18,7 +18,7 @@ Compression=lzma/ultra64
 SolidCompression=true
 SourceDir=..\Build
 SetupLogging=false
-AppMutex=ultimatezonebuilder
+AppMutex=highvoltagering
 PrivilegesRequired=admin
 ShowLanguageDialog=no
 LanguageDetectionMethod=none
@@ -74,9 +74,9 @@ Source: Sprites\*; DestDir: {app}\Sprites; Flags: ignoreversion recursesubdirs
 Source: Textures\*; DestDir: {app}\Textures; Flags: ignoreversion
 
 [Icons]
-Name: {group}\Ultimate Zone Builder; Filename: {app}\Builder.exe
-Name: {group}\{cm:UninstallProgram,Ultimate Zone Builder}; Filename: {uninstallexe}
-Name: {commondesktop}\Ultimate Zone Builder; Filename: {app}\Builder.exe; Tasks: desktopicon
+Name: {group}\High Voltage Ring; Filename: {app}\Builder.exe
+Name: {group}\{cm:UninstallProgram,High Voltage Ring}; Filename: {uninstallexe}
+Name: {commondesktop}\High Voltage Ring; Filename: {app}\Builder.exe; Tasks: desktopicon
 
 [UninstallDelete]
 Name: {app}; Type: filesandordirs
@@ -86,7 +86,7 @@ Name: {app}\Builder.pdb; Type: files
 Name: {app}\Builder.xml; Type: files
 
 [Registry]
-Root: HKLM; Subkey: SOFTWARE\UZB\Ultimate Zone Builder\; ValueType: string; ValueName: Location; ValueData: {app}; Flags: uninsdeletevalue
+Root: HKLM; Subkey: SOFTWARE\HVR\High Voltage Ring\; ValueType: string; ValueName: Location; ValueData: {app}; Flags: uninsdeletevalue
 
 [Messages]
 ReadyLabel2a=Continue to begin with the installation, or click Back if you want to review or change any settings.

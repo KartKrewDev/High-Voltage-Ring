@@ -1,0 +1,382 @@
+###############################################################################
+GDCC ACS Language Extensions
+###############################################################################
+
+===============================================================================
+Lexical Elements
+===============================================================================
+
+===========================================================
+Punctuators
+===========================================================
+
+Syntax:
+  punctuator: add one of
+    . ... ##
+
+===========================================================
+Keywords
+===========================================================
+
+Syntax:
+  keyword: add
+    <enum>
+    <fixed>
+    <float>
+    <sizeof>
+    <struct>
+
+===============================================================================
+Expressions
+===============================================================================
+
+===========================================================
+Suffix Expressions
+===========================================================
+
+Syntax:
+  suffix-expression: add
+    suffix-expression . identifier
+
+===========================================================
+Prefix Expressions
+===========================================================
+
+Syntax:
+  prefix-expression: add
+    <sizeof> ( type-name )
+    <sizeof> prefix-expression
+
+  print-expression: add
+    print-identifier ( print-specifier-string print-argument-list(opt) )
+
+  print-specifier-string:
+    string-literal
+    string-literal , print-specifier-argument-list
+
+  print-specifier-argument-list:
+    print-specifier-argument
+    print-specifier-argument-list , print-specifier-argument
+
+-----------------------------------------------------------
+Print Expressions
+-----------------------------------------------------------
+
+Semantics:
+  A print expression using a print specifier string uses a string literal to
+  describe print specifiers. Within the string, a sequence beginning with a
+  percent (%) and ending with a colon (:) is a print specifier using the same
+  names as a print specifier list. All other sequences are taken as literal
+  characters to print.
+
+===========================================================
+Cast Expressions
+===========================================================
+
+Syntax:
+  cast-expression: add
+    ( type ) cast-expression
+
+===============================================================================
+Declarations
+===============================================================================
+
+Syntax:
+  external-declaration: add
+    enumeration-declaration
+    print-declaration
+    structure-declaration
+
+===========================================================
+Function Declarations
+===========================================================
+
+Syntax:
+  function-declaration: add
+    <function> declaration-specifiers identifier ( parameter-type-list )
+      identifier-sequence(opt) ;
+    <function> declaration-specifiers identifier ( parameter-type-list )
+      identifier-sequence compound-statement
+
+  parameter-type-list: add
+    parameter-list , ...
+
+  identifier-sequence:
+    identifier identifier-sequence(opt)
+
+===========================================================
+Script Declarations
+===========================================================
+
+Syntax:
+  script-declaration: add
+    <script> script-address script-parameters(opt) identifier-sequence(opt)
+      compound-statement
+
+===========================================================
+Special Declarations
+===========================================================
+
+Syntax:
+  special-item: add
+    type-name special-address identifier ( special-parameters )
+
+  special-address: add
+    { special-address-value } :
+    { special-address-value , special-address-value } :
+
+  special-address-value: add
+    string-literal
+
+  special-parameters: add
+    integer-literal , parameter-type-list
+    parameter-type-list
+
+===========================================================
+Object Declarations
+===========================================================
+
+Syntax:
+  declaration-specifiers: add
+    type-qualifier declaration-specifiers(opt)
+
+  type-qualifier:
+    <const>
+
+  type-specifier: add
+    <fixed>
+    <float>
+
+  direct-declarator: add
+    ( declarator )
+
+===========================================================
+CreateTranslation Declarations
+===========================================================
+
+Syntax:
+  create-translation-declaration:
+    <createtranslation> identifier ( create-translation-property-list ) ;
+
+  create-translation-property-list:
+    create-translation-property
+    create-translation-property-list , create-translation-property
+
+  create-translation-property:
+    create-translation-property-prefix(opt) ( create-translation-property-name
+      ) : constant-expression
+
+  create-translation-property-prefix:
+    %
+
+  create-translation-property-name:
+    identifier
+    constant-expression : constant-expression = constant-expression :
+      constant-expression
+
+===========================================================
+Enumeration Declarations
+===========================================================
+
+Syntax:
+  enumeration-declaration:
+    <enum> identifier(opt) { enumeration-member-declaration-list }
+    <enum> identifier(opt) { enumeration-member-declaration-list , }
+
+  enumeration-member-declaration-list:
+    enumeration-member-declaration
+    enumeration-member-declaration-list , enumeration-member-declaration
+
+  enumeration-member-declaration:
+    identifier
+    identifier = constant-expression
+
+===========================================================
+Print Declarations
+===========================================================
+
+Syntax:
+  print-declaration:
+    <print> identifier ( print-property-list ) ;
+
+  print-property-list:
+    print-property
+    print-property-list , print-property
+
+  print-property:
+    identifier : constant-expression
+    identifier(opt) ( identifier ) : constant-expression
+
+===========================================================
+Structure Declarations
+===========================================================
+
+Syntax:
+  structure-declaration:
+    <struct> identifier { structure-member-declaration-sequence }
+    <struct> identifier ;
+
+  structure-member-declaration-sequence:
+    structure-member-declaration
+    structure-member-declaration-sequence structure-member-declaration
+
+  structure-member-declaration:
+    specifier-qualifier-sequence structure-member-declarator-list ;
+
+  specifier-qualifier-sequence:
+    type-specifier specifier-qualifier-sequence(opt)
+    type-qualifier specifier-qualifier-sequence(opt)
+
+  structure-member-declarator-list:
+    structure-member-declarator
+    structure-member-declarator-list , structure-member-declarator
+
+  structure-member-declarator:
+    declarator
+
+===============================================================================
+Preprocessor Directives
+===============================================================================
+
+Syntax:
+  preprocessing-line: add
+    if-section
+
+  if-section:
+    if-line elif-line-sequence(opt) else-line(opt) endif-line
+
+  if-line:
+    # <if> constant-expression new-line preprocessing-line-sequence(opt)
+    # <ifdef> identifier new-line preprocessing-line-sequence(opt)
+    # <ifndef> identifier new-line preprocessing-line-sequence(opt)
+
+  elif-line-sequence:
+    elif-line
+    elif-line-sequence elif-line
+
+  elif-line:
+    # <elif> constant-expression new-line preprocessing-line-sequence(opt)
+
+  else-line:
+    # <else> new-line preprocessing-line-sequence(opt)
+
+  endif-line:
+    # <endif> new-line
+
+  control-line: add
+    # define-name identifier lparen identifier-list(opt) )
+      preprocessing-token-sequence(opt)new-line
+    # define-name identifier lparen ... ) preprocessing-token-sequence(opt)
+      new-line
+    # define-name identifier lparen identifier-list , ... )
+      preprocessing-token-sequence(opt) new-line
+    # <pragma> preprocessing-token-sequence new-line
+    # <undef> identifier new-line
+    # new-line
+
+  identifier-list:
+    identifier
+    identifier-list , identifier
+
+===========================================================
+Conditional Inclusion
+===========================================================
+
+===========================================================
+Macro Replacement
+===========================================================
+
+===========================================================
+Pragma Directives
+===========================================================
+
+-----------------------------------------------------------
+block_scope
+-----------------------------------------------------------
+
+Syntax:
+  # <pragma> <block_scope> on-off-switch
+
+Semantics:
+  When not in effect, block scope object declarations are visible at function
+  scope.
+
+  When in effect, block scope object declarations are block scoped.
+
+  Follows the same scoping rules as STDC pragmas. The default state is OFF.
+
+-----------------------------------------------------------
+define raw
+-----------------------------------------------------------
+
+Syntax:
+  # <pragma> <define> <raw> on-off-switch
+
+Semantics:
+  When not in effect, object-like macro definitions are preprocessed and
+  altered to make them act like a primary-expression rather than simple token
+  substitution.
+
+  When in effect, object-like macro definitions are taken as-is as in C.
+
+  Follows the same scoping rules as STDC pragmas. The default state is OFF.
+
+-----------------------------------------------------------
+fixed
+-----------------------------------------------------------
+
+Syntax:
+  # <pragma> <fixed> on-off-switch
+
+Semantics:
+  Equivalent to setting both the fixed_literal and fixed_type pragmas to the
+  specified state.
+
+-----------------------------------------------------------
+fixed_literal
+-----------------------------------------------------------
+
+Syntax:
+  # <pragma> <fixed_literal> on-off-switch
+
+Semantics:
+  When in effect, fixed-point literals have fixed type.
+
+  When not in effect, fixed-point literals have int type.
+
+  Follows the same scoping rules as STDC pragmas. The default state is OFF.
+
+-----------------------------------------------------------
+fixed_type
+-----------------------------------------------------------
+
+Syntax:
+  # <pragma> <fixed_type> on-off-switch
+
+Semantics:
+  When in effect, the fixed keyword indicates a fixed-point type.
+
+  When not in effect, the fixed keyword is a synonym for int.
+
+  Follows the same scoping rules as STDC pragmas. The default state is OFF.
+
+-----------------------------------------------------------
+state
+-----------------------------------------------------------
+
+Syntax:
+  # <pragma> <state> <save>
+  # <pragma> <state> <restore>
+
+Semantics:
+  Saves or restores the pragma state, as though entering or leaving a compound
+  statement, respectively.
+
+###############################################################################
+Grammar
+###############################################################################
+
+###############################################################################
+EOF
+###############################################################################
+

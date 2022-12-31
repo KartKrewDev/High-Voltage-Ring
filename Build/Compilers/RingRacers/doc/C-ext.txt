@@ -1,0 +1,1166 @@
+###############################################################################
+GDCC C Language Extensions
+###############################################################################
+
+===============================================================================
+Attribute Specifiers
+===============================================================================
+
+Syntax:
+  attribute-specifier-list:
+    attribute-specifier
+    attribute-specifier-list attribute-specifier
+
+  attribute-specifier:
+    [ [ attribute-list ] ]
+    <__attribute__> ( ( attribute-list ) )
+
+  attribute-list:
+    attribute
+    attribute-list , attribute
+
+  attribute:
+    attribute-name attribute-argument-clause(opt)
+
+  attribute-name:
+    identifier
+    keyword
+
+  attribute-argument-clause:
+    ( balanced-token-seq )
+
+  balanced-token-seq:
+    balanced-token
+    balanced-token-seq balanced-token
+
+  balanced-token:
+    ( balanced-token-seq )
+    [ balanced-token-seq ]
+    { balanced-token-seq }
+    any token other than a parenthesis, a bracket, or a brace
+
+Semantics:
+  Attribute specifiers are used to attach additional information to
+  declarations and declarators.
+
+===========================================================
+Address
+===========================================================
+
+Syntax:
+  attribute-address:
+    attribute-address-name ( constant-expression )
+    attribute-address-name ( string-literal )
+
+  attribute-address-name:
+    <address>
+    <__address>
+
+Constraints:
+  If applied to an object, the object shall have static storage duration.
+
+Semantics:
+  The first form sets the address of the affected object, function, or address
+  space.
+
+  The second form sets the call name of the affected function.
+
+===========================================================
+Address Lit
+===========================================================
+
+Syntax:
+  attribute-address_Lit:
+    attribute-address_Lit-name ( constant-expression )
+
+  attribute-address-name:
+    <address_Lit>
+    <__address_Lit>
+
+Constraints:
+  Shall only be applied to functions.
+
+Semantics:
+  For "AsmFunc" call functions, sets an alternative address to use when all
+  arguments are constants.
+
+===========================================================
+Alloc Aut
+===========================================================
+
+Syntax:
+  attribute-alloc_Aut:
+    attribute-alloc_Aut-name ( constant-expression )
+
+  attribute-alloc_Aut-name:
+    <alloc_Aut>
+    <__alloc_Aut>
+
+Semantics:
+  Sets the Aut stack size for a function. Currently only applies to scripts.
+
+===========================================================
+Anonymous
+===========================================================
+
+Syntax:
+  attribute-anonymous:
+    attribute-anonymous-name
+
+  attribute-anonymous-name:
+    <anonymous>
+    <__anonymous>
+
+Constraints:
+  Shall only be applied to structure members with structure type.
+
+Semantics:
+  Makes the affected member's members visible in the containing structure.
+
+===========================================================
+Call
+===========================================================
+
+Syntax:
+  attribute-call:
+    attribute-call-name ( string-literal )
+
+  attribute-call-name:
+    <call>
+    <__call>
+
+Constraints:
+  Shall only be applied to functions and function types.
+
+Semantics:
+  Sets the affected function's calling convention.
+
+-----------------------------------------------------------
+"AsmFunc"
+-----------------------------------------------------------
+
+Semantics:
+  Calling convention for special function-like instructions. Requires an
+  explicit allocation to be the instruction number.
+
+-----------------------------------------------------------
+"LangACS"
+-----------------------------------------------------------
+
+Semantics:
+  Calling convention for "ACS" linkage functions.
+
+-----------------------------------------------------------
+"LangASM"
+-----------------------------------------------------------
+
+Semantics:
+  Calling convention for "asm" linkage functions.
+
+-----------------------------------------------------------
+"LangC"
+-----------------------------------------------------------
+
+Semantics:
+  Calling convention for "C" linkage functions.
+
+-----------------------------------------------------------
+"Native"
+-----------------------------------------------------------
+
+Semantics:
+  Calling convention for native functions.
+
+  For ZDACS, this uses callfunc indexes and requires an explicit allocation.
+
+-----------------------------------------------------------
+"Script"
+-----------------------------------------------------------
+
+Semantics:
+  Calling convention for ACS scripts. It is a named or numbered script based on
+  options passed to the compiler.
+
+  Functions with this calling convention are executed asynchronously.
+
+-----------------------------------------------------------
+"ScriptI"
+-----------------------------------------------------------
+
+Semantics:
+  Same as "Script", except always a numbered script.
+
+-----------------------------------------------------------
+"ScriptS"
+-----------------------------------------------------------
+
+Semantics:
+  Same as "Script", except always a named script.
+
+-----------------------------------------------------------
+"Special"
+-----------------------------------------------------------
+
+Semantics:
+  Calling convention for line specials. Requires an explicit allocation to be
+  the line special number.
+
+  A pointer to a function with this calling convention may be converted to an
+  integer type in assignment, the result is the explicitly allocated line
+  special number. If there is no explicit allocation or if the allocated number
+  cannot be represented by the result type, the behavior is undefined.
+
+-----------------------------------------------------------
+"SScript"
+-----------------------------------------------------------
+
+Semantics:
+  Alternative ACS script calling convention that is executed synchronously,
+  delaying the caller until the callee returns. It is a named or numbered
+  script based on options passed to the compiler.
+
+-----------------------------------------------------------
+"SScriptI"
+-----------------------------------------------------------
+
+Semantics:
+  Same as "SScript", except always a numbered script.
+
+-----------------------------------------------------------
+"SScriptS"
+-----------------------------------------------------------
+
+Semantics:
+  Same as "SScript", except always a named script.
+
+-----------------------------------------------------------
+"StdCall"
+-----------------------------------------------------------
+
+Semantics:
+  The normal function calling convention.
+
+-----------------------------------------------------------
+"StkCall"
+-----------------------------------------------------------
+
+Semantics:
+  Minimalist function calling convention that does not pass the stack pointer.
+  LangACS functions map to this.
+
+===========================================================
+Delay
+===========================================================
+
+Syntax:
+  attribute-delay:
+    attribute-delay-name
+
+  attribute-delay-name:
+    <delay>
+    <__delay>
+
+Semantics:
+  Marks a function as delaying or potentially delaying execution when called.
+
+===========================================================
+Extern
+===========================================================
+
+Syntax:
+  attribute-extern:
+    attribute-extern-name ( string-literal )
+
+  attribute-extern-name:
+    <extern>
+    <__extern>
+
+Semantics:
+  Sets the affected object or function's language linkage. Supported strings
+  are: "ACS", "asm", "C".
+
+  Setting language linkage in this way does not affect a function's default
+  calling convention or otherwise alter its type.
+
+===========================================================
+No Init
+===========================================================
+
+Syntax:
+  attribute-no_init:
+    attribute-no_init-name
+
+  attribute-no_init-name:
+    <no_init>
+    <__no_init>
+
+Semantics:
+  Suppresses the normal static-storage initialization rules for the affected
+  objects, instead leaving them with indeterminate values at startup. Only
+  affects object definitions.
+
+===========================================================
+Optional Args
+===========================================================
+
+Syntax:
+  attribute-optional_args:
+    attribute-optional_args-name ( constant-expression )
+
+  attribute-optional_args-name:
+    <optional_args>
+    <__optional_args>
+
+Constraints:
+  Shall only be applied to functions.
+
+Semantics:
+  Indicates that some or all of the arguments may be omitted when calling the
+  affected function. For calling conventions that do not support optional
+  arguments, omitted arguments are replaced as if by static initialization.
+
+===========================================================
+Return
+===========================================================
+
+Syntax:
+  attribute-return:
+    attribute-return-name
+
+  attribute-return-name:
+    <return>
+    <__return>
+
+Constraints:
+  Shall only be applied to statements.
+
+Semantics:
+  Indicates that the affected __asm statement has a return in it.
+
+===========================================================
+Script
+===========================================================
+
+Syntax:
+  attribute-script:
+    attribute-script-name ( string-literal )
+
+  attribute-script-name:
+    <script>
+    <__script>
+
+Constraints:
+  Shall only be applied to functions and function types.
+
+Semantics:
+  Sets the affected function's script type or flags. Supported types are:
+  "bluereturn", "death", "disconnect", "enter", "event", "lightning", "open",
+  "pickup", "redreturn", "respawn", "return", "unloading", "whitereturn".
+  Supported flags are: "clientside", "net".
+
+===============================================================================
+Lexical Elements
+===============================================================================
+
+===========================================================
+Character Constants
+===========================================================
+
+Syntax:
+  simple-escape-sequence: add
+    \C
+
+Description:
+  The \C escape is used to initiate a color code sequence, as \c does in ACS.
+
+===============================================================================
+Expressions
+===============================================================================
+
+===========================================================
+Primary Expressions
+===========================================================
+
+Syntax:
+  primary-expression: add
+    div-expression
+    glyph-expression
+
+-----------------------------------------------------------
+Div Expression
+-----------------------------------------------------------
+
+Syntax:
+  div-expression:
+    <__div> ( assignment-expression , assignment-expression )
+
+Constraints:
+  Both expressions shall have integer type.
+
+Semantics:
+  The usual arithmetic conversions are performed on the two expressions.
+
+  The result is a __div object containing the quotient and remainder of the
+  division of the first expression by the second. If the second expression is
+  0, or either part of the result cannot be represented the behavior is
+  undefined.
+
+-----------------------------------------------------------
+Glyph Expression
+-----------------------------------------------------------
+
+Syntax:
+  glyph-expression:
+    <__glyph> ( type-name , string-literal )
+
+Constraints:
+  The specified type shall be a complete object type.
+
+Semantics:
+  The result of a glyph expression is an rvalue with the specified type with a
+  value determined by the specified glyph.
+
+  If the glyph's type does not match the specified type, the behavior is
+  undefined.
+
+===============================================================================
+Declarations
+===============================================================================
+
+Syntax:
+  declaration: add
+    attribute-specifier-list declaration-specifiers init-declarator-list(opt) ;
+    address-space-declaration
+
+===========================================================
+Declaration Specifiers
+===========================================================
+
+Syntax:
+  declaration-specifiers: add
+    declaration-specifiers attribute-specifier-list
+
+===========================================================
+Type Specifiers
+===========================================================
+
+Syntax:
+  type-specifier: add
+    <__div_t>
+    <__fixed>
+    <__label>
+    <__str>
+    <__str_ent>
+
+-----------------------------------------------------------
+Div T
+-----------------------------------------------------------
+
+Semantics:
+  __div_t is the return type of the __div expression. It is a structure type
+  with two members as per the div_t type. It may be combined with long, signed,
+  and unsigned as in int to alter the members' type.
+
+  The full type specifier shall be one of the following (in any order):
+    <__div_t>, or <signed> <__div_t>
+    <unsigned> <__div_t>
+    <long> <__div_t>, or <signed> <long> <__div_t>
+    <unsigned> <long> <__div_t>
+    <long> <long> <__div_t>, or <signed> <long> <long> <__div_t>
+    <unsigned> <long> <long> <__div_t>
+
+-----------------------------------------------------------
+Fixed
+-----------------------------------------------------------
+
+Semantics:
+  __fixed is an alias for _Accum.
+
+-----------------------------------------------------------
+Label
+-----------------------------------------------------------
+
+Semantics:
+  __label is a non-object type used to represent dynamic jump targets.
+
+-----------------------------------------------------------
+Str
+-----------------------------------------------------------
+
+Semantics:
+  __str is an alias for __str_ent*.
+
+-----------------------------------------------------------
+Str Ent
+-----------------------------------------------------------
+
+Semantics:
+  __str_ent is a non-object type used to represent string table entries.
+
+===========================================================
+Structure and Union Specifiers
+===========================================================
+
+Syntax:
+  struct-declaration: add
+    struct-property-declaration
+
+  struct-property-declaration:
+    <__prop> identifier { struct-property-list }
+
+  struct-property-list:
+    struct-property
+    struct-property-list , struct-property
+
+  struct-property:
+    struct-property-name : primary-expression (
+      struct-property-argument-list(opt) )
+
+  struct-property-name:
+    <call>
+    <get>
+    <set>
+    <__call>
+    <__get>
+    <__set>
+
+  struct-property-argument-list:
+    struct-property-argument
+    struct-property-argument-list , struct-property-argument
+
+  struct-property-argument:
+    <this>
+    <__arg>
+    <__this>
+    * <this>
+    * <__this>
+    -> identifier
+    constant-expression
+
+-----------------------------------------------------------
+Structure Property Declarations
+-----------------------------------------------------------
+
+Constraints:
+  In a struct property list, each struct property name (call, get, and set (or
+  their respective aliases, __call, __get, and __set)) shall appear at most
+  once.
+
+  The primary expression in a struct property shall be a constant expression.
+
+  In a struct property argument list, this (or its alias, __this) or
+  ->identifier shall appear at most once.
+
+Semantics:
+  Declares a structure member whose access is controlled by the specified
+  functions. Such a member is known as a structure property member.
+
+  An individual property is specified as a function and argument list. When
+  invoked, the function is passed that argument list with the following
+  substitutions made:
+    Each this is replaced with a pointer to the containing object.
+
+    Each *this is replaced with the containing object.
+
+    Each arg is replaced with a subsequent argument being passed to the
+    structure property expression.
+
+    Each ->identifier is replaced with the named member of the containing
+    object.
+  If there are any remaining arguments to the structure property expression,
+  they are added as if the argument list contained a corresponding number of
+  arg arguments.
+
+  When a structure property member is accessed, the result is evaluated
+  depending on context:
+    If subject to the call operator and there is a call property, then it is
+    invoked with the call expressions as arguments.
+
+    Otherwise, if subject to the call operator and there is no call property,
+    then the get property is invoked and the result is called.
+
+    Otherwise, if subject to the assignment operator, the set property is
+    invoked with the right expression as the argument.
+
+    Otherwise, if converted to an rvalue, the get property is invoked.
+
+    Otherwise, the expression has no type or value.
+
+===========================================================
+Type Qualifiers
+===========================================================
+
+Syntax:
+  address-space-name: add
+    <__aut>
+    <__far>
+    <__gbl_ars>
+    <__gbl_reg>
+    <__hub_ars>
+    <__hub_reg>
+    <__loc_reg>
+    <__mod_ars>
+    <__mod_reg>
+    <__sta>
+    <__str_ars>
+
+===========================================================
+Declarators
+===========================================================
+
+Syntax:
+  direct-declarator: add
+    identifier attribute-specifier-list
+    direct-declarator [ type-qualifier-list(opt) assignment-expression(opt) ]
+      attribute-specifier-list
+    direct-declarator [ static type-qualifier-list(opt) assignment-expression ]
+      attribute-specifier-list
+    direct-declarator [ type-qualifier-list static assignment-expression ]
+      attribute-specifier-list
+    direct-declarator [ type-qualifier-list(opt) * ] attribute-specifier-list
+    direct-declarator ( parameter-type-list ) attribute-specifier-list
+    direct-declarator ( identifier-list(opt) ) attribute-specifier-list
+
+  pointer:
+    * attribute-specifier-list type-qualifier-list(opt)
+    * attribute-specifier-list type-qualifier-list(opt) pointer
+
+===========================================================
+Address Space Declarations
+===========================================================
+
+Syntax:
+  address-space-declaration:
+    attribute-specifier-list(opt) <__addrdef> storage-class-specifier(opt)
+      address-space-specifier identifier attribute-specifier-list(opt) ;
+
+  address-space-specifier:
+    <__gbl_arr>
+    <__hub_arr>
+    <__loc_arr>
+    <__mod_arr>
+
+Constraints:
+  The storage class specifier, if provided, shall be either extern or static.
+
+Semantics:
+  Declares or defines an address space for use as an address space name.
+
+  If the address space specifier is __loc_arr, the declaration shall be at
+  block scope and have no storage class specifier. The resulting address space
+  has no linkage.
+
+  If the storage class specifier is extern, the declaration is a forward
+  declaration. Otherwise it defines a new address space.
+
+  If the storage class specifier is static, the address space has internal
+  linkage. Otherwise it has external linkage.
+
+  Address spaces have the same linkage as objects. If an address space and an
+  external object have the same name, the behavior is undefined.
+
+===============================================================================
+Statements
+===============================================================================
+
+Syntax:
+  statement: add
+    asm-statement
+    with-statement
+
+===========================================================
+Assembly Statement
+===========================================================
+
+Syntax:
+  asm-statement:
+    <__asm> ( string-literal ) ;
+
+Semantics:
+  Passes the contents of the string literal to the IR assembler as a statement
+  list.
+
+===========================================================
+With Statement
+===========================================================
+
+Syntax:
+  with-statement:
+    <__with> ( with-declaration-sequence(opt) ) statement
+
+  with-declaration-sequence:
+    with-declaration
+    with-declaration-sequence with-declaration
+
+  with-declaration:
+    declaration
+    expression ;
+
+Semantics:
+  The with statement creates a new scope for a single statement, with
+  declarations and expressions inserted in that new scope before the statement.
+
+  The statement
+    __with(X; Y;) Z;
+  is equivalent to
+    {X; Y; Z;}
+  with regards to scoping and lifetimes.
+
+  It is unspecified whether or not the with statement affects pragma scoping.
+
+===============================================================================
+Pragma Directives
+===============================================================================
+
+===========================================================
+ACS library
+===========================================================
+
+Syntax:
+  # <pragma> <ACS> <library> string-literal
+
+Semantics:
+  Specifies a library to link with at load-time.
+
+===========================================================
+GDCC FIXED_LITERAL
+===========================================================
+
+Syntax:
+  # <pragma> <GDCC> <FIXED_LITERAL> on-off-switch
+
+Semantics:
+  When in effect, floating constants that do not end with F or f are treated as
+  having _Accum type. Additionally, the suffix of floating constants may
+  include L, l, LL, or ll to have double or long double type.
+
+  When not in effect, floating constants are handled normally.
+
+  Follows the same scoping rules as STDC pragmas. The default state is OFF.
+
+===========================================================
+GDCC STRENT_LITERAL
+===========================================================
+
+Syntax:
+  # <pragma> <GDCC> <STRENT_LITERAL> on-off-switch
+
+Semantics:
+  When in effect, unprefixed string literals have type __str_ent*.
+
+  When not in effect, string literals are handled normally.
+
+  Follows the same scoping rules as STDC pragmas. The default state is OFF.
+
+===========================================================
+GDCC state
+===========================================================
+
+Syntax:
+  # <pragma> <GDCC> <state> <save>
+  # <pragma> <GDCC> <state> <restore>
+
+Semantics:
+  Saves or restores the pragma state, as though entering or leaving a compound
+  statement, respectively.
+
+===============================================================================
+Predefined Macro Names
+===============================================================================
+
+===========================================================
+Standard Macros
+===========================================================
+
+Macros that are conditionally defined or otherwise having
+implementation-defined values.
+
+-----------------------------------------------------------
+__STDC_NO_ATOMICS__
+-----------------------------------------------------------
+
+Always defined as 1.
+
+-----------------------------------------------------------
+__STDC_NO_COMPLEX__
+-----------------------------------------------------------
+
+Always defined as 1.
+
+-----------------------------------------------------------
+__STDC_NO_THREADS__
+-----------------------------------------------------------
+
+Always defined as 1.
+
+-----------------------------------------------------------
+__STDC_NO_VLA__
+-----------------------------------------------------------
+
+Always defined as 1.
+
+Variably modified types may be used as an argument to sizeof, but not in any
+other context.
+
+===========================================================
+Unconditional Macros
+===========================================================
+
+These are always defined, regardless of compiler options.
+
+-----------------------------------------------------------
+__GDCC__
+-----------------------------------------------------------
+
+Expands to a nonzero integer literal, indicating that source is being compiled
+by a GDCC compiler.
+
+===========================================================
+Conditional Macros
+===========================================================
+
+These may or may not be defined depending on compiler options.
+
+-----------------------------------------------------------
+__GDCC_Family__*__
+-----------------------------------------------------------
+
+Depending on the --bc-format and --bc-target options, zero or more of the
+following will be defined as 1:
+  __GDCC_Family__ZDACS__
+
+-----------------------------------------------------------
+__GDCC_Format__*__
+-----------------------------------------------------------
+
+Depending on the --bc-format option, one of the following will be defined as 1:
+  __GDCC_Format__None__
+  __GDCC_Format__ACSE__
+  __GDCC_Format__MgC_NTS__
+All others are undefined.
+
+-----------------------------------------------------------
+__GDCC_Target__*__
+-----------------------------------------------------------
+
+Depending on the --bc-target option, one of the following will be defined as 1:
+  __GDCC_Target__None__
+  __GDCC_Target__MageCraft__
+  __GDCC_Target__ZDoom__
+All others are undefined.
+
+###############################################################################
+Grammar
+###############################################################################
+
+  attribute-specifier-list:
+    attribute-specifier
+    attribute-specifier-list attribute-specifier
+
+  attribute-specifier:
+    [ [ attribute-list ] ]
+    <__attribute__> ( ( attribute-list ) )
+
+  attribute-list:
+    attribute
+    attribute-list , attribute
+
+  attribute:
+    attribute-name attribute-argument-clause(opt)
+
+  attribute-name:
+    identifier
+    keyword
+
+  attribute-argument-clause:
+    ( balanced-token-seq )
+
+  balanced-token-seq:
+    balanced-token
+    balanced-token-seq balanced-token
+
+  balanced-token:
+    ( balanced-token-seq )
+    [ balanced-token-seq ]
+    { balanced-token-seq }
+    any token other than a parenthesis, a bracket, or a brace
+
+  attribute-address:
+    attribute-address-name ( constant-expression )
+    attribute-address-name ( string-literal )
+
+  attribute-address-name:
+    <address>
+    <__address>
+
+  attribute-alloc_Aut:
+    attribute-alloc_Aut-name ( constant-expression )
+
+  attribute-alloc_Aut-name:
+    <alloc_Aut>
+    <__alloc_Aut>
+
+  attribute-call:
+    attribute-call-name ( string-literal )
+
+  attribute-call-name:
+    <call>
+    <__call>
+
+  attribute-extern:
+    attribute-extern-name ( string-literal )
+
+  attribute-extern-name:
+    <extern>
+    <__extern>
+
+  attribute-no_init:
+    attribute-no_init-name
+
+  attribute-no_init-name:
+    <no_init>
+    <__no_init>
+
+  attribute-optional_args:
+    attribute-optional_args-name ( constant-expression )
+
+  attribute-optional_args-name:
+    <optional_args>
+    <__optional_args>
+
+  attribute-script:
+    attribute-script-name ( string-literal )
+
+  attribute-script-name:
+    <script>
+    <__script>
+
+  primary-expression: add
+    div-expression
+    glyph-expression
+
+  div-expression:
+    <__div> ( assignment-expression , assignment-expression )
+
+  glyph-expression:
+    <__glyph> ( type-name , string-literal )
+
+  declaration: add
+    attribute-specifier-list declaration-specifiers init-declarator-list(opt) ;
+    address-space-declaration
+
+  declaration-specifiers: add
+    declaration-specifiers attribute-specifier
+
+  type-specifier: add
+    <__div_t>
+    <__fixed>
+    <__label>
+    <__str>
+    <__str_ent>
+
+  address-space-name: add
+    <__aut>
+    <__far>
+    <__gbl_ars>
+    <__gbl_reg>
+    <__hub_ars>
+    <__hub_reg>
+    <__loc_reg>
+    <__mod_ars>
+    <__mod_reg>
+    <__sta>
+    <__str_ars>
+
+  direct-declarator: add
+    identifier attribute-specifier-list
+    direct-declarator [ type-qualifier-list(opt) assignment-expression(opt) ]
+      attribute-specifier-list
+    direct-declarator [ static type-qualifier-list(opt) assignment-expression ]
+      attribute-specifier-list
+    direct-declarator [ type-qualifier-list static assignment-expression ]
+      attribute-specifier-list
+    direct-declarator [ type-qualifier-list(opt) * ] attribute-specifier-list
+    direct-declarator ( parameter-type-list ) attribute-specifier-list
+    direct-declarator ( identifier-list(opt) ) attribute-specifier-list
+
+  pointer:
+    * attribute-specifier-list type-qualifier-list(opt)
+    * attribute-specifier-list type-qualifier-list(opt) pointer
+
+  address-space-declaration:
+    <__addrdef> storage-class-specifier(opt) address-space-specifier identifier
+      attribute-specifier-list(opt) ;
+
+  address-space-specifier:
+    <__gbl_arr>
+    <__hub_arr>
+    <__loc_arr>
+    <__mod_arr>
+
+  statement: add
+    asm-statement
+    with-statement
+
+  asm-statement:
+    <__asm> ( string-literal ) ;
+
+  with-statement:
+    <__with> ( with-declaration-sequence(opt) ) statement
+
+  with-declaration-sequence:
+    with-declaration
+    with-declaration-sequence with-declaration
+
+  with-declaration:
+    declaration
+    expression ;
+
+  # <pragma> <ACS> <library> string-literal
+
+  # <pragma> <GDCC> <FIXED_LITERAL> on-off-switch
+
+  # <pragma> <GDCC> <STRENT_LITERAL> on-off-switch
+
+  # <pragma> <GDCC> <state> <save>
+  # <pragma> <GDCC> <state> <restore>
+
+###############################################################################
+GDCC C Library Extensions
+###############################################################################
+
+===============================================================================
+Input/output <stdio.h>
+===============================================================================
+
+===========================================================
+Functions
+===========================================================
+
+-----------------------------------------------------------
+fprintf
+-----------------------------------------------------------
+
+Description:
+  Add a new conversion specifier:
+
+    S
+      If an L length modifier is present, the argument shall be a pointer to
+      __str_ent. The argument is used as the name of a localized string to
+      print.
+
+      Otherwise, if a j length modifier is present, the argument shall be a
+      pointer to __str_ent. The argument is used as the name of a keybind to
+      print.
+
+      Otherwise, if a t length modifier is present, the argument shall be an
+      int. The argument is used as an index for a name to print.
+
+      Otherwise, there shall be no length modifier and the argument shall be a
+      pointer to __str_ent. The argument is used as the string to print.
+
+      In any of the above, the format precision is used as in s conversions.
+
+-----------------------------------------------------------
+__fprintf_str
+-----------------------------------------------------------
+
+Synopsis:
+  #include <stdio.h>
+  int __fprintf_str(FILE *restrict stream,
+    char __str_ars const *restrict format, ...);
+  int __nprintf_str(char __str_ars const *restrict format, ...);
+  int __printf_str(char __str_ars const *restrict format, ...);
+  int __snprintf_str(char *restrict s, size_t n,
+    char __str_ars const *restrict format, ...);
+  int __sprintf_str(char *restrict s,
+    char __str_ars const *restrict format, ...);
+  int __vfprintf_str(FILE *restrict stream,
+    char __str_ars const *restrict format, __va_list arg);
+  int __vnprintf_str(char __str_ars const *restrict format, __va_list arg);
+  int __vprintf_str(char __str_ars const *restrict format, __va_list arg);
+  int __vsnprintf_str(char *restrict s, size_t n,
+    char __str_ars const *restrict format, __va_list arg);
+  int __vsprintf_str(char *restrict s, char __str_ars const *restrict format,
+    va_list arg);
+
+Description:
+  The __fprintf_str functions are equivalent to their non-_str counterparts,
+  with the format parameter replaced with an indexed string.
+
+Returns:
+  The __fprintf_str functions return the same value as their non-_str
+  counterparts.
+
+-----------------------------------------------------------
+__nprintf
+-----------------------------------------------------------
+
+Synopsis:
+  #include <stdio.h>
+  int __nprintf(char const *restrict format, ...);
+
+Description:
+  The __nprintf function is equivalent to fprintf, except that the output is
+  written to a native print buffer rather than to a stream.
+
+  If the current target lacks any special native print buffer, output is
+  written to stdout.
+
+Returns:
+  The __nprintf function returns the number of characters written, or a
+  negative value if an encoding error occurred.
+
+-----------------------------------------------------------
+__vnprintf
+-----------------------------------------------------------
+
+Synopsis:
+  #include <stdarg.h>
+  #include <stdio.h>
+  int __vnprintf(char const *restrict format, va_list arg);
+
+Description:
+  The __vnprintf function is equivalent to __nprintf, with the variable
+  argument list replaced by arg, which shall have been initialized by the
+  va_start macro (and possibly subsequent va_arg calls). The __vnprintf
+  function does not invoke the va_end macro.
+
+Returns:
+  The __vnprintf function returns the number of characters written, or a
+  negative value if an encoding error occurred.
+
+===============================================================================
+General utilities <stdlib.h>
+===============================================================================
+
+===========================================================
+Functions
+===========================================================
+
+-----------------------------------------------------------
+strtoi and strtoui
+-----------------------------------------------------------
+
+Synopsis:
+  #include <stdlib.h>
+  int strtoi(char const *restrict nptr, char **restrict endptr, int base);
+  unsigned int strtoui(char const *restrict nptr, char **restrict endptr,
+    int base);
+
+Description:
+  The strtoi and strtoui functions are equivalent to the strtol and strtoul
+  functions, except that the initial portion of the string is converted to int
+  and unsigned int representation, respectively.
+
+Returns:
+  The strtoi and strtoui functions return the converted value, if any. If no
+  conversion could be performed, zero is returned. If the correct value is
+  outside the range of representable values, INT_MAX, INT_MIN, or UINT_MAX is
+  returned (according to the return type and sign of the value, if any), and
+  the value of the macro ERANGE is stored in errno.
+
+###############################################################################
+EOF
+###############################################################################
+
