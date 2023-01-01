@@ -298,6 +298,11 @@ namespace CodeImp.DoomBuilder.Controls
 			this.Parent.Refresh();
 		}
 
-		#endregion
-	}
+        #endregion
+
+        private void stringarg0_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
 }

@@ -57,7 +57,7 @@ namespace CodeImp.DoomBuilder.Windows
 			public readonly SidedefProperties Front;
 			public readonly SidedefProperties Back;
 
-			public LinedefProperties(Linedef line) 
+			public LinedefProperties(Linedef line)
 			{
 				Front = (line.Front != null ? new SidedefProperties(line.Front) : null);
 				Back = (line.Back != null ? new SidedefProperties(line.Back) : null);
@@ -97,7 +97,7 @@ namespace CodeImp.DoomBuilder.Windows
 			public readonly string MiddleTexture;
 			public readonly string LowTexture;
 
-			public SidedefProperties(Sidedef side) 
+			public SidedefProperties(Sidedef side)
 			{
 				RepeatCount = UniFields.GetInteger(side.Fields, "repeatcnt", 0);
 
@@ -143,24 +143,24 @@ namespace CodeImp.DoomBuilder.Windows
 			InitializeComponent();
 
 			// Widow setup
-			if(General.Settings.StoreSelectedEditTab)
+			if (General.Settings.StoreSelectedEditTab)
 			{
 				int activetab = General.Settings.ReadSetting("windows." + configname + ".activetab", 0);
-				
+
 				// When front or back tab was previously selected, switch to appropriate side (selectfront/selectback are set in BaseVisualGeometrySidedef.OnEditEnd)
-				if((selectfront || selectback) && (activetab == 1 || activetab == 2))
+				if ((selectfront || selectback) && (activetab == 1 || activetab == 2))
 					tabs.SelectTab(selectfront ? 1 : 2);
 				else
 					tabs.SelectTab(activetab);
 			}
-			
+
 			// Fill flags lists
-			foreach(KeyValuePair<string, string> lf in General.Map.Config.LinedefFlags)
+			foreach (KeyValuePair<string, string> lf in General.Map.Config.LinedefFlags)
 				flags.Add(lf.Value, lf.Key);
 			flags.Enabled = General.Map.Config.LinedefFlags.Count > 0;
 
 			// Fill sidedef flags lists
-			foreach(KeyValuePair<string, string> lf in General.Map.Config.SidedefFlags) 
+			foreach (KeyValuePair<string, string> lf in General.Map.Config.SidedefFlags)
 			{
 				flagsFront.Add(lf.Value, lf.Key);
 				flagsBack.Add(lf.Value, lf.Key);
@@ -170,7 +170,11 @@ namespace CodeImp.DoomBuilder.Windows
 
 			// Fill actions list
 			action.AddInfo(General.Map.Config.SortedLinedefActions.ToArray());
-			
+
+			// Fill activations list
+			foreach (LinedefActivateInfo ai in General.Map.Config.LinedefActivates) udmfactivates.Add(ai.Title, ai);
+			udmfactivates.Enabled = General.Map.Config.LinedefFlags.Count > 0;
+
 			// Initialize image selectors
 			fronthigh.Initialize();
 			frontmid.Initialize();
@@ -196,7 +200,7 @@ namespace CodeImp.DoomBuilder.Windows
 			labelrenderstyle.Enabled = (General.Map.Config.LinedefRenderStyles.Count > 0);
 
 			// Fill renderstyles
-			foreach(KeyValuePair<string, string> lf in General.Map.Config.LinedefRenderStyles)
+			foreach (KeyValuePair<string, string> lf in General.Map.Config.LinedefRenderStyles)
 				renderStyle.Items.Add(lf.Value);
 
 			// Restore value linking
@@ -208,7 +212,7 @@ namespace CodeImp.DoomBuilder.Windows
 			pfcBackScaleBottom.LinkValues = General.Settings.ReadSetting("windows." + configname + ".linkbackbottomscale", false);
 
 			// Disable top/mid/bottom texture offset controls?
-			if(!General.Map.Config.UseLocalSidedefTextureOffsets)
+			if (!General.Map.Config.UseLocalSidedefTextureOffsets)
 			{
 				pfcFrontOffsetTop.Enabled = false;
 				pfcFrontOffsetMid.Enabled = false;
@@ -251,40 +255,47 @@ namespace CodeImp.DoomBuilder.Windows
 		// This sets up the form to edit the given lines
 		public void Setup(ICollection<Linedef> lines, bool selectfront, bool selectback)
 		{
-            // Window setup
-            // ano - moved this here because we don't reinstantiate the thing every time anymore
-            if (General.Settings.StoreSelectedEditTab)
-            {
-                int activetab = General.Settings.ReadSetting("windows." + configname + ".activetab", 0);
+			// Window setup
+			// ano - moved this here because we don't reinstantiate the thing every time anymore
+			if (General.Settings.StoreSelectedEditTab)
+			{
+				int activetab = General.Settings.ReadSetting("windows." + configname + ".activetab", 0);
 
-                // When front or back tab was previously selected, switch to appropriate side (selectfront/selectback are set in BaseVisualGeometrySidedef.OnEditEnd)
-                if ((selectfront || selectback) && (activetab == 1 || activetab == 2))
-                    tabs.SelectTab(selectfront ? 1 : 2);
-                else
-                    tabs.SelectTab(activetab);
-            }
+				// When front or back tab was previously selected, switch to appropriate side (selectfront/selectback are set in BaseVisualGeometrySidedef.OnEditEnd)
+				if ((selectfront || selectback) && (activetab == 1 || activetab == 2))
+					tabs.SelectTab(selectfront ? 1 : 2);
+				else
+					tabs.SelectTab(activetab);
+			}
 
-            preventchanges = true;
+			preventchanges = true;
 			oldmapischanged = General.Map.IsChanged;
-            undocreated = false;
-            argscontrol.Reset();
-            tagsselector.Reset();
+			undocreated = false;
+			argscontrol.Reset();
+			tagsselector.Reset();
 
-            // Keep this list
-            this.lines = lines;
-			if(lines.Count > 1) this.Text = "Edit Linedefs (" + lines.Count + ")";
+			// Keep this list
+			this.lines = lines;
+			if (lines.Count > 1) this.Text = "Edit Linedefs (" + lines.Count + ")";
 			linedefprops = new List<LinedefProperties>();
-			
+
 			////////////////////////////////////////////////////////////////////////
 			// Set all options to the first linedef properties
 			////////////////////////////////////////////////////////////////////////
 
 			// Get first line
 			Linedef fl = General.GetByIndex(lines, 0);
-			
+
 			// Flags
-			foreach(CheckBox c in flags.Checkboxes)
-				if(fl.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fl.Flags[c.Tag.ToString()];
+			foreach (CheckBox c in flags.Checkboxes)
+				if (fl.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fl.Flags[c.Tag.ToString()];
+
+			// UDMF Activations
+			foreach (CheckBox c in udmfactivates.Checkboxes)
+			{
+				LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+				if (fl.Flags.ContainsKey(ai.Key)) c.Checked = fl.Flags[ai.Key];
+			}
 
 			fieldslist.SetValues(fl.Fields, true); // Custom fields
 			commenteditor.SetValues(fl.Fields, true); //mxd. Comments
@@ -297,19 +308,19 @@ namespace CodeImp.DoomBuilder.Windows
 
 			//mxd. Args
 			argscontrol.SetValue(fl, true);
-			
+
 			// Front side and back side checkboxes
 			frontside.Checked = (fl.Front != null);
-			#if MONO_WINFORMS
+#if MONO_WINFORMS
 			frontgroup.Enabled = (fl.Front != null);
-			#endif
+#endif
 			backside.Checked = (fl.Back != null);
-			#if MONO_WINFORMS
+#if MONO_WINFORMS
 			backgroup.Enabled = (fl.Back != null);
-			#endif
+#endif
 
 			// Front settings
-			if(fl.Front != null)
+			if (fl.Front != null)
 			{
 				fronthigh.TextureName = fl.Front.HighTexture;
 				frontmid.TextureName = fl.Front.MiddleTexture;
@@ -320,11 +331,11 @@ namespace CodeImp.DoomBuilder.Windows
 				frontsector.Text = fl.Front.Sector.Index.ToString();
 
 				// Flags
-				foreach(CheckBox c in flagsFront.Checkboxes)
-					if(fl.Front.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fl.Front.Flags[c.Tag.ToString()];
+				foreach (CheckBox c in flagsFront.Checkboxes)
+					if (fl.Front.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fl.Front.Flags[c.Tag.ToString()];
 
 				// Front settings
-				foreach(PairedFieldsControl pfc in frontUdmfControls)
+				foreach (PairedFieldsControl pfc in frontUdmfControls)
 					pfc.SetValuesFrom(fl.Front.Fields, true);
 
 				repeatcntFront.Text = UniFields.GetInteger(fl.Front.Fields, "repeatcnt", 0).ToString();
@@ -334,7 +345,7 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			// Back settings
-			if(fl.Back != null)
+			if (fl.Back != null)
 			{
 				backhigh.TextureName = fl.Back.HighTexture;
 				backmid.TextureName = fl.Back.MiddleTexture;
@@ -345,11 +356,11 @@ namespace CodeImp.DoomBuilder.Windows
 				backsector.Text = fl.Back.Sector.Index.ToString();
 
 				// Flags
-				foreach(CheckBox c in flagsBack.Checkboxes)
-					if(fl.Back.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fl.Back.Flags[c.Tag.ToString()];
+				foreach (CheckBox c in flagsBack.Checkboxes)
+					if (fl.Back.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fl.Back.Flags[c.Tag.ToString()];
 
 				// Back settings
-				foreach(PairedFieldsControl pfc in backUdmfControls)
+				foreach (PairedFieldsControl pfc in backUdmfControls)
 					pfc.SetValuesFrom(fl.Back.Fields, true);
 
 				repeatcntBack.Text = UniFields.GetInteger(fl.Back.Fields, "repeatcnt", 0).ToString();
@@ -362,13 +373,13 @@ namespace CodeImp.DoomBuilder.Windows
 			////////////////////////////////////////////////////////////////////////
 
 			// Go for all lines
-			foreach(Linedef l in lines)
+			foreach (Linedef l in lines)
 			{
 				// Flags
-				foreach(CheckBox c in flags.Checkboxes)
+				foreach (CheckBox c in flags.Checkboxes)
 				{
-					if(c.CheckState == CheckState.Indeterminate) continue; //mxd
-					if(l.IsFlagSet(c.Tag.ToString()) != c.Checked) 
+					if (c.CheckState == CheckState.Indeterminate) continue; //mxd
+					if (l.IsFlagSet(c.Tag.ToString()) != c.Checked)
 					{
 						c.ThreeState = true;
 						c.CheckState = CheckState.Indeterminate;
@@ -377,12 +388,25 @@ namespace CodeImp.DoomBuilder.Windows
 
 				//mxd. UDMF Settings
 
+				// UDMF Activations
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+				{
+					if (c.CheckState == CheckState.Indeterminate) continue; //mxd
+
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					if (l.IsFlagSet(ai.Key) != c.Checked)
+					{
+						c.ThreeState = true;
+						c.CheckState = CheckState.Indeterminate;
+					}
+				}
+
 				// Render style
-				if(renderStyle.SelectedIndex > -1 && renderStyle.SelectedIndex != Array.IndexOf(renderstyles, l.Fields.GetValue("renderstyle", "translucent")))
+				if (renderStyle.SelectedIndex > -1 && renderStyle.SelectedIndex != Array.IndexOf(renderstyles, l.Fields.GetValue("renderstyle", "translucent")))
 					renderStyle.SelectedIndex = -1;
 
 				// Alpha
-				if(!string.IsNullOrEmpty(alpha.Text) && General.Clamp(alpha.GetResultFloat(1.0), 0.0, 1.0) != l.Fields.GetValue("alpha", 1.0))
+				if (!string.IsNullOrEmpty(alpha.Text) && General.Clamp(alpha.GetResultFloat(1.0), 0.0, 1.0) != l.Fields.GetValue("alpha", 1.0))
 					alpha.Text = string.Empty;
 
 				if (!string.IsNullOrEmpty(executordelay.Text))
@@ -398,13 +422,13 @@ namespace CodeImp.DoomBuilder.Windows
 				commenteditor.SetValues(l.Fields, false);
 
 				// Action
-				if(l.Action != action.Value) action.Empty = true;
+				if (l.Action != action.Value) action.Empty = true;
 
 				//mxd. Arguments
 				argscontrol.SetValue(l, false);
-				
+
 				// Front side checkbox
-				if((l.Front != null) != frontside.Checked)
+				if ((l.Front != null) != frontside.Checked)
 				{
 					frontside.ThreeState = true;
 					frontside.CheckState = CheckState.Indeterminate;
@@ -412,7 +436,7 @@ namespace CodeImp.DoomBuilder.Windows
 				}
 
 				// Back side checkbox
-				if((l.Back != null) != backside.Checked)
+				if ((l.Back != null) != backside.Checked)
 				{
 					backside.ThreeState = true;
 					backside.CheckState = CheckState.Indeterminate;
@@ -420,34 +444,34 @@ namespace CodeImp.DoomBuilder.Windows
 				}
 
 				// Front settings
-				if(l.Front != null)
+				if (l.Front != null)
 				{
 					//mxd
-					if(!string.IsNullOrEmpty(fronthigh.TextureName) && fronthigh.TextureName != l.Front.HighTexture) 
+					if (!string.IsNullOrEmpty(fronthigh.TextureName) && fronthigh.TextureName != l.Front.HighTexture)
 					{
-						if(!fronthigh.Required && l.Front.HighRequired()) fronthigh.Required = true;
+						if (!fronthigh.Required && l.Front.HighRequired()) fronthigh.Required = true;
 						fronthigh.MultipleTextures = true;
 						fronthigh.TextureName = string.Empty;
 					}
-					if(!string.IsNullOrEmpty(frontmid.TextureName) && frontmid.TextureName != l.Front.MiddleTexture) 
+					if (!string.IsNullOrEmpty(frontmid.TextureName) && frontmid.TextureName != l.Front.MiddleTexture)
 					{
-						if(!frontmid.Required && l.Front.MiddleRequired()) frontmid.Required = true;
+						if (!frontmid.Required && l.Front.MiddleRequired()) frontmid.Required = true;
 						frontmid.MultipleTextures = true;
 						frontmid.TextureName = string.Empty;
 					}
-					if(!string.IsNullOrEmpty(frontlow.TextureName) && frontlow.TextureName != l.Front.LowTexture) 
+					if (!string.IsNullOrEmpty(frontlow.TextureName) && frontlow.TextureName != l.Front.LowTexture)
 					{
-						if(!frontlow.Required && l.Front.LowRequired()) frontlow.Required = true;
+						if (!frontlow.Required && l.Front.LowRequired()) frontlow.Required = true;
 						frontlow.MultipleTextures = true; //mxd
 						frontlow.TextureName = string.Empty;
 					}
-					if(frontsector.Text != l.Front.Sector.Index.ToString()) frontsector.Text = string.Empty;
+					if (frontsector.Text != l.Front.Sector.Index.ToString()) frontsector.Text = string.Empty;
 
 					//flags
-					foreach(CheckBox c in flagsFront.Checkboxes) 
+					foreach (CheckBox c in flagsFront.Checkboxes)
 					{
-						if(c.CheckState == CheckState.Indeterminate) continue;
-						if(l.Front.IsFlagSet(c.Tag.ToString()) != c.Checked) 
+						if (c.CheckState == CheckState.Indeterminate) continue;
+						if (l.Front.IsFlagSet(c.Tag.ToString()) != c.Checked)
 						{
 							c.ThreeState = true;
 							c.CheckState = CheckState.Indeterminate;
@@ -455,7 +479,7 @@ namespace CodeImp.DoomBuilder.Windows
 					}
 
 					//mxd
-					foreach(PairedFieldsControl pfc in frontUdmfControls)
+					foreach (PairedFieldsControl pfc in frontUdmfControls)
 						pfc.SetValuesFrom(l.Front.Fields, false);
 
 					if (!string.IsNullOrEmpty(repeatcntFront.Text))
@@ -468,34 +492,34 @@ namespace CodeImp.DoomBuilder.Windows
 				}
 
 				// Back settings
-				if(l.Back != null)
+				if (l.Back != null)
 				{
 					//mxd
-					if(!string.IsNullOrEmpty(backhigh.TextureName) && backhigh.TextureName != l.Back.HighTexture) 
+					if (!string.IsNullOrEmpty(backhigh.TextureName) && backhigh.TextureName != l.Back.HighTexture)
 					{
-						if(!backhigh.Required && l.Back.HighRequired()) backhigh.Required = true;
+						if (!backhigh.Required && l.Back.HighRequired()) backhigh.Required = true;
 						backhigh.MultipleTextures = true;
 						backhigh.TextureName = string.Empty;
 					}
-					if(!string.IsNullOrEmpty(backmid.TextureName) && backmid.TextureName != l.Back.MiddleTexture) 
+					if (!string.IsNullOrEmpty(backmid.TextureName) && backmid.TextureName != l.Back.MiddleTexture)
 					{
-						if(!backmid.Required && l.Back.MiddleRequired()) backmid.Required = true;
+						if (!backmid.Required && l.Back.MiddleRequired()) backmid.Required = true;
 						backmid.MultipleTextures = true;
 						backmid.TextureName = string.Empty;
 					}
-					if(!string.IsNullOrEmpty(backlow.TextureName) && backlow.TextureName != l.Back.LowTexture) 
+					if (!string.IsNullOrEmpty(backlow.TextureName) && backlow.TextureName != l.Back.LowTexture)
 					{
-						if(!backlow.Required && l.Back.LowRequired()) backlow.Required = true;
+						if (!backlow.Required && l.Back.LowRequired()) backlow.Required = true;
 						backlow.MultipleTextures = true;
 						backlow.TextureName = string.Empty;
 					}
-					if(backsector.Text != l.Back.Sector.Index.ToString()) backsector.Text = string.Empty;
+					if (backsector.Text != l.Back.Sector.Index.ToString()) backsector.Text = string.Empty;
 
 					//flags
-					foreach(CheckBox c in flagsBack.Checkboxes) 
+					foreach (CheckBox c in flagsBack.Checkboxes)
 					{
-						if(c.CheckState == CheckState.Indeterminate) continue;
-						if(l.Back.IsFlagSet(c.Tag.ToString()) != c.Checked) 
+						if (c.CheckState == CheckState.Indeterminate) continue;
+						if (l.Back.IsFlagSet(c.Tag.ToString()) != c.Checked)
 						{
 							c.ThreeState = true;
 							c.CheckState = CheckState.Indeterminate;
@@ -503,7 +527,7 @@ namespace CodeImp.DoomBuilder.Windows
 					}
 
 					//mxd
-					foreach(PairedFieldsControl pfc in backUdmfControls)
+					foreach (PairedFieldsControl pfc in backUdmfControls)
 						pfc.SetValuesFrom(l.Back.Fields, false);
 
 					if (!string.IsNullOrEmpty(repeatcntBack.Text))
@@ -521,7 +545,7 @@ namespace CodeImp.DoomBuilder.Windows
 
 			//mxd. Set tags
 			tagsselector.SetValues(lines);
-			
+
 			// Refresh controls so that they show their image
 			backhigh.Refresh();
 			backmid.Refresh();
@@ -532,31 +556,67 @@ namespace CodeImp.DoomBuilder.Windows
 
 			preventchanges = false;
 
+			CheckActivationFlagsRequired(); //mxd
 			argscontrol.UpdateScriptControls(); //mxd
 			actionhelp.UpdateAction(action.GetValue()); //mxd
 			commenteditor.FinishSetup(); //mxd
 
 			//mxd. Update "Reset" buttons
-			if(alpha.Text == "1") resetalpha.Visible = false;
+			if (alpha.Text == "1") resetalpha.Visible = false;
 		}
 
 		//mxd
-		private void MakeUndo() 
+		private void MakeUndo()
 		{
-			if(undocreated) return;
+			if (undocreated) return;
 			undocreated = true;
 
 			//mxd. Make undo
 			General.Map.UndoRedo.CreateUndo("Edit " + (lines.Count > 1 ? lines.Count + " linedefs" : "linedef"));
 
-			if(General.Map.FormatInterface.HasCustomFields) 
+			if (General.Map.FormatInterface.HasCustomFields)
 			{
-				foreach(Linedef l in lines)
+				foreach (Linedef l in lines)
 				{
 					l.Fields.BeforeFieldsChange();
-					if(l.Front != null) l.Front.Fields.BeforeFieldsChange();
-					if(l.Back != null) l.Back.Fields.BeforeFieldsChange();
+					if (l.Front != null) l.Front.Fields.BeforeFieldsChange();
+					if (l.Back != null) l.Back.Fields.BeforeFieldsChange();
 				}
+			}
+		}
+
+		private void CheckActivationFlagsRequired()
+		{
+			// Display a warning if we have an action and no activation flags
+			if (action.Value != 0
+				&& General.Map.Config.LinedefActions.ContainsKey(action.Value)
+				&& General.Map.Config.LinedefActions[action.Value].RequiresActivation)
+			{
+				bool haveactivationflag = false;
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+				{
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					if (ai.IsTrigger && c.CheckState != CheckState.Unchecked)
+					{
+						haveactivationflag = true;
+						break;
+					}
+				}
+
+				missingactivation.Visible = !haveactivationflag;
+
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+				{
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					if (ai.IsTrigger)
+						c.ForeColor = (!haveactivationflag ? Color.DarkRed : SystemColors.ControlText);
+				}
+			}
+			else
+			{
+				missingactivation.Visible = false;
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+					c.ForeColor = SystemColors.ControlText;
 			}
 		}
 
@@ -568,7 +628,7 @@ namespace CodeImp.DoomBuilder.Windows
 		private void apply_Click(object sender, EventArgs e)
 		{
 			// Verify the action
-			if((action.Value < General.Map.FormatInterface.MinAction) || (action.Value > General.Map.FormatInterface.MaxAction))
+			if ((action.Value < General.Map.FormatInterface.MinAction) || (action.Value > General.Map.FormatInterface.MaxAction))
 			{
 				General.ShowWarningMessage("Linedef action must be between " + General.Map.FormatInterface.MinAction + " and " + General.Map.FormatInterface.MaxAction + ".", MessageBoxButtons.OK);
 				return;
@@ -576,63 +636,74 @@ namespace CodeImp.DoomBuilder.Windows
 
 			MakeUndo();
 
-			
+
 			// Go for all the lines
 			int offset = 0; //mxd
-			foreach(Linedef l in lines)
-			{			
+			foreach (Linedef l in lines)
+			{
+				// UDMF activations
+				foreach(CheckBox c in udmfactivates.Checkboxes)
+				{
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					switch(c.CheckState)
+					{
+						case CheckState.Checked: l.SetFlag(ai.Key, true); break;
+						case CheckState.Unchecked: l.SetFlag(ai.Key, false); break;
+					}
+				}
+
 				// Action
-				if(!action.Empty) l.Action = action.Value;
+				if (!action.Empty) l.Action = action.Value;
 
 				//mxd. Apply args
 				argscontrol.Apply(l, offset++);
-				
+
 				// Remove front side?
-				if((l.Front != null) && (frontside.CheckState == CheckState.Unchecked))
+				if ((l.Front != null) && (frontside.CheckState == CheckState.Unchecked))
 				{
 					l.Front.Dispose();
 				}
 				// Create or modify front side?
-				else if(frontside.CheckState == CheckState.Checked)
+				else if (frontside.CheckState == CheckState.Checked)
 				{
 					// Make sure we have a valid sector (make a new one if needed)
 					int index = (l.Front != null ? l.Front.Sector.Index : -1);
 					index = frontsector.GetResult(index);
-					if((index > -1) && (index < General.Map.Map.Sectors.Count))
+					if ((index > -1) && (index < General.Map.Map.Sectors.Count))
 					{
 						Sector s = (General.Map.Map.GetSectorByIndex(index) ?? General.Map.Map.CreateSector());
-						if(s != null)
+						if (s != null)
 						{
 							// Create new sidedef?
-							if(l.Front == null) General.Map.Map.CreateSidedef(l, true, s);
+							if (l.Front == null) General.Map.Map.CreateSidedef(l, true, s);
 
 							// Change sector?
-							if(l.Front != null && l.Front.Sector != s) l.Front.SetSector(s);
+							if (l.Front != null && l.Front.Sector != s) l.Front.SetSector(s);
 						}
 					}
 				}
 
 				// Remove back side?
-				if((l.Back != null) && (backside.CheckState == CheckState.Unchecked))
+				if ((l.Back != null) && (backside.CheckState == CheckState.Unchecked))
 				{
 					l.Back.Dispose();
 				}
 				// Create or modify back side?
-				else if(backside.CheckState == CheckState.Checked)
+				else if (backside.CheckState == CheckState.Checked)
 				{
 					// Make sure we have a valid sector (make a new one if needed)
 					int index = (l.Back != null ? l.Back.Sector.Index : -1);
 					index = backsector.GetResult(index);
-					if((index > -1) && (index < General.Map.Map.Sectors.Count))
+					if ((index > -1) && (index < General.Map.Map.Sectors.Count))
 					{
 						Sector s = (General.Map.Map.GetSectorByIndex(index) ?? General.Map.Map.CreateSector());
-						if(s != null)
+						if (s != null)
 						{
 							// Create new sidedef?
-							if(l.Back == null) General.Map.Map.CreateSidedef(l, false, s);
-							
+							if (l.Back == null) General.Map.Map.CreateSidedef(l, false, s);
+
 							// Change sector?
-							if(l.Back != null && l.Back.Sector != s) l.Back.SetSector(s);
+							if (l.Back != null && l.Back.Sector != s) l.Back.SetSector(s);
 						}
 					}
 				}
@@ -647,10 +718,10 @@ namespace CodeImp.DoomBuilder.Windows
 
 			// Update the used textures
 			General.Map.Data.UpdateUsedTextures();
-			
+
 			// Done
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null)	OnValuesChanged(this, EventArgs.Empty); //mxd
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty); //mxd
 			this.DialogResult = DialogResult.OK;
 			this.Close();
 		}
@@ -669,14 +740,14 @@ namespace CodeImp.DoomBuilder.Windows
 				if (General.Map.IsChanged && oldmapischanged == false)
 					General.Map.ForceMapIsChangedFalse();
 			}
-			
+
 			// Be gone
 			this.DialogResult = DialogResult.Cancel;
 			this.Close();
 		}
 
 		// Front side (un)checked
-		private void frontside_CheckStateChanged(object sender, EventArgs e) 
+		private void frontside_CheckStateChanged(object sender, EventArgs e)
 		{
 			// Enable/disable panel
 			// NOTE: Also enabled when checkbox is grayed!
@@ -685,7 +756,7 @@ namespace CodeImp.DoomBuilder.Windows
 		}
 
 		// Back side (un)checked
-		private void backside_CheckStateChanged(object sender, EventArgs e) 
+		private void backside_CheckStateChanged(object sender, EventArgs e)
 		{
 			// Enable/disable panel
 			// NOTE: Also enabled when checkbox is grayed!
@@ -697,18 +768,19 @@ namespace CodeImp.DoomBuilder.Windows
 		private void action_ValueChanges(object sender, EventArgs e)
 		{
 			int showaction = 0;
-			
+
 			// Only when line type is known
-			if(General.Map.Config.LinedefActions.ContainsKey(action.Value)) showaction = action.Value;
+			if (General.Map.Config.LinedefActions.ContainsKey(action.Value)) showaction = action.Value;
 
 			//mxd. Change the argument descriptions
 			argscontrol.UpdateAction(showaction, preventchanges);
 
-			if(!preventchanges) 
+			if (!preventchanges)
 			{
 				MakeUndo(); //mxd
 
 				//mxd. Update what must be updated
+				CheckActivationFlagsRequired();
 				argscontrol.UpdateScriptControls();
 				actionhelp.UpdateAction(showaction);
 			}
@@ -721,13 +793,13 @@ namespace CodeImp.DoomBuilder.Windows
 		}
 
 		//mxd
-		private void tabcustom_MouseEnter(object sender, EventArgs e) 
+		private void tabcustom_MouseEnter(object sender, EventArgs e)
 		{
 			fieldslist.Focus();
 		}
 
 		//mxd. Store window settings
-		private void LinedefEditForm_FormClosing(object sender, FormClosingEventArgs e) 
+		private void LinedefEditForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			// Save settings
 			General.Settings.WriteSetting("windows." + configname + ".activetab", tabs.SelectedIndex);
@@ -751,34 +823,34 @@ namespace CodeImp.DoomBuilder.Windows
 
 		#region ================== mxd. Realtime events (linedef)
 
-		private void cbRenderStyle_SelectedIndexChanged(object sender, EventArgs e) 
+		private void cbRenderStyle_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 
 			//update values
-			foreach(Linedef l in lines)
+			foreach (Linedef l in lines)
 				UniFields.SetString(l.Fields, "renderstyle", renderstyles[renderStyle.SelectedIndex], "translucent");
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
-		
-		private void alpha_WhenTextChanged(object sender, EventArgs e) 
+
+		private void alpha_WhenTextChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			//restore values
-			if(string.IsNullOrEmpty(alpha.Text)) 
+			if (string.IsNullOrEmpty(alpha.Text))
 			{
-				foreach(Linedef l in lines) 
+				foreach (Linedef l in lines)
 					UniFields.SetFloat(l.Fields, "alpha", linedefprops[i++].Alpha, 1.0);
-			} 
+			}
 			else //update values
 			{
-				foreach(Linedef l in lines) 
+				foreach (Linedef l in lines)
 				{
 					double value = General.Clamp(alpha.GetResultFloat(l.Fields.GetValue("alpha", 1.0)), 0.0, 1.0);
 					UniFields.SetFloat(l.Fields, "alpha", value, 1.0);
@@ -788,7 +860,7 @@ namespace CodeImp.DoomBuilder.Windows
 			resetalpha.Visible = (alpha.GetResultFloat(1.0) != 1.0);
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null)	OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
 		private void resetalpha_Click(object sender, EventArgs e)
@@ -797,22 +869,22 @@ namespace CodeImp.DoomBuilder.Windows
 			alpha.Text = "1";
 		}
 
-		private void flags_OnValueChanged(object sender, EventArgs e) 
+		private void flags_OnValueChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
 				// Apply all flags
-				foreach(CheckBox c in flags.Checkboxes) 
+				foreach (CheckBox c in flags.Checkboxes)
 				{
-					if(c.CheckState == CheckState.Checked)
+					if (c.CheckState == CheckState.Checked)
 						l.SetFlag(c.Tag.ToString(), true);
-					else if(c.CheckState == CheckState.Unchecked)
+					else if (c.CheckState == CheckState.Unchecked)
 						l.SetFlag(c.Tag.ToString(), false);
-					else if(linedefprops[i].Flags.ContainsKey(c.Tag.ToString()))
+					else if (linedefprops[i].Flags.ContainsKey(c.Tag.ToString()))
 						l.SetFlag(c.Tag.ToString(), linedefprops[i].Flags[c.Tag.ToString()]);
 					else //linedefs created in the editor have empty Flags by default
 						l.SetFlag(c.Tag.ToString(), false);
@@ -820,9 +892,16 @@ namespace CodeImp.DoomBuilder.Windows
 
 				i++;
 			}
-			
+
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null)	OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+		}
+
+		//mxd
+		private void udmfactivates_OnValueChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			CheckActivationFlagsRequired();
 		}
 
 		private void executordelay_WhenTextChanged(object sender, EventArgs e)
@@ -864,7 +943,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// Reset increment steps, otherwise it's just keep counting and counting
 			repeatcntFront.ResetIncrementStep();
 
-	        //restore values
+			//restore values
 			if (string.IsNullOrEmpty(repeatcntFront.Text))
 			{
 				foreach (Linedef l in lines)
@@ -888,7 +967,7 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
 		private void repeatcntBack_WhenTextChanged(object sender, EventArgs e)
@@ -932,31 +1011,31 @@ namespace CodeImp.DoomBuilder.Windows
 		#region Custom fields changed
 
 		// Custom fields on front sides
-		private void customfrontbutton_Click(object sender, EventArgs e) 
+		private void customfrontbutton_Click(object sender, EventArgs e)
 		{
 			// Make collection of front sides
 			List<MapElement> sides = new List<MapElement>(lines.Count);
-			foreach(Linedef l in lines) if(l.Front != null) sides.Add(l.Front);
+			foreach (Linedef l in lines) if (l.Front != null) sides.Add(l.Front);
 
-			if(!CustomFieldsForm.ShowDialog(this, "Front side custom fields", "sidedef", sides, General.Map.Config.SidedefFields)) return;
+			if (!CustomFieldsForm.ShowDialog(this, "Front side custom fields", "sidedef", sides, General.Map.Config.SidedefFields)) return;
 
 			//Apply values
 			Sidedef fs = General.GetByIndex(sides, 0) as Sidedef;
 
 			//..to the first side
-			foreach(PairedFieldsControl pfc in frontUdmfControls)
+			foreach (PairedFieldsControl pfc in frontUdmfControls)
 				pfc.SetValuesFrom(fs.Fields, true);
 
 			repeatcntFront.Text = UniFields.GetInteger(fs.Fields, "repeatcnt", 0).ToString();
 
 			//flags
 			foreach (CheckBox c in flagsFront.Checkboxes)
-				if(fs.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fs.Flags[c.Tag.ToString()];
+				if (fs.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fs.Flags[c.Tag.ToString()];
 
 			//..then to all of them
-			foreach(Sidedef s in sides)
+			foreach (Sidedef s in sides)
 			{
-				foreach(PairedFieldsControl pfc in frontUdmfControls)
+				foreach (PairedFieldsControl pfc in frontUdmfControls)
 					pfc.SetValuesFrom(s.Fields, false);
 
 				if (!string.IsNullOrEmpty(repeatcntFront.Text))
@@ -966,13 +1045,13 @@ namespace CodeImp.DoomBuilder.Windows
 				}
 
 				//flags
-				foreach (CheckBox c in flagsFront.Checkboxes) 
+				foreach (CheckBox c in flagsFront.Checkboxes)
 				{
-					if(c.CheckState == CheckState.Indeterminate) continue;
+					if (c.CheckState == CheckState.Indeterminate) continue;
 
-					if(s.Flags.ContainsKey(c.Tag.ToString())) 
+					if (s.Flags.ContainsKey(c.Tag.ToString()))
 					{
-						if(s.Flags[c.Tag.ToString()] != c.Checked) 
+						if (s.Flags[c.Tag.ToString()] != c.Checked)
 						{
 							c.ThreeState = true;
 							c.CheckState = CheckState.Indeterminate;
@@ -982,36 +1061,36 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
 		// Custom fields on back sides
-		private void custombackbutton_Click(object sender, EventArgs e) 
+		private void custombackbutton_Click(object sender, EventArgs e)
 		{
 			// Make collection of back sides
 			List<MapElement> sides = new List<MapElement>(lines.Count);
-			foreach(Linedef l in lines) if(l.Back != null) sides.Add(l.Back);
+			foreach (Linedef l in lines) if (l.Back != null) sides.Add(l.Back);
 
 			// Edit these
-			if(!CustomFieldsForm.ShowDialog(this, "Back side custom fields", "sidedef", sides, General.Map.Config.SidedefFields)) return;
+			if (!CustomFieldsForm.ShowDialog(this, "Back side custom fields", "sidedef", sides, General.Map.Config.SidedefFields)) return;
 
 			//Apply values
 			Sidedef fs = General.GetByIndex(sides, 0) as Sidedef;
 
 			//..to the first side
-			foreach(PairedFieldsControl pfc in backUdmfControls)
+			foreach (PairedFieldsControl pfc in backUdmfControls)
 				pfc.SetValuesFrom(fs.Fields, true);
 
 			repeatcntBack.Text = UniFields.GetInteger(fs.Fields, "repeatcnt", 0).ToString();
 
 			//flags
 			foreach (CheckBox c in flagsBack.Checkboxes)
-				if(fs.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fs.Flags[c.Tag.ToString()];
+				if (fs.Flags.ContainsKey(c.Tag.ToString())) c.Checked = fs.Flags[c.Tag.ToString()];
 
 			//..then to all of them
-			foreach(Sidedef s in sides) 
+			foreach (Sidedef s in sides)
 			{
-				foreach(PairedFieldsControl pfc in backUdmfControls)
+				foreach (PairedFieldsControl pfc in backUdmfControls)
 					pfc.SetValuesFrom(s.Fields, false);
 
 				if (!string.IsNullOrEmpty(repeatcntBack.Text))
@@ -1021,11 +1100,11 @@ namespace CodeImp.DoomBuilder.Windows
 				}
 
 				//flags
-				foreach (CheckBox c in flagsBack.Checkboxes) 
+				foreach (CheckBox c in flagsBack.Checkboxes)
 				{
-					if(c.CheckState == CheckState.Indeterminate) continue;
+					if (c.CheckState == CheckState.Indeterminate) continue;
 
-					if(s.Flags.ContainsKey(c.Tag.ToString()) && s.Flags[c.Tag.ToString()] != c.Checked) 
+					if (s.Flags.ContainsKey(c.Tag.ToString()) && s.Flags[c.Tag.ToString()] != c.Checked)
 					{
 						c.ThreeState = true;
 						c.CheckState = CheckState.Indeterminate;
@@ -1034,96 +1113,34 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-			#endregion
+		#endregion
 
-			#region Texture changed
+		#region Texture changed
 
-		private void fronthigh_OnValueChanged(object sender, EventArgs e) 
+		private void fronthigh_OnValueChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo();
 
 			// Restore values
-			if(string.IsNullOrEmpty(fronthigh.TextureName)) 
+			if (string.IsNullOrEmpty(fronthigh.TextureName))
 			{
 				int i = 0;
-				foreach(Linedef l in lines) 
+				foreach (Linedef l in lines)
 				{
-					if(l.Front != null) l.Front.SetTextureHigh(linedefprops[i].Front != null ? linedefprops[i].Front.HighTexture : "-");
-					i++;
-				}
-			}
-			// Update values
-			else 
-			{
-				foreach(Linedef l in lines)
-				{
-					if(l.Front != null) l.Front.SetTextureHigh(fronthigh.GetResult(l.Front.HighTexture));
-				}
-			}
-
-			// Update the used textures
-			General.Map.Data.UpdateUsedTextures();
-
-			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
-		}
-
-		private void frontmid_OnValueChanged(object sender, EventArgs e) 
-		{
-			if(preventchanges) return;
-			MakeUndo();
-
-			// Restore values
-			if(string.IsNullOrEmpty(frontmid.TextureName)) 
-			{
-				int i = 0;
-				foreach(Linedef l in lines) 
-				{
-					if(l.Front != null) l.Front.SetTextureMid(linedefprops[i].Front != null ? linedefprops[i].Front.MiddleTexture : "-");
-					i++;
-				}
-			}
-			// Update values
-			else 
-			{
-				foreach(Linedef l in lines)
-				{
-					if(l.Front != null) l.Front.SetTextureMid(frontmid.GetResult(l.Front.MiddleTexture));
-				}
-			}
-
-			// Update the used textures
-			General.Map.Data.UpdateUsedTextures();
-
-			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
-		}
-
-		private void frontlow_OnValueChanged(object sender, EventArgs e) 
-		{
-			if(preventchanges) return;
-			MakeUndo();
-
-			// Restore values
-			if(string.IsNullOrEmpty(frontlow.TextureName)) 
-			{
-				int i = 0;
-				foreach(Linedef l in lines) 
-				{
-					if(l.Front != null) l.Front.SetTextureLow(linedefprops[i].Front != null ? linedefprops[i].Front.LowTexture : "-");
+					if (l.Front != null) l.Front.SetTextureHigh(linedefprops[i].Front != null ? linedefprops[i].Front.HighTexture : "-");
 					i++;
 				}
 			}
 			// Update values
 			else
 			{
-				foreach(Linedef l in lines)
+				foreach (Linedef l in lines)
 				{
-					if(l.Front != null) l.Front.SetTextureLow(frontlow.GetResult(l.Front.LowTexture));
+					if (l.Front != null) l.Front.SetTextureHigh(fronthigh.GetResult(l.Front.HighTexture));
 				}
 			}
 
@@ -1131,61 +1148,30 @@ namespace CodeImp.DoomBuilder.Windows
 			General.Map.Data.UpdateUsedTextures();
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void backhigh_OnValueChanged(object sender, EventArgs e) 
+		private void frontmid_OnValueChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo();
 
 			// Restore values
-			if(string.IsNullOrEmpty(backhigh.TextureName)) 
+			if (string.IsNullOrEmpty(frontmid.TextureName))
 			{
 				int i = 0;
-				foreach(Linedef l in lines) 
+				foreach (Linedef l in lines)
 				{
-					if(l.Back != null) l.Back.SetTextureHigh(linedefprops[i].Back != null ? linedefprops[i].Back.HighTexture : "-");
-					i++;
-				}
-			}
-			// Update values
-			else 
-			{
-				foreach(Linedef l in lines)
-				{
-					if(l.Back != null) l.Back.SetTextureHigh(backhigh.GetResult(l.Back.HighTexture));
-				}
-			}
-
-			// Update the used textures
-			General.Map.Data.UpdateUsedTextures();
-
-			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
-		}
-
-		private void backmid_OnValueChanged(object sender, EventArgs e) 
-		{
-			if(preventchanges) return;
-			MakeUndo();
-
-			// Restore values
-			if(string.IsNullOrEmpty(backmid.TextureName)) 
-			{
-				int i = 0;
-				foreach(Linedef l in lines) 
-				{
-					if(l.Back != null) l.Back.SetTextureMid(linedefprops[i].Back != null ? linedefprops[i].Back.MiddleTexture : "-");
+					if (l.Front != null) l.Front.SetTextureMid(linedefprops[i].Front != null ? linedefprops[i].Front.MiddleTexture : "-");
 					i++;
 				}
 			}
 			// Update values
 			else
 			{
-				foreach(Linedef l in lines)
+				foreach (Linedef l in lines)
 				{
-					if(l.Back != null) l.Back.SetTextureMid(backmid.GetResult(l.Back.MiddleTexture));
+					if (l.Front != null) l.Front.SetTextureMid(frontmid.GetResult(l.Front.MiddleTexture));
 				}
 			}
 
@@ -1193,30 +1179,30 @@ namespace CodeImp.DoomBuilder.Windows
 			General.Map.Data.UpdateUsedTextures();
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void backlow_OnValueChanged(object sender, EventArgs e) 
+		private void frontlow_OnValueChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo();
 
 			// Restore values
-			if(string.IsNullOrEmpty(backlow.TextureName)) 
+			if (string.IsNullOrEmpty(frontlow.TextureName))
 			{
 				int i = 0;
-				foreach(Linedef l in lines) 
+				foreach (Linedef l in lines)
 				{
-					if(l.Back != null) l.Back.SetTextureLow(linedefprops[i].Back != null ? linedefprops[i].Back.LowTexture : "-");
+					if (l.Front != null) l.Front.SetTextureLow(linedefprops[i].Front != null ? linedefprops[i].Front.LowTexture : "-");
 					i++;
 				}
 			}
 			// Update values
-			else 
+			else
 			{
-				foreach(Linedef l in lines)
+				foreach (Linedef l in lines)
 				{
-					if(l.Back != null) l.Back.SetTextureLow(backlow.GetResult(l.Back.LowTexture));
+					if (l.Front != null) l.Front.SetTextureLow(frontlow.GetResult(l.Front.LowTexture));
 				}
 			}
 
@@ -1224,32 +1210,125 @@ namespace CodeImp.DoomBuilder.Windows
 			General.Map.Data.UpdateUsedTextures();
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-			#endregion
+		private void backhigh_OnValueChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			MakeUndo();
 
-			#region Global texture offsets changed
+			// Restore values
+			if (string.IsNullOrEmpty(backhigh.TextureName))
+			{
+				int i = 0;
+				foreach (Linedef l in lines)
+				{
+					if (l.Back != null) l.Back.SetTextureHigh(linedefprops[i].Back != null ? linedefprops[i].Back.HighTexture : "-");
+					i++;
+				}
+			}
+			// Update values
+			else
+			{
+				foreach (Linedef l in lines)
+				{
+					if (l.Back != null) l.Back.SetTextureHigh(backhigh.GetResult(l.Back.HighTexture));
+				}
+			}
+
+			// Update the used textures
+			General.Map.Data.UpdateUsedTextures();
+
+			General.Map.IsChanged = true;
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+		}
+
+		private void backmid_OnValueChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			MakeUndo();
+
+			// Restore values
+			if (string.IsNullOrEmpty(backmid.TextureName))
+			{
+				int i = 0;
+				foreach (Linedef l in lines)
+				{
+					if (l.Back != null) l.Back.SetTextureMid(linedefprops[i].Back != null ? linedefprops[i].Back.MiddleTexture : "-");
+					i++;
+				}
+			}
+			// Update values
+			else
+			{
+				foreach (Linedef l in lines)
+				{
+					if (l.Back != null) l.Back.SetTextureMid(backmid.GetResult(l.Back.MiddleTexture));
+				}
+			}
+
+			// Update the used textures
+			General.Map.Data.UpdateUsedTextures();
+
+			General.Map.IsChanged = true;
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+		}
+
+		private void backlow_OnValueChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			MakeUndo();
+
+			// Restore values
+			if (string.IsNullOrEmpty(backlow.TextureName))
+			{
+				int i = 0;
+				foreach (Linedef l in lines)
+				{
+					if (l.Back != null) l.Back.SetTextureLow(linedefprops[i].Back != null ? linedefprops[i].Back.LowTexture : "-");
+					i++;
+				}
+			}
+			// Update values
+			else
+			{
+				foreach (Linedef l in lines)
+				{
+					if (l.Back != null) l.Back.SetTextureLow(backlow.GetResult(l.Back.LowTexture));
+				}
+			}
+
+			// Update the used textures
+			General.Map.Data.UpdateUsedTextures();
+
+			General.Map.IsChanged = true;
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+		}
+
+		#endregion
+
+		#region Global texture offsets changed
 
 		private void frontTextureOffset_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			frontTextureOffset.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Front != null) 
+				if (l.Front != null)
 				{
-					if(linedefprops[i].Front != null) 
+					if (linedefprops[i].Front != null)
 					{
 						l.Front.OffsetX = frontTextureOffset.GetValue1(linedefprops[i].Front.OffsetX);
 						l.Front.OffsetY = frontTextureOffset.GetValue2(linedefprops[i].Front.OffsetY);
-					} 
-					else 
+					}
+					else
 					{
 						l.Front.OffsetX = frontTextureOffset.GetValue1(0);
 						l.Front.OffsetY = frontTextureOffset.GetValue2(0);
@@ -1260,28 +1339,28 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void backTextureOffset_OnValuesChanged(object sender, EventArgs e) 
+		private void backTextureOffset_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			backTextureOffset.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Back != null) 
+				if (l.Back != null)
 				{
-					if(linedefprops[i].Back != null) 
+					if (linedefprops[i].Back != null)
 					{
 						l.Back.OffsetX = backTextureOffset.GetValue1(linedefprops[i].Back.OffsetX);
 						l.Back.OffsetY = backTextureOffset.GetValue2(linedefprops[i].Back.OffsetY);
-					} 
-					else 
+					}
+					else
 					{
 						l.Back.OffsetX = backTextureOffset.GetValue1(0);
 						l.Back.OffsetY = backTextureOffset.GetValue2(0);
@@ -1290,27 +1369,27 @@ namespace CodeImp.DoomBuilder.Windows
 
 				i++;
 			}
-			
+
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-			#endregion
+		#endregion
 
-			#region Texture offsets changed
+		#region Texture offsets changed
 
 		private void pfcFrontOffsetTop_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcFrontOffsetTop.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Front != null) 
+				if (l.Front != null)
 				{
 					double oldX = linedefprops[i].Front != null ? linedefprops[i].Front.OffsetTopX : 0f;
 					double oldY = linedefprops[i].Front != null ? linedefprops[i].Front.OffsetTopY : 0f;
@@ -1320,21 +1399,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
 		private void pfcFrontOffsetMid_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcFrontOffsetMid.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Front != null) 
+				if (l.Front != null)
 				{
 					double oldX = linedefprops[i].Front != null ? linedefprops[i].Front.OffsetMidX : 0f;
 					double oldY = linedefprops[i].Front != null ? linedefprops[i].Front.OffsetMidY : 0f;
@@ -1345,21 +1424,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
 		private void pfcFrontOffsetBottom_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcFrontOffsetBottom.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Front != null) 
+				if (l.Front != null)
 				{
 					double oldX = linedefprops[i].Front != null ? linedefprops[i].Front.OffsetBottomX : 0f;
 					double oldY = linedefprops[i].Front != null ? linedefprops[i].Front.OffsetBottomY : 0f;
@@ -1370,21 +1449,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void pfcBackOffsetTop_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcBackOffsetTop_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcBackOffsetTop.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Back != null) 
+				if (l.Back != null)
 				{
 					double oldX = linedefprops[i].Back != null ? linedefprops[i].Back.OffsetTopX : 0f;
 					double oldY = linedefprops[i].Back != null ? linedefprops[i].Back.OffsetTopY : 0f;
@@ -1395,21 +1474,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void pfcBackOffsetMid_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcBackOffsetMid_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcBackOffsetMid.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Back != null) 
+				if (l.Back != null)
 				{
 					double oldX = linedefprops[i].Back != null ? linedefprops[i].Back.OffsetMidX : 0f;
 					double oldY = linedefprops[i].Back != null ? linedefprops[i].Back.OffsetMidY : 0f;
@@ -1420,21 +1499,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void pfcBackOffsetBottom_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcBackOffsetBottom_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcBackOffsetBottom.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Back != null) 
+				if (l.Back != null)
 				{
 					double oldX = linedefprops[i].Back != null ? linedefprops[i].Back.OffsetBottomX : 0f;
 					double oldY = linedefprops[i].Back != null ? linedefprops[i].Back.OffsetBottomY : 0f;
@@ -1445,25 +1524,25 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-			#endregion
+		#endregion
 
-			#region Scale changed
+		#region Scale changed
 
-		private void pfcFrontScaleTop_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcFrontScaleTop_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcFrontScaleTop.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Front != null) 
+				if (l.Front != null)
 				{
 					double oldX = linedefprops[i].Front != null ? linedefprops[i].Front.ScaleTopX : 1.0f;
 					double oldY = linedefprops[i].Front != null ? linedefprops[i].Front.ScaleTopY : 1.0f;
@@ -1474,21 +1553,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void pfcFrontScaleMid_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcFrontScaleMid_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcFrontScaleMid.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Front != null) 
+				if (l.Front != null)
 				{
 					double oldX = linedefprops[i].Front != null ? linedefprops[i].Front.ScaleMidX : 1.0f;
 					double oldY = linedefprops[i].Front != null ? linedefprops[i].Front.ScaleMidY : 1.0f;
@@ -1499,21 +1578,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void pfcFrontScaleBottom_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcFrontScaleBottom_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcFrontScaleBottom.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Front != null) 
+				if (l.Front != null)
 				{
 					double oldX = linedefprops[i].Front != null ? linedefprops[i].Front.ScaleBottomX : 1.0f;
 					double oldY = linedefprops[i].Front != null ? linedefprops[i].Front.ScaleBottomY : 1.0f;
@@ -1524,21 +1603,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void pfcBackScaleTop_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcBackScaleTop_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcBackScaleTop.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Back != null) 
+				if (l.Back != null)
 				{
 					double oldX = linedefprops[i].Back != null ? linedefprops[i].Back.ScaleTopX : 1.0f;
 					double oldY = linedefprops[i].Back != null ? linedefprops[i].Back.ScaleTopY : 1.0f;
@@ -1549,21 +1628,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void pfcBackScaleMid_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcBackScaleMid_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcBackScaleMid.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Back != null) 
+				if (l.Back != null)
 				{
 					double oldX = linedefprops[i].Back != null ? linedefprops[i].Back.ScaleMidX : 1.0f;
 					double oldY = linedefprops[i].Back != null ? linedefprops[i].Back.ScaleMidY : 1.0f;
@@ -1574,21 +1653,21 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void pfcBackScaleBottom_OnValuesChanged(object sender, EventArgs e) 
+		private void pfcBackScaleBottom_OnValuesChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
 			// Reset increment steps, otherwise it's just keep counting and counting
 			pfcBackScaleBottom.ResetIncrementStep();
 
-			foreach (Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Back != null) 
+				if (l.Back != null)
 				{
 					double oldX = linedefprops[i].Back != null ? linedefprops[i].Back.ScaleBottomX : 1.0f;
 					double oldY = linedefprops[i].Back != null ? linedefprops[i].Back.ScaleBottomY : 1.0f;
@@ -1599,31 +1678,31 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-			#endregion
+		#endregion
 
-			#region Flags cahnged
+		#region Flags cahnged
 
-		private void flagsFront_OnValueChanged(object sender, EventArgs e) 
+		private void flagsFront_OnValueChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Front == null) continue;
-				
+				if (l.Front == null) continue;
+
 				// Apply all flags
-				foreach(CheckBox c in flagsFront.Checkboxes) 
+				foreach (CheckBox c in flagsFront.Checkboxes)
 				{
-					if(c.CheckState == CheckState.Checked)
+					if (c.CheckState == CheckState.Checked)
 						l.Front.SetFlag(c.Tag.ToString(), true);
-					else if(c.CheckState == CheckState.Unchecked)
+					else if (c.CheckState == CheckState.Unchecked)
 						l.Front.SetFlag(c.Tag.ToString(), false);
-					else if(linedefprops[i].Front.Flags.ContainsKey(c.Tag.ToString()))
+					else if (linedefprops[i].Front.Flags.ContainsKey(c.Tag.ToString()))
 						l.Front.SetFlag(c.Tag.ToString(), linedefprops[i].Front.Flags[c.Tag.ToString()]);
 					else //linedefs created in the editor have empty Flags by default
 						l.Front.SetFlag(c.Tag.ToString(), false);
@@ -1633,27 +1712,27 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void flagsBack_OnValueChanged(object sender, EventArgs e) 
+		private void flagsBack_OnValueChanged(object sender, EventArgs e)
 		{
-			if(preventchanges) return;
+			if (preventchanges) return;
 			MakeUndo(); //mxd
 			int i = 0;
 
-			foreach(Linedef l in lines) 
+			foreach (Linedef l in lines)
 			{
-				if(l.Back == null) continue;
+				if (l.Back == null) continue;
 
 				// Apply all flags
-				foreach(CheckBox c in flagsBack.Checkboxes) 
+				foreach (CheckBox c in flagsBack.Checkboxes)
 				{
-					if(c.CheckState == CheckState.Checked)
+					if (c.CheckState == CheckState.Checked)
 						l.Back.SetFlag(c.Tag.ToString(), true);
-					else if(c.CheckState == CheckState.Unchecked)
+					else if (c.CheckState == CheckState.Unchecked)
 						l.Back.SetFlag(c.Tag.ToString(), false);
-					else if(linedefprops[i].Back.Flags.ContainsKey(c.Tag.ToString()))
+					else if (linedefprops[i].Back.Flags.ContainsKey(c.Tag.ToString()))
 						l.Back.SetFlag(c.Tag.ToString(), linedefprops[i].Back.Flags[c.Tag.ToString()]);
 					else //linedefs created in the editor have empty Flags by default
 						l.Back.SetFlag(c.Tag.ToString(), false);
@@ -1663,7 +1742,7 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
 		#endregion
