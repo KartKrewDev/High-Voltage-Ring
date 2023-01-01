@@ -210,7 +210,17 @@ namespace CodeImp.DoomBuilder.Data
             get
             {
                 if (mapinfo == null)
-                    return DOOM_PIXEL_RATIO;
+                {
+                    if (General.Map.Config.EngineName == "srb2")
+                    {
+                        return 1.0f;
+                    }
+                    else
+                    {
+                        return DOOM_PIXEL_RATIO;
+                    }
+                }
+
                 return mapinfo.PixelRatio;
             }
         }
