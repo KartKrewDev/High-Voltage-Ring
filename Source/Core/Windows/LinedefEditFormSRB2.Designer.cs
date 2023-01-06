@@ -258,7 +258,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.actiongroup.Controls.Add(label2);
             this.actiongroup.Controls.Add(this.action);
             this.actiongroup.Controls.Add(this.browseaction);
-            this.actiongroup.Location = new System.Drawing.Point(8, 268);
+            this.actiongroup.Location = new System.Drawing.Point(8, 189);
             this.actiongroup.Name = "actiongroup";
             this.actiongroup.Size = new System.Drawing.Size(533, 259);
             this.actiongroup.TabIndex = 1;
@@ -404,7 +404,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.activationGroup.Controls.Add(this.missingactivation);
             this.activationGroup.Controls.Add(this.udmfactivates);
-            this.activationGroup.Location = new System.Drawing.Point(8, 189);
+            this.activationGroup.Location = new System.Drawing.Point(8, 454);
             this.activationGroup.Name = "activationGroup";
             this.activationGroup.Size = new System.Drawing.Size(533, 73);
             this.activationGroup.TabIndex = 0;

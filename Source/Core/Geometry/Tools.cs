@@ -2100,6 +2100,16 @@ namespace CodeImp.DoomBuilder.Geometry
 					for(int i = 0; i < l.Args.Length; i++) l.Args[i] = 0;
 				}
 			}
+			
+			// Remove actions from sectors
+			foreach(Sector s in General.Map.Map.Sectors)
+			{
+				if(s.Marked)
+				{
+					s.Action = 0;
+					for(int i = 0; i < s.Args.Length; i++) s.Args[i] = 0;
+				}
+			}
 		}
 		
 		#endregion

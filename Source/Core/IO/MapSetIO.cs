@@ -61,6 +61,7 @@ namespace CodeImp.DoomBuilder.IO
 		public abstract bool HasLinedefTag { get; }
 		public abstract bool HasThingTag { get; }
 		public abstract bool HasThingAction { get; }
+		public abstract bool HasSectorAction { get; }
 		public abstract bool HasCustomFields { get; }
 		public abstract bool HasThingHeight { get; }
 		public abstract bool HasActionArgs { get; }

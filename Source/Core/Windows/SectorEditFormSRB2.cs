@@ -2,12 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Types;
+using CodeImp.DoomBuilder.Config;
 
 #endregion
 
@@ -194,6 +196,13 @@ namespace CodeImp.DoomBuilder.Windows
 			// Fill universal fields list
 			fieldslist.ListFixedFields(General.Map.Config.SectorFields);
 
+			// Fill actions list
+			action.AddInfo(General.Map.Config.SortedLinedefActions.ToArray());
+
+			// Fill activations list
+			foreach (LinedefActivateInfo ai in General.Map.Config.SectorActivates) udmfactivates.Add(ai.Title, ai);
+			udmfactivates.Enabled = General.Map.Config.SectorFlags.Count > 0;
+
 			// Initialize image selectors
 			floortex.Initialize();
 			ceilingtex.Initialize();
@@ -240,8 +249,10 @@ namespace CodeImp.DoomBuilder.Windows
 			preventchanges = true; //mxd
 			oldmapischanged = General.Map.IsChanged;
 			undocreated = false;
-            // Keep this list
-            this.sectors = sectors;
+			argscontrol.Reset();
+
+			// Keep this list
+			this.sectors = sectors;
 			if(sectors.Count > 1) this.Text = "Edit Sectors (" + sectors.Count + ")";
 			sectorprops = new Dictionary<Sector, SectorProperties>(sectors.Count); //mxd
 
@@ -315,6 +326,19 @@ namespace CodeImp.DoomBuilder.Windows
 			// Slopes
 			SetupFloorSlope(sc, true);
 			SetupCeilingSlope(sc, true);
+
+			// Action
+			action.Value = sc.Action;
+
+			//mxd. Args
+			argscontrol.SetValue(sc, true);
+
+			// UDMF Activations
+			foreach (CheckBox c in udmfactivates.Checkboxes)
+			{
+				LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+				if (sc.Flags.ContainsKey(ai.Key)) c.Checked = sc.Flags[ai.Key];
+			}
 
 			// Custom fields
 			fieldslist.SetValues(sc.Fields, true);
@@ -430,6 +454,25 @@ namespace CodeImp.DoomBuilder.Windows
 				SetupFloorSlope(s, false);
 				SetupCeilingSlope(s, false);
 
+				// Action
+				if (s.Action != action.Value) action.Empty = true;
+
+				//mxd. Arguments
+				argscontrol.SetValue(s, false);
+
+				// UDMF Activations
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+				{
+					if (c.CheckState == CheckState.Indeterminate) continue; //mxd
+
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					if (s.IsFlagSet(ai.Key) != c.Checked)
+					{
+						c.ThreeState = true;
+						c.CheckState = CheckState.Indeterminate;
+					}
+				}
+
 				// Custom fields
 				fieldslist.SetValues(s.Fields, false);
 
@@ -474,6 +517,10 @@ namespace CodeImp.DoomBuilder.Windows
 			commenteditor.FinishSetup();
 
 			preventchanges = false; //mxd
+
+			CheckActivationFlagsRequired(); //mxd
+			argscontrol.UpdateScriptControls(); //mxd
+			actionhelp.UpdateAction(action.GetValue()); //mxd
 		}
 
 		//mxd
@@ -654,15 +701,58 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 		}
 
+		private void CheckActivationFlagsRequired()
+		{
+			// Display a warning if we have an action and no activation flags
+			if (action.Value != 0
+				&& General.Map.Config.LinedefActions.ContainsKey(action.Value)
+				&& General.Map.Config.LinedefActions[action.Value].RequiresActivation)
+			{
+				bool haveactivationflag = false;
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+				{
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					if (ai.IsTrigger && c.CheckState != CheckState.Unchecked)
+					{
+						haveactivationflag = true;
+						break;
+					}
+				}
+
+				missingactivation.Visible = !haveactivationflag;
+
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+				{
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					if (ai.IsTrigger)
+						c.ForeColor = (!haveactivationflag ? Color.DarkRed : SystemColors.ControlText);
+				}
+			}
+			else
+			{
+				missingactivation.Visible = false;
+				foreach (CheckBox c in udmfactivates.Checkboxes)
+					c.ForeColor = SystemColors.ControlText;
+			}
+		}
+
 		#endregion
 
 		#region ================== Events
 
 		private void apply_Click(object sender, EventArgs e) 
 		{
+			// Verify the action
+			if(General.Map.FormatInterface.HasSectorAction && ((action.Value < General.Map.FormatInterface.MinAction) || (action.Value > General.Map.FormatInterface.MaxAction))) 
+			{
+				General.ShowWarningMessage("Sector action must be between " + General.Map.FormatInterface.MinAction + " and " + General.Map.FormatInterface.MaxAction + ".", MessageBoxButtons.OK);
+				return;
+			}
+
 			MakeUndo(); //mxd
 
 			// Go for all sectors
+			int offset = 0; //mxd
 			foreach(Sector s in sectors) 
 			{
 				// Apply all flags
@@ -707,6 +797,15 @@ namespace CodeImp.DoomBuilder.Windows
 					s.CeilSlope = new Vector3D();
 					s.CeilSlopeOffset = double.NaN;
 				}
+
+				//Action
+				if(!action.Empty) s.Action = action.Value;
+
+				//mxd. Apply args
+				argscontrol.Apply(s, offset);
+
+				//mxd. Increase offset...
+				offset++;
 			}
 
 			//mxd. Apply tags
@@ -769,6 +868,41 @@ namespace CodeImp.DoomBuilder.Windows
 		private void tabcustom_MouseEnter(object sender, EventArgs e) 
 		{
 			fieldslist.Focus();
+		}
+
+		// Action changes
+		private void action_ValueChanges(object sender, EventArgs e) 
+		{
+			int showaction = 0;
+
+			// Only when line type is known
+			if(General.Map.Config.LinedefActions.ContainsKey(action.Value)) showaction = action.Value;
+
+			//mxd. Change the argument descriptions
+			argscontrol.UpdateAction(showaction, preventchanges);
+
+			if(!preventchanges)
+			{
+				MakeUndo(); //mxd
+
+				//mxd. Update what must be updated
+				CheckActivationFlagsRequired();
+				argscontrol.UpdateScriptControls();
+				actionhelp.UpdateAction(showaction);
+			}
+		}
+
+		// Browse Action clicked
+		private void browseaction_Click(object sender, EventArgs e)
+		{
+			action.Value = ActionBrowserForm.BrowseAction(this, action.Value);
+		}
+
+		//mxd
+		private void udmfactivates_OnValueChanged(object sender, EventArgs e)
+		{
+			if (preventchanges) return;
+			CheckActivationFlagsRequired();
 		}
 
 		private void ceilAngleControl_AngleChanged(object sender, EventArgs e) 

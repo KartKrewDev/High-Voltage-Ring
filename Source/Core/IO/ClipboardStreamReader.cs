@@ -135,6 +135,7 @@ namespace CodeImp.DoomBuilder.IO
 
 			for(int i = 0; i < count; i++) 
 			{
+				int[] args = new int[Sector.NUM_ARGS];
 				int effect = reader.ReadInt32();
 				int hfloor = reader.ReadInt32();
 				int hceil = reader.ReadInt32();
@@ -153,6 +154,9 @@ namespace CodeImp.DoomBuilder.IO
 				Vector3D fslope = new Vector3D(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
 				double coffset = reader.ReadDouble();
 				Vector3D cslope = new Vector3D(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+
+				int action = reader.ReadInt32();
+				for(int a = 0; a < args.Length; a++) args[a] = reader.ReadInt32();
 
 				//flags
 				Dictionary<string, bool> stringflags = new Dictionary<string, bool>(StringComparer.Ordinal);
@@ -176,12 +180,19 @@ namespace CodeImp.DoomBuilder.IO
 					stringflags.Add(flag.Key, false);
 				}
 
+				//add missing activations
+				foreach(LinedefActivateInfo activate in General.Map.Config.SectorActivates) 
+				{
+					if(stringflags.ContainsKey(activate.Key)) continue;
+					stringflags.Add(activate.Key, false);
+				}
+
 				// Create new item
 				Dictionary<string, UniValue> fields = ReadCustomFields(reader);
 				Sector s = map.CreateSector();
 				if(s != null) 
 				{
-					s.Update(hfloor, hceil, tfloor, tceil, effect, stringflags, tags, bright, foffset, fslope, coffset, cslope);
+					s.Update(hfloor, hceil, tfloor, tceil, effect, stringflags, tags, bright, foffset, fslope, coffset, cslope, action, args);
 
 					// Add custom fields
 					s.Fields.BeforeFieldsChange();

@@ -106,6 +106,7 @@ namespace CodeImp.DoomBuilder.IO
 		public override bool HasLinedefTag { get { return true; } }
 		public override bool HasThingTag { get { return true; } }
 		public override bool HasThingAction { get { return true; } }
+		public override bool HasSectorAction { get { return ((manager != null) && (manager.Config != null) && (manager.Config.EngineName == "srb2")); } }
 		public override bool HasCustomFields { get { return true; } }
 		public override bool HasThingHeight { get { return true; } }
 		public override bool HasActionArgs { get { return true; } }

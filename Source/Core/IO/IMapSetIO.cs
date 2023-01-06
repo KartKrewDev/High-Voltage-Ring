@@ -38,6 +38,7 @@ namespace CodeImp.DoomBuilder.IO
 		bool HasLinedefTag { get; }
 		bool HasThingTag { get; }
 		bool HasThingAction { get; }
+		bool HasSectorAction { get; }
 		bool HasCustomFields { get; }
 		bool HasThingHeight { get; }
 		bool HasActionArgs { get; }

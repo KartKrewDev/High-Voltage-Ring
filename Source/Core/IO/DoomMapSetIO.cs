@@ -57,6 +57,7 @@ namespace CodeImp.DoomBuilder.IO
 		public override bool HasLinedefTag { get { return true; } }
 		public override bool HasThingTag { get { return false; } }
 		public override bool HasThingAction { get { return false; } }
+		public override bool HasSectorAction { get { return false; } }
 		public override bool HasCustomFields { get { return false; } }
 		public override bool HasThingHeight { get { return false; } }
 		public override bool HasActionArgs { get { return false; } }

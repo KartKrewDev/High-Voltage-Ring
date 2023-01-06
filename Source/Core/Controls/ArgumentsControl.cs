@@ -94,6 +94,11 @@ namespace CodeImp.DoomBuilder.Controls
 			SetValue(t.Fields, t.Args, first);
 		}
 
+		public void SetValue(Sector s, bool first)
+		{
+			SetValue(s.Fields, s.Args, first);
+		}
+
 		private void SetValue(UniFields fields, int[] newargs, bool first)
 		{
 			if(first)
@@ -231,6 +236,58 @@ namespace CodeImp.DoomBuilder.Controls
 			// Apply the rest of args
 			for (int i = 1; i < args.Length; i++)
 				t.Args[i] = args[i].GetResult(t.Args[i], step);
+		}
+
+		public void Apply(Sector s, int step)
+		{
+            //mxd. Script name/number handling
+            // We can't rely on control visibility here, because all controlls will be invisible if ArgumentsControl is invisible
+            // (for example, when a different tab is selected)
+            bool isacs = (Array.IndexOf(GZGeneral.ACS_SPECIALS, action) != -1);
+            switch (Arg0Mode)
+            {
+                // Apply arg0str
+                case ArgZeroMode.STRING:
+                    if (isacs)
+                    {
+                        if (!string.IsNullOrEmpty(arg0named.Text))
+                            s.Fields["arg0str"] = new UniValue(UniversalType.String, arg0named.Text);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(arg0str.Text))
+                            s.Fields["arg0str"] = new UniValue(UniversalType.String, arg0str.Text);
+                    }
+                    break;
+
+                // Apply script number
+                case ArgZeroMode.INT:
+                    if (!isacs)
+                        goto case ArgZeroMode.DEFAULT;
+                    //
+                    if (!string.IsNullOrEmpty(arg0int.Text))
+                    {
+                        if (arg0int.SelectedItem != null)
+                            s.Args[0] = ((ScriptItem)((ColoredComboBoxItem)arg0int.SelectedItem).Value).Index;
+                        else if (!int.TryParse(arg0int.Text.Trim(), out s.Args[0]))
+                            s.Args[0] = 0;
+
+                        if (s.Fields.ContainsKey("arg0str")) s.Fields.Remove("arg0str");
+                    }
+                    break;
+
+                // Apply classic arg
+                case ArgZeroMode.DEFAULT:
+                    s.Args[0] = arg0.GetResult(s.Args[0], step);
+                    if (s.Fields.ContainsKey("arg0str")) s.Fields.Remove("arg0str");
+                    break;
+
+                default: throw new NotImplementedException("Unknown ArgZeroMode");
+            }
+
+			// Apply the rest of args
+			for (int i = 1; i < args.Length; i++)
+				s.Args[i] = args[i].GetResult(s.Args[i], step);
 		}
 
 		#endregion

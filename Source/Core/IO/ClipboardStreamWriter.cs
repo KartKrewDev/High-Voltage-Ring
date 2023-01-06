@@ -71,6 +71,10 @@ namespace CodeImp.DoomBuilder.IO
 					foreach(KeyValuePair<string, string> flag in General.Map.Config.FloorPortalFlags)
 						config.WriteSetting("managedfields.sector." + flag.Key, true);
 
+					// Add sector activations
+					foreach(LinedefActivateInfo activate in General.Map.Config.SectorActivates)
+						config.WriteSetting("managedfields.sector." + activate.Key, true);
+
 					// Add thing flags
 					foreach(KeyValuePair<string, string> flag in General.Map.Config.ThingFlags)
 						config.WriteSetting("managedfields.thing." + flag.Key, true);
@@ -224,6 +228,9 @@ namespace CodeImp.DoomBuilder.IO
 				writer.Write(s.CeilSlope.x);
 				writer.Write(s.CeilSlope.y);
 				writer.Write(s.CeilSlope.z);
+
+				writer.Write(s.Action);
+				for(int i = 0; i < s.Args.Length; i++) writer.Write(s.Args[i]);
 
 				AddFlags(s.Flags, writer);
 				AddCustomFields(s.Fields, "sector", writer);

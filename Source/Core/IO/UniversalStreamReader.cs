@@ -109,6 +109,10 @@ namespace CodeImp.DoomBuilder.IO
 					foreach(KeyValuePair<string, string> flag in General.Map.Config.FloorPortalFlags)
 						config.WriteSetting("managedfields.sector." + flag.Key, true);
 
+					// Add sector activations
+					foreach(LinedefActivateInfo activate in General.Map.Config.SectorActivates)
+						config.WriteSetting("managedfields.sector." + activate.Key, true);
+
 					// Add thing flags
 					foreach(KeyValuePair<string, string> flag in General.Map.Config.ThingFlags)
 						config.WriteSetting("managedfields.thing." + flag.Key, true);
@@ -379,6 +383,7 @@ namespace CodeImp.DoomBuilder.IO
 			{
 				// Read fields
 				UniversalCollection c = collections[i];
+				int[] args = new int[Sector.NUM_ARGS];
 				string where = "sector " + i;
 				int hfloor = GetCollectionEntry(c, "heightfloor", false, 0, where);
 				int hceil = GetCollectionEntry(c, "heightceiling", false, 0, where);
@@ -416,6 +421,10 @@ namespace CodeImp.DoomBuilder.IO
 				double cslopez = GetCollectionEntry(c, "ceilingplane_c", false, 0.0, where);
 				double coffset = GetCollectionEntry(c, "ceilingplane_d", false, double.NaN, where);
 
+				int action = GetCollectionEntry(c, "action", false, 0, where);
+				for (int j = 0; j < args.Length; j++)
+					args[j] = GetCollectionEntry(c, "arg" + j, false, 0, where);
+
 				//mxd. Read flags
 				Dictionary<string, bool> stringflags = new Dictionary<string, bool>(StringComparer.Ordinal);
 				foreach(KeyValuePair<string, string> flag in General.Map.Config.SectorFlags)
@@ -425,11 +434,25 @@ namespace CodeImp.DoomBuilder.IO
 				foreach(KeyValuePair<string, string> flag in General.Map.Config.FloorPortalFlags)
 					stringflags[flag.Key] = GetCollectionEntry(c, flag.Key, false, false, where);
 
+				// Activations
+				foreach(LinedefActivateInfo activate in General.Map.Config.SectorActivates)
+					stringflags[activate.Key] = GetCollectionEntry(c, activate.Key, false, false, where);
+
 				// Create new item
 				Sector s = map.CreateSector();
 				if(s != null)
 				{
-					s.Update(hfloor, hceil, tfloor, tceil, special, stringflags, tags, bright, foffset, new Vector3D(fslopex, fslopey, fslopez).GetNormal(), coffset, new Vector3D(cslopex, cslopey, cslopez).GetNormal());
+					s.Update(
+						hfloor, hceil,
+						tfloor, tceil,
+						special,
+						stringflags,
+						tags,
+						bright,
+						foffset, new Vector3D(fslopex, fslopey, fslopez).GetNormal(),
+						coffset, new Vector3D(cslopex, cslopey, cslopez).GetNormal(),
+						action, args
+					);
 
 					// Custom fields
 					ReadCustomFields(c, s, "sector");

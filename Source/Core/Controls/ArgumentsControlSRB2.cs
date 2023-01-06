@@ -76,6 +76,11 @@ namespace CodeImp.DoomBuilder.Controls
 			SetValue(t.Fields, t.Args, first);
 		}
 
+		public void SetValue(Sector s, bool first)
+		{
+			SetValue(s.Fields, s.Args, first);
+		}
+
 		private void SetValue(UniFields fields, int[] newargs, bool first)
 		{
 			// Update arguments
@@ -120,12 +125,32 @@ namespace CodeImp.DoomBuilder.Controls
 					UniFields.SetString(t.Fields, "stringarg" + i, stringargs[i].Text, string.Empty);
 		}
 
+		public void Apply(Sector s, int step)
+		{
+			for (int i = 0; i < args.Length; i++)
+				s.Args[i] = args[i].GetResult(s.Args[i], step);
+
+			for (int i = 0; i < stringargs.Length; i++)
+				if (!string.IsNullOrEmpty(stringargs[i].Text))
+					UniFields.SetString(s.Fields, "stringarg" + i, stringargs[i].Text, string.Empty);
+		}
+
 		#endregion
 
 		#region ================== Update
 
-		//TODO: Info for string args
 		public void UpdateAction(int action, bool setuponly)
+		{
+			UpdateAction(action, setuponly, null);
+		}
+
+		public void UpdateThingType(ThingTypeInfo info)
+		{
+			UpdateAction(this.action, false, null);
+		}
+
+		//TODO: Info for string args
+		public void UpdateAction(int action, bool setuponly, ThingTypeInfo info)
 		{
 			// Update arguments
 			int showaction = 0;
@@ -136,8 +161,16 @@ namespace CodeImp.DoomBuilder.Controls
 			if (General.Map.Config.LinedefActions.ContainsKey(action)) showaction = action;
 
 			// Update argument infos
-			arginfo = General.Map.Config.LinedefActions[showaction].Args;
-			stringarginfo = General.Map.Config.LinedefActions[showaction].StringArgs;
+			if (info != null)
+			{
+				arginfo = info.Args;
+				stringarginfo = info.StringArgs;
+			}
+			else
+			{
+				arginfo = General.Map.Config.LinedefActions[showaction].Args;
+				stringarginfo = General.Map.Config.LinedefActions[showaction].Args;
+			}
 
 			//mxd. Don't update action args when old and new argument infos match
 			if (arginfo != null && oldarginfo != null && stringarginfo != null && oldstringarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo) && ArgumentInfosMatch(stringarginfo, oldstringarginfo)) return;
@@ -171,54 +204,6 @@ namespace CodeImp.DoomBuilder.Controls
 
 			// Store current action
 			this.action = showaction;
-
-			this.EndUpdate();
-		}
-
-		public void UpdateThingType(ThingTypeInfo info)
-		{
-			// Update arguments
-			ArgumentInfo[] oldarginfo = (arginfo != null ? (ArgumentInfo[])arginfo.Clone() : null); //mxd
-			ArgumentInfo[] oldstringarginfo = (stringarginfo != null ? (ArgumentInfo[])stringarginfo.Clone() : null);
-
-			// Update argument infos
-			if (info != null)
-			{
-				arginfo = info.Args;
-				stringarginfo = info.StringArgs;
-			}
-			else
-			{
-				arginfo = General.Map.Config.LinedefActions[0].Args;
-				stringarginfo = General.Map.Config.LinedefActions[0].Args;
-			}
-
-			//mxd. Don't update args when old and new argument infos match
-			if (arginfo != null && oldarginfo != null && stringarginfo != null && oldstringarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo) && ArgumentInfosMatch(stringarginfo, oldstringarginfo)) return;
-
-			// Change the argument descriptions
-			this.BeginUpdate();
-
-			for (int i = 0; i < args.Length; i++)
-				UpdateArgument(args[i], labels[i], arginfo[i]);
-
-			for (int i = 0; i < stringargs.Length; i++)
-				UpdateStringArgument(stringargs[i], stringlabels[i], stringarginfo[i]);
-
-			// Apply thing's default arguments
-			if (info != null)
-			{
-				for (int i = 0; i < args.Length; i++)
-					args[i].SetDefaultValue();
-			}
-			else //or set them to 0
-			{
-				for (int i = 0; i < args.Length; i++)
-					args[i].SetValue(0);
-			}
-
-			for (int i = 0; i < stringargs.Length; i++)
-				stringargs[i].Text = string.Empty;
 
 			this.EndUpdate();
 		}

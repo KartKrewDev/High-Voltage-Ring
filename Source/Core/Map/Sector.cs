@@ -39,6 +39,13 @@ namespace CodeImp.DoomBuilder.Map
 	
 	public sealed class Sector : SelectableElement, IMultiTaggedMapElement
 	{
+		#region ================== Constants
+
+		public const int NUM_ARGS = 10;
+		public const int NUM_STRING_ARGS = 2;
+
+		#endregion
+
 		#region ================== Variables
 
 		// Map
@@ -88,7 +95,11 @@ namespace CodeImp.DoomBuilder.Map
 		private double flooroffset;
 		private Vector3D ceilslope;
 		private double ceiloffset;
-		
+
+		// Ring Racers action
+		private int action;
+		private int[] args;
+
 		#endregion
 
 		#region ================== Properties
@@ -142,6 +153,9 @@ namespace CodeImp.DoomBuilder.Map
 		public double CeilSlopeOffset { get { return ceiloffset; } set { BeforePropsChange(); ceiloffset = value; updateneeded = true; } }
         internal int LastProcessed { get { return lastProcessed; } set { lastProcessed = value; } }
 
+		public int Action { get { return action; } set { BeforePropsChange(); action = value; } }
+		public int[] Args { get { return args; } }
+
 		#endregion
 
 		#region ================== Constructor / Disposer
@@ -161,6 +175,7 @@ namespace CodeImp.DoomBuilder.Map
 			this.longceiltexname = MapSet.EmptyLongName;
 			this.flags = new Dictionary<string, bool>(StringComparer.Ordinal); //mxd
 			this.tags = new List<int> { 0 }; //mxd
+			this.args = new int[NUM_ARGS];
 			this.updateneeded = true;
 			this.triangulationneeded = true;
 			this.triangles = new Triangulation(); //mxd
@@ -323,6 +338,8 @@ namespace CodeImp.DoomBuilder.Map
 			s.floorslope = floorslope; //mxd
 			s.ceiloffset = ceiloffset; //mxd
 			s.ceilslope = ceilslope; //mxd
+			s.action = action;
+			s.args = (int[])args.Clone();
 			s.updateneeded = true;
 			base.CopyPropertiesTo(s);
 		}
@@ -828,11 +845,30 @@ namespace CodeImp.DoomBuilder.Map
 		//mxd. This updates all properties (Doom/Hexen version)
 		public void Update(int hfloor, int hceil, string tfloor, string tceil, int effect, int tag, int brightness) 
 		{
-			Update(hfloor, hceil, tfloor, tceil, effect, new Dictionary<string, bool>(StringComparer.Ordinal), new List<int> { tag }, brightness, 0, new Vector3D(), 0, new Vector3D());
+			Update(
+				hfloor, hceil,
+				tfloor, tceil,
+				effect,
+				new Dictionary<string, bool>(StringComparer.Ordinal),
+				new List<int> { tag },
+				brightness,
+				0, new Vector3D(),
+				0, new Vector3D(),
+				0, new int[NUM_ARGS]
+			);
 		}
 
 		//mxd. This updates all properties (UDMF version)
-		public void Update(int hfloor, int hceil, string tfloor, string tceil, int effect, Dictionary<string, bool> flags, List<int> tags, int brightness, double flooroffset, Vector3D floorslope, double ceiloffset, Vector3D ceilslope)
+		public void Update(
+			int hfloor, int hceil,
+			string tfloor, string tceil,
+			int effect,
+			Dictionary<string, bool> flags,
+			List<int> tags,
+			int brightness,
+			double flooroffset, Vector3D floorslope,
+			double ceiloffset, Vector3D ceilslope,
+			int action, int[] args)
 		{
 			BeforePropsChange();
 			
@@ -857,6 +893,10 @@ namespace CodeImp.DoomBuilder.Map
 			if(string.IsNullOrEmpty(tfloor)) tfloor = "-"; //mxd
 			floortexname = tfloor;
 			longfloortexname = Lump.MakeLongName(tfloor);
+
+			this.action = action;
+			this.args = new int[NUM_ARGS];
+			args.CopyTo(this.args, 0);
 
 			//mxd. Map is changed
 			General.Map.IsChanged = true;

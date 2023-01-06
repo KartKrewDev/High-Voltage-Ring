@@ -176,6 +176,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly StepsList brightnesslevels;
 		private readonly Dictionary<string, string> sectorrenderstyles; //mxd
 		private readonly Dictionary<string, string> sectorportalrenderstyles; //mxd
+		private readonly List<LinedefActivateInfo> sectoractivates;
 
 		// Universal fields
 		private readonly List<UniversalFieldInfo> linedeffields;
@@ -336,6 +337,7 @@ namespace CodeImp.DoomBuilder.Config
 		public StepsList BrightnessLevels { get { return brightnesslevels; } }
 		public Dictionary<string, string> SectorRenderStyles { get { return sectorrenderstyles; } } //mxd
 		public Dictionary<string, string> SectorPortalRenderStyles { get { return sectorportalrenderstyles; } } //mxd
+		public List<LinedefActivateInfo> SectorActivates { get { return sectoractivates; } }
 
 		// Universal fields
 		public List<UniversalFieldInfo> LinedefFields { get { return linedeffields; } }
@@ -419,6 +421,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.sectorportalrenderstyles = new Dictionary<string, string>(StringComparer.Ordinal); //mxd
 			this.thingrenderstyles = new Dictionary<string, string>(StringComparer.Ordinal); //mxd
 			this.defaultskytextures = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); //mxd
+			this.sectoractivates = new List<LinedefActivateInfo>();
 			
 			// Read general settings
 			configname = cfg.ReadSetting("game", "<unnamed game>");
@@ -569,6 +572,7 @@ namespace CodeImp.DoomBuilder.Config
 			LoadSectorGeneralizedEffects();
 			LoadStringDictionary(sectorrenderstyles, "sectorrenderstyles"); //mxd
 			LoadStringDictionary(sectorportalrenderstyles, "sectorportalrenderstyles"); //mxd
+			LoadSectorActivations();
 			
 			// Universal fields
 			linedeffields = LoadUniversalFields("linedef");
@@ -939,6 +943,35 @@ namespace CodeImp.DoomBuilder.Config
 				{
 					General.ErrorLogger.Add(ErrorType.Warning, "Structure \"gen_sectortypes\" contains invalid entries in the \"" + this.Name + "\" game configuration");
 				}
+			}
+		}
+
+		// Sector activates
+		private void LoadSectorActivations()
+		{
+			// Get linedef activations
+			IDictionary dic = cfg.ReadSetting("sectoractivations", new Hashtable());
+			foreach(DictionaryEntry de in dic)
+			{
+				// If the value is a dictionary read the values from that
+				if (de.Value is ICollection)
+				{
+					string name = cfg.ReadSetting("sectoractivations." + de.Key.ToString() + ".name", de.Key.ToString());
+					bool istrigger = cfg.ReadSetting("sectoractivations." + de.Key.ToString() + ".istrigger", true);
+					sectoractivates.Add(new LinedefActivateInfo(de.Key.ToString(), name, istrigger));
+				}
+				else
+				{
+					// Add to the list
+					sectoractivates.Add(new LinedefActivateInfo(de.Key.ToString(), de.Value.ToString(), true));
+				}
+			}
+
+			//mxd. Sort only when activations are numeric
+			MapSetIO io = MapSetIO.Create(formatinterface);
+			if(io.HasNumericLinedefActivations)
+			{
+				sectoractivates.Sort();
 			}
 		}
 

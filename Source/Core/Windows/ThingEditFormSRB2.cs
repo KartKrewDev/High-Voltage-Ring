@@ -108,6 +108,9 @@ namespace CodeImp.DoomBuilder.Windows
 				flags.Add(tf.Value, tf.Key);
 			flags.Enabled = (General.Map.Config.ThingFlags.Count > 0);
 
+			// Fill actions list
+			action.AddInfo(General.Map.Config.SortedLinedefActions.ToArray());
+
 			// Initialize custom fields editor
 			fieldslist.Setup("thing");
 
@@ -204,9 +207,12 @@ namespace CodeImp.DoomBuilder.Windows
 			pitch.Text = ft.Pitch.ToString();
 			roll.Text = ft.Roll.ToString();
 
-			// Action/tags
+			// Tags
 			tagSelector.Setup(UniversalType.ThingTag);
 			tagSelector.SetTag(ft.Tag);
+
+			// Action
+			action.Value = ft.Action;
 
 			//mxd. Args
 			argscontrol.UpdateThingType(thinginfo);
@@ -262,6 +268,9 @@ namespace CodeImp.DoomBuilder.Windows
 				// Tags
 				if(t.Tag != ft.Tag) tagSelector.ClearTag(); //mxd
 
+				// Action
+				if(t.Action != action.Value) action.Empty = true;
+
 				//mxd. Arguments
 				argscontrol.SetValue(t, false);
 
@@ -300,6 +309,7 @@ namespace CodeImp.DoomBuilder.Windows
 			preventmapchange = false;
 
 			argscontrol.UpdateScriptControls(); //mxd
+			actionhelp.UpdateAction(action.GetValue()); //mxd
 			commenteditor.FinishSetup(); //mxd
 			UpdateFlagNames(); //mxd
 		}
@@ -368,6 +378,33 @@ namespace CodeImp.DoomBuilder.Windows
 		private void thingtype_OnTypeDoubleClicked() 
 		{
 			apply_Click(this, EventArgs.Empty);
+		}
+
+		// Action changes
+		private void action_ValueChanges(object sender, EventArgs e) 
+		{
+			int showaction = 0;
+
+			// Only when line type is known, otherwise use the thing arguments
+			if(General.Map.Config.LinedefActions.ContainsKey(action.Value)) showaction = action.Value;
+
+			//mxd. Change the argument descriptions
+			argscontrol.UpdateAction(showaction, preventchanges, (action.Empty ? null : thinginfo));
+
+			if(!preventchanges) 
+			{
+				MakeUndo(); //mxd
+
+				//mxd. Update what must be updated
+				argscontrol.UpdateScriptControls();
+				actionhelp.UpdateAction(showaction);
+			}
+		}
+
+		// Browse Action clicked
+		private void browseaction_Click(object sender, EventArgs e) 
+		{
+			action.Value = ActionBrowserForm.BrowseAction(this, action.Value);
 		}
 
 		// Angle text changes
@@ -470,6 +507,9 @@ namespace CodeImp.DoomBuilder.Windows
 
 				// Tags
 				t.Tag = General.Clamp(tagSelector.GetSmartTag(t.Tag, offset), General.Map.FormatInterface.MinTag, General.Map.FormatInterface.MaxTag); //mxd
+
+				// Action
+				if(!action.Empty) t.Action = action.Value;
 
 				//mxd. Apply args
 				argscontrol.Apply(t, offset);
@@ -688,6 +728,9 @@ namespace CodeImp.DoomBuilder.Windows
 		private void thingtype_OnTypeChanged(ThingTypeInfo value) 
 		{
 			thinginfo = value;
+
+			// Update arguments
+			action_ValueChanges(this, EventArgs.Empty);
 
 			//mxd. Update things
 			if(preventchanges ||

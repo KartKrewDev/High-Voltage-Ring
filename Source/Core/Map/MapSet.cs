@@ -3983,6 +3983,27 @@ namespace CodeImp.DoomBuilder.Map
 					}
 				}
 			}
+
+			// Call handler on sectors action
+			if(General.Map.FormatInterface.HasSectorAction && General.Map.FormatInterface.HasActionArgs)
+			{
+				foreach(Sector s in sectors)
+				{
+					if(s.Marked == marked)
+					{
+						LinedefActionInfo info = General.Map.Config.GetLinedefActionInfo(s.Action);
+						for(int i = 0; i < info.Args.Length; i++)
+						{
+							if(info.Args[i].Used && CheckIsTagType(info.Args[i].Type))
+							{
+								int tag = s.Args[i];
+								handler(s, true, (UniversalType)(info.Args[i].Type), ref tag, obj);
+								if(tag != s.Args[i]) s.Args[i] = tag;
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		// This checks if the given action argument type is a tag type
