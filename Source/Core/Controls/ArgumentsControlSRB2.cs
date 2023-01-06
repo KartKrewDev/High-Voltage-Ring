@@ -146,7 +146,7 @@ namespace CodeImp.DoomBuilder.Controls
 
 		public void UpdateThingType(ThingTypeInfo info)
 		{
-			UpdateAction(this.action, false, null);
+			UpdateAction(this.action, false, info);
 		}
 
 		//TODO: Info for string args
@@ -161,7 +161,7 @@ namespace CodeImp.DoomBuilder.Controls
 			if (General.Map.Config.LinedefActions.ContainsKey(action)) showaction = action;
 
 			// Update argument infos
-			if (info != null)
+			if ((showaction == 0) && (info != null))
 			{
 				arginfo = info.Args;
 				stringarginfo = info.StringArgs;
@@ -172,8 +172,18 @@ namespace CodeImp.DoomBuilder.Controls
 				stringarginfo = General.Map.Config.LinedefActions[showaction].Args;
 			}
 
+			// Don't update action args when thing type is changed
+			if (info != null && showaction != 0 && this.action == showaction)
+				return;
+
 			//mxd. Don't update action args when old and new argument infos match
-			if (arginfo != null && oldarginfo != null && stringarginfo != null && oldstringarginfo != null && ArgumentInfosMatch(arginfo, oldarginfo) && ArgumentInfosMatch(stringarginfo, oldstringarginfo)) return;
+			if (arginfo != null && oldarginfo != null
+				&& stringarginfo != null && oldstringarginfo != null
+				&& ArgumentInfosMatch(arginfo, oldarginfo)
+				&& ArgumentInfosMatch(stringarginfo, oldstringarginfo))
+			{
+				return;
+			}
 
 			// Change the argument descriptions
 			this.BeginUpdate();
@@ -186,8 +196,8 @@ namespace CodeImp.DoomBuilder.Controls
 
 			if (!setuponly)
 			{
-				// Apply action's default arguments
-				if (showaction != 0)
+				// Apply action's or thing's default arguments
+				if(showaction != 0 || info != null)
 				{
 					for (int i = 0; i < args.Length; i++)
 						args[i].SetDefaultValue();
