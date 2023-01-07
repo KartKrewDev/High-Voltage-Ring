@@ -52,7 +52,6 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			public readonly Dictionary<string, bool> Flags;
 			public readonly double Alpha;
-			public readonly int ExecutorDelay;
 
 			public readonly SidedefProperties Front;
 			public readonly SidedefProperties Back;
@@ -62,7 +61,6 @@ namespace CodeImp.DoomBuilder.Windows
 				Front = (line.Front != null ? new SidedefProperties(line.Front) : null);
 				Back = (line.Back != null ? new SidedefProperties(line.Back) : null);
 				Alpha = UniFields.GetFloat(line.Fields, "alpha", 1.0f);
-				ExecutorDelay = UniFields.GetInteger(line.Fields, "executordelay", 0);
 				Flags = line.GetFlags();
 			}
 		}
@@ -301,7 +299,6 @@ namespace CodeImp.DoomBuilder.Windows
 			commenteditor.SetValues(fl.Fields, true); //mxd. Comments
 			renderStyle.SelectedIndex = Array.IndexOf(renderstyles, fl.Fields.GetValue("renderstyle", "translucent"));
 			alpha.Text = General.Clamp(fl.Fields.GetValue("alpha", 1.0), 0.0, 1.0).ToString();
-			executordelay.Text = UniFields.GetInteger(fl.Fields, "executordelay", 0).ToString();
 
 			// Action
 			action.Value = fl.Action;
@@ -408,12 +405,6 @@ namespace CodeImp.DoomBuilder.Windows
 				// Alpha
 				if (!string.IsNullOrEmpty(alpha.Text) && General.Clamp(alpha.GetResultFloat(1.0), 0.0, 1.0) != l.Fields.GetValue("alpha", 1.0))
 					alpha.Text = string.Empty;
-
-				if (!string.IsNullOrEmpty(executordelay.Text))
-				{
-					int delay = UniFields.GetInteger(l.Fields, "executordelay", 0);
-					if (delay != executordelay.GetResult(delay)) executordelay.Text = string.Empty;
-				}
 
 				// Custom fields
 				fieldslist.SetValues(l.Fields, false);
@@ -902,30 +893,6 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (preventchanges) return;
 			CheckActivationFlagsRequired();
-		}
-
-		private void executordelay_WhenTextChanged(object sender, EventArgs e)
-		{
-			if (preventchanges) return;
-			MakeUndo(); //mxd
-			int i = 0;
-
-			//restore values
-			if (string.IsNullOrEmpty(executordelay.Text))
-			{
-				foreach (Linedef l in lines)
-					UniFields.SetInteger(l.Fields, "executordelay", linedefprops[i++].ExecutorDelay, 0);
-			}
-			else //update values
-			{
-				foreach (Linedef l in lines)
-				{
-					UniFields.SetInteger(l.Fields, "executordelay", executordelay.GetResult(0), 0);
-				}
-			}
-
-			General.Map.IsChanged = true;
-			if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
 		#endregion

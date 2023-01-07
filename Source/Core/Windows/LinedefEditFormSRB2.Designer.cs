@@ -33,7 +33,6 @@ namespace CodeImp.DoomBuilder.Windows
             System.Windows.Forms.Label label11;
             System.Windows.Forms.Label label12;
             System.Windows.Forms.Label label6;
-            System.Windows.Forms.Label executordelaylabel;
             System.Windows.Forms.Label labelRepeatcntFront;
             System.Windows.Forms.Label labelRepeatcntBack;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinedefEditFormSRB2));
@@ -41,7 +40,6 @@ namespace CodeImp.DoomBuilder.Windows
             this.cancel = new System.Windows.Forms.Button();
             this.apply = new System.Windows.Forms.Button();
             this.actiongroup = new System.Windows.Forms.GroupBox();
-            this.executordelay = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
             this.argscontrol = new CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2();
             this.actionhelp = new CodeImp.DoomBuilder.Controls.ActionSpecialHelpButton();
             this.action = new CodeImp.DoomBuilder.Controls.ActionSelectorControl();
@@ -125,7 +123,6 @@ namespace CodeImp.DoomBuilder.Windows
             label11 = new System.Windows.Forms.Label();
             label12 = new System.Windows.Forms.Label();
             label6 = new System.Windows.Forms.Label();
-            executordelaylabel = new System.Windows.Forms.Label();
             labelRepeatcntFront = new System.Windows.Forms.Label();
             labelRepeatcntBack = new System.Windows.Forms.Label();
             this.actiongroup.SuspendLayout();
@@ -188,15 +185,6 @@ namespace CodeImp.DoomBuilder.Windows
             label6.TabIndex = 17;
             label6.Text = "Alpha:";
             // 
-            // executordelaylabel
-            // 
-            executordelaylabel.AutoSize = true;
-            executordelaylabel.Location = new System.Drawing.Point(75, 228);
-            executordelaylabel.Name = "executordelaylabel";
-            executordelaylabel.Size = new System.Drawing.Size(80, 13);
-            executordelaylabel.TabIndex = 71;
-            executordelaylabel.Text = "Executor delay:";
-            // 
             // labelRepeatcntFront
             // 
             labelRepeatcntFront.AutoSize = true;
@@ -228,7 +216,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(453, 665);
+            this.cancel.Location = new System.Drawing.Point(453, 636);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(112, 25);
             this.cancel.TabIndex = 2;
@@ -239,7 +227,7 @@ namespace CodeImp.DoomBuilder.Windows
             // apply
             // 
             this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.apply.Location = new System.Drawing.Point(335, 665);
+            this.apply.Location = new System.Drawing.Point(335, 636);
             this.apply.Name = "apply";
             this.apply.Size = new System.Drawing.Size(112, 25);
             this.apply.TabIndex = 1;
@@ -251,44 +239,23 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.actiongroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.actiongroup.Controls.Add(this.executordelay);
             this.actiongroup.Controls.Add(this.argscontrol);
-            this.actiongroup.Controls.Add(executordelaylabel);
             this.actiongroup.Controls.Add(this.actionhelp);
             this.actiongroup.Controls.Add(label2);
             this.actiongroup.Controls.Add(this.action);
             this.actiongroup.Controls.Add(this.browseaction);
             this.actiongroup.Location = new System.Drawing.Point(8, 189);
             this.actiongroup.Name = "actiongroup";
-            this.actiongroup.Size = new System.Drawing.Size(533, 259);
+            this.actiongroup.Size = new System.Drawing.Size(533, 225);
             this.actiongroup.TabIndex = 1;
             this.actiongroup.TabStop = false;
             this.actiongroup.Text = " Action ";
-            // 
-            // executordelay
-            // 
-            this.executordelay.AllowDecimal = false;
-            this.executordelay.AllowExpressions = false;
-            this.executordelay.AllowNegative = false;
-            this.executordelay.AllowRelative = false;
-            this.executordelay.ButtonStep = 1;
-            this.executordelay.ButtonStepBig = 35F;
-            this.executordelay.ButtonStepFloat = 1F;
-            this.executordelay.ButtonStepSmall = 1F;
-            this.executordelay.ButtonStepsUseModifierKeys = true;
-            this.executordelay.ButtonStepsWrapAround = false;
-            this.executordelay.Location = new System.Drawing.Point(161, 223);
-            this.executordelay.Name = "executordelay";
-            this.executordelay.Size = new System.Drawing.Size(65, 24);
-            this.executordelay.StepValues = null;
-            this.executordelay.TabIndex = 72;
-            this.executordelay.WhenTextChanged += new System.EventHandler(this.executordelay_WhenTextChanged);
             // 
             // argscontrol
             // 
             this.argscontrol.Location = new System.Drawing.Point(6, 44);
             this.argscontrol.Name = "argscontrol";
-            this.argscontrol.Size = new System.Drawing.Size(521, 173);
+            this.argscontrol.Size = new System.Drawing.Size(521, 175);
             this.argscontrol.TabIndex = 11;
             this.argscontrol.Load += new System.EventHandler(this.argscontrol_Load);
             // 
@@ -381,7 +348,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabs.Name = "tabs";
             this.tabs.Padding = new System.Drawing.Point(12, 3);
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(557, 648);
+            this.tabs.Size = new System.Drawing.Size(557, 619);
             this.tabs.TabIndex = 0;
             // 
             // tabproperties
@@ -395,7 +362,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabproperties.Location = new System.Drawing.Point(4, 23);
             this.tabproperties.Name = "tabproperties";
             this.tabproperties.Padding = new System.Windows.Forms.Padding(5);
-            this.tabproperties.Size = new System.Drawing.Size(549, 621);
+            this.tabproperties.Size = new System.Drawing.Size(549, 592);
             this.tabproperties.TabIndex = 0;
             this.tabproperties.Text = " Properties ";
             this.tabproperties.UseVisualStyleBackColor = true;
@@ -404,7 +371,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.activationGroup.Controls.Add(this.missingactivation);
             this.activationGroup.Controls.Add(this.udmfactivates);
-            this.activationGroup.Location = new System.Drawing.Point(8, 454);
+            this.activationGroup.Location = new System.Drawing.Point(8, 420);
             this.activationGroup.Name = "activationGroup";
             this.activationGroup.Size = new System.Drawing.Size(533, 73);
             this.activationGroup.TabIndex = 0;
@@ -484,7 +451,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.idgroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.idgroup.Controls.Add(this.tagsselector);
-            this.idgroup.Location = new System.Drawing.Point(8, 533);
+            this.idgroup.Location = new System.Drawing.Point(8, 499);
             this.idgroup.Name = "idgroup";
             this.idgroup.Size = new System.Drawing.Size(533, 85);
             this.idgroup.TabIndex = 2;
@@ -1350,7 +1317,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(577, 697);
+            this.ClientSize = new System.Drawing.Size(577, 668);
             this.Controls.Add(this.tabs);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.apply);
@@ -1480,7 +1447,6 @@ namespace CodeImp.DoomBuilder.Windows
 		private CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2 argscontrol;
 		private CodeImp.DoomBuilder.Controls.TagsSelector tagsselector;
 		private System.Windows.Forms.Button resetalpha;
-		private Controls.ButtonsNumericTextbox executordelay;
 		private Controls.ButtonsNumericTextbox repeatcntFront;
 		private Controls.ButtonsNumericTextbox repeatcntBack;
 	}
