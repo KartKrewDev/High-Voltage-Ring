@@ -26,7 +26,6 @@ namespace CodeImp.DoomBuilder.Windows
 		#region ================== Constants
 
 		private const string NO_DAMAGETYPE = "None"; //mxd
-		private const string TRIGGERER_DEFAULT = "Player";
 
 		#endregion
 
@@ -186,10 +185,6 @@ namespace CodeImp.DoomBuilder.Windows
 			damagetype.Items.Add(NO_DAMAGETYPE);
 			damagetype.Items.AddRange(General.Map.Data.DamageTypes);
 
-			//Fill triggerer list
-			List<string> ttypes = new List<string>(General.Map.Config.TriggererTypes);
-			triggerer.Items.AddRange(ttypes.ToArray());
-
 			// Initialize custom fields editor
 			fieldslist.Setup("sector");
 
@@ -312,8 +307,6 @@ namespace CodeImp.DoomBuilder.Windows
 			// Misc
 			gravity.Text = sc.Fields.GetValue("gravity", 1.0).ToString();
 			friction.Text = sc.Fields.GetValue("friction", 0.90625).ToString();
-			triggerTag.Text = sc.Fields.GetValue("triggertag", 0).ToString();
-			triggerer.Text = sc.Fields.GetValue("triggerer", TRIGGERER_DEFAULT);
 
 			// Sector colors
 			fadeColor.SetValueFrom(sc.Fields, true);
@@ -418,9 +411,6 @@ namespace CodeImp.DoomBuilder.Windows
 				// Misc
 				if (s.Fields.GetValue("gravity", 1.0).ToString() != gravity.Text) gravity.Text = "";
 				if (s.Fields.GetValue("friction", 0.90625).ToString() != friction.Text) friction.Text = "";
-				if (s.Fields.GetValue("triggertag", 0).ToString() != triggerTag.Text) triggerTag.Text = "";
-				if (triggerer.SelectedIndex > -1 && s.Fields.GetValue("triggerer", TRIGGERER_DEFAULT) != triggerer.Text)
-					triggerer.SelectedIndex = -1;
 
 				// Sector colors
 				fadeColor.SetValueFrom(s.Fields, false);
@@ -774,12 +764,6 @@ namespace CodeImp.DoomBuilder.Windows
 
 				if (!string.IsNullOrEmpty(friction.Text))
 					UniFields.SetFloat(s.Fields, "friction", friction.GetResultFloat(s.Fields.GetValue("friction", 0.90625)), 0.90625);
-
-				if (!string.IsNullOrEmpty(triggerTag.Text))
-					UniFields.SetInteger(s.Fields, "triggertag", triggerTag.GetResult(s.Fields.GetValue("triggertag", 0)), 0);
-
-				if (!string.IsNullOrEmpty(triggerer.Text))
-					UniFields.SetString(s.Fields, "triggerer", triggerer.Text, TRIGGERER_DEFAULT);
 
 				// Clear horizontal slopes
 				double diff = Math.Abs(Math.Round(s.FloorSlopeOffset) - s.FloorSlopeOffset);

@@ -32,8 +32,6 @@
             System.Windows.Forms.GroupBox groupaction;
             System.Windows.Forms.GroupBox groupeffect;
             System.Windows.Forms.Label labelFriction;
-            System.Windows.Forms.Label labelTriggerer;
-            System.Windows.Forms.Label labelTriggerTag;
             System.Windows.Forms.Label label16;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SectorEditFormSRB2));
             System.Windows.Forms.Label label9;
@@ -48,8 +46,6 @@
             System.Windows.Forms.Label labelFadeEnd;
             this.tagsselector = new CodeImp.DoomBuilder.Controls.TagsSelector();
             this.friction = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
-            this.triggerer = new System.Windows.Forms.ComboBox();
-            this.triggerTag = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
             this.resetdamagetype = new System.Windows.Forms.Button();
             this.brightness = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
             this.damagetype = new System.Windows.Forms.ComboBox();
@@ -124,8 +120,6 @@
             groupaction = new System.Windows.Forms.GroupBox();
             groupeffect = new System.Windows.Forms.GroupBox();
             labelFriction = new System.Windows.Forms.Label();
-            labelTriggerer = new System.Windows.Forms.Label();
-            labelTriggerTag = new System.Windows.Forms.Label();
             label16 = new System.Windows.Forms.Label();
             label9 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
@@ -183,10 +177,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             groupeffect.Controls.Add(this.friction);
             groupeffect.Controls.Add(labelFriction);
-            groupeffect.Controls.Add(labelTriggerer);
-            groupeffect.Controls.Add(this.triggerer);
-            groupeffect.Controls.Add(labelTriggerTag);
-            groupeffect.Controls.Add(this.triggerTag);
             groupeffect.Controls.Add(label16);
             groupeffect.Controls.Add(this.resetdamagetype);
             groupeffect.Controls.Add(this.brightness);
@@ -213,7 +203,7 @@
             this.friction.ButtonStepSmall = 0.03125F;
             this.friction.ButtonStepsUseModifierKeys = true;
             this.friction.ButtonStepsWrapAround = false;
-            this.friction.Location = new System.Drawing.Point(101, 76);
+            this.friction.Location = new System.Drawing.Point(101, 78);
             this.friction.Name = "friction";
             this.friction.Size = new System.Drawing.Size(81, 24);
             this.friction.StepValues = null;
@@ -221,60 +211,16 @@
             // 
             // labelFriction
             // 
-            labelFriction.Location = new System.Drawing.Point(21, 79);
+            labelFriction.Location = new System.Drawing.Point(21, 83);
             labelFriction.Name = "labelFriction";
             labelFriction.Size = new System.Drawing.Size(74, 14);
             labelFriction.TabIndex = 22;
             labelFriction.Text = "Friction:";
             labelFriction.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // labelTriggerer
-            // 
-            labelTriggerer.Location = new System.Drawing.Point(193, 53);
-            labelTriggerer.Name = "labelTriggerer";
-            labelTriggerer.Size = new System.Drawing.Size(74, 14);
-            labelTriggerer.TabIndex = 7;
-            labelTriggerer.Text = "Triggerer:";
-            labelTriggerer.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // triggerer
-            // 
-            this.triggerer.FormattingEnabled = true;
-            this.triggerer.Location = new System.Drawing.Point(272, 50);
-            this.triggerer.Name = "triggerer";
-            this.triggerer.Size = new System.Drawing.Size(81, 21);
-            this.triggerer.TabIndex = 8;
-            // 
-            // labelTriggerTag
-            // 
-            labelTriggerTag.Location = new System.Drawing.Point(193, 82);
-            labelTriggerTag.Name = "labelTriggerTag";
-            labelTriggerTag.Size = new System.Drawing.Size(74, 14);
-            labelTriggerTag.TabIndex = 21;
-            labelTriggerTag.Text = "Trigger tag:";
-            labelTriggerTag.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // triggerTag
-            // 
-            this.triggerTag.AllowDecimal = false;
-            this.triggerTag.AllowExpressions = false;
-            this.triggerTag.AllowNegative = false;
-            this.triggerTag.AllowRelative = false;
-            this.triggerTag.ButtonStep = 1;
-            this.triggerTag.ButtonStepBig = 1F;
-            this.triggerTag.ButtonStepFloat = 1F;
-            this.triggerTag.ButtonStepSmall = 1F;
-            this.triggerTag.ButtonStepsUseModifierKeys = true;
-            this.triggerTag.ButtonStepsWrapAround = false;
-            this.triggerTag.Location = new System.Drawing.Point(272, 78);
-            this.triggerTag.Name = "triggerTag";
-            this.triggerTag.Size = new System.Drawing.Size(81, 24);
-            this.triggerTag.StepValues = null;
-            this.triggerTag.TabIndex = 20;
-            // 
             // label16
             // 
-            label16.Location = new System.Drawing.Point(193, 24);
+            label16.Location = new System.Drawing.Point(21, 111);
             label16.Name = "label16";
             label16.Size = new System.Drawing.Size(74, 14);
             label16.TabIndex = 0;
@@ -315,9 +261,9 @@
             // damagetype
             // 
             this.damagetype.FormattingEnabled = true;
-            this.damagetype.Location = new System.Drawing.Point(272, 21);
+            this.damagetype.Location = new System.Drawing.Point(101, 108);
             this.damagetype.Name = "damagetype";
-            this.damagetype.Size = new System.Drawing.Size(81, 21);
+            this.damagetype.Size = new System.Drawing.Size(148, 21);
             this.damagetype.TabIndex = 1;
             this.damagetype.TextChanged += new System.EventHandler(this.damagetype_TextChanged);
             this.damagetype.MouseDown += new System.Windows.Forms.MouseEventHandler(this.damagetype_MouseDown);
@@ -325,7 +271,7 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new System.Drawing.Point(36, 22);
+            label9.Location = new System.Drawing.Point(36, 23);
             label9.Name = "label9";
             label9.Size = new System.Drawing.Size(59, 13);
             label9.TabIndex = 3;
@@ -691,7 +637,7 @@
             this.tabColors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tabColors.Location = new System.Drawing.Point(4, 22);
             this.tabColors.Name = "tabColors";
-            this.tabColors.Size = new System.Drawing.Size(570, 681);
+            this.tabColors.Size = new System.Drawing.Size(570, 708);
             this.tabColors.TabIndex = 5;
             this.tabColors.Text = "Colors";
             this.tabColors.UseVisualStyleBackColor = true;
@@ -820,7 +766,7 @@
             this.tabSurfaces.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabSurfaces.Location = new System.Drawing.Point(4, 22);
             this.tabSurfaces.Name = "tabSurfaces";
-            this.tabSurfaces.Size = new System.Drawing.Size(570, 681);
+            this.tabSurfaces.Size = new System.Drawing.Size(570, 708);
             this.tabSurfaces.TabIndex = 2;
             this.tabSurfaces.Text = "Surfaces";
             this.tabSurfaces.UseVisualStyleBackColor = true;
@@ -894,7 +840,7 @@
             // 
             // floorAngleControl
             // 
-            this.floorAngleControl.Angle = -2700;
+            this.floorAngleControl.Angle = -2790;
             this.floorAngleControl.AngleOffset = 90;
             this.floorAngleControl.DoomAngleClamping = false;
             this.floorAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1091,7 +1037,7 @@
             // 
             // ceilAngleControl
             // 
-            this.ceilAngleControl.Angle = -2700;
+            this.ceilAngleControl.Angle = -2790;
             this.ceilAngleControl.AngleOffset = 90;
             this.ceilAngleControl.DoomAngleClamping = false;
             this.ceilAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1227,7 +1173,7 @@
             this.tabslopes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabslopes.Location = new System.Drawing.Point(4, 22);
             this.tabslopes.Name = "tabslopes";
-            this.tabslopes.Size = new System.Drawing.Size(570, 681);
+            this.tabslopes.Size = new System.Drawing.Size(570, 708);
             this.tabslopes.TabIndex = 3;
             this.tabslopes.Text = "Slopes";
             this.tabslopes.UseVisualStyleBackColor = true;
@@ -1282,7 +1228,7 @@
             this.tabcomment.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tabcomment.Location = new System.Drawing.Point(4, 22);
             this.tabcomment.Name = "tabcomment";
-            this.tabcomment.Size = new System.Drawing.Size(570, 681);
+            this.tabcomment.Size = new System.Drawing.Size(570, 708);
             this.tabcomment.TabIndex = 4;
             this.tabcomment.Text = "Comment";
             this.tabcomment.UseVisualStyleBackColor = true;
@@ -1292,7 +1238,7 @@
             this.commenteditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.commenteditor.Location = new System.Drawing.Point(0, 0);
             this.commenteditor.Name = "commenteditor";
-            this.commenteditor.Size = new System.Drawing.Size(570, 681);
+            this.commenteditor.Size = new System.Drawing.Size(570, 708);
             this.commenteditor.TabIndex = 0;
             // 
             // tabcustom
@@ -1302,7 +1248,7 @@
             this.tabcustom.Location = new System.Drawing.Point(4, 22);
             this.tabcustom.Name = "tabcustom";
             this.tabcustom.Padding = new System.Windows.Forms.Padding(3);
-            this.tabcustom.Size = new System.Drawing.Size(570, 681);
+            this.tabcustom.Size = new System.Drawing.Size(570, 708);
             this.tabcustom.TabIndex = 1;
             this.tabcustom.Text = "Custom";
             this.tabcustom.UseVisualStyleBackColor = true;
@@ -1320,7 +1266,7 @@
             this.fieldslist.PropertyColumnVisible = true;
             this.fieldslist.PropertyColumnWidth = 150;
             this.fieldslist.ShowFixedFields = true;
-            this.fieldslist.Size = new System.Drawing.Size(564, 675);
+            this.fieldslist.Size = new System.Drawing.Size(564, 702);
             this.fieldslist.TabIndex = 1;
             this.fieldslist.TypeColumnVisible = true;
             this.fieldslist.TypeColumnWidth = 100;
@@ -1469,8 +1415,6 @@
         private System.Windows.Forms.GroupBox groupBox8;
 		private Controls.ButtonsNumericTextbox lightAlpha;
 		private Controls.ButtonsNumericTextbox fadeAlpha;
-		private System.Windows.Forms.ComboBox triggerer;
-		private Controls.ButtonsNumericTextbox triggerTag;
 		private Controls.ButtonsNumericTextbox fadeEnd;
 		private Controls.ButtonsNumericTextbox fadeStart;
 		private Controls.ButtonsNumericTextbox friction;
