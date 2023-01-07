@@ -788,6 +788,17 @@ namespace CodeImp.DoomBuilder.Windows
 				//mxd. Apply args
 				argscontrol.Apply(s, offset);
 
+				// UDMF activations
+				foreach(CheckBox c in udmfactivates.Checkboxes)
+				{
+					LinedefActivateInfo ai = (c.Tag as LinedefActivateInfo);
+					switch(c.CheckState)
+					{
+						case CheckState.Checked: s.SetFlag(ai.Key, true); break;
+						case CheckState.Unchecked: s.SetFlag(ai.Key, false); break;
+					}
+				}
+
 				//mxd. Increase offset...
 				offset++;
 			}
