@@ -86,7 +86,7 @@ special
 
 	int		  420:Light_Fade(3, 4),
 	int		  421:Light_Stop(1),
-	int		  422:Camera_CutAwayView(2),
+	int		  422:Camera_CutAwayView(2, 5),
 	int		  423:Level_SetSky(1, 2),
 	int		  424:Level_SetWeather(1, 2),
 	int		  425:Thing_SetState(1),
@@ -177,6 +177,10 @@ special
 	int		 -307:PlayerLap(0),
 	int		 -308:LowestLap(0),
 	bool	 -309:EncoreMode(0),
+
+	void	 -500:CameraWait(1, int),
+	int		 -501:PodiumPosition(0),
+	void	 -502:PodiumFinish(0),
 
 	//  0 to 56: Implemented by ACSVM
 	void  {  2     }:__suspend(void),
