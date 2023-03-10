@@ -1111,6 +1111,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 						break;
 
+					case "raise_to_fof":
+						if (l.Front != null)
+						{
+							SectorData sd = GetSectorData(l.Front.Sector);
+							sd.AddRaiseThings(l.Args[0], l.Args[1]);
+						}
+						break;
+
 					// ========== Transfer Brightness (50) (see http://zdoom.org/wiki/ExtraFloor_LightOnly) =========
 					case "extrafloor_lightonly":
 						if(l.Front != null && sectortags.ContainsKey(l.Args[0]))

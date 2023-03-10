@@ -13,6 +13,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 {
 	internal class SectorData
 	{
+		#region ================== Internal classes
+
+		private class RaiseThings
+		{
+			public readonly int type;
+			public readonly int tag;
+
+			public RaiseThings(int sourcetype, int sourcetag)
+			{
+				type = sourcetype;
+				tag = sourcetag;
+			}
+		}
+
+		#endregion
+
 		#region ================== Variables
 		
 		// VisualMode
@@ -69,6 +85,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private int lightfloor;
 		private int lightceiling;
 
+		// raise_to_fof
+		private List<RaiseThings> raisethings;
+
 		#endregion
 		
 		#region ================== Properties
@@ -107,6 +126,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.ceiling = new SectorLevel(sector, SectorLevelType.Ceiling);
 			this.ceilingbase = new SectorLevel(sector, SectorLevelType.Ceiling); //mxd
 			this.glowingflateffect = new EffectGlowingFlat(this); //mxd
+			this.raisethings = new List<RaiseThings>();
 			
 			// Add ceiling and floor
 			lightlevels.Add(floor);
@@ -225,6 +245,28 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			lightlevels.Insert(lightlevels.Count - 1, level);
 		}
 		
+		// raise_to_fof
+		public void AddRaiseThings(int type, int tag)
+		{
+			RaiseThings r = new RaiseThings(type, tag);
+			raisethings.Add(r);
+		}
+
+		// raise_to_fof
+		public bool IsThingRaised(Thing thing)
+		{
+			foreach (RaiseThings r in raisethings)
+			{
+				if ((r.type == 0 || thing.Type == r.type) &&
+						(r.tag == 0 || thing.Tag == r.tag))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		// This resets this sector data and all sectors that require updating after me
 		/*public void Reset()
 		{

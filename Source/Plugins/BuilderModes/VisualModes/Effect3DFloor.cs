@@ -53,6 +53,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool IgnoreBottomHeight { get { return ignorebottomheight; } } //mxd
 		public bool Sloped3dFloor { get { return sloped3dfloor; } } //mxd
 		public bool ClipSidedefs { get { return clipsides; } } //mxd
+		public SectorData ControlSectorData { get { return data.Mode.GetSectorData(linedef.Front.Sector); } }
 
 		//mxd. 3D-Floor Flags
 		[Flags]
@@ -100,7 +101,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This makes sure we are updated with the source linedef information
 		public override void Update()
 		{
-			SectorData sd = data.Mode.GetSectorData(linedef.Front.Sector);
+			SectorData sd = this.ControlSectorData;
 			if(!sd.Updated) sd.Update();
 			sd.AddUpdateSector(data.Sector, true);
 
