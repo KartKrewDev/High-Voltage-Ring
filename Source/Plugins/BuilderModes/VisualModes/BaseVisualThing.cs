@@ -435,7 +435,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(Thing.Sector != null)
 				{
 					SectorData sd = mode.GetSectorData(Thing.Sector);
-					double maxz = sd.Ceiling.plane.GetZ(Thing.Position) - info.Height;
+					SectorLevel ceiling = sd.Ceiling;
+
+					foreach (Effect3DFloor e in sd.ExtraFloors)
+					{
+						if (e.ControlSectorData.IsThingRaised(this.Thing))
+						{
+							ceiling = e.Ceiling;
+							break;
+						}
+					}
+
+					double maxz = ceiling.plane.GetZ(Thing.Position) - info.Height;
 					pos.z = maxz;
 
 					if(Thing.Position.z > 0 || nointeraction) pos.z -= Thing.Position.z;
@@ -454,7 +465,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(Thing.Sector != null)
 				{
 					SectorData sd = mode.GetSectorData(Thing.Sector);
-					double minz = sd.Floor.plane.GetZ(Thing.Position);
+					SectorLevel floor = sd.Floor;
+
+					foreach (Effect3DFloor e in sd.ExtraFloors)
+					{
+						if (e.ControlSectorData.IsThingRaised(this.Thing))
+						{
+							floor = e.Floor;
+							break;
+						}
+					}
+
+					double minz = floor.plane.GetZ(Thing.Position);
 					pos.z = minz;
 
 					if(Thing.Position.z > 0 || nointeraction) pos.z += Thing.Position.z;

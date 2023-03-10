@@ -13,6 +13,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 {
 	internal class SectorData
 	{
+		#region ================== Internal classes
+
+		private class RaiseThings
+		{
+			public readonly int type;
+			public readonly int tag;
+
+			public RaiseThings(int sourcetype, int sourcetag)
+			{
+				type = sourcetype;
+				tag = sourcetag;
+			}
+		}
+
+		#endregion
+
 		#region ================== Variables
 		
 		// VisualMode
@@ -69,6 +85,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private int lightfloor;
 		private int lightceiling;
 
+		// raise_to_fof
+		private List<RaiseThings> raisethings;
+		private List<Sector> targetextrafloors;
+
 		#endregion
 		
 		#region ================== Properties
@@ -84,6 +104,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorLevel Ceiling { get { return ceiling; } }
 		public BaseVisualMode Mode { get { return mode; } }
 		public Dictionary<Sector, bool> UpdateAlso { get { return updatesectors; } }
+		public List<Sector> TargetExtraFloors { get { return targetextrafloors; } }
 		
 		#endregion
 		
@@ -107,6 +128,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.ceiling = new SectorLevel(sector, SectorLevelType.Ceiling);
 			this.ceilingbase = new SectorLevel(sector, SectorLevelType.Ceiling); //mxd
 			this.glowingflateffect = new EffectGlowingFlat(this); //mxd
+			this.raisethings = new List<RaiseThings>();
+			this.targetextrafloors = new List<Sector>();
 			
 			// Add ceiling and floor
 			lightlevels.Add(floor);
@@ -224,7 +247,34 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// at the end and the floor at the beginning
 			lightlevels.Insert(lightlevels.Count - 1, level);
 		}
+
+		public void Add3DFloorTargetSector(Sector s)
+		{
+			targetextrafloors.Add(s);
+		}
 		
+		// raise_to_fof
+		public void AddRaiseThings(int type, int tag)
+		{
+			RaiseThings r = new RaiseThings(type, tag);
+			raisethings.Add(r);
+		}
+
+		// raise_to_fof
+		public bool IsThingRaised(Thing thing)
+		{
+			foreach (RaiseThings r in raisethings)
+			{
+				if ((r.type == 0 || thing.Type == r.type) &&
+						(r.tag == 0 || thing.Tag == r.tag))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		// This resets this sector data and all sectors that require updating after me
 		/*public void Reset()
 		{
