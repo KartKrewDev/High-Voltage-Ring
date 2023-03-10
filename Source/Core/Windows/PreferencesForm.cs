@@ -112,6 +112,7 @@ namespace CodeImp.DoomBuilder.Windows
 			vertexScaleLabel.Text = vertexScale.Value * 100 + "%" + (vertexScale.Value == 1 ? " (default)" : "");
 			cbMarkExtraFloors.Checked = General.Settings.GZMarkExtraFloors;
 			recentFiles.Value = General.Settings.MaxRecentFiles;
+			thingScale.Value = General.Clamp(thingScale.Maximum - General.Settings.ThingScale, thingScale.Minimum, thingScale.Maximum);
 			screenshotsfolderpath.Text = General.Settings.ScreenshotsPath;
 			if(Directory.Exists(General.Settings.ScreenshotsPath))
 				browseScreenshotsFolderDialog.SelectedPath = General.Settings.ScreenshotsPath;
@@ -332,6 +333,7 @@ namespace CodeImp.DoomBuilder.Windows
 			General.Settings.CheckForUpdates = checkforupdates.Checked; //mxd
 			General.Settings.LocateTextureGroup = locatetexturegroup.Checked; //mxd
 			General.Settings.MaxRecentFiles = recentFiles.Value; //mxd
+			General.Settings.ThingScale = thingScale.Maximum - thingScale.Value;
 			General.Settings.ScreenshotsPath = screenshotsfolderpath.Text.Trim(); //mxd
 			General.Settings.ShowFPS = cbShowFPS.Checked;
 			General.Settings.AutoLaunchOnTest = autolaunchontest.Checked;
@@ -537,6 +539,15 @@ namespace CodeImp.DoomBuilder.Windows
 		private void recentFiles_ValueChanged(object sender, EventArgs e) 
 		{
 			labelRecentFiles.Text = recentFiles.Value.ToString();
+		}
+
+		private void thingScale_ValueChanged(object sender, EventArgs e)
+		{
+			int divisor = 1 << (thingScale.Maximum - thingScale.Value);
+			if (divisor == 1)
+				labelThingScale.Text = "Full Scale";
+			else
+				labelThingScale.Text = "1/" + divisor.ToString();
 		}
 
 		#endregion

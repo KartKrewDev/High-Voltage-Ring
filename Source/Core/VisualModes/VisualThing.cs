@@ -46,6 +46,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		
 		// Thing
 		private readonly Thing thing;
+		private readonly float scalex;
+		private readonly float scaley;
 
 		//mxd. Info
 		protected ThingTypeInfo info;
@@ -195,6 +197,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			// Initialize
 			this.thing = t;
+			this.scalex = (float)t.ScaleX / (float)(1 << General.Settings.ThingScale);
+			this.scaley = (float)t.ScaleY / (float)(1 << General.Settings.ThingScale);
 			this.renderpass = RenderPass.Mask;
 			this.position = Matrix.Identity;
 
@@ -341,7 +345,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					
 					// Actor becomes a flat sprite which can be tilted with the use of the Pitch actor property.
 					case ThingRenderMode.FLATSPRITE:
-						transform = Matrix.Scaling((float)thing.ScaleX, (float)thing.ScaleX, (float)thing.ScaleY);
+						transform = Matrix.Scaling(scalex, scalex, scaley);
 
 						// Apply roll?
 						if(thing.Roll != 0)
@@ -377,7 +381,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 					// Similar to FLATSPRITE but is not affected by pitch.
 					case ThingRenderMode.WALLSPRITE:
-						transform = Matrix.Scaling((float)thing.ScaleX, (float)thing.ScaleX, (float)thing.ScaleY);
+						transform = Matrix.Scaling(scalex, scalex, scaley);
 						
 						// Apply roll?
 						if(thing.Roll != 0)
@@ -492,7 +496,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					#endregion
 
 					case ThingRenderMode.NORMAL:
-						transform = Matrix.Scaling((float)thing.ScaleX, (float)thing.ScaleX, (float)thing.ScaleY);
+						transform = Matrix.Scaling(scalex, scalex, scaley);
 
 						// Apply roll?
 						if(info.RollSprite && thing.Roll != 0)

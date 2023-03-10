@@ -46,6 +46,9 @@ namespace CodeImp.DoomBuilder.Windows
 			this.recentFiles = new CodeImp.DoomBuilder.Controls.TransparentTrackBar();
 			this.labelRecentFiles = new System.Windows.Forms.Label();
 			this.label25 = new System.Windows.Forms.Label();
+			this.thingScale = new CodeImp.DoomBuilder.Controls.TransparentTrackBar();
+			this.labelThingScale = new System.Windows.Forms.Label();
+			this.label34 = new System.Windows.Forms.Label();
 			this.vertexScaleLabel = new System.Windows.Forms.Label();
 			this.label22 = new System.Windows.Forms.Label();
 			this.vertexScale = new CodeImp.DoomBuilder.Controls.TransparentTrackBar();
@@ -221,6 +224,7 @@ namespace CodeImp.DoomBuilder.Windows
 			label1 = new System.Windows.Forms.Label();
 			groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.recentFiles)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.thingScale)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.vertexScale)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.zoomfactor)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.autoscrollspeed)).BeginInit();
@@ -269,6 +273,9 @@ namespace CodeImp.DoomBuilder.Windows
 			groupBox1.Controls.Add(this.recentFiles);
 			groupBox1.Controls.Add(this.labelRecentFiles);
 			groupBox1.Controls.Add(this.label25);
+			groupBox1.Controls.Add(this.thingScale);
+			groupBox1.Controls.Add(this.labelThingScale);
+			groupBox1.Controls.Add(this.label34);
 			groupBox1.Controls.Add(this.vertexScaleLabel);
 			groupBox1.Controls.Add(this.label22);
 			groupBox1.Controls.Add(this.vertexScale);
@@ -374,6 +381,37 @@ namespace CodeImp.DoomBuilder.Windows
 			this.label25.TabIndex = 47;
 			this.label25.Text = "Max. recent files:";
 			this.toolTip1.SetToolTip(this.label25, "Controls how many recent files \r\nare shown in the \"File\" menu.");
+			//
+			// thingScale
+			//
+			this.thingScale.BackColor = System.Drawing.Color.Transparent;
+			this.thingScale.LargeChange = 1;
+			this.thingScale.Location = new System.Drawing.Point(127, 399);
+			this.thingScale.Maximum = 3;
+			this.thingScale.Name = "thingScale";
+			this.thingScale.Size = new System.Drawing.Size(116, 45);
+			this.thingScale.TabIndex = 50;
+			this.thingScale.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+			this.thingScale.Value = thingScale.Maximum;
+			this.thingScale.ValueChanged += new System.EventHandler(this.thingScale_ValueChanged);
+			//
+			// labelThingScale
+			//
+			this.labelThingScale.AutoSize = true;
+			this.labelThingScale.Location = new System.Drawing.Point(249, 411);
+			this.labelThingScale.Name = "labelThingScale";
+			this.labelThingScale.Size = new System.Drawing.Size(13, 13);
+			this.labelThingScale.TabIndex = 50;
+			this.labelThingScale.Text = "Full Scale";
+			//
+			// label34
+			//
+			this.label34.AutoSize = true;
+			this.label34.Location = new System.Drawing.Point(31, 412);
+			this.label34.Name = "label34";
+			this.label34.Size = new System.Drawing.Size(87, 13);
+			this.label34.TabIndex = 50;
+			this.label34.Text = "Thing Scale:";
 			// 
 			// vertexScaleLabel
 			// 
@@ -2562,6 +2600,9 @@ namespace CodeImp.DoomBuilder.Windows
 		private CodeImp.DoomBuilder.Controls.TransparentTrackBar recentFiles;
 		private System.Windows.Forms.Label labelRecentFiles;
 		private System.Windows.Forms.Label label25;
+		private CodeImp.DoomBuilder.Controls.TransparentTrackBar thingScale;
+		private System.Windows.Forms.Label labelThingScale;
+		private System.Windows.Forms.Label label34;
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.Button browsescreenshotsdir;
 		private System.Windows.Forms.TextBox screenshotsfolderpath;
