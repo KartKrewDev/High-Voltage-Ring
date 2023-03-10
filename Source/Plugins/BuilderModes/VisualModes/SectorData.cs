@@ -87,6 +87,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		// raise_to_fof
 		private List<RaiseThings> raisethings;
+		private List<Sector> targetextrafloors;
 
 		#endregion
 		
@@ -103,6 +104,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorLevel Ceiling { get { return ceiling; } }
 		public BaseVisualMode Mode { get { return mode; } }
 		public Dictionary<Sector, bool> UpdateAlso { get { return updatesectors; } }
+		public List<Sector> TargetExtraFloors { get { return targetextrafloors; } }
 		
 		#endregion
 		
@@ -127,6 +129,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.ceilingbase = new SectorLevel(sector, SectorLevelType.Ceiling); //mxd
 			this.glowingflateffect = new EffectGlowingFlat(this); //mxd
 			this.raisethings = new List<RaiseThings>();
+			this.targetextrafloors = new List<Sector>();
 			
 			// Add ceiling and floor
 			lightlevels.Add(floor);
@@ -243,6 +246,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Note: Inserting before the end so that the ceiling stays
 			// at the end and the floor at the beginning
 			lightlevels.Insert(lightlevels.Count - 1, level);
+		}
+
+		public void Add3DFloorTargetSector(Sector s)
+		{
+			targetextrafloors.Add(s);
 		}
 		
 		// raise_to_fof

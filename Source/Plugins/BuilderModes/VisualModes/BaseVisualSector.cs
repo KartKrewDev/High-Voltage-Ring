@@ -137,7 +137,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Go for all things in this sector
 			foreach(Thing t in General.Map.Map.Things)
 			{
-				if(t.Sector == this.Sector)
+				if(t.Sector == this.Sector || data.TargetExtraFloors.Contains(t.Sector))
 				{
 					if(mode.VisualThingExists(t))
 					{
@@ -190,7 +190,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//update things in this sector
 			foreach(Thing t in General.Map.Map.Things) 
 			{
-				if(t.Sector == this.Sector) 
+				if(t.Sector == this.Sector || data.TargetExtraFloors.Contains(t.Sector))
 				{
 					if(mode.VisualThingExists(t)) 
 					{

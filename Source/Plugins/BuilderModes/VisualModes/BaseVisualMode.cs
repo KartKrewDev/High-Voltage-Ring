@@ -1104,7 +1104,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								List<Sector> sectors = sectortags[l.Args[0]];
 								foreach (Sector s in sectors)
 								{
-									SectorData sd = GetSectorData(s);
+									SectorData sd = GetSectorData(l.Front.Sector);
+									sd.Add3DFloorTargetSector(s);
+
+									sd = GetSectorData(s);
 									sd.AddEffect3DFloor(l);
 								}
 							}
