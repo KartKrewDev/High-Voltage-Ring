@@ -178,6 +178,7 @@ special
 	int		 -308:LowestLap(0),
 	bool	 -309:EncoreMode(0),
 	bool	 -310:BreakTheCapsules(0),
+	bool	 -311:TimeAttack(0),
 
 	void	 -500:CameraWait(1, int),
 	int		 -501:PodiumPosition(0),
