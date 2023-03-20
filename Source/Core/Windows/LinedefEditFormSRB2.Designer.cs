@@ -216,7 +216,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(453, 636);
+            this.cancel.Location = new System.Drawing.Point(453, 665);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(112, 25);
             this.cancel.TabIndex = 2;
@@ -227,7 +227,7 @@ namespace CodeImp.DoomBuilder.Windows
             // apply
             // 
             this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.apply.Location = new System.Drawing.Point(335, 636);
+            this.apply.Location = new System.Drawing.Point(335, 665);
             this.apply.Name = "apply";
             this.apply.Size = new System.Drawing.Size(112, 25);
             this.apply.TabIndex = 1;
@@ -246,7 +246,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.actiongroup.Controls.Add(this.browseaction);
             this.actiongroup.Location = new System.Drawing.Point(8, 189);
             this.actiongroup.Name = "actiongroup";
-            this.actiongroup.Size = new System.Drawing.Size(533, 225);
+            this.actiongroup.Size = new System.Drawing.Size(533, 259);
             this.actiongroup.TabIndex = 1;
             this.actiongroup.TabStop = false;
             this.actiongroup.Text = " Action ";
@@ -255,7 +255,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.argscontrol.Location = new System.Drawing.Point(6, 44);
             this.argscontrol.Name = "argscontrol";
-            this.argscontrol.Size = new System.Drawing.Size(521, 175);
+            this.argscontrol.Size = new System.Drawing.Size(521, 173);
             this.argscontrol.TabIndex = 11;
             this.argscontrol.Load += new System.EventHandler(this.argscontrol_Load);
             // 
@@ -348,7 +348,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabs.Name = "tabs";
             this.tabs.Padding = new System.Drawing.Point(12, 3);
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(557, 619);
+            this.tabs.Size = new System.Drawing.Size(557, 648);
             this.tabs.TabIndex = 0;
             // 
             // tabproperties
@@ -362,7 +362,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabproperties.Location = new System.Drawing.Point(4, 23);
             this.tabproperties.Name = "tabproperties";
             this.tabproperties.Padding = new System.Windows.Forms.Padding(5);
-            this.tabproperties.Size = new System.Drawing.Size(549, 592);
+            this.tabproperties.Size = new System.Drawing.Size(549, 621);
             this.tabproperties.TabIndex = 0;
             this.tabproperties.Text = " Properties ";
             this.tabproperties.UseVisualStyleBackColor = true;
@@ -371,7 +371,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             this.activationGroup.Controls.Add(this.missingactivation);
             this.activationGroup.Controls.Add(this.udmfactivates);
-            this.activationGroup.Location = new System.Drawing.Point(8, 420);
+            this.activationGroup.Location = new System.Drawing.Point(8, 454);
             this.activationGroup.Name = "activationGroup";
             this.activationGroup.Size = new System.Drawing.Size(533, 73);
             this.activationGroup.TabIndex = 0;
@@ -451,7 +451,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.idgroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.idgroup.Controls.Add(this.tagsselector);
-            this.idgroup.Location = new System.Drawing.Point(8, 499);
+            this.idgroup.Location = new System.Drawing.Point(8, 533);
             this.idgroup.Name = "idgroup";
             this.idgroup.Size = new System.Drawing.Size(533, 85);
             this.idgroup.TabIndex = 2;
@@ -1317,7 +1317,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(577, 668);
+            this.ClientSize = new System.Drawing.Size(577, 697);
             this.Controls.Add(this.tabs);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.apply);
