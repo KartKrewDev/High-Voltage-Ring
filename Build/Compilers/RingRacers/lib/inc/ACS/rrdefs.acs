@@ -152,10 +152,16 @@
 
 #define TAG_ALL (65535)
 
-#define CAM_FOLLOW_FIRST (-1)
-#define CAM_FOLLOW_SECOND (-2)
-#define CAM_FOLLOW_THIRD (-3)
+#define CAM_FOLLOW_FIRST   (-1)
+#define CAM_FOLLOW_SECOND  (-2)
+#define CAM_FOLLOW_THIRD   (-3)
 #define CAM_FOLLOW_CONSOLE (-4)
+
+#define BLEND_TRANSLUCENT     (0)
+#define BLEND_ADD             (1)
+#define BLEND_SUBTRACT        (2)
+#define BLEND_REVERSESUBTRACT (3)
+#define BLEND_MODULATE        (4)
 
 #endif//__GDCC_Header__ACS__rrdefs_acs__
 

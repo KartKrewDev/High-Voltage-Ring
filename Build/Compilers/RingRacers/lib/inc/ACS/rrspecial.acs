@@ -89,7 +89,7 @@ special
 	int		  422:Camera_CutAwayView(2, 5),
 	int		  423:Level_SetSky(1, 2),
 	int		  424:Level_SetWeather(1, 2),
-	int		  425:Thing_SetState(1),
+	int		  425:Thing_SetState(2),
 	int		  426:Thing_Stop(0, 1),
 	int		  427:Player_AddScore(1),
 	int		  428:Sector_PlatformMovement(2, 5),
@@ -177,10 +177,13 @@ special
 	int		 -307:PlayerLap(0),
 	int		 -308:LowestLap(0),
 	bool	 -309:EncoreMode(0),
+	bool	 -310:BreakTheCapsules(0),
+	bool	 -311:TimeAttack(0),
 
 	void	 -500:CameraWait(1, int),
 	int		 -501:PodiumPosition(0),
 	void	 -502:PodiumFinish(0),
+	void	 -503:SetLineRenderStyle(3, int, int, fixed),
 
 	//  0 to 56: Implemented by ACSVM
 	void  {  2     }:__suspend(void),
