@@ -153,14 +153,85 @@ special
 
 	// Internal functions have negative values
 	// [type] [ID]:[function name]([required args], [type of each arg, including optional ones])
-	int		   -1:GetLineUDMFInt(2, int, str),
-	fixed	   -2:GetLineUDMFFixed(2, int, str),
-	int		   -3:GetThingUDMFInt(2, int, str),
-	fixed	   -4:GetThingUDMFFixed(2, int, str),
-	int		   -5:GetSectorUDMFInt(2, int, str),
-	fixed	   -6:GetSectorUDMFFixed(2, int, str),
-	int		   -7:GetSideUDMFInt(3, int, int, str),
-	fixed	   -8:GetSideUDMFFixed(3, int, int, str),
+	int		   -1:GetLineProperty(2, int, int),
+	fixed	   -1:GetLinePropertyFixed(2, int, int),
+	str		   -1:GetLinePropertyString(2, int, int),
+	bool	   -1:GetLinePropertyBool(2, int, int),
+
+	void	   -2:SetLineProperty(3, int, int, int),
+	void	   -2:SetLinePropertyFixed(3, int, int, fixed),
+	void	   -2:SetLinePropertyString(3, int, int, str),
+	void	   -2:SetLinePropertyBool(3, int, int, bool),
+
+	int		   -3:GetLineUserProperty(2, int, str),
+	fixed	   -3:GetLineUserPropertyFixed(2, int, str),
+	str		   -3:GetLineUserPropertyString(2, int, str),
+	bool	   -3:GetLineUserPropertyBool(2, int, str),
+
+	int		   -4:GetSectorProperty(2, int, int),
+	fixed	   -4:GetSectorPropertyFixed(2, int, int),
+	str		   -4:GetSectorPropertyString(2, int, int),
+	bool	   -4:GetSectorPropertyBool(2, int, int),
+
+	void	   -5:SetSectorProperty(3, int, int, int),
+	void	   -5:SetSectorPropertyFixed(3, int, int, fixed),
+	void	   -5:SetSectorPropertyString(3, int, int, str),
+	void	   -5:SetSectorPropertyBool(3, int, int, bool),
+
+	int		   -6:GetSectorUserProperty(2, int, str),
+	fixed	   -6:GetSectorUserPropertyFixed(2, int, str),
+	str		   -6:GetSectorUserPropertyString(2, int, str),
+	bool	   -6:GetSectorUserPropertyBool(2, int, str),
+
+	int		   -7:GetSideProperty(3, int, int, int),
+	fixed	   -7:GetSidePropertyFixed(3, int, int, int),
+	str		   -7:GetSidePropertyString(3, int, int, int),
+	bool	   -7:GetSidePropertyBool(3, int, int, int),
+
+	void	   -8:SetSideProperty(4, int, int, int, int),
+	void	   -8:SetSidePropertyFixed(4, int, int, int, fixed),
+	void	   -8:SetSidePropertyString(4, int, int, int, str),
+	void	   -8:SetSidePropertyBool(4, int, int, int, bool),
+
+	int		   -9:GetSideUserProperty(3, int, int, str),
+	fixed	   -9:GetSideUserPropertyFixed(3, int, int, str),
+	str		   -9:GetSideUserPropertyString(3, int, int, str),
+	bool	   -9:GetSideUserPropertyBool(3, int, int, str),
+
+	int		  -10:GetThingProperty(2, int, int),
+	fixed	  -10:GetThingPropertyFixed(2, int, int),
+	str		  -10:GetThingPropertyString(2, int, int),
+	bool	  -10:GetThingPropertyBool(2, int, int),
+
+	void	  -11:SetThingProperty(3, int, int, int),
+	void	  -11:SetThingPropertyFixed(3, int, int, fixed),
+	void	  -11:SetThingPropertyString(3, int, int, str),
+	void	  -11:SetThingPropertyBool(3, int, int, bool),
+
+	int		  -12:GetThingUserProperty(2, int, str),
+	fixed	  -12:GetThingUserPropertyFixed(2, int, str),
+	str		  -12:GetThingUserPropertyString(2, int, str),
+	bool	  -12:GetThingUserPropertyBool(2, int, str),
+
+	int		  -13:GetPlayerProperty(2, int, int),
+	fixed	  -13:GetPlayerPropertyFixed(2, int, int),
+	str		  -13:GetPlayerPropertyString(2, int, int),
+	bool	  -13:GetPlayerPropertyBool(2, int, int),
+
+	void	  -14:SetPlayerProperty(3, int, int, int),
+	void	  -14:SetPlayerPropertyFixed(3, int, int, fixed),
+	void	  -14:SetPlayerPropertyString(3, int, int, str),
+	void	  -14:SetPlayerPropertyBool(3, int, int, bool),
+
+	int		  -15:GetPolyobjProperty(2, int, int),
+	fixed	  -15:GetPolyobjPropertyFixed(2, int, int),
+	str		  -15:GetPolyobjPropertyString(2, int, int),
+	bool	  -15:GetPolyobjPropertyBool(2, int, int),
+
+	void	  -16:SetPolyobjProperty(3, int, int, int),
+	void	  -16:SetPolyobjPropertyFixed(3, int, int, fixed),
+	void	  -16:SetPolyobjPropertyString(3, int, int, str),
+	void	  -16:SetPolyobjPropertyBool(3, int, int, bool),
 
 	int		 -100:strcmp(2, str, str),
 	int		 -101:strcasecmp(2, str, str),
