@@ -299,8 +299,8 @@ special
 
 	int   {122     }:PlayerScore(void),
 
-	int   {136     }:FixedMul(int, int), // 136 to 137: Implemented by ACSVM
-	int   {137     }:FixedDiv(int, int),
+	int   {136     }:FixedMul(fixed, fixed), // 136 to 137: Implemented by ACSVM
+	int   {137     }:FixedDiv(fixed, fixed),
 
 	void  {157     }:PrintFixed(fixed), // 157: Implemented by ACSVM
 
@@ -332,7 +332,7 @@ special
 
 	// 330: Implemented by ACSVM
 
-	void  {349     }:PrintBinary(int), // 349 to 361: Implemented by ACSVM
+	void  {349     }:PrintBinary(bool), // 349 to 361: Implemented by ACSVM
 	void  {350     }:PrintHex(int),
 
 	str   {352     }:EndStrParam(void),

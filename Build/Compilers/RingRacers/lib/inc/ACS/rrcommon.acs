@@ -16,6 +16,8 @@
 #ifndef __GDCC_Header__ACS__rrcommon_acs__
 #define __GDCC_Header__ACS__rrcommon_acs__
 
+#pragma fixed ON
+
 #include "rrspecial.acs"
 #include "rrdefs.acs"
 
