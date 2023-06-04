@@ -255,6 +255,7 @@ special
 	int		 -501:PodiumPosition(0),
 	void	 -502:PodiumFinish(0),
 	void	 -503:SetLineRenderStyle(3, int, int, fixed),
+	void	 -504:MapWarp(2, str, bool),
 
 	//  0 to 56: Implemented by ACSVM
 	void  {  2     }:__suspend(void),
