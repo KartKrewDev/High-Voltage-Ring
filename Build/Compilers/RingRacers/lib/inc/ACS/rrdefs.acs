@@ -26,6 +26,9 @@
 #define FRACBITS (16)
 #define FRACUNIT (1 << FRACBITS)
 
+#define MAXPLAYERS (16)
+#define MAXBOTDIFFICULTY (13)
+
 #define TAG_ALL (65535)
 
 enum
@@ -677,6 +680,13 @@ enum
 	DI_SOUTH = 6,
 	DI_SOUTHEAST = 7,
 	NUMDIRS = 8,
+};
+
+enum
+{
+	BOT_STYLE_NORMAL,
+	BOT_STYLE_STAY,
+	BOT_STYLE__MAX
 };
 
 #endif//__GDCC_Header__ACS__rrdefs_acs__
