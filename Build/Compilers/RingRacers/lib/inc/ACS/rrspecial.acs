@@ -317,6 +317,9 @@ special
 
 	// 225 to 243: Implemented by ACSVM
 
+	int   {247     }:PlayerNumber(void),
+	int   {248     }:ActivatorTID(void),
+
 	int   {253     }:strlen(str), // 253: Implemented by ACSVM
 
 	// 256 to 257: Implemented by ACSVM
