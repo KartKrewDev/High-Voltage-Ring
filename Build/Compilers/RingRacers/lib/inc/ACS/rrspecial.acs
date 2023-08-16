@@ -238,8 +238,8 @@ special
 	int		 -101:stricmp(2, str, str),
 
 	// Reimplementations of trigger linedefs.
-	int		 -300:CountEnemies(1, int),
-	int		 -301:CountPushables(1, int),
+	int		 -300:CountEnemies(0, int, int),
+	int		 -301:CountPushables(0, int, int),
 	bool	 -302:HaveUnlockableTrigger(1, int),
 	bool	 -303:HaveUnlockable(1, int),
 	str		 -304:PlayerSkin(0),
@@ -250,6 +250,7 @@ special
 	bool	 -309:EncoreMode(0),
 	bool	 -310:BreakTheCapsules(0),
 	bool	 -311:TimeAttack(0),
+	int		 -312:ThingCount(0, str, int, int),
 
 	void	 -500:CameraWait(1, int),
 	int		 -501:PodiumPosition(0),
@@ -264,7 +265,7 @@ special
 	void  { 55,  56}:Delay(int),
 	int   { 57,  58}:Random(int, int),
 	fixed { 57,  58}:RandomFixed(fixed, fixed),
-	int   { 59,  60}:ThingCount(str, int),
+	int   { 59,  60}:__ThingCountOld(str, int),
 	void  { 61,  62}:TagWait(int),
 	void  { 63,  64}:PolyWait(int),
 	void  { 65,  66}:ChangeFloor(int, str),
@@ -315,6 +316,9 @@ special
 	// 203 to 217: Implemented by ACSVM
 
 	// 225 to 243: Implemented by ACSVM
+
+	int   {247     }:PlayerNumber(void),
+	int   {248     }:ActivatorTID(void),
 
 	int   {253     }:strlen(str), // 253: Implemented by ACSVM
 
