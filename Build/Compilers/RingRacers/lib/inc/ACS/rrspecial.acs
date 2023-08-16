@@ -258,6 +258,7 @@ special
 	void	 -503:SetLineRenderStyle(3, int, int, fixed),
 	void	 -504:MapWarp(2, str, bool),
 	int		 -505:AddBot(0, str, int, int),
+	void		 -506:StopLevelExit(0),
 
 	//  0 to 56: Implemented by ACSVM
 	void  {  2     }:__suspend(void),
