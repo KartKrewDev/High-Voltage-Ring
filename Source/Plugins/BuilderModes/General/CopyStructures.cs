@@ -770,7 +770,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private readonly int roll; //mxd
 		private readonly double scalex; //mxd
 		private readonly double scaley; //mxd
-		private readonly Dictionary<string, bool> flags;
+        private readonly double mobjscale; //mxd
+        private readonly Dictionary<string, bool> flags;
 		private readonly int tag;
 		private readonly int action;
 		private readonly int[] args;
@@ -784,6 +785,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			roll = t.Roll;
 			scalex = t.ScaleX;
 			scaley = t.ScaleY;
+			mobjscale = t.MobjScale;
 			flags = t.GetFlags();
 			tag = t.Tag;
 			action = t.Action;
@@ -811,7 +813,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(settings.ZHeight) t.Move(t.Position.x, t.Position.y, zheight);
 				if(settings.Pitch) t.SetPitch(pitch);
 				if(settings.Roll) t.SetRoll(roll);
-				if(settings.Scale) t.SetScale(scalex, scaley);
+				if(settings.Scale)
+				{
+					t.SetScale(scalex, scaley);
+					t.SetMobjScale(mobjscale);
+				}
 				if(settings.Flags)
 				{
 					t.ClearFlags();
@@ -1018,7 +1024,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// UDMF-specific properties
 			if(flags.Pitch && source.Pitch != target.Pitch) return false;
 			if(flags.Roll && source.Roll != target.Roll) return false;
-			if(flags.Scale && (source.ScaleX != target.ScaleX) || (source.ScaleY != target.ScaleY)) return false;
+			if(flags.Scale && (source.ScaleX != target.ScaleX) || (source.ScaleY != target.ScaleY) || (source.MobjScale != target.MobjScale)) return false;
 
 			// UI fields
 			if(!UIFieldsMatch(flags, source, target)) return false;

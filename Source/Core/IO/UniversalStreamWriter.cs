@@ -116,9 +116,9 @@ namespace CodeImp.DoomBuilder.IO
 
 		// This writes the structures to a stream
 		// writenamespace may be null to omit writing the namespace to the stream
-		public void Write(MapSet map, Stream stream, string writenamespace)
+		public void Write(MapSet map, Stream stream, string writenamespace, int writeversion)
 		{
-			Write(map.Vertices, map.Linedefs, map.Sidedefs, map.Sectors, map.Things, map.UnknownUDMFData, stream, writenamespace);
+			Write(map.Vertices, map.Linedefs, map.Sidedefs, map.Sectors, map.Things, map.UnknownUDMFData, stream, writenamespace, writeversion);
 		}
 
 		// This writes the structures to a stream
@@ -127,15 +127,16 @@ namespace CodeImp.DoomBuilder.IO
 		// If there are missing sidedefs, their reference will be removed from the linedefs.
 		public void Write(ICollection<Vertex> vertices, ICollection<Linedef> linedefs,
 						  ICollection<Sidedef> sidedefs, ICollection<Sector> sectors,
-						  ICollection<Thing> things, ICollection<UniversalEntry> unknowndata, Stream stream, string writenamespace)
+						  ICollection<Thing> things, ICollection<UniversalEntry> unknowndata, Stream stream, string writenamespace, int writeversion)
 		{
 			UniversalParser textmap = new UniversalParser();
 
 			// Begin with fields that must be at the top
 			if(writenamespace != null) textmap.Root.Add("namespace", writenamespace);
+            if(writeversion != 0) textmap.Root.Add("version", writeversion);
 
-			// Dump unknown fields at the top
-			WriteUnknownData(unknowndata, textmap);
+            // Dump unknown fields at the top
+            WriteUnknownData(unknowndata, textmap);
 
 			Dictionary<Vertex, int> vertexids = new Dictionary<Vertex, int>(vertices.Count); //mxd
 			Dictionary<Sidedef, int> sidedefids = new Dictionary<Sidedef, int>(sidedefs.Count); //mxd
@@ -353,7 +354,8 @@ namespace CodeImp.DoomBuilder.IO
 				if(t.Roll != 0) coll.Add("roll", t.Roll); //mxd
 				if(t.ScaleX != 0 && t.ScaleX != 1.0f) coll.Add("scalex", t.ScaleX); //mxd
 				if(t.ScaleY != 0 && t.ScaleY != 1.0f) coll.Add("scaley", t.ScaleY); //mxd
-				coll.Add("type", t.Type);
+                if (t.MobjScale != 0 && t.MobjScale != 1.0f) coll.Add("mobjscale", t.MobjScale);
+                coll.Add("type", t.Type);
 				if(t.Action != 0) coll.Add("special", t.Action);
 				for (int i = 0; i < t.Args.Length; i++)
 				{

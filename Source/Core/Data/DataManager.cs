@@ -211,7 +211,7 @@ namespace CodeImp.DoomBuilder.Data
             {
                 if (mapinfo == null)
                 {
-                    if (General.Map.Config.EngineName == "srb2")
+                    if (General.Map.Config.EngineName == "srb2" || General.Map.Config.EngineName == "ringracers")
                     {
                         return 1.0f;
                     }

@@ -4171,7 +4171,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (General.Map.UDMF)
 			{
-				if (General.Map.Config.EngineName == "srb2")
+				if (General.Map.Config.EngineName == "srb2" || General.Map.Config.EngineName == "ringracers")
 				{
 					return new LinedefEditFormSRB2(selectfront, selectback);
 				}
@@ -4216,7 +4216,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (General.Map.UDMF)
 			{
-				if (General.Map.Config.EngineName == "srb2")
+				if (General.Map.Config.EngineName == "srb2" || General.Map.Config.EngineName == "ringracers")
 				{
 					return new SectorEditFormSRB2();
 				}
@@ -4261,7 +4261,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (General.Map.UDMF)
 			{
-				if (General.Map.Config.EngineName == "srb2")
+				if (General.Map.Config.EngineName == "srb2" || General.Map.Config.EngineName == "ringracers")
 				{
 					return new ThingEditFormSRB2();
 				}

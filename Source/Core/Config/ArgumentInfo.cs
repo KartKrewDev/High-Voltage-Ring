@@ -67,12 +67,13 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly int maxrange; //mxd
         private readonly bool str; // [ZZ]
         private readonly string titlestr; // [ZZ]
+        private readonly int acs_script_mode; // [ZZ]
 
-		#endregion
+        #endregion
 
-		#region ================== Properties
+        #region ================== Properties
 
-		public string Title { get { return title; } }
+        public string Title { get { return title; } }
 		public string ToolTip { get { return tooltip; } } //mxd
 		public bool Used { get { return used; } }
 		public int Type { get { return type; } }
@@ -88,13 +89,14 @@ namespace CodeImp.DoomBuilder.Config
 		public int MaxRange { get { return maxrange; } } //mxd
         public bool Str { get { return str; } } // [ZZ]
         public string TitleStr { get { return titlestr; } } // [ZZ]
+        public int Script { get { return acs_script_mode; } } // [ZZ]
 
-		#endregion
+        #endregion
 
-		#region ================== Constructor / Disposer
+        #region ================== Constructor / Disposer
 
-		// Constructor for argument info from configuration
-		internal ArgumentInfo(Configuration cfg, string argspath, int argindex, bool isstringarg, IDictionary<string, EnumList> enums)
+        // Constructor for argument info from configuration
+        internal ArgumentInfo(Configuration cfg, string argspath, int argindex, bool isstringarg, IDictionary<string, EnumList> enums)
 		{
 			// Read
 			string argtype = isstringarg ? ".stringarg" : ".arg";
@@ -105,6 +107,7 @@ namespace CodeImp.DoomBuilder.Config
 			this.type = cfg.ReadSetting(argpath + ".type", 0);
             this.str = cfg.ReadSetting(argpath + ".str", false);
             this.titlestr = cfg.ReadSetting(argpath + ".titlestr", this.title);
+            this.acs_script_mode = cfg.ReadSetting(argpath + ".script", 0);
             this.defaultvalue = cfg.ReadSetting(argpath + ".default", 0);
 
             //mxd. Get rendering hint settings

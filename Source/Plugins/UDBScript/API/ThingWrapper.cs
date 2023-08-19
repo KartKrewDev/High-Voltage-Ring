@@ -536,7 +536,10 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 
 			if (thing.ScaleY != 1.0)
 				fields.Add("scaley", thing.ScaleY);
-		}
+
+            if (thing.MobjScale != 1.0)
+                fields.Add("mobjscale", thing.MobjScale);
+        }
 
 		/// <summary>
 		/// Processed a managed UDMF field, setting the managed value to what the user set in the UDMF field.
@@ -557,7 +560,11 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 					if(newvalue == null) thing.SetScale(thing.ScaleX, 1.0);
 					else thing.SetScale(thing.ScaleX, (double)newvalue);
 					return true;
-			}
+                case "mobjscale":
+                    if (newvalue == null) thing.SetMobjScale(1.0);
+                    else thing.SetMobjScale((double)newvalue);
+                    return true;
+            }
 
 			return false;
 		}

@@ -180,6 +180,12 @@
     <Compile Include="Controls\ArgumentBox.Designer.cs">
       <DependentUpon>ArgumentBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ArgumentsControlSRB2Thing.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ArgumentsControlSRB2Thing.Designer.cs">
+      <DependentUpon>ArgumentsControlSRB2Thing.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ArgumentsControlSRB2.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -690,6 +696,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\ArgumentsControlSRB2Thing.resx">
+      <DependentUpon>ArgumentsControlSRB2Thing.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ArgumentsControlSRB2.resx">
       <DependentUpon>ArgumentsControlSRB2.cs</DependentUpon>
     </EmbeddedResource>

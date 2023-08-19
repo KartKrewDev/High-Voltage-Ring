@@ -169,7 +169,7 @@ namespace CodeImp.DoomBuilder.IO
 			ReadThings(map, textmap);
 
 			// Read all the stuff we don't know, but have to preserve
-			map.UnknownUDMFData = GetUnknownCollections(textmap.Root, new List<string>() { "namespace", "vertex", "sector", "linedef", "sidedef", "thing" });
+			map.UnknownUDMFData = GetUnknownCollections(textmap.Root, new List<string>() { "namespace", "version", "vertex", "sector", "linedef", "sidedef", "thing" });
 		}
 
 		// This reads the things
@@ -185,7 +185,8 @@ namespace CodeImp.DoomBuilder.IO
 				// Read fields
 				UniversalCollection c = collections[i];
 				int[] args = new int[Thing.NUM_ARGS];
-				string where = "thing " + i;
+                int[] thingargs = new int[Thing.NUM_ARGS];
+                string where = "thing " + i;
 				double x = GetCollectionEntry(c, "x", true, 0.0, where);
 				double y = GetCollectionEntry(c, "y", true, 0.0, where);
 				double height = GetCollectionEntry(c, "height", false, 0.0, where);
@@ -196,12 +197,15 @@ namespace CodeImp.DoomBuilder.IO
 				double scaleX = GetCollectionEntry(c, "scalex", false, 1.0, where); //mxd
 				double scaleY = GetCollectionEntry(c, "scaley", false, 1.0, where); //mxd
 				double scale = GetCollectionEntry(c, "scale", false, 0.0, where); //mxd
-				int type = GetCollectionEntry(c, "type", true, 0, where);
+                double mScale = GetCollectionEntry(c, "mobjscale", false, 1.0, where);
+                int type = GetCollectionEntry(c, "type", true, 0, where);
 				int special = GetCollectionEntry(c, "special", false, 0, where);
 				for (int j = 0; j < args.Length; j++)
 					args[j] = GetCollectionEntry(c, "arg" + j, false, 0, where);
+                for (int j = 0; j < thingargs.Length; j++)
+                    thingargs[j] = GetCollectionEntry(c, "thingarg" + j, false, 0, where);
 
-				if(scale != 0) //mxd
+                if (scale != 0) //mxd
 				{
 					scaleX = scale;
 					scaleY = scale;
@@ -221,7 +225,7 @@ namespace CodeImp.DoomBuilder.IO
 				Thing t = map.CreateThing();
 				if(t != null)
 				{
-					t.Update(type, x, y, height, angledeg, pitch, roll, scaleX, scaleY, stringflags, tag, special, args);
+					t.Update(type, x, y, height, angledeg, pitch, roll, scaleX, scaleY, mScale, stringflags, tag, special, args, thingargs);
 
 					// Custom fields
 					ReadCustomFields(c, t, "thing");

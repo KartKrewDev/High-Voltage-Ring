@@ -362,7 +362,8 @@ namespace CodeImp.DoomBuilder.IO
 			for(int i = 0; i < count; i++) 
 			{
 				int[] args = new int[Thing.NUM_ARGS];
-				int tag = reader.ReadInt32();
+                int[] thingargs = new int[Thing.NUM_ARGS];
+                int tag = reader.ReadInt32();
 				double x = reader.ReadDouble();
 				double y = reader.ReadDouble();
 				double height = reader.ReadDouble();
@@ -371,12 +372,14 @@ namespace CodeImp.DoomBuilder.IO
 				int roll = reader.ReadInt32(); //mxd
 				double scaleX = reader.ReadDouble(); //mxd
 				double scaleY = reader.ReadDouble(); //mxd
-				int type = reader.ReadInt32();
+                double mobjScale = reader.ReadDouble(); //mxd
+                int type = reader.ReadInt32();
 				int special = reader.ReadInt32();
 				for(int a = 0; a < args.Length; a++) args[a] = reader.ReadInt32();
+                for(int a = 0; a < thingargs.Length; a++) thingargs[a] = reader.ReadInt32();
 
-				//flags
-				Dictionary<string, bool> stringflags = new Dictionary<string, bool>(StringComparer.Ordinal);
+                //flags
+                Dictionary<string, bool> stringflags = new Dictionary<string, bool>(StringComparer.Ordinal);
 				int numFlags = reader.ReadInt32();
 				for(int f = 0; f < numFlags; f++) stringflags.Add(ReadString(reader), reader.ReadBoolean());
 
@@ -392,7 +395,7 @@ namespace CodeImp.DoomBuilder.IO
 				Thing t = map.CreateThing();
 				if(t != null) 
 				{
-					t.Update(type, x, y, height, angledeg, pitch, roll, scaleX, scaleY, stringflags, tag, special, args);
+					t.Update(type, x, y, height, angledeg, pitch, roll, scaleX, scaleY, mobjScale, stringflags, tag, special, args, thingargs);
 
 					// Add custom fields
 					t.Fields.BeforeFieldsChange();

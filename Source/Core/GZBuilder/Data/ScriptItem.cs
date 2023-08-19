@@ -127,7 +127,31 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			return result;
 		}
 
-		public override string ToString() 
+        internal string[] GetArgumentsDescriptionsSRB2(bool showArgs)
+        {
+            string[] result = new[] {
+				"Script name",
+				string.Empty,
+				string.Empty,
+				string.Empty,
+				string.Empty,
+				string.Empty,
+				string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+            };
+
+			if (showArgs == false)
+			{
+				return result;
+			}
+
+            argnames.CopyTo(0, result, 1, argnames.Count < 9 ? argnames.Count : 9);
+            return result;
+        }
+
+        public override string ToString() 
 		{
 			return name;
 		}

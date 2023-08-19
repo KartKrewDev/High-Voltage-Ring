@@ -115,7 +115,7 @@ namespace CodeImp.DoomBuilder.Editing
 					MemoryStream memstream = new MemoryStream();
 					UniversalStreamWriter writer = new UniversalStreamWriter();
 					writer.RememberCustomTypes = false;
-					writer.Write(copyset, memstream, null);
+					writer.Write(copyset, memstream, null, 0);
 
 					// Compress the stream
 					memstream.Seek(0, SeekOrigin.Begin);

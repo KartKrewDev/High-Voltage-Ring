@@ -255,7 +255,8 @@ namespace CodeImp.DoomBuilder.IO
 				writer.Write(t.Roll); //mxd
 				writer.Write(t.ScaleX); //mxd
 				writer.Write(t.ScaleY); //mxd
-				writer.Write(t.Type);
+                writer.Write(t.MobjScale);
+                writer.Write(t.Type);
 				writer.Write(t.Action);
 				for(int i = 0; i < t.Args.Length; i++) writer.Write(t.Args[i]);
 
