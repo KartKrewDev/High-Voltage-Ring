@@ -84,9 +84,9 @@ namespace CodeImp.DoomBuilder.Controls
 			for (int i = 0; i < stringargs.Length; i++)
 			{
 				if (first)
-					stringargs[i].Text = fields.GetValue("stringthingarg" + i, string.Empty);
+					stringargs[i].Text = fields.GetValue("thingstringarg" + i, string.Empty);
 				else
-					if (fields.GetValue("stringthingarg" + i, string.Empty) != stringargs[i].Text) stringargs[i].Text = string.Empty;
+					if (fields.GetValue("thingstringarg" + i, string.Empty) != stringargs[i].Text) stringargs[i].Text = string.Empty;
 			}
 		}
 
@@ -101,7 +101,7 @@ namespace CodeImp.DoomBuilder.Controls
 
 			for (int i = 0; i < stringargs.Length; i++)
 				if (!string.IsNullOrEmpty(stringargs[i].Text))
-					UniFields.SetString(t.Fields, "stringthingarg" + i, stringargs[i].Text, string.Empty);
+					UniFields.SetString(t.Fields, "thingstringarg" + i, stringargs[i].Text, string.Empty);
 		}
 
 		#endregion
