@@ -258,6 +258,11 @@ special
 	void	 -503:SetLineRenderStyle(3, int, int, fixed),
 	void	 -504:MapWarp(2, str, bool),
 	int		 -505:AddBot(0, str, int, int),
+	void		 -506:StopLevelExit(0),
+	void		 -507:ExitLevel(0, bool),
+	void		 -508:Music_Play(1, str),
+	void		 -509:Music_StopAll(0),
+	void		 -510:Music_Remap(2, str, str),
 
 	//  0 to 56: Implemented by ACSVM
 	void  {  2     }:__suspend(void),
