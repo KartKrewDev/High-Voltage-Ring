@@ -274,7 +274,8 @@ namespace CodeImp.DoomBuilder.Windows
 			this.vertexinfo = new CodeImp.DoomBuilder.Controls.VertexInfoPanel();
 			this.linedefinfo = new CodeImp.DoomBuilder.Controls.LinedefInfoPanel();
 			this.thinginfo = new CodeImp.DoomBuilder.Controls.ThingInfoPanel();
-			this.sectorinfo = new CodeImp.DoomBuilder.Controls.SectorInfoPanel();
+            this.thinginfo_rr = new CodeImp.DoomBuilder.Controls.ThingInfoPanelRR();
+            this.sectorinfo = new CodeImp.DoomBuilder.Controls.SectorInfoPanel();
 			this.redrawtimer = new System.Windows.Forms.Timer(this.components);
 			this.display = new RenderTargetControl();
 			this.processor = new System.Windows.Forms.Timer(this.components);
@@ -1640,7 +1641,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.thingfilters.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.thingfilters.Margin = new System.Windows.Forms.Padding(1, 1, 0, 2);
 			this.thingfilters.Name = "thingfilters";
-			this.thingfilters.Size = new System.Drawing.Size((int)(120 * MainForm.DPIScaler.Width), (int)(22 * MainForm.DPIScaler.Height));
 			this.thingfilters.Text = "(show all)";
 			this.thingfilters.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.thingfilters.DropDownClosed += new System.EventHandler(this.LoseFocus);
@@ -1670,7 +1670,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.linedefcolorpresets.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.linedefcolorpresets.Margin = new System.Windows.Forms.Padding(1, 1, 0, 2);
 			this.linedefcolorpresets.Name = "linedefcolorpresets";
-			this.linedefcolorpresets.Size = new System.Drawing.Size((int)(120 * MainForm.DPIScaler.Width), (int)(22 * MainForm.DPIScaler.Height));
 			this.linedefcolorpresets.Text = "No presets";
 			this.linedefcolorpresets.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.linedefcolorpresets.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.linedefcolorpresets_DropDownItemClicked);
@@ -2282,7 +2281,6 @@ namespace CodeImp.DoomBuilder.Windows
 			this.configlabel.AutoSize = false;
 			this.configlabel.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.configlabel.Name = "configlabel";
-			this.configlabel.Size = new System.Drawing.Size((int)(280 * MainForm.DPIScaler.Width), (int)(18 * MainForm.DPIScaler.Height));
 			this.configlabel.Text = "ZDoom (Doom in Hexen Format)";
 			this.configlabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.configlabel.ToolTipText = "Current Game Configuration";
@@ -2588,7 +2586,8 @@ namespace CodeImp.DoomBuilder.Windows
 			this.panelinfo.Controls.Add(this.vertexinfo);
 			this.panelinfo.Controls.Add(this.linedefinfo);
 			this.panelinfo.Controls.Add(this.thinginfo);
-			this.panelinfo.Controls.Add(this.sectorinfo);
+            this.panelinfo.Controls.Add(this.thinginfo_rr);
+            this.panelinfo.Controls.Add(this.sectorinfo);
 			this.panelinfo.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelinfo.Location = new System.Drawing.Point(0, 564);
 			this.panelinfo.Name = "panelinfo";
@@ -2698,10 +2697,22 @@ namespace CodeImp.DoomBuilder.Windows
 			this.thinginfo.Size = new System.Drawing.Size(1006, 100);
 			this.thinginfo.TabIndex = 3;
 			this.thinginfo.Visible = false;
-			// 
-			// sectorinfo
-			// 
-			this.sectorinfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            // 
+            // thinginfo_rr
+            // 
+            this.thinginfo_rr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.thinginfo_rr.Location = new System.Drawing.Point(3, 3);
+            this.thinginfo_rr.MaximumSize = new System.Drawing.Size(10000, 100);
+            this.thinginfo_rr.MinimumSize = new System.Drawing.Size(100, 100);
+            this.thinginfo_rr.Name = "thinginfo_rr";
+            this.thinginfo_rr.Size = new System.Drawing.Size(1006, 100);
+            this.thinginfo_rr.TabIndex = 3;
+            this.thinginfo_rr.Visible = false;
+            // 
+            // sectorinfo
+            // 
+            this.sectorinfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.sectorinfo.Location = new System.Drawing.Point(3, 3);
 			this.sectorinfo.MaximumSize = new System.Drawing.Size(10000, 100);
@@ -2929,7 +2940,8 @@ namespace CodeImp.DoomBuilder.Windows
 		private CodeImp.DoomBuilder.Controls.VertexInfoPanel vertexinfo;
 		private CodeImp.DoomBuilder.Controls.SectorInfoPanel sectorinfo;
 		private CodeImp.DoomBuilder.Controls.ThingInfoPanel thinginfo;
-		private System.Windows.Forms.ToolStripButton buttonthingsfilter;
+        private CodeImp.DoomBuilder.Controls.ThingInfoPanelRR thinginfo_rr;
+        private System.Windows.Forms.ToolStripButton buttonthingsfilter;
 		private System.Windows.Forms.ToolStripSeparator seperatorviews;
 		private System.Windows.Forms.ToolStripStatusLabel gridlabel;
 		private System.Windows.Forms.ToolStripDropDownButton buttongrid;

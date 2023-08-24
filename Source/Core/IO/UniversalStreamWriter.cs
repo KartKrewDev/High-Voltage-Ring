@@ -361,7 +361,11 @@ namespace CodeImp.DoomBuilder.IO
 				{
 					if (t.Args[i] != 0) coll.Add("arg" + i, t.Args[i]);
 				}
-				coll.Comment = t.Index.ToString();
+                for (int i = 0; i < t.ThingArgs.Length; i++)
+                {
+                    if (t.ThingArgs[i] != 0) coll.Add("thingarg" + i, t.ThingArgs[i]);
+                }
+                coll.Comment = t.Index.ToString();
 
 				// Flags
 				foreach(KeyValuePair<string, bool> flag in t.Flags)

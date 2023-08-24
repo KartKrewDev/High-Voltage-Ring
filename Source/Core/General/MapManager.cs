@@ -2526,7 +2526,10 @@ namespace CodeImp.DoomBuilder
 					foreach(Linedef l in General.Map.Map.Linedefs)
 						for(int i = 0; i < l.Args.Length; i++) l.Args[i] = 0;
 					foreach(Thing t in General.Map.Map.Things)
-						for(int i = 0; i < t.Args.Length; i++) t.Args[i] = 0;
+					{
+                        for (int i = 0; i < t.Args.Length; i++) t.Args[i] = 0;
+                        for (int i = 0; i < t.ThingArgs.Length; i++) t.ThingArgs[i] = 0;
+                    }
 				}
 
 				map.UpdateCustomLinedefColors();

@@ -1229,12 +1229,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// ========== Thing line slope ==========
 					case 9501:
 					case 9500:
-						if(linetags.ContainsKey(t.Args[0]))
+						if(linetags.ContainsKey(t.ThingArgs[0]))
 						{
 							// Only slope each sector once, even when multiple lines of the same sector are tagged. See https://github.com/jewalky/UltimateDoomBuilder/issues/491
 							List<Sector> slopedsectors = new List<Sector>();
 
-							foreach(Linedef ld in linetags[t.Args[0]])
+							foreach(Linedef ld in linetags[t.ThingArgs[0]])
 							{
 								if (ld.Line.GetSideOfLine(t.Position) < 0.0f)
 								{
@@ -4219,12 +4219,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			//set position and angles
 			Thing t = visualThings[0].Thing;
-			if((t.Type == 9072 || t.Type == 9073) && t.Args[3] > 0) //AimingCamera or MovingCamera with target?
+			if((t.Type == 9072 || t.Type == 9073) && t.ThingArgs[3] > 0) //AimingCamera or MovingCamera with target?
 			{ 
 				//position
-				if(t.Type == 9072 && (t.Args[0] > 0 || t.Args[1] > 0)) //positon MovingCamera at targeted interpolation point
+				if(t.Type == 9072 && (t.ThingArgs[0] > 0 || t.ThingArgs[1] > 0)) //positon MovingCamera at targeted interpolation point
 				{ 
-					int ipTag = t.Args[0] + (t.Args[1] << 8);
+					int ipTag = t.ThingArgs[0] + (t.ThingArgs[1] << 8);
 					Thing ip = null;
 
 					//find interpolation point
@@ -4269,7 +4269,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				foreach(Thing tgt in General.Map.Map.Things) 
 				{
-					if(tgt.Tag == t.Args[3]) 
+					if(tgt.Tag == t.ThingArgs[3]) 
 					{
 						target = tgt;
 						break;
@@ -4278,7 +4278,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				if(target == null) 
 				{
-					General.Interface.DisplayStatus(StatusType.Warning, "Camera target with Tag " + t.Args[3] + " does not exist!");
+					General.Interface.DisplayStatus(StatusType.Warning, "Camera target with Tag " + t.ThingArgs[3] + " does not exist!");
 					General.Map.VisualCamera.AngleXY = t.Angle - Angle2D.PI;
 					General.Map.VisualCamera.AngleZ = Angle2D.PI;
 				} 
@@ -4296,17 +4296,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						targetPos = vTarget.CenterV3D;
 					}
 
-					bool pitch = (t.Args[2] & 4) != 0;
+					bool pitch = (t.ThingArgs[2] & 4) != 0;
 					Vector3D delta = General.Map.VisualCamera.Position - targetPos;
 					General.Map.VisualCamera.AngleXY = delta.GetAngleXY();
 					General.Map.VisualCamera.AngleZ = pitch ? -delta.GetAngleZ() : Angle2D.PI;
 				}
 			} 
-			else if((t.Type == 9025 || t.Type == 9073 || t.Type == 9070) && t.Args[0] != 0) //InterpolationPoint, SecurityCamera or AimingCamera with pitch?
+			else if((t.Type == 9025 || t.Type == 9073 || t.Type == 9070) && t.ThingArgs[0] != 0) //InterpolationPoint, SecurityCamera or AimingCamera with pitch?
 			{ 
 				General.Map.VisualCamera.Position = visualThings[0].CenterV3D; //position at camera
 				General.Map.VisualCamera.AngleXY = t.Angle - Angle2D.PI;
-				General.Map.VisualCamera.AngleZ = Angle2D.PI + Angle2D.DegToRad(t.Args[0]);
+				General.Map.VisualCamera.AngleZ = Angle2D.PI + Angle2D.DegToRad(t.ThingArgs[0]);
 			} 
 			else //nope, just a generic thing
 			{ 

@@ -40,7 +40,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				ThingData td = data.Mode.GetThingData(t);
 				td.AddUpdateSector(data.Sector, true);
 				verts[index] = t.Position;
-				if (t.Args[0] == 0)
+				if (t.ThingArgs[0] == 0)
 				{
 					t.DetermineSector(data.Mode.BlockMap);
 					if (t.Sector != null) verts[index].z += t.Sector.FloorHeight;

@@ -775,8 +775,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private readonly int tag;
 		private readonly int action;
 		private readonly int[] args;
-		
-		public ThingProperties(Thing t) : base(t.Fields, MapElementType.THING)
+        private readonly int[] thingargs;
+
+        public ThingProperties(Thing t) : base(t.Fields, MapElementType.THING)
 		{
 			type = t.Type;
 			angle = t.Angle;
@@ -790,7 +791,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			tag = t.Tag;
 			action = t.Action;
 			args = (int[])(t.Args.Clone());
-		}
+            thingargs = (int[])(t.ThingArgs.Clone());
+
+        }
 
 		//mxd. Applies coped properties with all settings enabled
 		public void Apply(ICollection<Thing> things, bool usecopysettings)
@@ -830,7 +833,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					for(int i = 0; i < t.Args.Length; i++)
 						t.Args[i] = args[i];
-				}
+                    for (int i = 0; i < t.ThingArgs.Length; i++)
+                        t.ThingArgs[i] = thingargs[i];
+                }
 			}
 
 			// Should we bother?
@@ -1007,8 +1012,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				for(int i = 0; i < source.Args.Length; i++)
 					if(source.Args[i] != target.Args[i]) return false;
 
-				// String args
-				if(General.Map.UDMF)
+                for (int i = 0; i < source.ThingArgs.Length; i++)
+                    if (source.ThingArgs[i] != target.ThingArgs[i]) return false;
+
+                // String args
+                if (General.Map.UDMF)
 				{
 					if(!UniFields.ValuesMatch("arg0str", source, target)) return false;
 					if(!UniFields.ValuesMatch("arg1str", source, target)) return false;

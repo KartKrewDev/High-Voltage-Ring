@@ -110,7 +110,8 @@ namespace CodeImp.DoomBuilder.IO
 		public override bool HasCustomFields { get { return true; } }
 		public override bool HasThingHeight { get { return true; } }
 		public override bool HasActionArgs { get { return true; } }
-		public override bool HasMixedActivations { get { return true; } }
+        public override bool HasThingArgs { get { return ((manager != null) && (manager.Config != null) && (manager.Config.EngineName == "ringracers")); } }
+        public override bool HasMixedActivations { get { return true; } }
 		public override bool HasPresetActivations { get { return false; } }
 		public override bool HasBuiltInActivations { get { return false; } }
 		public override bool HasNumericLinedefFlags { get { return false; } }

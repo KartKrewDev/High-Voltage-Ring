@@ -738,8 +738,8 @@ namespace CodeImp.DoomBuilder.Config
 			ThingTypeInfo tti = General.Map.Data.GetThingInfoEx(t.Type);
 			if(tti != null) 
 			{
-				for (int i = 0; i < t.Args.Length; i++)
-					t.Args[i] = (int)tti.Args[i].DefaultValue;
+				for (int i = 0; i < t.ThingArgs.Length; i++)
+					t.ThingArgs[i] = (int)tti.Args[i].DefaultValue;
 			}
 		}
 
@@ -765,8 +765,8 @@ namespace CodeImp.DoomBuilder.Config
 			ThingTypeInfo tti = General.Map.Data.GetThingInfoEx(t.Type);
 			if (tti != null)
 			{
-				for (int i = 0; i < t.Args.Length; i++)
-					t.Args[i] = (int)tti.Args[i].DefaultValue;
+				for (int i = 0; i < t.ThingArgs.Length; i++)
+					t.ThingArgs[i] = (int)tti.Args[i].DefaultValue;
 			}
 		}
 

@@ -157,7 +157,7 @@ namespace CodeImp.DoomBuilder.Windows
 			preventchanges = true;
 			oldmapischanged = General.Map.IsChanged;
             undocreated = false;
-            argscontrol.Reset();
+            thingargscontrol.Reset();
             scriptargscontrol.Reset();
 
             // Keep this list
@@ -223,9 +223,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// Action
 			action.Value = ft.Action;
 
-			//mxd. Args
-			argscontrol.UpdateThingType(thinginfo);
-			argscontrol.SetValue(ft, true);
+            //mxd. Args
+            thingargscontrol.UpdateThingType(thinginfo);
+            thingargscontrol.SetValue(ft, true);
+			scriptargscontrol.SetValue(ft, true);
 
 			////////////////////////////////////////////////////////////////////////
 			// Now go for all lines and change the options when a setting is different
@@ -280,11 +281,12 @@ namespace CodeImp.DoomBuilder.Windows
 				// Action
 				if(t.Action != action.Value) action.Empty = true;
 
-				//mxd. Arguments
-				argscontrol.SetValue(t, false);
+                //mxd. Arguments
+                thingargscontrol.SetValue(t, false);
+                scriptargscontrol.SetValue(t, false);
 
-				//mxd. User vars. Should be done before adding regular fields
-				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
+                //mxd. User vars. Should be done before adding regular fields
+                ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
 				if (ti != null && ti.Actor != null)
 				{
 					Dictionary<string, UniversalType> uservars = ti.Actor.GetAllUserVars();
@@ -520,11 +522,12 @@ namespace CodeImp.DoomBuilder.Windows
 				// Action
 				if(!action.Empty) t.Action = action.Value;
 
-				//mxd. Apply args
-				argscontrol.Apply(t, offset);
+                //mxd. Apply args
+                thingargscontrol.Apply(t, offset);
+                scriptargscontrol.Apply(t, offset);
 
-				//mxd. Custom fields
-				fieldslist.Apply(t.Fields);
+                //mxd. Custom fields
+                fieldslist.Apply(t.Fields);
 
 				//mxd. User vars. Should be called after fieldslist.Apply()
 				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
@@ -760,7 +763,7 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			UpdateFlagNames(); //mxd
-			argscontrol.UpdateThingType(thinginfo);
+            thingargscontrol.UpdateThingType(thinginfo);
 
 			General.Map.IsChanged = true;
 			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);

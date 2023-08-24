@@ -32,7 +32,6 @@ namespace CodeImp.DoomBuilder.Controls
 
         private enum ArgMode
         {
-            INT_OR_STRING,
             INT,
             STRING,
             SCRIPT,
@@ -69,7 +68,7 @@ namespace CodeImp.DoomBuilder.Controls
             scriptargs = new ColoredComboBox[] { scriptarg0 };
             stringargcb = new System.Windows.Forms.CheckBox[] { stringargcb0, stringargcb1 };
 
-			argmodes = new ArgMode[] { ArgMode.INT_OR_STRING, ArgMode.INT_OR_STRING };
+			argmodes = new ArgMode[] { ArgMode.INT, ArgMode.INT };
 			argstrval = new string[] { string.Empty, string.Empty };
             haveargstr = new bool[] { false, false };
         }
@@ -111,7 +110,7 @@ namespace CodeImp.DoomBuilder.Controls
 				{
 					if (i < stringargs.Length)
 					{
-						argstrval[i] = fields.GetValue("stringarg" + i, string.Empty);
+                        argstrval[i] = fields.GetValue("stringarg" + i, string.Empty);
 						haveargstr[i] = !string.IsNullOrEmpty(argstrval[i]);
 					}
 
@@ -132,7 +131,8 @@ namespace CodeImp.DoomBuilder.Controls
                         }
                     }
 
-                    if (!string.IsNullOrEmpty(args[i].Text) && newargs[i] != args[i].GetResult(int.MinValue)) args[i].ClearValue();
+                    if (!string.IsNullOrEmpty(args[i].Text) && newargs[i] != args[i].GetResult(int.MinValue))
+						args[i].ClearValue();
                 }
 			}
 		}
@@ -160,7 +160,7 @@ namespace CodeImp.DoomBuilder.Controls
         {
             for (int i = 0; i < args.Length; i++)
 			{
-				ArgMode mode = ArgMode.INT;
+                ArgMode mode = ArgMode.INT;
 				if (i < argmodes.Length)
 				{
 					mode = argmodes[i];
@@ -168,13 +168,6 @@ namespace CodeImp.DoomBuilder.Controls
 
                 switch (mode)
                 {
-                    case ArgMode.INT_OR_STRING:
-                        if (i < stringargs.Length && stringargcb[i].Checked)
-                        {
-                            goto case ArgMode.STRING;
-                        }
-                        goto case ArgMode.INT;
-
                     case ArgMode.SCRIPT:
                         if (i >= scriptargs.Length)
                         {
@@ -191,14 +184,15 @@ namespace CodeImp.DoomBuilder.Controls
 							goto case ArgMode.INT;
                         }
 
-                        if (!string.IsNullOrEmpty(stringargs[i].Text))
-                            UniFields.SetString(fields, "stringarg" + i, stringargs[i].Text, string.Empty);
+						if (!string.IsNullOrEmpty(stringargs[i].Text))
+							UniFields.SetString(fields, "stringarg" + i, stringargs[i].Text, string.Empty);
                         break;
 
                     case ArgMode.INT:
 						if (i < stringargs.Length)
 						{
-                            if (fields.ContainsKey("stringarg" + i)) fields.Remove("stringarg" + i);
+                            if (fields.ContainsKey("stringarg" + i))
+								fields.Remove("stringarg" + i);
                         }
 						newargs[i] = args[i].GetResult(newargs[i], step);
                         break;
@@ -253,14 +247,12 @@ namespace CodeImp.DoomBuilder.Controls
 
 				for (int i = 0; i < stringargs.Length; i++)
 				{
-                    stringargs[i].Text = string.Empty;
+                    stringargs[i].Text = argstrval[i] = " ";
 
                     if (i < scriptargs.Length)
 					{
-                        scriptargs[i].Text = string.Empty;
+                        scriptargs[i].Text = " ";
                     }
-
-					argstrval[i] = string.Empty;
                 }
             }
 
@@ -291,7 +283,7 @@ namespace CodeImp.DoomBuilder.Controls
 					stringargs[i].Visible = false;
 					args[i].Visible = false;
 
-					argmodes[i] = ArgMode.STRING;
+					argmodes[i] = ArgMode.SCRIPT;
 					stringargs[i].Text = scriptargs[i].Text = argstrval[i];
 
 					if (General.Map.NamedScripts.ContainsKey(argstrval[i]))
@@ -314,7 +306,7 @@ namespace CodeImp.DoomBuilder.Controls
 					args[i].Visible = false;
 
 					argmodes[i] = ArgMode.STRING;
-					stringargs[i].Text = scriptargs[i].Text = argstrval[i];
+					stringargs[i].Text = argstrval[i];
 				}
 				else if (arginfo[i].Used)
 				{
@@ -333,20 +325,24 @@ namespace CodeImp.DoomBuilder.Controls
 				}
 				else
 				{
-					// YOU DECIDE!
-					stringargcb[i].Visible = true;
+                    // YOU DECIDE!
+                    stringargs[i].Clear();
+                    stringargs[i].Location = new Point(args[i].Location.X, args[i].Location.Y + 2);
+
+                    stringargcb[i].Visible = true;
 					stringargcb[i].Checked = haveargstr[i];
+
+                    argmodes[i] = (haveargstr[i] ? ArgMode.STRING : ArgMode.INT);
 
                     if (i < scriptargs.Length)
                     {
                         scriptargs[i].Visible = false;
                     }
-                    stringargs[i].Visible = stringargcb[i].Checked;
-					args[i].Visible = !stringargcb[i].Checked;
-                    stringargs[i].Location = new Point(args[i].Location.X, args[i].Location.Y + 2);
+                    stringargs[i].Visible = (argmodes[i] == ArgMode.STRING);
+					args[i].Visible = (argmodes[i] == ArgMode.INT);
 
-                    argmodes[i] = ArgMode.INT_OR_STRING;
-				}
+                    stringargs[i].Text = argstrval[i];
+                }
 			}
         }
 
@@ -453,10 +449,15 @@ namespace CodeImp.DoomBuilder.Controls
 
         private void stringargcb_CheckedChanged(int i)
 		{
-            if (!stringargcb[i].Visible) return;
-			stringargs[i].Visible = stringargcb[i].Checked;
-            args[i].Visible = (!stringargcb[i].Checked);
-            argmodes[i] = ArgMode.INT_OR_STRING;
+			if (!stringargcb[i].Visible)
+			{
+				return;
+			}
+
+            argmodes[i] = (stringargcb[i].Checked ? ArgMode.STRING : ArgMode.INT);
+
+            stringargs[i].Visible = (argmodes[i] == ArgMode.STRING);
+            args[i].Visible = (argmodes[i] == ArgMode.INT);
         }
 
         private void stringargcb0_CheckedChanged(object sender, EventArgs e)

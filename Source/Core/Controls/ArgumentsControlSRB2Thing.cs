@@ -67,28 +67,29 @@ namespace CodeImp.DoomBuilder.Controls
 
 		public void SetValue(Thing t, bool first)
 		{
-			SetValue(t.Fields, t.ThingArgs, first);
-		}
-
-		private void SetValue(UniFields fields, int[] newargs, bool first)
-		{
-			// Update arguments
-			for (int i = 0; i < args.Length; i++)
-			{
+            // Update arguments
+            for (int i = 0; i < args.Length; i++)
+            {
 				if (first)
-					args[i].SetValue(newargs[i]);
+					args[i].SetValue(t.ThingArgs[i]);
 				else
-					if (!string.IsNullOrEmpty(args[i].Text) && newargs[i] != args[i].GetResult(int.MinValue)) args[i].ClearValue();
-			}
+				{
+					if (!string.IsNullOrEmpty(args[i].Text) && t.ThingArgs[i] != args[i].GetResult(int.MinValue))
+						args[i].ClearValue();
+				}
+            }
 
-			for (int i = 0; i < stringargs.Length; i++)
-			{
+            for (int i = 0; i < stringargs.Length; i++)
+            {
 				if (first)
-					stringargs[i].Text = fields.GetValue("thingstringarg" + i, string.Empty);
+					stringargs[i].Text = t.Fields.GetValue("thingstringarg" + i, string.Empty);
 				else
-					if (fields.GetValue("thingstringarg" + i, string.Empty) != stringargs[i].Text) stringargs[i].Text = string.Empty;
-			}
-		}
+				{
+					if (t.Fields.GetValue("thingstringarg" + i, string.Empty) != stringargs[i].Text)
+						stringargs[i].Text = string.Empty;
+				}
+            }
+        }
 
 		#endregion
 
@@ -97,11 +98,15 @@ namespace CodeImp.DoomBuilder.Controls
 		public void Apply(Thing t, int step)
 		{
 			for (int i = 0; i < args.Length; i++)
+			{
 				t.ThingArgs[i] = args[i].GetResult(t.ThingArgs[i], step);
+			}
 
 			for (int i = 0; i < stringargs.Length; i++)
-				if (!string.IsNullOrEmpty(stringargs[i].Text))
-					UniFields.SetString(t.Fields, "thingstringarg" + i, stringargs[i].Text, string.Empty);
+			{
+                if (!string.IsNullOrEmpty(stringargs[i].Text))
+                    UniFields.SetString(t.Fields, "thingstringarg" + i, stringargs[i].Text, string.Empty);
+            }
 		}
 
 		#endregion
@@ -109,12 +114,6 @@ namespace CodeImp.DoomBuilder.Controls
 		#region ================== Update
 
 		public void UpdateThingType(ThingTypeInfo info)
-		{
-            UpdateThingType(false, info);
-		}
-
-		//TODO: Info for string args
-		public void UpdateThingType(bool setuponly, ThingTypeInfo info)
 		{
             // Update arguments
             ArgumentInfo[] oldarginfo = (arginfo != null ? (ArgumentInfo[])arginfo.Clone() : null); //mxd
@@ -150,23 +149,20 @@ namespace CodeImp.DoomBuilder.Controls
             for (int i = 0; i < stringargs.Length; i++)
                 UpdateStringArgument(stringargs[i], stringlabels[i], stringarginfo[i]);
 
-            if (!setuponly)
+            // Apply thing's default arguments
+            if (info != null)
             {
-                // Apply thing's default arguments
-                if (info != null)
-                {
-                    for (int i = 0; i < args.Length; i++)
-                        args[i].SetDefaultValue();
-                }
-                else //or set them to 0
-                {
-                    for (int i = 0; i < args.Length; i++)
-                        args[i].SetValue(0);
-                }
-
-                for (int i = 0; i < stringargs.Length; i++)
-                    stringargs[i].Text = string.Empty;
+                for (int i = 0; i < args.Length; i++)
+                    args[i].SetDefaultValue();
             }
+            else //or set them to 0
+            {
+                for (int i = 0; i < args.Length; i++)
+                    args[i].SetValue(0);
+            }
+
+            for (int i = 0; i < stringargs.Length; i++)
+                stringargs[i].Text = string.Empty;
 
             this.EndUpdate();
         }

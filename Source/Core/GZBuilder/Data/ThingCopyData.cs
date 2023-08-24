@@ -14,7 +14,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		private readonly int tag;
 		private readonly int action;
 		private readonly int[] args;
-		private readonly UniFields fields;
+        private readonly int[] thingargs;
+        private readonly UniFields fields;
 
 		public Vector3D Position { get { return pos; } }
 		
@@ -27,7 +28,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			tag = t.Tag;
 			action = t.Action;
 			args = (int[])t.Args.Clone();
-			fields = new UniFields(t, t.Fields);
+            thingargs = (int[])t.ThingArgs.Clone();
+            fields = new UniFields(t, t.Fields);
 		}
 
 		public void ApplyTo(Thing t) 
@@ -45,7 +47,10 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			for(int i = 0; i < args.Length; i++) 
 				t.Args[i] = args[i];
 
-			foreach(KeyValuePair<string, UniValue> group in fields) 
+            for (int i = 0; i < thingargs.Length; i++)
+                t.ThingArgs[i] = thingargs[i];
+
+            foreach (KeyValuePair<string, UniValue> group in fields) 
 			{
 				if(t.Fields.ContainsKey(group.Key))
 					t.Fields[group.Key] = group.Value;

@@ -49,7 +49,7 @@
             this.sprite_scale = new CodeImp.DoomBuilder.Controls.PairedFloatControl();
             this.label1 = new System.Windows.Forms.Label();
             this.mobj_scale = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
-            this.argscontrol = new CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2Thing();
+            this.thingargscontrol = new CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2Thing();
             this.settingsgroup = new System.Windows.Forms.GroupBox();
             this.missingflags = new System.Windows.Forms.PictureBox();
             this.flags = new CodeImp.DoomBuilder.Controls.CheckboxArrayControl();
@@ -377,12 +377,12 @@
             this.mobj_scale.TabIndex = 33;
             this.mobj_scale.WhenTextChanged += new System.EventHandler(this.mobjscale_WhenTextChanged);
             // 
-            // argscontrol
+            // thingargscontrol
             // 
-            this.argscontrol.Location = new System.Drawing.Point(6, 19);
-            this.argscontrol.Name = "argscontrol";
-            this.argscontrol.Size = new System.Drawing.Size(477, 172);
-            this.argscontrol.TabIndex = 16;
+            this.thingargscontrol.Location = new System.Drawing.Point(6, 19);
+            this.thingargscontrol.Name = "thingargscontrol";
+            this.thingargscontrol.Size = new System.Drawing.Size(477, 172);
+            this.thingargscontrol.TabIndex = 16;
             // 
             // settingsgroup
             // 
@@ -793,7 +793,7 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.argscontrol);
+            this.groupBox5.Controls.Add(this.thingargscontrol);
             this.groupBox5.Location = new System.Drawing.Point(242, 120);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(565, 194);
@@ -904,7 +904,7 @@
 		private CodeImp.DoomBuilder.Controls.ActionSpecialHelpButton actionhelp;
 		private CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2 scriptargscontrol;
 		private System.Windows.Forms.CheckBox hidefixedfields;
-        private CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2Thing argscontrol;
+        private CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2Thing thingargscontrol;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label1;
         private Controls.ButtonsNumericTextbox mobj_scale;

@@ -116,7 +116,7 @@ namespace CodeImp.DoomBuilder.Map
 		internal Dictionary<string, bool> Flags { get { return flags; } }
 		public int Action { get { return action; } set { BeforePropsChange(); action = value; } }
 		public int[] Args { get { return args; } }
-        public int[] ThingArgs { get { return thingargs; } }
+        public int[] ThingArgs { get { return (General.Map.FormatInterface.HasThingArgs ? thingargs : args); } }
         public float Size { get { return size * (float)mobjscale / (float)(1 << General.Settings.ThingScale); } }
 		public float RenderSize { get { return rendersize; } }
 		public float Height { get { return height * (float)mobjscale / (float)(1 << General.Settings.ThingScale); } } //mxd
@@ -228,7 +228,7 @@ namespace CodeImp.DoomBuilder.Map
 			s.rwInt(ref tag);
 			s.rwInt(ref action);
 			for(int i = 0; i < args.Length; i++) s.rwInt(ref args[i]);
-            for (int i = 0; i < thingargs.Length; i++) s.rwInt(ref thingargs[i]);
+            for(int i = 0; i < thingargs.Length; i++) s.rwInt(ref thingargs[i]);
 
             if (!s.IsWriting) 
 			{

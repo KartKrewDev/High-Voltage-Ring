@@ -626,8 +626,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					return true;
 				}
 			}
+
 			//mxd. Thing action on this thing?
-			else if (thing.Action == 0)
+			if (thing.Action == 0 || General.Map.FormatInterface.HasThingArgs)
 			{
 				// Gets the association, unless it is a child link.
 				// This prevents a reverse link to a thing via an argument, when it should be a direct tag-to-tag link instead.
@@ -635,7 +636,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					for (int i = 0; i < ti.Args.Length; i++)
 					{
-						if ((ti.Args[i].Type == (int)type) && (tags.Contains(thing.Args[i])))
+						if ((ti.Args[i].Type == (int)type) && (tags.Contains(thing.ThingArgs[i])))
 							return true;
 					}
 				}
@@ -676,7 +677,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if (BuilderPlug.Me.EventLineLabelStyle == 0 || General.Map.Config.LineTagIndicatesSectors)
 					return description;
 
-				for (int i=0; i < 5; i++)
+				for (int i = 0; i < Linedef.NUM_ARGS; i++)
 				{
 					if(lai.Args[i].Used)
 					{
@@ -703,9 +704,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else if(se is Thing) // No action, but maybe the thing args are used directly
 			{
 				List<string> argdescription = new List<string>();
-				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(((Thing)se).Type);
+				Thing t = (Thing)se;
+                ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
 
-				for (int i = 0; i < 5; i++)
+				for (int i = 0; i < Thing.NUM_ARGS; i++)
 				{
 					if (ti.Args[i].Used)
 					{
@@ -714,18 +716,34 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if (BuilderPlug.Me.EventLineLabelStyle == 2) // Label style: full arguments
 							argstring = ti.Args[i].Title + ": ";
 
-						EnumItem ei = ti.Args[i].Enum.GetByEnumIndex(actionargs[i].ToString());
+						EnumItem ei = ti.Args[i].Enum.GetByEnumIndex(t.ThingArgs[i].ToString());
 
 						if (ei != null && BuilderPlug.Me.EventLineLabelStyle == 2) // Label style: full arguments
 							argstring += ei.ToString();
 						else // Argument has no EnumItem or label style: short arguments
-							argstring += actionargs[i].ToString();
+							argstring += t.ThingArgs[i].ToString();
 
 						argdescription.Add(argstring);
 					}
 				}
 
-				if(argdescription.Count > 0)
+                for (int i = 0; i < Thing.NUM_STRING_ARGS; i++)
+                {
+                    if (ti.StringArgs[i].Used)
+                    {
+                        string strargname = string.Concat("thingstringarg", i);
+                        string argstring = "";
+
+                        if (BuilderPlug.Me.EventLineLabelStyle == 2) // Label style: full arguments
+                            argstring = ti.StringArgs[i].Title + ": ";
+
+						argstring += t.Fields.GetValue(strargname, string.Empty);
+
+                        argdescription.Add(argstring);
+                    }
+                }
+
+                if (argdescription.Count > 0)
 					return string.Join(", ", argdescription);
 			}
 

@@ -192,17 +192,20 @@ namespace CodeImp.DoomBuilder.Config
 			this.fixedrotation = false; //mxd
 			this.spriteframe = new[] { new SpriteFrameInfo { Sprite = sprite, SpriteLongName = Lump.MakeLongName(sprite, true) } }; //mxd
 			this.args = new ArgumentInfo[Thing.NUM_ARGS];
-			this.stringargs = new ArgumentInfo[Thing.NUM_STRING_ARGS];
-			this.isknown = false;
+            this.stringargs = new ArgumentInfo[Thing.NUM_STRING_ARGS];
+            this.isknown = false;
 			this.absolutez = false;
 			this.xybillboard = false;
 			this.locksprite = false; //mxd
 			this.flagsrename = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase); //mxd
 			this.thinglink = 0;
             this.optional = false; // [ZZ]
-			
-			// We have no destructor
-			GC.SuppressFinalize(this);
+
+            for (int i = 0; i < this.args.Length; i++) this.args[i] = new ArgumentInfo(i, false);
+            for (int i = 0; i < this.stringargs.Length; i++) this.stringargs[i] = new ArgumentInfo(i, true);
+
+            // We have no destructor
+            GC.SuppressFinalize(this);
 		}
 
 		// Constructor
