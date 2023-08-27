@@ -197,8 +197,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			// Initialize
 			this.thing = t;
-			this.scalex = (float)t.ScaleX / (float)(1 << General.Settings.ThingScale);
-			this.scaley = (float)t.ScaleY / (float)(1 << General.Settings.ThingScale);
+			this.scalex = ((float)t.ScaleX * (float)t.MobjScale) / (float)(1 << General.Settings.ThingScale);
+			this.scaley = ((float)t.ScaleY * (float)t.MobjScale) / (float)(1 << General.Settings.ThingScale);
 			this.renderpass = RenderPass.Mask;
 			this.position = Matrix.Identity;
 

@@ -770,12 +770,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private readonly int roll; //mxd
 		private readonly double scalex; //mxd
 		private readonly double scaley; //mxd
-		private readonly Dictionary<string, bool> flags;
+        private readonly double mobjscale; //mxd
+        private readonly Dictionary<string, bool> flags;
 		private readonly int tag;
 		private readonly int action;
 		private readonly int[] args;
-		
-		public ThingProperties(Thing t) : base(t.Fields, MapElementType.THING)
+        private readonly int[] thingargs;
+
+        public ThingProperties(Thing t) : base(t.Fields, MapElementType.THING)
 		{
 			type = t.Type;
 			angle = t.Angle;
@@ -784,11 +786,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			roll = t.Roll;
 			scalex = t.ScaleX;
 			scaley = t.ScaleY;
+			mobjscale = t.MobjScale;
 			flags = t.GetFlags();
 			tag = t.Tag;
 			action = t.Action;
 			args = (int[])(t.Args.Clone());
-		}
+            thingargs = (int[])(t.ThingArgs.Clone());
+
+        }
 
 		//mxd. Applies coped properties with all settings enabled
 		public void Apply(ICollection<Thing> things, bool usecopysettings)
@@ -811,7 +816,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(settings.ZHeight) t.Move(t.Position.x, t.Position.y, zheight);
 				if(settings.Pitch) t.SetPitch(pitch);
 				if(settings.Roll) t.SetRoll(roll);
-				if(settings.Scale) t.SetScale(scalex, scaley);
+				if(settings.Scale)
+				{
+					t.SetScale(scalex, scaley);
+					t.SetMobjScale(mobjscale);
+				}
 				if(settings.Flags)
 				{
 					t.ClearFlags();
@@ -824,7 +833,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					for(int i = 0; i < t.Args.Length; i++)
 						t.Args[i] = args[i];
-				}
+                    for (int i = 0; i < t.ThingArgs.Length; i++)
+                        t.ThingArgs[i] = thingargs[i];
+                }
 			}
 
 			// Should we bother?
@@ -1001,8 +1012,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				for(int i = 0; i < source.Args.Length; i++)
 					if(source.Args[i] != target.Args[i]) return false;
 
-				// String args
-				if(General.Map.UDMF)
+                for (int i = 0; i < source.ThingArgs.Length; i++)
+                    if (source.ThingArgs[i] != target.ThingArgs[i]) return false;
+
+                // String args
+                if (General.Map.UDMF)
 				{
 					if(!UniFields.ValuesMatch("arg0str", source, target)) return false;
 					if(!UniFields.ValuesMatch("arg1str", source, target)) return false;
@@ -1018,7 +1032,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// UDMF-specific properties
 			if(flags.Pitch && source.Pitch != target.Pitch) return false;
 			if(flags.Roll && source.Roll != target.Roll) return false;
-			if(flags.Scale && (source.ScaleX != target.ScaleX) || (source.ScaleY != target.ScaleY)) return false;
+			if(flags.Scale && (source.ScaleX != target.ScaleX) || (source.ScaleY != target.ScaleY) || (source.MobjScale != target.MobjScale)) return false;
 
 			// UI fields
 			if(!UIFieldsMatch(flags, source, target)) return false;

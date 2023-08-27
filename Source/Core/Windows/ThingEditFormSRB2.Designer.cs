@@ -44,6 +44,12 @@
             this.anglecontrol = new CodeImp.DoomBuilder.Controls.AngleControlEx();
             this.tabs = new System.Windows.Forms.TabControl();
             this.tabproperties = new System.Windows.Forms.TabPage();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.labelScale = new System.Windows.Forms.Label();
+            this.sprite_scale = new CodeImp.DoomBuilder.Controls.PairedFloatControl();
+            this.label1 = new System.Windows.Forms.Label();
+            this.mobj_scale = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
+            this.thingargscontrol = new CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2Thing();
             this.settingsgroup = new System.Windows.Forms.GroupBox();
             this.missingflags = new System.Windows.Forms.PictureBox();
             this.flags = new CodeImp.DoomBuilder.Controls.CheckboxArrayControl();
@@ -61,11 +67,8 @@
             this.posZ = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
             this.zlabel = new System.Windows.Forms.Label();
             this.tabeffects = new System.Windows.Forms.TabPage();
-            this.grouprendering = new System.Windows.Forms.GroupBox();
-            this.labelScale = new System.Windows.Forms.Label();
-            this.scale = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
             this.actiongroup = new System.Windows.Forms.GroupBox();
-            this.argscontrol = new CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2();
+            this.scriptargscontrol = new CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2();
             this.actionhelp = new CodeImp.DoomBuilder.Controls.ActionSpecialHelpButton();
             this.labelAction = new System.Windows.Forms.Label();
             this.action = new CodeImp.DoomBuilder.Controls.ActionSelectorControl();
@@ -82,10 +85,12 @@
             this.hint = new System.Windows.Forms.PictureBox();
             this.hintlabel = new System.Windows.Forms.Label();
             this.tooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabs.SuspendLayout();
             this.tabproperties.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.settingsgroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.missingflags)).BeginInit();
             this.grouproll.SuspendLayout();
@@ -93,12 +98,12 @@
             this.groupangle.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabeffects.SuspendLayout();
-            this.grouprendering.SuspendLayout();
             this.actiongroup.SuspendLayout();
             this.grouptag.SuspendLayout();
             this.tabcomment.SuspendLayout();
             this.tabcustom.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.hint)).BeginInit();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -106,7 +111,7 @@
             this.groupBox1.Controls.Add(this.thingtype);
             this.groupBox1.Location = new System.Drawing.Point(6, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(230, 390);
+            this.groupBox1.Size = new System.Drawing.Size(230, 412);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = " Thing ";
@@ -116,7 +121,7 @@
             this.thingtype.Location = new System.Drawing.Point(9, 13);
             this.thingtype.Margin = new System.Windows.Forms.Padding(6);
             this.thingtype.Name = "thingtype";
-            this.thingtype.Size = new System.Drawing.Size(212, 374);
+            this.thingtype.Size = new System.Drawing.Size(212, 392);
             this.thingtype.TabIndex = 0;
             this.thingtype.UseMultiSelection = true;
             this.thingtype.OnTypeChanged += new CodeImp.DoomBuilder.Controls.ThingBrowserControl.TypeChangedDeletegate(this.thingtype_OnTypeChanged);
@@ -133,7 +138,7 @@
             this.groupBox2.Controls.Add(this.labelpitch);
             this.groupBox2.Controls.Add(this.angle);
             this.groupBox2.Controls.Add(this.labelAngle);
-            this.groupBox2.Location = new System.Drawing.Point(428, 298);
+            this.groupBox2.Location = new System.Drawing.Point(614, 320);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(193, 98);
             this.groupBox2.TabIndex = 6;
@@ -283,11 +288,13 @@
             this.tabs.Name = "tabs";
             this.tabs.Padding = new System.Drawing.Point(24, 3);
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(635, 425);
+            this.tabs.Size = new System.Drawing.Size(915, 456);
             this.tabs.TabIndex = 0;
             // 
             // tabproperties
             // 
+            this.tabproperties.Controls.Add(this.groupBox5);
+            this.tabproperties.Controls.Add(this.groupBox3);
             this.tabproperties.Controls.Add(this.settingsgroup);
             this.tabproperties.Controls.Add(this.grouproll);
             this.tabproperties.Controls.Add(this.grouppitch);
@@ -299,10 +306,83 @@
             this.tabproperties.Location = new System.Drawing.Point(4, 22);
             this.tabproperties.Name = "tabproperties";
             this.tabproperties.Padding = new System.Windows.Forms.Padding(3);
-            this.tabproperties.Size = new System.Drawing.Size(627, 399);
+            this.tabproperties.Size = new System.Drawing.Size(907, 430);
             this.tabproperties.TabIndex = 0;
             this.tabproperties.Text = "Properties";
             this.tabproperties.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.labelScale);
+            this.groupBox3.Controls.Add(this.sprite_scale);
+            this.groupBox3.Controls.Add(this.label1);
+            this.groupBox3.Controls.Add(this.mobj_scale);
+            this.groupBox3.Location = new System.Drawing.Point(428, 320);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(180, 98);
+            this.groupBox3.TabIndex = 17;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Scaling";
+            // 
+            // labelScale
+            // 
+            this.labelScale.Location = new System.Drawing.Point(9, 49);
+            this.labelScale.Name = "labelScale";
+            this.labelScale.Size = new System.Drawing.Size(68, 14);
+            this.labelScale.TabIndex = 37;
+            this.labelScale.Text = "Sprite scale:";
+            this.labelScale.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // sprite_scale
+            // 
+            this.sprite_scale.ButtonStep = 0.1F;
+            this.sprite_scale.ButtonStepBig = 0.25F;
+            this.sprite_scale.ButtonStepSmall = 0.01F;
+            this.sprite_scale.ButtonStepsUseModifierKeys = true;
+            this.sprite_scale.DefaultValue = 1D;
+            this.sprite_scale.LinkValues = false;
+            this.sprite_scale.Location = new System.Drawing.Point(12, 66);
+            this.sprite_scale.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.sprite_scale.Name = "sprite_scale";
+            this.sprite_scale.Size = new System.Drawing.Size(163, 26);
+            this.sprite_scale.TabIndex = 36;
+            this.sprite_scale.OnValuesChanged += new System.EventHandler(this.scale_OnValuesChanged);
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(9, 22);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(71, 14);
+            this.label1.TabIndex = 34;
+            this.label1.Text = "Object scale:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // mobj_scale
+            // 
+            this.mobj_scale.AllowDecimal = true;
+            this.mobj_scale.AllowExpressions = false;
+            this.mobj_scale.AllowNegative = false;
+            this.mobj_scale.AllowRelative = true;
+            this.mobj_scale.ButtonStep = 1;
+            this.mobj_scale.ButtonStepBig = 0.25F;
+            this.mobj_scale.ButtonStepFloat = 0.1F;
+            this.mobj_scale.ButtonStepSmall = 0.01F;
+            this.mobj_scale.ButtonStepsUseModifierKeys = true;
+            this.mobj_scale.ButtonStepsWrapAround = false;
+            this.mobj_scale.Location = new System.Drawing.Point(85, 17);
+            this.mobj_scale.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.mobj_scale.Name = "mobj_scale";
+            this.mobj_scale.Size = new System.Drawing.Size(90, 24);
+            this.mobj_scale.StepValues = null;
+            this.mobj_scale.TabIndex = 33;
+            this.mobj_scale.WhenTextChanged += new System.EventHandler(this.mobjscale_WhenTextChanged);
+            // 
+            // thingargscontrol
+            // 
+            this.thingargscontrol.Location = new System.Drawing.Point(6, 19);
+            this.thingargscontrol.Name = "thingargscontrol";
+            this.thingargscontrol.Size = new System.Drawing.Size(477, 172);
+            this.thingargscontrol.TabIndex = 16;
             // 
             // settingsgroup
             // 
@@ -310,7 +390,7 @@
             this.settingsgroup.Controls.Add(this.flags);
             this.settingsgroup.Location = new System.Drawing.Point(242, 6);
             this.settingsgroup.Name = "settingsgroup";
-            this.settingsgroup.Size = new System.Drawing.Size(295, 286);
+            this.settingsgroup.Size = new System.Drawing.Size(649, 108);
             this.settingsgroup.TabIndex = 1;
             this.settingsgroup.TabStop = false;
             this.settingsgroup.Text = " Flags ";
@@ -332,10 +412,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flags.AutoScroll = true;
-            this.flags.Columns = 2;
+            this.flags.Columns = 4;
             this.flags.Location = new System.Drawing.Point(6, 19);
             this.flags.Name = "flags";
-            this.flags.Size = new System.Drawing.Size(283, 260);
+            this.flags.Size = new System.Drawing.Size(637, 82);
             this.flags.TabIndex = 0;
             this.flags.VerticalSpacing = 1;
             this.flags.OnValueChanged += new System.EventHandler(this.flags_OnValueChanged);
@@ -343,7 +423,7 @@
             // grouproll
             // 
             this.grouproll.Controls.Add(this.rollControl);
-            this.grouproll.Location = new System.Drawing.Point(543, 16);
+            this.grouproll.Location = new System.Drawing.Point(813, 142);
             this.grouproll.Name = "grouproll";
             this.grouproll.Size = new System.Drawing.Size(78, 88);
             this.grouproll.TabIndex = 2;
@@ -364,7 +444,7 @@
             // grouppitch
             // 
             this.grouppitch.Controls.Add(this.pitchControl);
-            this.grouppitch.Location = new System.Drawing.Point(543, 110);
+            this.grouppitch.Location = new System.Drawing.Point(813, 236);
             this.grouppitch.Name = "grouppitch";
             this.grouppitch.Size = new System.Drawing.Size(78, 88);
             this.grouppitch.TabIndex = 3;
@@ -385,7 +465,7 @@
             // groupangle
             // 
             this.groupangle.Controls.Add(this.anglecontrol);
-            this.groupangle.Location = new System.Drawing.Point(543, 204);
+            this.groupangle.Location = new System.Drawing.Point(813, 330);
             this.groupangle.Name = "groupangle";
             this.groupangle.Size = new System.Drawing.Size(78, 88);
             this.groupangle.TabIndex = 4;
@@ -401,7 +481,7 @@
             this.groupBox4.Controls.Add(this.posY);
             this.groupBox4.Controls.Add(this.posZ);
             this.groupBox4.Controls.Add(this.zlabel);
-            this.groupBox4.Location = new System.Drawing.Point(242, 298);
+            this.groupBox4.Location = new System.Drawing.Point(242, 320);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(180, 98);
             this.groupBox4.TabIndex = 5;
@@ -505,86 +585,44 @@
             // 
             // tabeffects
             // 
-            this.tabeffects.Controls.Add(this.grouprendering);
             this.tabeffects.Controls.Add(this.actiongroup);
             this.tabeffects.Controls.Add(this.grouptag);
             this.tabeffects.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabeffects.Location = new System.Drawing.Point(4, 22);
             this.tabeffects.Name = "tabeffects";
             this.tabeffects.Padding = new System.Windows.Forms.Padding(3);
-            this.tabeffects.Size = new System.Drawing.Size(627, 399);
+            this.tabeffects.Size = new System.Drawing.Size(907, 430);
             this.tabeffects.TabIndex = 1;
             this.tabeffects.Text = "Args / Tag / Misc.";
             this.tabeffects.UseVisualStyleBackColor = true;
-            // 
-            // grouprendering
-            // 
-            this.grouprendering.Controls.Add(this.labelScale);
-            this.grouprendering.Controls.Add(this.scale);
-            this.grouprendering.Location = new System.Drawing.Point(3, 6);
-            this.grouprendering.Name = "grouprendering";
-            this.grouprendering.Size = new System.Drawing.Size(276, 61);
-            this.grouprendering.TabIndex = 22;
-            this.grouprendering.TabStop = false;
-            this.grouprendering.Text = " Rendering ";
-            // 
-            // labelScale
-            // 
-            this.labelScale.Location = new System.Drawing.Point(5, 27);
-            this.labelScale.Name = "labelScale";
-            this.labelScale.Size = new System.Drawing.Size(80, 14);
-            this.labelScale.TabIndex = 32;
-            this.labelScale.Text = "Scale:";
-            this.labelScale.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // scale
-            // 
-            this.scale.AllowDecimal = true;
-            this.scale.AllowExpressions = false;
-            this.scale.AllowNegative = false;
-            this.scale.AllowRelative = true;
-            this.scale.ButtonStep = 1;
-            this.scale.ButtonStepBig = 0.25F;
-            this.scale.ButtonStepFloat = 0.1F;
-            this.scale.ButtonStepSmall = 0.01F;
-            this.scale.ButtonStepsUseModifierKeys = true;
-            this.scale.ButtonStepsWrapAround = false;
-            this.scale.Location = new System.Drawing.Point(89, 22);
-            this.scale.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.scale.Name = "scale";
-            this.scale.Size = new System.Drawing.Size(72, 24);
-            this.scale.StepValues = null;
-            this.scale.TabIndex = 0;
-            this.scale.WhenTextChanged += new System.EventHandler(this.scale_WhenTextChanged);
             // 
             // actiongroup
             // 
             this.actiongroup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.actiongroup.Controls.Add(this.argscontrol);
+            this.actiongroup.Controls.Add(this.scriptargscontrol);
             this.actiongroup.Controls.Add(this.actionhelp);
             this.actiongroup.Controls.Add(this.labelAction);
             this.actiongroup.Controls.Add(this.action);
             this.actiongroup.Controls.Add(this.browseaction);
-            this.actiongroup.Location = new System.Drawing.Point(3, 73);
+            this.actiongroup.Location = new System.Drawing.Point(3, 6);
             this.actiongroup.Name = "actiongroup";
-            this.actiongroup.Size = new System.Drawing.Size(615, 251);
+            this.actiongroup.Size = new System.Drawing.Size(898, 331);
             this.actiongroup.TabIndex = 22;
             this.actiongroup.TabStop = false;
             this.actiongroup.Text = " Action ";
             // 
-            // argscontrol
+            // scriptargscontrol
             // 
-            this.argscontrol.Location = new System.Drawing.Point(6, 66);
-            this.argscontrol.Name = "argscontrol";
-            this.argscontrol.Size = new System.Drawing.Size(603, 170);
-            this.argscontrol.TabIndex = 15;
-            this.argscontrol.Load += new System.EventHandler(this.argscontrol_Load);
+            this.scriptargscontrol.Location = new System.Drawing.Point(36, 66);
+            this.scriptargscontrol.Name = "scriptargscontrol";
+            this.scriptargscontrol.Size = new System.Drawing.Size(600, 170);
+            this.scriptargscontrol.TabIndex = 15;
             // 
             // actionhelp
             // 
-            this.actionhelp.Location = new System.Drawing.Point(581, 24);
+            this.actionhelp.Location = new System.Drawing.Point(608, 27);
             this.actionhelp.Name = "actionhelp";
             this.actionhelp.Size = new System.Drawing.Size(28, 26);
             this.actionhelp.TabIndex = 14;
@@ -592,7 +630,7 @@
             // labelAction
             // 
             this.labelAction.AutoSize = true;
-            this.labelAction.Location = new System.Drawing.Point(15, 30);
+            this.labelAction.Location = new System.Drawing.Point(45, 34);
             this.labelAction.Name = "labelAction";
             this.labelAction.Size = new System.Drawing.Size(40, 13);
             this.labelAction.TabIndex = 9;
@@ -605,7 +643,7 @@
             this.action.Empty = false;
             this.action.GeneralizedCategories = null;
             this.action.GeneralizedOptions = null;
-            this.action.Location = new System.Drawing.Point(62, 27);
+            this.action.Location = new System.Drawing.Point(89, 30);
             this.action.Name = "action";
             this.action.Size = new System.Drawing.Size(485, 21);
             this.action.TabIndex = 0;
@@ -615,7 +653,7 @@
             // browseaction
             // 
             this.browseaction.Image = global::CodeImp.DoomBuilder.Properties.Resources.List;
-            this.browseaction.Location = new System.Drawing.Point(551, 24);
+            this.browseaction.Location = new System.Drawing.Point(578, 27);
             this.browseaction.Name = "browseaction";
             this.browseaction.Size = new System.Drawing.Size(28, 26);
             this.browseaction.TabIndex = 1;
@@ -627,16 +665,16 @@
             // grouptag
             // 
             this.grouptag.Controls.Add(this.tagSelector);
-            this.grouptag.Location = new System.Drawing.Point(3, 330);
+            this.grouptag.Location = new System.Drawing.Point(3, 343);
             this.grouptag.Name = "grouptag";
-            this.grouptag.Size = new System.Drawing.Size(615, 66);
+            this.grouptag.Size = new System.Drawing.Size(898, 80);
             this.grouptag.TabIndex = 0;
             this.grouptag.TabStop = false;
             this.grouptag.Text = " Identification ";
             // 
             // tagSelector
             // 
-            this.tagSelector.Location = new System.Drawing.Point(6, 21);
+            this.tagSelector.Location = new System.Drawing.Point(48, 25);
             this.tagSelector.Name = "tagSelector";
             this.tagSelector.Size = new System.Drawing.Size(603, 35);
             this.tagSelector.TabIndex = 8;
@@ -647,7 +685,7 @@
             this.tabcomment.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabcomment.Location = new System.Drawing.Point(4, 22);
             this.tabcomment.Name = "tabcomment";
-            this.tabcomment.Size = new System.Drawing.Size(627, 399);
+            this.tabcomment.Size = new System.Drawing.Size(907, 430);
             this.tabcomment.TabIndex = 3;
             this.tabcomment.Text = "Comment";
             this.tabcomment.UseVisualStyleBackColor = true;
@@ -656,7 +694,7 @@
             // 
             this.commenteditor.Location = new System.Drawing.Point(3, 3);
             this.commenteditor.Name = "commenteditor";
-            this.commenteditor.Size = new System.Drawing.Size(621, 396);
+            this.commenteditor.Size = new System.Drawing.Size(901, 424);
             this.commenteditor.TabIndex = 0;
             // 
             // tabcustom
@@ -666,7 +704,7 @@
             this.tabcustom.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabcustom.Location = new System.Drawing.Point(4, 22);
             this.tabcustom.Name = "tabcustom";
-            this.tabcustom.Size = new System.Drawing.Size(627, 399);
+            this.tabcustom.Size = new System.Drawing.Size(907, 430);
             this.tabcustom.TabIndex = 2;
             this.tabcustom.Text = "Custom";
             this.tabcustom.UseVisualStyleBackColor = true;
@@ -675,7 +713,7 @@
             // hidefixedfields
             // 
             this.hidefixedfields.AutoSize = true;
-            this.hidefixedfields.Location = new System.Drawing.Point(10, 381);
+            this.hidefixedfields.Location = new System.Drawing.Point(8, 410);
             this.hidefixedfields.Name = "hidefixedfields";
             this.hidefixedfields.Size = new System.Drawing.Size(195, 17);
             this.hidefixedfields.TabIndex = 2;
@@ -697,7 +735,7 @@
             this.fieldslist.PropertyColumnVisible = true;
             this.fieldslist.PropertyColumnWidth = 150;
             this.fieldslist.ShowFixedFields = true;
-            this.fieldslist.Size = new System.Drawing.Size(611, 368);
+            this.fieldslist.Size = new System.Drawing.Size(891, 395);
             this.fieldslist.TabIndex = 1;
             this.fieldslist.TypeColumnVisible = true;
             this.fieldslist.TypeColumnWidth = 100;
@@ -707,7 +745,7 @@
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(533, 442);
+            this.cancel.Location = new System.Drawing.Point(813, 473);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(112, 25);
             this.cancel.TabIndex = 2;
@@ -718,7 +756,7 @@
             // apply
             // 
             this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.apply.Location = new System.Drawing.Point(415, 442);
+            this.apply.Location = new System.Drawing.Point(695, 473);
             this.apply.Name = "apply";
             this.apply.Size = new System.Drawing.Size(112, 25);
             this.apply.TabIndex = 1;
@@ -730,7 +768,7 @@
             // 
             this.hint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.hint.Image = global::CodeImp.DoomBuilder.Properties.Resources.Lightbulb;
-            this.hint.Location = new System.Drawing.Point(10, 446);
+            this.hint.Location = new System.Drawing.Point(10, 477);
             this.hint.Name = "hint";
             this.hint.Size = new System.Drawing.Size(16, 16);
             this.hint.TabIndex = 3;
@@ -740,7 +778,7 @@
             // 
             this.hintlabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.hintlabel.AutoSize = true;
-            this.hintlabel.Location = new System.Drawing.Point(24, 447);
+            this.hintlabel.Location = new System.Drawing.Point(24, 478);
             this.hintlabel.Name = "hintlabel";
             this.hintlabel.Size = new System.Drawing.Size(365, 13);
             this.hintlabel.TabIndex = 4;
@@ -753,13 +791,23 @@
             this.tooltip.InitialDelay = 10;
             this.tooltip.ReshowDelay = 100;
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.thingargscontrol);
+            this.groupBox5.Location = new System.Drawing.Point(242, 120);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(565, 194);
+            this.groupBox5.TabIndex = 38;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Behaviors";
+            // 
             // ThingEditFormSRB2
             // 
             this.AcceptButton = this.apply;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(655, 470);
+            this.ClientSize = new System.Drawing.Size(935, 501);
             this.Controls.Add(this.hint);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.apply);
@@ -782,6 +830,7 @@
             this.groupBox2.PerformLayout();
             this.tabs.ResumeLayout(false);
             this.tabproperties.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
             this.settingsgroup.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.missingflags)).EndInit();
             this.grouproll.ResumeLayout(false);
@@ -790,7 +839,6 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.tabeffects.ResumeLayout(false);
-            this.grouprendering.ResumeLayout(false);
             this.actiongroup.ResumeLayout(false);
             this.actiongroup.PerformLayout();
             this.grouptag.ResumeLayout(false);
@@ -798,6 +846,7 @@
             this.tabcustom.ResumeLayout(false);
             this.tabcustom.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.hint)).EndInit();
+            this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -835,7 +884,6 @@
         private System.Windows.Forms.Label labelroll;
         private Controls.ButtonsNumericTextbox pitch;
         private System.Windows.Forms.Label labelpitch;
-        private System.Windows.Forms.GroupBox grouprendering;
         private System.Windows.Forms.GroupBox settingsgroup;
         private Controls.CheckboxArrayControl flags;
         private System.Windows.Forms.GroupBox grouproll;
@@ -843,10 +891,8 @@
         private System.Windows.Forms.GroupBox grouppitch;
         private CodeImp.DoomBuilder.Controls.AngleControlEx pitchControl;
         private System.Windows.Forms.GroupBox groupangle;
-        private CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox scale;
 		private System.Windows.Forms.PictureBox missingflags;
 		private System.Windows.Forms.ToolTip tooltip;
-		private System.Windows.Forms.Label labelScale;
 		private System.Windows.Forms.CheckBox cbrandomangle;
 		private System.Windows.Forms.CheckBox cbrandomroll;
 		private System.Windows.Forms.CheckBox cbrandompitch;
@@ -856,7 +902,14 @@
 		private CodeImp.DoomBuilder.Controls.ActionSelectorControl action;
 		private System.Windows.Forms.Button browseaction;
 		private CodeImp.DoomBuilder.Controls.ActionSpecialHelpButton actionhelp;
-		private CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2 argscontrol;
+		private CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2 scriptargscontrol;
 		private System.Windows.Forms.CheckBox hidefixedfields;
-	}
+        private CodeImp.DoomBuilder.Controls.ArgumentsControlSRB2Thing thingargscontrol;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label1;
+        private Controls.ButtonsNumericTextbox mobj_scale;
+        private System.Windows.Forms.Label labelScale;
+        private Controls.PairedFloatControl sprite_scale;
+        private System.Windows.Forms.GroupBox groupBox5;
+    }
 }

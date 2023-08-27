@@ -23,6 +23,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -35,7 +36,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -180,6 +180,12 @@
     <Compile Include="Controls\ArgumentBox.Designer.cs">
       <DependentUpon>ArgumentBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ArgumentsControlSRB2Thing.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ArgumentsControlSRB2Thing.Designer.cs">
+      <DependentUpon>ArgumentsControlSRB2Thing.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ArgumentsControlSRB2.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -197,6 +203,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\Scripting\TextEditorControl.cs" />
+    <Compile Include="Controls\ThingInfoPanelRR.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ThingInfoPanelRR.Designer.cs">
+      <DependentUpon>ThingInfoPanelRR.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TransparentTrackBar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -690,6 +702,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\ArgumentsControlSRB2Thing.resx">
+      <DependentUpon>ArgumentsControlSRB2Thing.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ArgumentsControlSRB2.resx">
       <DependentUpon>ArgumentsControlSRB2.cs</DependentUpon>
     </EmbeddedResource>
@@ -698,6 +713,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PairedFloatControl.resx">
       <DependentUpon>PairedFloatControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ThingInfoPanelRR.resx">
+      <DependentUpon>ThingInfoPanelRR.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\LinedefEditFormSRB2.resx">
       <DependentUpon>LinedefEditFormSRB2.cs</DependentUpon>

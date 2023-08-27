@@ -61,8 +61,10 @@ namespace CodeImp.DoomBuilder.Windows
 			public readonly int AngleDoom;
 			public readonly int Pitch;
 			public readonly int Roll;
-			public readonly double Scale;
-			public readonly double Alpha;
+            public readonly double ScaleX;
+            public readonly double ScaleY;
+            public readonly double MobjScale;
+            public readonly double Alpha;
 			public readonly double X;
 			public readonly double Y;
 			public readonly double Z;
@@ -77,8 +79,10 @@ namespace CodeImp.DoomBuilder.Windows
 				AngleDoom = t.AngleDoom;
 				Pitch = t.Pitch;
 				Roll = t.Roll;
-				Scale = UniFields.GetFloat(t.Fields, "scale", 1.0f);
-				Alpha = UniFields.GetFloat(t.Fields, "alpha", 1.0f);
+                ScaleX = t.ScaleX;
+                ScaleY = t.ScaleY;
+                MobjScale = t.MobjScale;
+                Alpha = UniFields.GetFloat(t.Fields, "alpha", 1.0f);
 				Flags = t.GetFlags();
 			}
 		}
@@ -136,8 +140,11 @@ namespace CodeImp.DoomBuilder.Windows
 			//mxd. Use doom angle clamping?
 			anglecontrol.DoomAngleClamping = General.Map.Config.DoomThingRotationAngles;
 
-			// Setup types list
-			thingtype.Setup();
+            // Value linking
+            sprite_scale.LinkValues = General.Settings.ReadSetting("windows." + configname + ".linkscale", false);
+
+            // Setup types list
+            thingtype.Setup();
 		}
 
 		#endregion
@@ -150,7 +157,8 @@ namespace CodeImp.DoomBuilder.Windows
 			preventchanges = true;
 			oldmapischanged = General.Map.IsChanged;
             undocreated = false;
-            argscontrol.Reset();
+            thingargscontrol.Reset();
+            scriptargscontrol.Reset();
 
             // Keep this list
             this.things = things;
@@ -203,7 +211,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// Custom fields
 			fieldslist.SetValues(ft.Fields, true);
 			commenteditor.SetValues(ft.Fields, true);
-			scale.Text = ft.Fields.GetValue("scale", 1.0).ToString();
+            mobj_scale.Text = ft.MobjScale.ToString();
+            sprite_scale.SetValues(ft.ScaleX, ft.ScaleY, true);
 			pitch.Text = ft.Pitch.ToString();
 			roll.Text = ft.Roll.ToString();
 
@@ -214,9 +223,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// Action
 			action.Value = ft.Action;
 
-			//mxd. Args
-			argscontrol.UpdateThingType(thinginfo);
-			argscontrol.SetValue(ft, true);
+            //mxd. Args
+            thingargscontrol.UpdateThingType(thinginfo);
+            thingargscontrol.SetValue(ft, true);
+			scriptargscontrol.SetValue(ft, true);
 
 			////////////////////////////////////////////////////////////////////////
 			// Now go for all lines and change the options when a setting is different
@@ -271,11 +281,12 @@ namespace CodeImp.DoomBuilder.Windows
 				// Action
 				if(t.Action != action.Value) action.Empty = true;
 
-				//mxd. Arguments
-				argscontrol.SetValue(t, false);
+                //mxd. Arguments
+                thingargscontrol.SetValue(t, false);
+                scriptargscontrol.SetValue(t, false);
 
-				//mxd. User vars. Should be done before adding regular fields
-				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
+                //mxd. User vars. Should be done before adding regular fields
+                ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
 				if (ti != null && ti.Actor != null)
 				{
 					Dictionary<string, UniversalType> uservars = ti.Actor.GetAllUserVars();
@@ -288,10 +299,10 @@ namespace CodeImp.DoomBuilder.Windows
 				//mxd. Custom fields
 				fieldslist.SetValues(t.Fields, false);
 				commenteditor.SetValues(t.Fields, false); //mxd. Comments
-				if (!string.IsNullOrEmpty(scale.Text))
-					UniFields.SetFloat(t.Fields, "scale", scale.GetResultFloat(t.Fields.GetValue("scale", 1.0)), 1.0);
+                if (t.MobjScale.ToString() != mobj_scale.Text) mobj_scale.Text = "";
+                sprite_scale.SetValues(t.ScaleX, t.ScaleY, false);
 
-				if(t.Pitch.ToString() != pitch.Text) pitch.Text = "";
+                if (t.Pitch.ToString() != pitch.Text) pitch.Text = "";
 				if(t.Roll.ToString() != roll.Text) roll.Text = "";
 
 				//mxd. Store initial properties
@@ -308,7 +319,7 @@ namespace CodeImp.DoomBuilder.Windows
 			flags_OnValueChanged(flags, EventArgs.Empty);
 			preventmapchange = false;
 
-			argscontrol.UpdateScriptControls(); //mxd
+            scriptargscontrol.UpdateScriptControls(); //mxd
 			actionhelp.UpdateAction(action.GetValue()); //mxd
 			commenteditor.FinishSetup(); //mxd
 			UpdateFlagNames(); //mxd
@@ -389,14 +400,14 @@ namespace CodeImp.DoomBuilder.Windows
 			if(General.Map.Config.LinedefActions.ContainsKey(action.Value)) showaction = action.Value;
 
 			//mxd. Change the argument descriptions
-			argscontrol.UpdateAction(showaction, preventchanges, (action.Empty ? null : thinginfo));
+			scriptargscontrol.UpdateAction(showaction, preventchanges);
 
 			if(!preventchanges) 
 			{
 				MakeUndo(); //mxd
 
 				//mxd. Update what must be updated
-				argscontrol.UpdateScriptControls();
+				scriptargscontrol.UpdateScriptControls();
 				actionhelp.UpdateAction(showaction);
 			}
 		}
@@ -511,11 +522,12 @@ namespace CodeImp.DoomBuilder.Windows
 				// Action
 				if(!action.Empty) t.Action = action.Value;
 
-				//mxd. Apply args
-				argscontrol.Apply(t, offset);
+                //mxd. Apply args
+                thingargscontrol.Apply(t, offset);
+                scriptargscontrol.Apply(t, offset);
 
-				//mxd. Custom fields
-				fieldslist.Apply(t.Fields);
+                //mxd. Custom fields
+                fieldslist.Apply(t.Fields);
 
 				//mxd. User vars. Should be called after fieldslist.Apply()
 				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
@@ -625,7 +637,8 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			// Save settings
 			General.Settings.WriteSetting("windows." + configname + ".activetab", tabs.SelectedIndex);
-			General.Settings.WriteSetting("windows." + configname + ".useabsoluteheight", useabsoluteheight);
+            General.Settings.WriteSetting("windows." + configname + ".linkscale", sprite_scale.LinkValues);
+            General.Settings.WriteSetting("windows." + configname + ".useabsoluteheight", useabsoluteheight);
 			General.Settings.WriteSetting("windows." + configname + ".customfieldsshowfixed", !hidefixedfields.Checked);
 		}
 
@@ -705,27 +718,26 @@ namespace CodeImp.DoomBuilder.Windows
 			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
 		}
 
-		private void scale_WhenTextChanged(object sender, EventArgs e) 
-		{
-			if(preventchanges) return;
-			MakeUndo(); //mxd
-			int i = 0;
+        private void scale_OnValuesChanged(object sender, EventArgs e)
+        {
+            if (preventchanges) return;
+            MakeUndo(); //mxd
+            int i = 0;
 
-			foreach (Thing t in things)
-			{
-				double s = scale.GetResultFloat(thingprops[i].Scale);
-				if (s == 0) s = 1.0f;
-				UniFields.SetFloat(t.Fields, "scale", s);
-				t.SetScale(s, s);
-				i++;
-			}
+            foreach (Thing t in things)
+            {
+                double sx = sprite_scale.GetValue1(thingprops[i].ScaleX);
+                double sy = sprite_scale.GetValue2(thingprops[i].ScaleY);
+                t.SetScale((sx == 0 ? 1.0f : sx), (sy == 0 ? 1.0f : sy));
+                i++;
+            }
 
-			General.Map.IsChanged = true;
-			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
-		}
+            General.Map.IsChanged = true;
+            if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+        }
 
-		// Selected type changes
-		private void thingtype_OnTypeChanged(ThingTypeInfo value) 
+        // Selected type changes
+        private void thingtype_OnTypeChanged(ThingTypeInfo value) 
 		{
 			thinginfo = value;
 
@@ -751,7 +763,7 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			UpdateFlagNames(); //mxd
-			argscontrol.UpdateThingType(thinginfo);
+            thingargscontrol.UpdateThingType(thinginfo);
 
 			General.Map.IsChanged = true;
 			if(OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
@@ -904,17 +916,26 @@ namespace CodeImp.DoomBuilder.Windows
 			grouproll.Enabled = !cbrandomroll.Checked;
 		}
 
-		private void hidefixedfields_CheckedChanged(object sender, EventArgs e)
+        private void mobjscale_WhenTextChanged(object sender, EventArgs e)
+        {
+            if (preventchanges) return;
+            MakeUndo(); //mxd
+
+            foreach (Thing t in things)
+            {
+                double value = mobj_scale.GetResultFloat(t.MobjScale);
+                t.SetMobjScale((value == 0 ? 1.0f : value));
+            }
+
+            General.Map.IsChanged = true;
+            if (OnValuesChanged != null) OnValuesChanged(this, EventArgs.Empty);
+        }
+
+        private void hidefixedfields_CheckedChanged(object sender, EventArgs e)
 		{
 			fieldslist.ShowFixedFields = !hidefixedfields.Checked;
 		}
 
 		#endregion
-
-		private void argscontrol_Load(object sender, EventArgs e)
-		{
-
-		}
-
-	}
+    }
 }

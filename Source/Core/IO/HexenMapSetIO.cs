@@ -59,7 +59,8 @@ namespace CodeImp.DoomBuilder.IO
 		public override bool HasCustomFields { get { return false; } }
 		public override bool HasThingHeight { get { return true; } }
 		public override bool HasActionArgs { get { return true; } }
-		public override bool HasMixedActivations { get { return false; } }
+        public override bool HasThingArgs { get { return false; } }
+        public override bool HasMixedActivations { get { return false; } }
 		public override bool HasPresetActivations { get { return true; } }
 		public override bool HasBuiltInActivations { get { return false; } }
 		public override bool HasNumericLinedefFlags { get { return true; } }
@@ -162,7 +163,7 @@ namespace CodeImp.DoomBuilder.IO
 				
 				// Create new item
 				Thing t = map.CreateThing();
-				t.Update(type, x, y, z, angle, 0, 0, 1.0f, 1.0f, stringflags, tag, action, args);
+				t.Update(type, x, y, z, angle, 0, 0, 1.0f, 1.0f, 1.0f, stringflags, tag, action, args, args);
 			}
 
 			// Done

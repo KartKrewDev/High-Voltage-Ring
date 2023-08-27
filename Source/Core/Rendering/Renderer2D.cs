@@ -1342,7 +1342,8 @@ namespace CodeImp.DoomBuilder.Rendering
 								continue;
 
 							bool forcespriterendering;
-							float spritewidth, spriteheight, spritescale;
+							float realwidth, realheight;
+                            float spritewidth, spriteheight, spritescale;
 
 							// Determine sizes
 							if(t.FixedSize && scale > 1.0f)
@@ -1361,16 +1362,19 @@ namespace CodeImp.DoomBuilder.Rendering
 								forcespriterendering = false;
 							}
 
-							// Calculate scaled sprite size
-							if(sprite.Width > sprite.Height)
+                            realwidth = (float)sprite.Width * (float)t.ScaleX;
+                            realheight = (float)sprite.Height * (float)t.ScaleY;
+
+                            // Calculate scaled sprite size
+                            if (realwidth > realheight)
 							{
 								spritewidth = (t.Size - THING_SPRITE_SHRINK) * spritescale;
-								spriteheight = spritewidth * ((float)sprite.Height / sprite.Width);
+								spriteheight = spritewidth * (realheight / realwidth);
 							}
-							else if(sprite.Width < sprite.Height)
+							else if(realwidth < realheight)
 							{
 								spriteheight = (t.Size - THING_SPRITE_SHRINK) * spritescale;
-								spritewidth = spriteheight * ((float)sprite.Width / sprite.Height);
+								spritewidth = spriteheight * (realwidth / realheight);
 							}
 							else
 							{
@@ -1486,7 +1490,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						{
 							if((General.Settings.GZDrawModelsMode == ModelRenderMode.SELECTION && !t.Selected) || (General.Settings.GZDrawModelsMode == ModelRenderMode.ACTIVE_THINGS_FILTER && alpha < 1.0f)) continue;
 							Vector2D screenpos = ((Vector2D)t.Position).GetTransformed(translatex, translatey, scale, -scale);
-							double modelScale = scale * t.ActorScale.Width * t.ScaleX;
+							double modelScale = scale * t.ActorScale.Width * t.ScaleX * t.MobjScale;
 
 							//should we render this model?
 							if(((screenpos.x + mde.Model.Radius * modelScale) <= 0.0f) || ((screenpos.x - mde.Model.Radius * modelScale) >= windowsize.Width) ||
@@ -1496,8 +1500,8 @@ namespace CodeImp.DoomBuilder.Rendering
 							graphics.SetUniform(UniformName.FillColor, (t.Selected ? cSelection : cWire));
 
 							// Set transform settings
-							double sx = t.ScaleX * t.ActorScale.Width;
-							double sy = t.ScaleY * t.ActorScale.Height;
+							double sx = t.ScaleX * t.ActorScale.Width * t.MobjScale;
+							double sy = t.ScaleY * t.ActorScale.Height * t.MobjScale;
 							
 							Matrix modelscale = Matrix.Scaling((float)sx, (float)sx, (float)sy);
 							Matrix rotation = Matrix.RotationY((float)-t.RollRad) * Matrix.RotationX((float)-t.PitchRad) * Matrix.RotationZ((float)t.Angle);

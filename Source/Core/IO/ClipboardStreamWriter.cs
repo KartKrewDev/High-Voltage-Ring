@@ -255,11 +255,13 @@ namespace CodeImp.DoomBuilder.IO
 				writer.Write(t.Roll); //mxd
 				writer.Write(t.ScaleX); //mxd
 				writer.Write(t.ScaleY); //mxd
-				writer.Write(t.Type);
+                writer.Write(t.MobjScale);
+                writer.Write(t.Type);
 				writer.Write(t.Action);
 				for(int i = 0; i < t.Args.Length; i++) writer.Write(t.Args[i]);
+                for(int i = 0; i < t.ThingArgs.Length; i++) writer.Write(t.ThingArgs[i]);
 
-				AddFlags(t.Flags, writer);
+                AddFlags(t.Flags, writer);
 				AddCustomFields(t.Fields, "thing", writer);
 			}
 		}

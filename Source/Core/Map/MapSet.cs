@@ -3927,9 +3927,9 @@ namespace CodeImp.DoomBuilder.Map
 						{
 							if(info.Args[i].Used && CheckIsTagType(info.Args[i].Type))
 							{
-								int tag = t.Args[i];
+								int tag = t.ThingArgs[i];
 								handler(t, true, (UniversalType)(info.Args[i].Type), ref tag, obj);
-								if(tag != t.Args[i]) t.Args[i] = tag;
+								if(tag != t.ThingArgs[i]) t.ThingArgs[i] = tag;
 							}
 						}
 					}

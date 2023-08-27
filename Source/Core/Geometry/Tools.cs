@@ -2088,7 +2088,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				{
 					t.Action = 0;
 					for(int i = 0; i < t.Args.Length; i++) t.Args[i] = 0;
-				}
+                }
 			}
 			
 			// Remove actions from linedefs

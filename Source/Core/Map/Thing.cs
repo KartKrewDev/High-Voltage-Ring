@@ -66,9 +66,11 @@ namespace CodeImp.DoomBuilder.Map
 		private int tag;
 		private int action;
 		private int[] args;
-		private double scaleX; //mxd
+        private int[] thingargs;
+        private double scaleX; //mxd
 		private double scaleY; //mxd
 		private SizeF spritescale; //mxd
+		private double mobjscale;
 		private int pitch; //mxd. Used in model rendering
 		private int roll; //mxd. Used in model rendering
 		private double pitchrad; //mxd
@@ -103,7 +105,8 @@ namespace CodeImp.DoomBuilder.Map
 		public Vector3D Position { get { return pos; } }
 		public double ScaleX { get { return scaleX; } } //mxd. This is UDMF property, not actual scale!
 		public double ScaleY { get { return scaleY; } } //mxd. This is UDMF property, not actual scale!
-		public int Pitch { get { return pitch; } } //mxd
+        public double MobjScale { get { return mobjscale; } } //mxd. Actor scale set in DECORATE
+        public int Pitch { get { return pitch; } } //mxd
 		public double PitchRad { get { return pitchrad; } }
 		public int Roll { get { return roll; } } //mxd
 		public double RollRad { get { return rollrad; } }
@@ -113,9 +116,10 @@ namespace CodeImp.DoomBuilder.Map
 		internal Dictionary<string, bool> Flags { get { return flags; } }
 		public int Action { get { return action; } set { BeforePropsChange(); action = value; } }
 		public int[] Args { get { return args; } }
-		public float Size { get { return size * (float)scaleX / (float)(1 << General.Settings.ThingScale); } }
+        public int[] ThingArgs { get { return (General.Map.FormatInterface.HasThingArgs ? thingargs : args); } }
+        public float Size { get { return size * (float)mobjscale / (float)(1 << General.Settings.ThingScale); } }
 		public float RenderSize { get { return rendersize; } }
-		public float Height { get { return height * (float)scaleY / (float)(1 << General.Settings.ThingScale); } } //mxd
+		public float Height { get { return height * (float)mobjscale / (float)(1 << General.Settings.ThingScale); } } //mxd
 		public PixelColor Color { get { return color; } }
 		public bool FixedSize { get { return fixedsize; } }
 		public int Tag { get { return tag; } set { BeforePropsChange(); tag = value; if((tag < General.Map.FormatInterface.MinTag) || (tag > General.Map.FormatInterface.MaxTag)) throw new ArgumentOutOfRangeException("Tag", "Invalid tag number"); } }
@@ -138,9 +142,11 @@ namespace CodeImp.DoomBuilder.Map
 			this.listindex = listindex;
 			this.flags = new Dictionary<string, bool>(StringComparer.Ordinal);
 			this.args = new int[NUM_ARGS];
-			this.scaleX = 1.0f;
+            this.thingargs = new int[NUM_ARGS];
+            this.scaleX = 1.0f;
 			this.scaleY = 1.0f;
-			this.spritescale = new SizeF(1.0f, 1.0f);
+            this.mobjscale = 1.0f;
+            this.spritescale = new SizeF(1.0f, 1.0f);
 			this.recordundo = recordundo;
 			
 			if(map == General.Map.Map && recordundo)
@@ -222,8 +228,9 @@ namespace CodeImp.DoomBuilder.Map
 			s.rwInt(ref tag);
 			s.rwInt(ref action);
 			for(int i = 0; i < args.Length; i++) s.rwInt(ref args[i]);
+            for(int i = 0; i < thingargs.Length; i++) s.rwInt(ref thingargs[i]);
 
-			if(!s.IsWriting) 
+            if (!s.IsWriting) 
 			{
 				anglerad = Angle2D.DoomToReal(angledoom);
 				UpdateCache(); //mxd
@@ -246,13 +253,15 @@ namespace CodeImp.DoomBuilder.Map
 			t.pitchrad = pitchrad; //mxd
 			t.scaleX = scaleX; //mxd
 			t.scaleY = scaleY; //mxd
+			t.mobjscale = mobjscale;
 			t.spritescale = spritescale; //mxd
 			t.pos = pos;
 			t.flags = new Dictionary<string,bool>(flags);
 			t.tag = tag;
 			t.action = action;
 			t.args = (int[])args.Clone();
-			t.size = size;
+            t.thingargs = (int[])thingargs.Clone();
+            t.size = size;
 			t.rendersize = rendersize;
 			t.height = height; //mxd
 			t.color = color;
@@ -541,11 +550,21 @@ namespace CodeImp.DoomBuilder.Map
 			if(type != General.Map.Config.Start3DModeThingType)
 				General.Map.IsChanged = true;
 		}
-		
-		// This updates all properties
-		// NOTE: This does not update sector! (call DetermineSector)
-		public void Update(int type, double x, double y, double zoffset, int angle, int pitch, int roll, double scaleX, double scaleY,
-						   Dictionary<string, bool> flags, int tag, int action, int[] args)
+
+        public void SetMobjScale(double newscale)
+        {
+            BeforePropsChange();
+
+			mobjscale = newscale;
+
+            if (type != General.Map.Config.Start3DModeThingType)
+                General.Map.IsChanged = true;
+        }
+
+        // This updates all properties
+        // NOTE: This does not update sector! (call DetermineSector)
+        public void Update(int type, double x, double y, double zoffset, int angle, int pitch, int roll, double scaleX, double scaleY,
+						   double mobjScale, Dictionary<string, bool> flags, int tag, int action, int[] args, int[] thingargs)
 		{
 			// Apply changes
 			this.type = type;
@@ -555,12 +574,15 @@ namespace CodeImp.DoomBuilder.Map
 			this.roll = roll; //mxd
 			this.scaleX = (scaleX == 0 ? 1.0f : scaleX); //mxd
 			this.scaleY = (scaleY == 0 ? 1.0f : scaleY); //mxd
-			this.flags = new Dictionary<string, bool>(flags);
+            this.mobjscale = (mobjScale == 0 ? 1.0f : mobjScale);
+            this.flags = new Dictionary<string, bool>(flags);
 			this.tag = tag;
 			this.action = action;
 			this.args = new int[NUM_ARGS];
-			args.CopyTo(this.args, 0);
-			this.Move(x, y, zoffset);
+            args.CopyTo(this.args, 0);
+            this.thingargs = new int[NUM_ARGS];
+            thingargs.CopyTo(this.thingargs, 0);
+            this.Move(x, y, zoffset);
 
 			UpdateCache(); //mxd
 		}
@@ -586,10 +608,10 @@ namespace CodeImp.DoomBuilder.Map
 			for(int i = 0; i < ti.Args.Length; i++)
 			{
 				if(ti.Args[i] == null) continue;
-				if(ti.Args[i].Type == (int)UniversalType.ThingRadius && args[i] > 0)
-					size = args[i];
-				else if(ti.Args[i].Type == (int)UniversalType.ThingHeight && args[i] > 0)
-					height = args[i];
+				if(ti.Args[i].Type == (int)UniversalType.ThingRadius && thingargs[i] > 0)
+					size = thingargs[i];
+				else if(ti.Args[i].Type == (int)UniversalType.ThingHeight && thingargs[i] > 0)
+					height = thingargs[i];
 			}
 			
 			// Color valid?

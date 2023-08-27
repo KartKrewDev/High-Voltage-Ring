@@ -40,7 +40,8 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 			public int Roll;
 			public double ScaleX;
 			public double ScaleY;
-			public int SectorHeight;
+            public double MobjScale;
+            public int SectorHeight;
 			public int ZOffset;
 			public int SafeDistance;
 			public int OffsetAngle; //position jitter angle, not Thing angle!
@@ -124,6 +125,7 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 				d.Roll = t.Roll;
 				d.ScaleX = t.ScaleX;
 				d.ScaleY = t.ScaleY;
+				d.MobjScale = t.MobjScale;
 
 				if(General.Map.FormatInterface.HasThingHeight) 
 				{

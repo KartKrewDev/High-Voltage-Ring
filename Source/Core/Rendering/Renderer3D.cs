@@ -1588,8 +1588,8 @@ namespace CodeImp.DoomBuilder.Rendering
                 graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((t == highlighted) && showhighlight, (t.Selected && showselection)));
 
 				// Create the matrix for positioning / rotation
-				double sx = t.Thing.ScaleX * t.Thing.ActorScale.Width;
-				double sy = t.Thing.ScaleY * t.Thing.ActorScale.Height;
+				double sx = t.Thing.ScaleX * t.Thing.ActorScale.Width * t.Thing.MobjScale;
+				double sy = t.Thing.ScaleY * t.Thing.ActorScale.Height * t.Thing.MobjScale;
                 
 				Matrix modelscale = Matrix.Scaling((float)sx, (float)sx, (float)sy);
 				Matrix modelrotation = Matrix.RotationY((float)-t.Thing.RollRad) * Matrix.RotationX((float)-t.Thing.PitchRad) * Matrix.RotationZ((float)t.Thing.Angle);

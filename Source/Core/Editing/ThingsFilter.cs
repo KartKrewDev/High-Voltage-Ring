@@ -67,8 +67,9 @@ namespace CodeImp.DoomBuilder.Editing
 		
 		// Filter by action/tag
 		protected int thingaction;		// -1 indicates not used
-		protected int[] thingargs;		// -1 indicates not used
-		protected int thingtag;			// -1 indicates not used
+		protected int[] thingargs;      // -1 indicates not used
+        protected int[] thingscriptargs;      // -1 indicates not used
+        protected int thingtag;			// -1 indicates not used
 		
 		// Filter by custom fields
 		protected UniFields customfields;
@@ -94,7 +95,8 @@ namespace CodeImp.DoomBuilder.Editing
 		internal int ThingZHeight { get { return thingzheight; } set { thingzheight = value; } }
 		internal int ThingAction { get { return thingaction; } set { thingaction = value; } }
 		internal int[] ThingArgs { get { return thingargs; } set { Array.Copy(value, thingargs, thingargs.Length); } }
-		internal int ThingTag { get { return thingtag; } set { thingtag = value; } }
+        internal int[] ThingScriptArgs { get { return thingscriptargs; } set { Array.Copy(value, thingscriptargs, thingscriptargs.Length); } }
+        internal int ThingTag { get { return thingtag; } set { thingtag = value; } }
 		internal UniFields ThingCustomFields { get { return customfields; } set { customfields = new UniFields(value); } }
 		internal ICollection<string> RequiredFields { get { return requiredfields; } }
 		internal ICollection<string> ForbiddenFields { get { return forbiddenfields; } }
@@ -120,8 +122,10 @@ namespace CodeImp.DoomBuilder.Editing
 			thingangle = f.thingangle;
 			thingaction = f.thingaction;
 			thingargs = new int[Thing.NUM_ARGS];
-			Array.Copy(f.thingargs, thingargs, thingargs.Length);
-			thingtag = f.thingtag;
+            Array.Copy(f.thingargs, thingargs, thingargs.Length);
+            thingscriptargs = new int[Thing.NUM_ARGS];
+            Array.Copy(f.thingscriptargs, thingscriptargs, thingscriptargs.Length);
+            thingtag = f.thingtag;
 			customfields = new UniFields(f.customfields);
 			requiredfields = new List<string>(f.requiredfields);
 			forbiddenfields = new List<string>(f.forbiddenfields);
@@ -139,7 +143,8 @@ namespace CodeImp.DoomBuilder.Editing
 			requiredfields = new List<string>();
 			forbiddenfields = new List<string>();
 			thingargs = new int[Thing.NUM_ARGS];
-			customfields = new UniFields();
+            thingscriptargs = new int[Thing.NUM_ARGS];
+            customfields = new UniFields();
 			
 			// Read settings from config
 			name = cfg.ReadSetting(path + ".name", DEFAULT_NAME);
@@ -150,9 +155,11 @@ namespace CodeImp.DoomBuilder.Editing
 			thingangle = cfg.ReadSetting(path + ".angle", -1);
 			thingzheight = cfg.ReadSetting(path + ".zheight", int.MinValue);
 			thingaction = cfg.ReadSetting(path + ".action", -1);
-			for(int i = 0; i < thingargs.Length; i++)
-				thingargs[i] = cfg.ReadSetting(path + ".arg" + i.ToString(CultureInfo.InvariantCulture), -1);
-			thingtag = cfg.ReadSetting(path + ".tag", -1);
+			for (int i = 0; i < thingargs.Length; i++)
+				thingargs[i] = cfg.ReadSetting(path + ".thingarg" + i.ToString(CultureInfo.InvariantCulture), -1);
+            for (int i = 0; i < thingscriptargs.Length; i++)
+                thingscriptargs[i] = cfg.ReadSetting(path + ".arg" + i.ToString(CultureInfo.InvariantCulture), -1);
+            thingtag = cfg.ReadSetting(path + ".tag", -1);
 			
 			// Read flags
 			// key is string, value must be boolean which indicates if
@@ -195,7 +202,9 @@ namespace CodeImp.DoomBuilder.Editing
 			thingaction = -1;
 			thingargs = new int[Thing.NUM_ARGS];
 			for(int i = 0 ; i < thingargs.Length; i++) thingargs[i] = -1;
-			thingtag = -1;
+            thingscriptargs = new int[Thing.NUM_ARGS];
+            for (int i = 0; i < thingscriptargs.Length; i++) thingscriptargs[i] = -1;
+            thingtag = -1;
 			name = DEFAULT_NAME;
 			
 			// We have no destructor
@@ -231,11 +240,15 @@ namespace CodeImp.DoomBuilder.Editing
 				if(!General.Map.FormatInterface.HasThingHeight) thingzheight = int.MinValue;
 				if(!General.Map.FormatInterface.HasThingAction) thingaction = -1;
 				if(!General.Map.FormatInterface.HasThingTag) thingtag = -1;
-				if(!General.Map.FormatInterface.HasActionArgs)
+                if (!General.Map.FormatInterface.HasThingArgs)
+                {
+                    for (int i = 0; i < thingargs.Length; i++) thingargs[i] = -1;
+                }
+                if (!General.Map.FormatInterface.HasActionArgs)
 				{
-					for(int i = 0; i < thingargs.Length; i++) thingargs[i] = -1;
+					for(int i = 0; i < thingscriptargs.Length; i++) thingscriptargs[i] = -1;
 				}
-				if(!General.Map.FormatInterface.HasCustomFields) customfields.Clear();
+                if (!General.Map.FormatInterface.HasCustomFields) customfields.Clear();
 			}
 		}
 
@@ -310,8 +323,10 @@ namespace CodeImp.DoomBuilder.Editing
 			cfg.WriteSetting(path + ".zheight", thingzheight);
 			cfg.WriteSetting(path + ".action", thingaction);
 			for(int i = 0; i < thingargs.Length; i++)
-				cfg.WriteSetting(path + ".arg" + i.ToString(CultureInfo.InvariantCulture), thingargs[i]);
-			cfg.WriteSetting(path + ".tag", thingtag);
+				cfg.WriteSetting(path + ".thingarg" + i.ToString(CultureInfo.InvariantCulture), thingargs[i]);
+            for (int i = 0; i < thingscriptargs.Length; i++)
+                cfg.WriteSetting(path + ".arg" + i.ToString(CultureInfo.InvariantCulture), thingscriptargs[i]);
+            cfg.WriteSetting(path + ".tag", thingtag);
 			
 			// Write required fields to config
 			foreach(string s in requiredfields)
@@ -370,10 +385,12 @@ namespace CodeImp.DoomBuilder.Editing
 				qualifies &= (thingaction == -1) || (t.Action == thingaction);
 				qualifies &= (thingtag == -1) || (t.Tag == thingtag);
 				for(int i = 0; i < thingargs.Length; i++)
-					qualifies &= (thingargs[i] == -1) || (t.Args[i] == thingargs[i]);
-				
-				// Still qualifies?
-				if(qualifies)
+					qualifies &= (thingargs[i] == -1) || (t.ThingArgs[i] == thingargs[i]);
+                for (int i = 0; i < thingscriptargs.Length; i++)
+                    qualifies &= (thingscriptargs[i] == -1) || (t.Args[i] == thingscriptargs[i]);
+
+                // Still qualifies?
+                if (qualifies)
 				{
 					// Check thing category
 					if(ti.Category == null)

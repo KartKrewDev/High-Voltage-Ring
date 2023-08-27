@@ -198,7 +198,7 @@ namespace CodeImp.DoomBuilder.Windows
 			//mxd. Set DPI-aware icon size
 			DPIScaler = new SizeF(graphics.DpiX / 96, graphics.DpiY / 96);
 
-			if(DPIScaler.Width != 1.0f || DPIScaler.Height != 1.0f)
+            if (DPIScaler.Width != 1.0f || DPIScaler.Height != 1.0f)
 			{
 				ScaledIconSize.Width = (int)Math.Round(ScaledIconSize.Width * DPIScaler.Width);
 				ScaledIconSize.Height = (int)Math.Round(ScaledIconSize.Height * DPIScaler.Height);
@@ -207,8 +207,12 @@ namespace CodeImp.DoomBuilder.Windows
 			// Setup controls
 			InitializeComponent();
 
-			//mxd. Resize status labels
-			if(DPIScaler.Width != 1.0f)
+            thingfilters.Size = new System.Drawing.Size((int)(120 * DPIScaler.Width), (int)(22 * DPIScaler.Height));
+            linedefcolorpresets.Size = new System.Drawing.Size((int)(120 * DPIScaler.Width), (int)(22 * DPIScaler.Height));
+            configlabel.Size = new System.Drawing.Size((int)(280 * DPIScaler.Width), (int)(18 * DPIScaler.Height));
+
+            //mxd. Resize status labels
+            if (DPIScaler.Width != 1.0f)
 			{
 				gridlabel.Width = (int)Math.Round(gridlabel.Width * DPIScaler.Width);
 				zoomlabel.Width = (int)Math.Round(zoomlabel.Width * DPIScaler.Width);
@@ -3773,7 +3777,8 @@ namespace CodeImp.DoomBuilder.Windows
 				if(vertexinfo.Visible) vertexinfo.Hide();
 				if(sectorinfo.Visible) sectorinfo.Hide();
 				if(thinginfo.Visible) thinginfo.Hide();
-				modename.Visible = false;
+                if (thinginfo_rr.Visible) thinginfo_rr.Hide();
+                modename.Visible = false;
 #if DEBUG
 				console.Visible = false; //mxd
 #endif
@@ -3829,7 +3834,8 @@ namespace CodeImp.DoomBuilder.Windows
 			if(vertexinfo.Visible) vertexinfo.Hide();
 			if(sectorinfo.Visible) sectorinfo.Hide();
 			if(thinginfo.Visible) thinginfo.Hide();
-			labelcollapsedinfo.Text = modename.Text;
+            if (thinginfo_rr.Visible) thinginfo_rr.Hide();
+            labelcollapsedinfo.Text = modename.Text;
 			labelcollapsedinfo.Refresh();
 #if DEBUG
 			console.Visible = true;
@@ -3917,7 +3923,8 @@ namespace CodeImp.DoomBuilder.Windows
 			if(vertexinfo.Visible) vertexinfo.Hide();
 			if(sectorinfo.Visible) sectorinfo.Hide();
 			if(thinginfo.Visible) thinginfo.Hide();
-			if(IsInfoPanelExpanded) linedefinfo.ShowInfo(l, highlightside);
+            if (thinginfo_rr.Visible) thinginfo_rr.Hide();
+            if (IsInfoPanelExpanded) linedefinfo.ShowInfo(l, highlightside);
 
 			// Show info on collapsed label
 			if(General.Map.Config.LinedefActions.ContainsKey(l.Action)) 
@@ -3961,7 +3968,8 @@ namespace CodeImp.DoomBuilder.Windows
 			if(linedefinfo.Visible) linedefinfo.Hide();
 			if(sectorinfo.Visible) sectorinfo.Hide();
 			if(thinginfo.Visible) thinginfo.Hide();
-			if(IsInfoPanelExpanded) vertexinfo.ShowInfo(v);
+            if (thinginfo_rr.Visible) thinginfo_rr.Hide();
+            if (IsInfoPanelExpanded) vertexinfo.ShowInfo(v);
 
 			// Show info on collapsed label
 			labelcollapsedinfo.Text = v.Position.x.ToString("0.##") + ", " + v.Position.y.ToString("0.##");
@@ -3999,7 +4007,8 @@ namespace CodeImp.DoomBuilder.Windows
 			if(linedefinfo.Visible) linedefinfo.Hide();
 			if(vertexinfo.Visible) vertexinfo.Hide();
 			if(thinginfo.Visible) thinginfo.Hide();
-			if(IsInfoPanelExpanded) sectorinfo.ShowInfo(s, highlightceiling, highlightfloor); //mxd
+            if (thinginfo_rr.Visible) thinginfo_rr.Hide();
+            if (IsInfoPanelExpanded) sectorinfo.ShowInfo(s, highlightceiling, highlightfloor); //mxd
 
 			// Show info on collapsed label
 			if(General.Map.Config.SectorEffects.ContainsKey(s.Effect))
@@ -4037,7 +4046,17 @@ namespace CodeImp.DoomBuilder.Windows
 			if(linedefinfo.Visible) linedefinfo.Hide();
 			if(vertexinfo.Visible) vertexinfo.Hide();
 			if(sectorinfo.Visible) sectorinfo.Hide();
-			if(IsInfoPanelExpanded) thinginfo.ShowInfo(t);
+			if (IsInfoPanelExpanded)
+			{
+				if (General.Map.FormatInterface.HasThingArgs)
+				{
+                    thinginfo_rr.ShowInfo(t);
+                }
+				else
+				{
+					thinginfo.ShowInfo(t);
+				}
+			}
 
 			// Show info on collapsed label
 			ThingTypeInfo ti = General.Map.Data.GetThingInfo(t.Type);
@@ -4171,7 +4190,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (General.Map.UDMF)
 			{
-				if (General.Map.Config.EngineName == "srb2")
+				if (General.Map.Config.EngineName == "srb2" || General.Map.Config.EngineName == "ringracers")
 				{
 					return new LinedefEditFormSRB2(selectfront, selectback);
 				}
@@ -4186,8 +4205,8 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 		}
 
-		// This shows the dialog to edit sectors
-		public DialogResult ShowEditSectors(ICollection<Sector> sectors)
+        // This shows the dialog to edit sectors
+        public DialogResult ShowEditSectors(ICollection<Sector> sectors)
 		{
 			// Show sector edit dialog
 			ISectorEditForm f = GetSectorEditForm();
@@ -4216,7 +4235,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (General.Map.UDMF)
 			{
-				if (General.Map.Config.EngineName == "srb2")
+				if (General.Map.Config.EngineName == "srb2" || General.Map.Config.EngineName == "ringracers")
 				{
 					return new SectorEditFormSRB2();
 				}
@@ -4261,7 +4280,7 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			if (General.Map.UDMF)
 			{
-				if (General.Map.Config.EngineName == "srb2")
+				if (General.Map.Config.EngineName == "srb2" || General.Map.Config.EngineName == "ringracers")
 				{
 					return new ThingEditFormSRB2();
 				}

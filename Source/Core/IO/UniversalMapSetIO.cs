@@ -106,11 +106,12 @@ namespace CodeImp.DoomBuilder.IO
 		public override bool HasLinedefTag { get { return true; } }
 		public override bool HasThingTag { get { return true; } }
 		public override bool HasThingAction { get { return true; } }
-		public override bool HasSectorAction { get { return ((manager != null) && (manager.Config != null) && (manager.Config.EngineName == "srb2")); } }
+		public override bool HasSectorAction { get { return ((manager != null) && (manager.Config != null) && (manager.Config.EngineName == "ringracers")); } }
 		public override bool HasCustomFields { get { return true; } }
 		public override bool HasThingHeight { get { return true; } }
 		public override bool HasActionArgs { get { return true; } }
-		public override bool HasMixedActivations { get { return true; } }
+        public override bool HasThingArgs { get { return ((manager != null) && (manager.Config != null) && (manager.Config.EngineName == "ringracers")); } }
+        public override bool HasMixedActivations { get { return true; } }
 		public override bool HasPresetActivations { get { return false; } }
 		public override bool HasBuiltInActivations { get { return false; } }
 		public override bool HasNumericLinedefFlags { get { return false; } }
@@ -172,7 +173,7 @@ namespace CodeImp.DoomBuilder.IO
 			MemoryStream memstream = new MemoryStream();
 			memstream.Seek(0, SeekOrigin.Begin);
 			udmfwriter.RememberCustomTypes = true;
-			udmfwriter.Write(map, memstream, manager.Config.EngineName);
+			udmfwriter.Write(map, memstream, manager.Config.EngineName, manager.Config.EngineVersion);
 
 			// Find insert position and remove old lump
 			int insertpos = MapManager.RemoveSpecificLump(wad, "TEXTMAP", position, MapManager.TEMP_MAP_HEADER, manager.Config.MapLumps);

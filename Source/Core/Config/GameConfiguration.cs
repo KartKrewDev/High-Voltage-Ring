@@ -61,7 +61,8 @@ namespace CodeImp.DoomBuilder.Config
 		// General settings
 		private readonly string configname;
 		private readonly string enginename;
-		private readonly float defaulttexturescale;
+        private readonly int engineversion;
+        private readonly float defaulttexturescale;
 		private readonly float defaultflatscale;
 		private readonly string defaultwalltexture; //mxd
 		private readonly string defaultfloortexture; //mxd
@@ -224,7 +225,8 @@ namespace CodeImp.DoomBuilder.Config
         // General settings
         public string Name { get { return configname; } }
 		public string EngineName { get { return enginename; } }
-		public string DefaultSaveCompiler { get { return defaultsavecompiler; } }
+        public int EngineVersion { get { return engineversion; } }
+        public string DefaultSaveCompiler { get { return defaultsavecompiler; } }
 		public string DefaultTestCompiler { get { return defaulttestcompiler; } }
 		public float DefaultTextureScale { get { return defaulttexturescale; } }
 		public float DefaultFlatScale { get { return defaultflatscale; } }
@@ -436,7 +438,8 @@ namespace CodeImp.DoomBuilder.Config
 			}
 
 			enginename = cfg.ReadSetting("engine", "");
-			defaultsavecompiler = cfg.ReadSetting("defaultsavecompiler", "");
+            engineversion = cfg.ReadSetting("version", 0);
+            defaultsavecompiler = cfg.ReadSetting("defaultsavecompiler", "");
 			defaulttestcompiler = cfg.ReadSetting("defaulttestcompiler", "");
 			defaulttexturescale = cfg.ReadSetting("defaulttexturescale", 1f);
 			defaultflatscale = cfg.ReadSetting("defaultflatscale", 1f);

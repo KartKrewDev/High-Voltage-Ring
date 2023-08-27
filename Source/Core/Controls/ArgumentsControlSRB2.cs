@@ -11,6 +11,7 @@ using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.GZBuilder;
+using System.Diagnostics.Eventing.Reader;
 
 #endregion
 
@@ -25,23 +26,37 @@ namespace CodeImp.DoomBuilder.Controls
 
 		private const int WM_SETREDRAW = 11;
 
-		#endregion
+        #endregion
 
-		#region ================== Variables
+        #region ================== Enums
 
-		private int action;
+        private enum ArgMode
+        {
+            INT,
+            STRING,
+            SCRIPT,
+        }
+
+        #endregion
+
+        #region ================== Variables
+
+        private int action;
 		private ArgumentInfo[] arginfo;
-		private ArgumentInfo[] stringarginfo;
 		private Label[] labels;
 		private ArgumentBox[] args;
-		private Label[] stringlabels;
-		private TextBox[] stringargs;
+        private TextBox[] stringargs;
+        private ColoredComboBox[] scriptargs;
+        private CheckBox[] stringargcb;
+        private ArgMode[] argmodes;
+        private string[] argstrval;
+        private bool[] haveargstr;
 
-		#endregion
+        #endregion
 
-		#region ================== Constructor
+        #region ================== Constructor
 
-		public ArgumentsControlSRB2()
+        public ArgumentsControlSRB2()
 		{
 			InitializeComponent();
 
@@ -49,9 +64,14 @@ namespace CodeImp.DoomBuilder.Controls
 
 			labels = new Label[] { arg0label, arg1label, arg2label, arg3label, arg4label, arg5label, arg6label, arg7label, arg8label, arg9label };
 			args = new ArgumentBox[] { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
-			stringlabels = new Label[] { stringarg0label, stringarg1label };
 			stringargs = new System.Windows.Forms.TextBox[] { stringarg0, stringarg1 };
-		}
+            scriptargs = new ColoredComboBox[] { scriptarg0 };
+            stringargcb = new System.Windows.Forms.CheckBox[] { stringargcb0, stringargcb1 };
+
+			argmodes = new ArgMode[] { ArgMode.INT, ArgMode.INT };
+			argstrval = new string[] { string.Empty, string.Empty };
+            haveargstr = new bool[] { false, false };
+        }
 
 		#endregion
 
@@ -83,21 +103,37 @@ namespace CodeImp.DoomBuilder.Controls
 
 		private void SetValue(UniFields fields, int[] newargs, bool first)
 		{
-			// Update arguments
-			for (int i = 0; i < args.Length; i++)
+			if (first)
 			{
-				if (first)
-					args[i].SetValue(newargs[i]);
-				else
-					if (!string.IsNullOrEmpty(args[i].Text) && newargs[i] != args[i].GetResult(int.MinValue)) args[i].ClearValue();
-			}
+				// Update arguments
+				for (int i = 0; i < args.Length; i++)
+				{
+					if (i < stringargs.Length)
+					{
+                        argstrval[i] = fields.GetValue("stringarg" + i, string.Empty);
+						haveargstr[i] = !string.IsNullOrEmpty(argstrval[i]);
+					}
 
-			for (int i = 0; i < stringargs.Length; i++)
+					args[i].SetValue(newargs[i]);
+				}
+			}
+			else
 			{
-				if (first)
-					stringargs[i].Text = fields.GetValue("stringarg" + i, string.Empty);
-				else
-					if (fields.GetValue("stringarg" + i, string.Empty) != stringargs[i].Text) stringargs[i].Text = string.Empty;
+                // Update arguments
+                for (int i = 0; i < args.Length; i++)
+                {
+                    if (i < stringargs.Length)
+                    {
+                        if (argstrval[i] != fields.GetValue("stringarg" + i, string.Empty))
+						{
+                            haveargstr[i] = true;
+                            argstrval[i] = string.Empty;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(args[i].Text) && newargs[i] != args[i].GetResult(int.MinValue))
+						args[i].ClearValue();
+                }
 			}
 		}
 
@@ -107,80 +143,84 @@ namespace CodeImp.DoomBuilder.Controls
 
 		public void Apply(Linedef l, int step)
 		{
-			for (int i = 0; i < args.Length; i++)
-				l.Args[i] = args[i].GetResult(l.Args[i], step);
-
-			for (int i = 0; i < stringargs.Length; i++)
-				if (!string.IsNullOrEmpty(stringargs[i].Text))
-					UniFields.SetString(l.Fields, "stringarg" + i, stringargs[i].Text, string.Empty);
-		}
+            Apply(l.Fields, l.Args, step);
+        }
 
 		public void Apply(Thing t, int step)
 		{
-			for (int i = 0; i < args.Length; i++)
-				t.Args[i] = args[i].GetResult(t.Args[i], step);
-
-			for (int i = 0; i < stringargs.Length; i++)
-				if (!string.IsNullOrEmpty(stringargs[i].Text))
-					UniFields.SetString(t.Fields, "stringarg" + i, stringargs[i].Text, string.Empty);
-		}
+            Apply(t.Fields, t.Args, step);
+        }
 
 		public void Apply(Sector s, int step)
 		{
-			for (int i = 0; i < args.Length; i++)
-				s.Args[i] = args[i].GetResult(s.Args[i], step);
-
-			for (int i = 0; i < stringargs.Length; i++)
-				if (!string.IsNullOrEmpty(stringargs[i].Text))
-					UniFields.SetString(s.Fields, "stringarg" + i, stringargs[i].Text, string.Empty);
+			Apply(s.Fields, s.Args, step);
 		}
 
-		#endregion
+        private void Apply(UniFields fields, int[] newargs, int step)
+        {
+            for (int i = 0; i < args.Length; i++)
+			{
+                ArgMode mode = ArgMode.INT;
+				if (i < argmodes.Length)
+				{
+					mode = argmodes[i];
+				}
 
-		#region ================== Update
+                switch (mode)
+                {
+                    case ArgMode.SCRIPT:
+                        if (i >= scriptargs.Length)
+                        {
+                            goto case ArgMode.STRING;
+                        }
+
+                        if (!string.IsNullOrEmpty(scriptargs[i].Text))
+                            UniFields.SetString(fields, "stringarg" + i, scriptargs[i].Text, string.Empty);
+                        break;
+
+                    case ArgMode.STRING:
+                        if (i >= stringargs.Length)
+                        {
+							goto case ArgMode.INT;
+                        }
+
+						if (!string.IsNullOrEmpty(stringargs[i].Text))
+							UniFields.SetString(fields, "stringarg" + i, stringargs[i].Text, string.Empty);
+                        break;
+
+                    case ArgMode.INT:
+						if (i < stringargs.Length)
+						{
+                            if (fields.ContainsKey("stringarg" + i))
+								fields.Remove("stringarg" + i);
+                        }
+						newargs[i] = args[i].GetResult(newargs[i], step);
+                        break;
+
+                    default: throw new NotImplementedException("Unknown ArgMode");
+                }
+            }
+        }
+
+        #endregion
+
+        #region ================== Update
 
 		public void UpdateAction(int action, bool setuponly)
-		{
-			UpdateAction(action, setuponly, null);
-		}
-
-		public void UpdateThingType(ThingTypeInfo info)
-		{
-			UpdateAction(this.action, false, info);
-		}
-
-		//TODO: Info for string args
-		public void UpdateAction(int action, bool setuponly, ThingTypeInfo info)
 		{
 			// Update arguments
 			int showaction = 0;
 			ArgumentInfo[] oldarginfo = (arginfo != null ? (ArgumentInfo[])arginfo.Clone() : null); //mxd
-			ArgumentInfo[] oldstringarginfo = (stringarginfo != null ? (ArgumentInfo[])stringarginfo.Clone() : null);
 
 			// Only when action type is known
 			if (General.Map.Config.LinedefActions.ContainsKey(action)) showaction = action;
 
 			// Update argument infos
-			if ((showaction == 0) && (info != null))
-			{
-				arginfo = info.Args;
-				stringarginfo = info.StringArgs;
-			}
-			else
-			{
-				arginfo = General.Map.Config.LinedefActions[showaction].Args;
-				stringarginfo = General.Map.Config.LinedefActions[showaction].Args;
-			}
-
-			// Don't update action args when thing type is changed
-			if (info != null && showaction != 0 && this.action == showaction)
-				return;
+			arginfo = General.Map.Config.LinedefActions[showaction].Args;
 
 			//mxd. Don't update action args when old and new argument infos match
 			if (arginfo != null && oldarginfo != null
-				&& stringarginfo != null && oldstringarginfo != null
-				&& ArgumentInfosMatch(arginfo, oldarginfo)
-				&& ArgumentInfosMatch(stringarginfo, oldstringarginfo))
+				&& ArgumentInfosMatch(arginfo, oldarginfo))
 			{
 				return;
 			}
@@ -191,13 +231,10 @@ namespace CodeImp.DoomBuilder.Controls
 			for (int i = 0; i < args.Length; i++)
 				UpdateArgument(args[i], labels[i], arginfo[i]);
 
-			for (int i = 0; i < stringargs.Length; i++)
-				UpdateStringArgument(stringargs[i], stringlabels[i], stringarginfo[i]);
-
 			if (!setuponly)
 			{
 				// Apply action's or thing's default arguments
-				if(showaction != 0 || info != null)
+				if (showaction != 0)
 				{
 					for (int i = 0; i < args.Length; i++)
 						args[i].SetDefaultValue();
@@ -209,8 +246,15 @@ namespace CodeImp.DoomBuilder.Controls
 				}
 
 				for (int i = 0; i < stringargs.Length; i++)
-					stringargs[i].Text = string.Empty;
-			}
+				{
+                    stringargs[i].Text = argstrval[i] = " ";
+
+                    if (i < scriptargs.Length)
+					{
+                        scriptargs[i].Text = " ";
+                    }
+                }
+            }
 
 			// Store current action
 			this.action = showaction;
@@ -220,29 +264,99 @@ namespace CodeImp.DoomBuilder.Controls
 
 		public void UpdateScriptControls()
 		{
-		}
+			for (int i = 0; i < stringargs.Length; i++)
+			{
+				if (arginfo[i].Script != 0 && i < scriptargs.Length)
+				{
+					// It's a SCRIPT!
+					scriptargs[i].Items.Clear();
+					scriptargs[i].Location = new Point(args[i].Location.X, args[i].Location.Y + 2);
 
-		private void UpdateArgument(ArgumentBox arg, Label label, ArgumentInfo info)
-		{
-			// Update labels
-			label.Text = info.Title + ":";
-			label.Enabled = info.Used;
-			arg.ForeColor = (label.Enabled ? SystemColors.WindowText : SystemColors.GrayText);
-			arg.Setup(info);
+                    foreach (ScriptItem nsi in General.Map.NamedScripts.Values)
+						scriptargs[i].Items.Add(new ColoredComboBoxItem(nsi, nsi.IsInclude ? SystemColors.HotTrack : SystemColors.WindowText));
+					scriptargs[i].DropDownWidth = Tools.GetDropDownWidth(scriptargs[i]);
 
-			// Update tooltip
-			UpdateToolTip(label, info);
-		}
-		private void UpdateStringArgument(TextBox arg, Label label, ArgumentInfo info)
-		{
-			// Update labels
-			label.Text = info.Title + ":";
-			label.Enabled = info.Used;
-			arg.ForeColor = (label.Enabled ? SystemColors.WindowText : SystemColors.GrayText);
+					stringargcb[i].Visible = false;
+					stringargcb[i].Checked = true;
 
-			// Update tooltip
-			UpdateToolTip(label, info);
-		}
+					scriptargs[i].Visible = true;
+					stringargs[i].Visible = false;
+					args[i].Visible = false;
+
+					argmodes[i] = ArgMode.SCRIPT;
+					stringargs[i].Text = scriptargs[i].Text = argstrval[i];
+
+					if (General.Map.NamedScripts.ContainsKey(argstrval[i]))
+						UpdateScriptArguments(General.Map.NamedScripts[argstrval[i]]);
+				}
+				else if (arginfo[i].Str)
+				{
+                    // It's a string
+                    stringargs[i].Clear();
+                    stringargs[i].Location = new Point(args[i].Location.X, args[i].Location.Y + 2);
+
+                    stringargcb[i].Visible = false;
+					stringargcb[i].Checked = true;
+
+					if (i < scriptargs.Length)
+					{
+                        scriptargs[i].Visible = false;
+                    }
+					stringargs[i].Visible = true;
+					args[i].Visible = false;
+
+					argmodes[i] = ArgMode.STRING;
+					stringargs[i].Text = argstrval[i];
+				}
+				else if (arginfo[i].Used)
+				{
+					// It's an integer
+					stringargcb[i].Visible = false;
+					stringargcb[i].Checked = false;
+
+                    if (i < scriptargs.Length)
+                    {
+                        scriptargs[i].Visible = false;
+                    }
+                    stringargs[i].Visible = false;
+					args[i].Visible = true;
+
+					argmodes[i] = ArgMode.INT;
+				}
+				else
+				{
+                    // YOU DECIDE!
+                    stringargs[i].Clear();
+                    stringargs[i].Location = new Point(args[i].Location.X, args[i].Location.Y + 2);
+
+                    stringargcb[i].Visible = true;
+					stringargcb[i].Checked = haveargstr[i];
+
+                    argmodes[i] = (haveargstr[i] ? ArgMode.STRING : ArgMode.INT);
+
+                    if (i < scriptargs.Length)
+                    {
+                        scriptargs[i].Visible = false;
+                    }
+                    stringargs[i].Visible = (argmodes[i] == ArgMode.STRING);
+					args[i].Visible = (argmodes[i] == ArgMode.INT);
+
+                    stringargs[i].Text = argstrval[i];
+                }
+			}
+        }
+
+        private void UpdateArgument(ArgumentBox arg, Label label, ArgumentInfo info)
+        {
+            // Update labels
+            label.Text = info.Title + ":";
+            label.Enabled = info.Used;
+            arg.ForeColor = (label.Enabled ? SystemColors.WindowText : SystemColors.GrayText);
+            arg.Setup(info);
+
+            // Update tooltip
+            UpdateToolTip(label, info);
+        }
 
 		private void UpdateToolTip(Label label, ArgumentInfo info)
 		{
@@ -260,8 +374,44 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 		}
 
-		//mxd
-		private static bool ArgumentInfosMatch(ArgumentInfo[] info1, ArgumentInfo[] info2)
+        private void UpdateScriptArguments(ScriptItem item)
+        {
+            if (item != null)
+            {
+                string[] argnames = item.GetArgumentsDescriptionsSRB2((arginfo[0].Script == 1));
+                for (int i = 1; i < labels.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(argnames[i]))
+                    {
+                        labels[i].Text = argnames[i] + ":";
+                        labels[i].Enabled = true;
+                        labels[i].Font = new Font(labels[i].Font, FontStyle.Regular);
+                        labels[i].ForeColor = SystemColors.WindowText;
+                    }
+                    else
+                    {
+                        labels[i].Text = arginfo[i].Title + ":";
+                        labels[i].Enabled = arginfo[i].Used;
+                        UpdateToolTip(labels[i], arginfo[i]);
+                    }
+
+                    args[i].ForeColor = (labels[i].Enabled ? SystemColors.WindowText : SystemColors.GrayText);
+                }
+            }
+            else
+            {
+                for (int i = 1; i < labels.Length; i++)
+                {
+                    labels[i].Text = arginfo[i].Title + ":";
+                    labels[i].Enabled = arginfo[i].Used;
+                    UpdateToolTip(labels[i], arginfo[i]);
+                    args[i].ForeColor = (labels[i].Enabled ? SystemColors.WindowText : SystemColors.GrayText);
+                }
+            }
+        }
+
+        //mxd
+        private static bool ArgumentInfosMatch(ArgumentInfo[] info1, ArgumentInfo[] info2)
 		{
 			if (info1.Length != info2.Length) return false;
 			bool haveusedargs = false; // Arguments should still be reset if all arguments are unused
@@ -295,9 +445,49 @@ namespace CodeImp.DoomBuilder.Controls
 
         #endregion
 
-        private void stringarg0_TextChanged(object sender, EventArgs e)
-        {
+        #region ================== Events
 
+        private void stringargcb_CheckedChanged(int i)
+		{
+			if (!stringargcb[i].Visible)
+			{
+				return;
+			}
+
+            argmodes[i] = (stringargcb[i].Checked ? ArgMode.STRING : ArgMode.INT);
+
+            stringargs[i].Visible = (argmodes[i] == ArgMode.STRING);
+            args[i].Visible = (argmodes[i] == ArgMode.INT);
         }
+
+        private void stringargcb0_CheckedChanged(object sender, EventArgs e)
+        {
+            stringargcb_CheckedChanged(0);
+        }
+
+        private void stringargcb1_CheckedChanged(object sender, EventArgs e)
+        {
+            stringargcb_CheckedChanged(1);
+        }
+
+        private void scriptarg0_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(scriptarg0.Text)) return;
+            ScriptItem item = null;
+            if (scriptarg0.SelectedIndex != -1)
+            {
+                item = ((ScriptItem)((ColoredComboBoxItem)scriptarg0.SelectedItem).Value);
+            }
+            else
+            {
+                string scriptname = scriptarg0.Text.Trim().ToLowerInvariant();
+                if (General.Map.NamedScripts.ContainsKey(scriptname))
+                    item = General.Map.NamedScripts[scriptname];
+            }
+
+            UpdateScriptArguments(item);
+        }
+
+        #endregion
     }
 }

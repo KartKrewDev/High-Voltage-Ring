@@ -155,7 +155,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 				switch(info.ClassName.ToLowerInvariant())
 				{
 					case "patrolpoint":
-						if(t.Tag != 0 || t.Args[0] != 0)
+						if(t.Tag != 0 || t.ThingArgs[0] != 0)
 						{
 							if(!result.PatrolPoints.ContainsKey(t.Tag)) result.PatrolPoints.Add(t.Tag, new List<Thing>());
 							result.PatrolPoints[t.Tag].Add(t);
@@ -183,8 +183,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 				if(t.Action != 0 
 					&& General.Map.Config.LinedefActions.ContainsKey(t.Action) 
 					&& General.Map.Config.LinedefActions[t.Action].Id.ToLowerInvariant() == "thing_setgoal"
-					&& (t.Args[0] == 0 || t.Args[0] == t.Tag)
-					&& t.Args[1] != 0)
+					&& (t.ThingArgs[0] == 0 || t.ThingArgs[0] == t.Tag)
+					&& t.ThingArgs[1] != 0)
 				{
 					result.ThingsWithGoal.Add(t);
 				}
@@ -207,18 +207,18 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 						break;
 
 					case "movingcamera":
-						if(t.Args[0] != 0 || t.Args[1] != 0) result.Cameras.Add(t);
+						if(t.ThingArgs[0] != 0 || t.ThingArgs[1] != 0) result.Cameras.Add(t);
 						break;
 
 					case "pathfollower":
-						if(t.Args[0] != 0 || t.Args[1] != 0) result.PathFollowers.Add(t);
+						if(t.ThingArgs[0] != 0 || t.ThingArgs[1] != 0) result.PathFollowers.Add(t);
 						break;
 
 					case "actormover":
-						if((t.Args[0] != 0 || t.Args[1] != 0) && t.Args[3] != 0)
+						if((t.ThingArgs[0] != 0 || t.ThingArgs[1] != 0) && t.ThingArgs[3] != 0)
 						{
-							if(!result.ActorMovers.ContainsKey(t.Args[3])) result.ActorMovers.Add(t.Args[3], new List<Thing>());
-							result.ActorMovers[t.Args[3]].Add(t);
+							if(!result.ActorMovers.ContainsKey(t.ThingArgs[3])) result.ActorMovers.Add(t.ThingArgs[3], new List<Thing>());
+							result.ActorMovers[t.ThingArgs[3]].Add(t);
 						}
 						break;
 				}
@@ -250,12 +250,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			{
 				foreach(Thing t in group.Value) 
 				{
-					if(!result.PatrolPoints.ContainsKey(t.Args[0])) continue;
+					if(!result.PatrolPoints.ContainsKey(t.ThingArgs[0])) continue;
 					
 					start = t.Position;
 					start.z += GetCorrectHeight(t, blockmap, true);
 
-					foreach(Thing tt in result.PatrolPoints[t.Args[0]])
+					foreach(Thing tt in result.PatrolPoints[t.ThingArgs[0]])
 					{
 						end = tt.Position;
 						end.z += GetCorrectHeight(tt, blockmap, true);
@@ -267,12 +267,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			// Process things with Thing_SetGoal
 			foreach(Thing t in result.ThingsWithGoal) 
 			{
-				if(!result.PatrolPoints.ContainsKey(t.Args[1])) continue;
+				if(!result.PatrolPoints.ContainsKey(t.ThingArgs[1])) continue;
 
 				start = t.Position;
 				start.z += GetCorrectHeight(t, blockmap, true);
 
-				foreach(Thing tt in result.PatrolPoints[t.Args[1]]) 
+				foreach(Thing tt in result.PatrolPoints[t.ThingArgs[1]]) 
 				{
 					end = tt.Position;
 					end.z += GetCorrectHeight(tt, blockmap, true);
@@ -301,9 +301,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			// Process cameras [CAN USE INTERPOLATION]
 			foreach(Thing t in result.Cameras)
 			{
-				int targettag = t.Args[0] + (t.Args[1] << 8);
+				int targettag = t.ThingArgs[0] + (t.ThingArgs[1] << 8);
 				if(targettag == 0 || !result.InterpolationPoints.ContainsKey(targettag)) continue; //no target / target doesn't exist
-				bool interpolatepath = ((t.Args[2] & 1) != 1);
+				bool interpolatepath = ((t.ThingArgs[2] & 1) != 1);
 
 				start = t.Position;
 				start.z += GetCorrectHeight(t, blockmap, true);
@@ -320,12 +320,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			{
 				foreach(Thing t in things)
 				{
-					int targettag = t.Args[0] + (t.Args[1] << 8);
+					int targettag = t.ThingArgs[0] + (t.ThingArgs[1] << 8);
 
 					// Add interpolation point targets
 					if(targettag != 0 && result.InterpolationPoints.ContainsKey(targettag))
 					{
-						bool interpolatepath = ((t.Args[2] & 1) != 1);
+						bool interpolatepath = ((t.ThingArgs[2] & 1) != 1);
 						start = t.Position;
 						start.z += GetCorrectHeight(t, blockmap, true);
 
@@ -337,12 +337,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 					}
 
 					// Add thing-to-move targets
-					if(actormovertargets.ContainsKey(t.Args[3]))
+					if(actormovertargets.ContainsKey(t.ThingArgs[3]))
 					{
 						start = t.Position;
 						start.z += GetCorrectHeight(t, blockmap, true);
 
-						foreach(Thing tt in actormovertargets[t.Args[3]])
+						foreach(Thing tt in actormovertargets[t.ThingArgs[3]])
 						{
 							end = tt.Position;
 							end.z += GetCorrectHeight(tt, blockmap, true);
@@ -355,9 +355,9 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			// Process path followers [CAN USE INTERPOLATION]
 			foreach(Thing t in result.PathFollowers)
 			{
-				int targettag = t.Args[0] + (t.Args[1] << 8);
+				int targettag = t.ThingArgs[0] + (t.ThingArgs[1] << 8);
 				if(targettag == 0 || !result.InterpolationPoints.ContainsKey(targettag)) continue; //no target / target doesn't exist
-				bool interpolatepath = (t.Args[2] & 1) != 1;
+				bool interpolatepath = (t.ThingArgs[2] & 1) != 1;
 
 				start = t.Position;
 				start.z += GetCorrectHeight(t, blockmap, true);
@@ -393,7 +393,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			{
 				foreach(PathNode node in group.Value)
 				{
-					int targettag = node.Thing.Args[3] + (node.Thing.Args[4] << 8);
+					int targettag = node.Thing.ThingArgs[3] + (node.Thing.ThingArgs[4] << 8);
 					if(targettag == 0 || !result.InterpolationPoints.ContainsKey(targettag)) continue;
 
 					foreach(PathNode targetnode in result.InterpolationPoints[targettag])
@@ -497,21 +497,21 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 				Vector3D pos = t.Position;
 				pos.z += GetCorrectHeight(t, blockmap, false);
 
-				for(int i = 0; i < t.Args.Length; i++)
+				for(int i = 0; i < t.ThingArgs.Length; i++)
 				{
-					if(t.Args[i] == 0) continue; // Avoid visual noise
+					if(t.ThingArgs[i] == 0) continue; // Avoid visual noise
 					var a = tti.Args[i]; //TODO: can this be null?
 					
 					switch(a.RenderStyle)
 					{
 						case ArgumentInfo.ArgumentRenderStyle.CIRCLE:
-							lines.AddRange(MakeCircleLines(pos, a.RenderColor, t.Args[i], numsides));
+							lines.AddRange(MakeCircleLines(pos, a.RenderColor, t.ThingArgs[i], numsides));
 							if(a.MinRange > 0) lines.AddRange(MakeCircleLines(pos, a.MinRangeColor, a.MinRange, numsides));
 							if(a.MaxRange > 0) lines.AddRange(MakeCircleLines(pos, a.MaxRangeColor, a.MaxRange, numsides));
 							break;
 
 						case ArgumentInfo.ArgumentRenderStyle.RECTANGLE:
-							lines.AddRange(MakeRectangleLines(pos, a.RenderColor, t.Args[i]));
+							lines.AddRange(MakeRectangleLines(pos, a.RenderColor, t.ThingArgs[i]));
 							if(a.MinRange > 0) lines.AddRange(MakeRectangleLines(pos, a.MinRangeColor, a.MinRange));
 							if(a.MaxRange > 0) lines.AddRange(MakeRectangleLines(pos, a.MaxRangeColor, a.MaxRange));
 							break;
@@ -545,17 +545,17 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                 {
                     if (t.Sector == null) t.DetermineSector();
                     int scaler = (t.Sector != null ? t.Sector.Brightness / 4 : 2);
-                    primaryradius = t.Args[3] * scaler;
+                    primaryradius = t.ThingArgs[3] * scaler;
                 }
                 else
                 {
-                    primaryradius = t.Args[3] * 2; //works... that.. way in GZDoom
-                    if (ld.LightAnimated) secondaryradius = t.Args[4] * 2;
+                    primaryradius = t.ThingArgs[3] * 2; //works... that.. way in GZDoom
+                    if (ld.LightAnimated) secondaryradius = t.ThingArgs[4] * 2;
                 }
             }
             else //it's one of vavoom lights
             {
-                primaryradius = t.Args[0] * 8;
+                primaryradius = t.ThingArgs[0] * 8;
             }
 
             // Check radii...
@@ -576,11 +576,11 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                         break;
 
                     case GZGeneral.LightDef.VAVOOM_COLORED: // Vavoom colored light
-                        color = new PixelColor((byte)linealpha, (byte)t.Args[1], (byte)t.Args[2], (byte)t.Args[3]);
+                        color = new PixelColor((byte)linealpha, (byte)t.ThingArgs[1], (byte)t.ThingArgs[2], (byte)t.ThingArgs[3]);
                         break;
 
                     default:
-                        color = new PixelColor((byte)linealpha, (byte)t.Args[0], (byte)t.Args[1], (byte)t.Args[2]);
+                        color = new PixelColor((byte)linealpha, (byte)t.ThingArgs[0], (byte)t.ThingArgs[1], (byte)t.ThingArgs[2]);
                         break;
                 }
             }
@@ -611,7 +611,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
                 ZDoom.ZDTextParser.GetColorFromString(t.Fields["arg0str"].Value.ToString(), out color);
                 color.a = (byte)linealpha;
             }
-            else color = new PixelColor((byte)linealpha, (byte)((t.Args[0] & 0xFF0000) >> 16), (byte)((t.Args[0] & 0x00FF00) >> 8), (byte)((t.Args[0] & 0x0000FF)));
+            else color = new PixelColor((byte)linealpha, (byte)((t.ThingArgs[0] & 0xFF0000) >> 16), (byte)((t.ThingArgs[0] & 0x00FF00) >> 8), (byte)((t.ThingArgs[0] & 0x0000FF)));
 
             if (highlight)
             {
@@ -622,12 +622,12 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
             color_secondary.a /= 2;
 
             List<Line3D> shapes = new List<Line3D>();
-            double _lAngle1 = Angle2D.DegToRad(t.Args[1]);
-            double _lAngle2 = Angle2D.DegToRad(t.Args[2]);
+            double _lAngle1 = Angle2D.DegToRad(t.ThingArgs[1]);
+            double _lAngle2 = Angle2D.DegToRad(t.ThingArgs[2]);
             double lAngle1 = _lAngle1;
             double lAngle2 = _lAngle2;
             
-            double lRadius = t.Args[3]*2;
+            double lRadius = t.ThingArgs[3]*2;
             double lDirY1 = Math.Sin(-lAngle1) * lRadius;
             double lDirX1 = Math.Cos(-lAngle1) * lRadius;
             double lDirY2 = Math.Sin(-lAngle2) * lRadius;
@@ -775,19 +775,19 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 					//arg3: (optional) maximum distance, in map units, at which the sound can be heard. If left to zero or lower than arg2, normal rolloff is used instead.
 					//arg4: (optional) scalar by which to multiply the values of arg2 and arg3. If left to zero, no multiplication takes place.
 
-					if(t.Args[0] == 0 || !General.Map.Data.AmbientSounds.ContainsKey(t.Args[0]))
+					if(t.ThingArgs[0] == 0 || !General.Map.Data.AmbientSounds.ContainsKey(t.ThingArgs[0]))
 						continue;
 
 					// Use custom radii?
-					if(t.Args[2] > 0 && t.Args[3] > 0 && t.Args[3] > t.Args[2])
+					if(t.ThingArgs[2] > 0 && t.ThingArgs[3] > 0 && t.ThingArgs[3] > t.ThingArgs[2])
 					{
-						minradius = t.Args[2] * (t.Args[4] != 0 ? t.Args[4] : 1.0f);
-						maxradius = t.Args[3] * (t.Args[4] != 0 ? t.Args[4] : 1.0f);
+						minradius = t.ThingArgs[2] * (t.ThingArgs[4] != 0 ? t.ThingArgs[4] : 1.0f);
+						maxradius = t.ThingArgs[3] * (t.ThingArgs[4] != 0 ? t.ThingArgs[4] : 1.0f);
 					}
 					else
 					{
-						minradius = General.Map.Data.AmbientSounds[t.Args[0]].MinimumRadius;
-						maxradius = General.Map.Data.AmbientSounds[t.Args[0]].MaximumRadius;
+						minradius = General.Map.Data.AmbientSounds[t.ThingArgs[0]].MinimumRadius;
+						maxradius = General.Map.Data.AmbientSounds[t.ThingArgs[0]].MaximumRadius;
 					}
 				}
 				else
