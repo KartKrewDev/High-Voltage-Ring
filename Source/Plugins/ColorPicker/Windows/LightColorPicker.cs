@@ -175,12 +175,12 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 			if (referenceThing.DynamicLightType.LightVavoom)
 				firstArg = 0;
 
-			lightProps.PrimaryRadius = referenceThing.Args[firstArg];
+			lightProps.PrimaryRadius = referenceThing.ThingArgs[firstArg];
 
 			//either both of them or none are used
 			if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, referenceThing.DynamicLightType.LightNum) != -1) 
 			{
-				lightProps.SecondaryRadius = referenceThing.Args[4];
+				lightProps.SecondaryRadius = referenceThing.ThingArgs[4];
 				lightProps.Interval = referenceThing.AngleDoom;
 			}
 		}
@@ -221,20 +221,20 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
                     if (t.DynamicLightType.LightType == GZGeneral.LightType.SPOT)
                     {
                         int c = ((int)lightProps.Red << 16) | ((int)lightProps.Green << 8) | lightProps.Blue;
-                        t.Args[0] = 0;
+                        t.ThingArgs[0] = 0;
                         t.Fields["arg0str"] = new UniValue(Types.UniversalType.String, c.ToString("X6"));
                     }
 					else if (t.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) //Vavoom Light Color
 					{ 
-						t.Args[1] = lightProps.Red;
-						t.Args[2] = lightProps.Green;
-						t.Args[3] = lightProps.Blue;
+						t.ThingArgs[1] = lightProps.Red;
+						t.ThingArgs[2] = lightProps.Green;
+						t.ThingArgs[3] = lightProps.Blue;
 					} 
 					else if (t.DynamicLightType.LightDef != GZGeneral.LightDef.VAVOOM_GENERIC) //vavoom light has no color settings
 					{ 
-						t.Args[0] = lightProps.Red;
-						t.Args[1] = lightProps.Green;
-						t.Args[2] = lightProps.Blue;
+						t.ThingArgs[0] = lightProps.Red;
+						t.ThingArgs[1] = lightProps.Green;
+						t.ThingArgs[2] = lightProps.Blue;
 					}
 				}
 
@@ -246,13 +246,13 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				{
 					LightProps fixedVal = fixedValues[i];
 
-					t.Args[firstArg] = fixedVal.PrimaryRadius + lightProps.PrimaryRadius;
-					if(t.Args[firstArg] < 0) t.Args[firstArg] = 0;
+					t.ThingArgs[firstArg] = fixedVal.PrimaryRadius + lightProps.PrimaryRadius;
+					if(t.ThingArgs[firstArg] < 0) t.ThingArgs[firstArg] = 0;
 
 					if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType.LightNum) != -1) 
 					{
-						t.Args[4] = fixedVal.SecondaryRadius + lightProps.SecondaryRadius;
-						if(t.Args[4] < 0) t.Args[4] = 0;
+						t.ThingArgs[4] = fixedVal.SecondaryRadius + lightProps.SecondaryRadius;
+						if(t.ThingArgs[4] < 0) t.ThingArgs[4] = 0;
 
 						t.Rotate(General.ClampAngle(fixedVal.Interval + lightProps.Interval));
 					}
@@ -260,11 +260,11 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				else 
 				{
 					if(lightProps.PrimaryRadius != -1)
-						t.Args[firstArg] = lightProps.PrimaryRadius;
+						t.ThingArgs[firstArg] = lightProps.PrimaryRadius;
 
 					if(showAllControls && Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType.LightNum) != -1) 
 					{
-						t.Args[4] = lightProps.SecondaryRadius;
+						t.ThingArgs[4] = lightProps.SecondaryRadius;
 						t.Rotate(General.ClampAngle(lightProps.Interval));
 					}
 				}
@@ -331,7 +331,7 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 		private static Color GetThingColor(Thing thing) 
 		{
 			if (thing.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_GENERIC) return Color.White; //vavoom light
-			if (thing.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) return Color.FromArgb((byte)thing.Args[1], (byte)thing.Args[2], (byte)thing.Args[3]); //vavoom colored light
+			if (thing.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) return Color.FromArgb((byte)thing.ThingArgs[1], (byte)thing.ThingArgs[2], (byte)thing.ThingArgs[3]); //vavoom colored light
             if (thing.DynamicLightType.LightType == GZGeneral.LightType.SPOT)
             {
                 if (thing.Fields.ContainsKey("arg0str"))
@@ -341,9 +341,9 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
                     return Color.FromArgb(255, pc.r, pc.g, pc.b);
                 }
 
-                return Color.FromArgb((int)((thing.Args[0] & 0xFFFFFF) | 0xFF000000));
+                return Color.FromArgb((int)((thing.ThingArgs[0] & 0xFFFFFF) | 0xFF000000));
             }
-			return Color.FromArgb((byte)thing.Args[0], (byte)thing.Args[1], (byte)thing.Args[2]);
+			return Color.FromArgb((byte)thing.ThingArgs[0], (byte)thing.ThingArgs[1], (byte)thing.ThingArgs[2]);
 		}
 
 		//this sets data to use as a reference for relative mode
@@ -357,12 +357,12 @@ namespace CodeImp.DoomBuilder.ColorPicker.Windows
 				LightProps lp = new LightProps();
 				int firstArg = 3;
 				if (t.DynamicLightType.LightVavoom) firstArg = 0;
-				lp.PrimaryRadius = t.Args[firstArg];
+				lp.PrimaryRadius = t.ThingArgs[firstArg];
 
 				//either both of them or none are used
 				if(showAllControls &&  Array.IndexOf(LIGHT_USES_ANGLE_VALUE, t.DynamicLightType.LightNum) != -1) 
 				{
-					lp.SecondaryRadius = t.Args[4];
+					lp.SecondaryRadius = t.ThingArgs[4];
 					lp.Interval = t.AngleDoom;
 				}
 

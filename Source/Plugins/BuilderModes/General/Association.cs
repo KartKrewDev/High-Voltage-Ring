@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.NetworkInformation;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
@@ -516,10 +517,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				actionargs = t.Args;
 			}
-			else // element is a Sector
+			else if (element is Sector) // element is a Sector
+            {
+                Sector s = element as Sector;
+
+                if (s.Action > 0 && General.Map.Config.LinedefActions.ContainsKey(s.Action))
+                    action = General.Map.Config.LinedefActions[s.Action];
+
+                actionargs = s.Args;
+            }
+			else
 			{
 				return actiontags;
-			}
+            }
 
 			if (action != null)
 			{
@@ -539,7 +549,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 				}
 			}
-			else if (element is Thing && directlinktype >= 0 && Math.Abs(directlinktype) != ((Thing)element).Type)
+
+			if (element is Thing && directlinktype >= 0 && Math.Abs(directlinktype) != ((Thing)element).Type)
 			{
 				// The direct link shenanigans if the thing doesn't have an action, but still reference something through
 				// the action parameters
@@ -557,7 +568,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							if (!actiontags.ContainsKey(ti.Args[i].Type))
 								actiontags[ti.Args[i].Type] = new HashSet<int>();
 
-							actiontags[ti.Args[i].Type].Add(actionargs[i]);
+							actiontags[ti.Args[i].Type].Add(t.ThingArgs[i]);
 						}
 
 					}
@@ -614,7 +625,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					return false;
 
 				LinedefActionInfo action = General.Map.Config.LinedefActions[thing.Action];
-				for (int i = 0; i < ti.Args.Length; i++)
+				for (int i = 0; i < action.Args.Length; i++)
 				{
 					if ((action.Args[i].Type == (int)type) && (tags.Contains(thing.Args[i])))
 						return true;
@@ -665,8 +676,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				action = ((Linedef)se).Action;
 				actionargs = ((Linedef)se).Args;
 			}
+            else if (se is Sector)
+            {
+                action = ((Sector)se).Action;
+                actionargs = ((Sector)se).Args;
+            }
 
-			if (action > 0)
+            if (action > 0)
 			{
 				LinedefActionInfo lai = General.Map.Config.GetLinedefActionInfo(action);
 				List<string> argdescription = new List<string>();
@@ -698,10 +714,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				description += " (" + string.Join(", ", argdescription) + ")";
+                return description;
+            }
 
-				return description;
-			}
-			else if(se is Thing) // No action, but maybe the thing args are used directly
+			if(se is Thing && (action == 0 || General.Map.FormatInterface.HasThingArgs)) // Maybe the thing args are used directly
 			{
 				List<string> argdescription = new List<string>();
 				Thing t = (Thing)se;

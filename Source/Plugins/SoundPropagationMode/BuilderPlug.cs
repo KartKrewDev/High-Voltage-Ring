@@ -245,7 +245,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			for(int i = 0; i < soundenvironmenthings.Count; i++)
 			{
 				//mxd. Make sure same environments use the same color
-				int seid = (soundenvironmenthings[i].Args[0] << 8) + soundenvironmenthings[i].Args[1];
+				int seid = (soundenvironmenthings[i].ThingArgs[0] << 8) + soundenvironmenthings[i].ThingArgs[1];
 				secolor[soundenvironmenthings[i]] = distinctcolors[seid % distinctcolors.Count];
 				senumber.Add(soundenvironmenthings[i], i + 1);
 			}
@@ -371,7 +371,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 				{
 					foreach(KeyValuePair<string, KeyValuePair<int, int>> group in General.Map.Data.Reverbs) 
 					{
-						if(group.Value.Key == activeenv.Args[0] && group.Value.Value == activeenv.Args[1]) 
+						if(group.Value.Key == activeenv.ThingArgs[0] && group.Value.Value == activeenv.ThingArgs[1]) 
 						{
 							environment.Name = group.Key + " (" + activeenv.Args[0] + " " + activeenv.Args[1] + ")";
 							break;
@@ -381,7 +381,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 					//mxd. No suitable name found?..
 					if(environment.Name == SoundEnvironment.DEFAULT_NAME)
 					{
-						environment.Name += " (" + activeenv.Args[0] + " " + activeenv.Args[1] + ")";
+						environment.Name += " (" + activeenv.ThingArgs[0] + " " + activeenv.ThingArgs[1] + ")";
 					}
 				}
 

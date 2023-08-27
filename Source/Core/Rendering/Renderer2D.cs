@@ -541,7 +541,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				if (t.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_GENERIC) //vavoom light
 					return new PixelColor(255, 255, 255, 255);
 				if (t.DynamicLightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED) //vavoom colored light
-					return new PixelColor(255, (byte)t.Args[1], (byte)t.Args[2], (byte)t.Args[3]);
+					return new PixelColor(255, (byte)t.ThingArgs[1], (byte)t.ThingArgs[2], (byte)t.ThingArgs[3]);
 				if (t.DynamicLightType.LightType == GZGeneral.LightType.SPOT)
 				{
 					if (t.Fields.ContainsKey("arg0str"))
@@ -551,9 +551,9 @@ namespace CodeImp.DoomBuilder.Rendering
 						pc.a = 255;
 						return pc;
 					}
-					return new PixelColor(255, (byte)((t.Args[0] & 0xFF0000) >> 16), (byte)((t.Args[0] & 0x00FF00) >> 8), (byte)((t.Args[0] & 0x0000FF)));
+					return new PixelColor(255, (byte)((t.ThingArgs[0] & 0xFF0000) >> 16), (byte)((t.ThingArgs[0] & 0x00FF00) >> 8), (byte)((t.ThingArgs[0] & 0x0000FF)));
 				}
-				return new PixelColor(255, (byte)t.Args[0], (byte)t.Args[1], (byte)t.Args[2]);
+				return new PixelColor(255, (byte)t.ThingArgs[0], (byte)t.ThingArgs[1], (byte)t.ThingArgs[2]);
 			}
 
 			return t.Color;

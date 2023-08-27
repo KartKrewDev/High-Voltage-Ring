@@ -47,13 +47,15 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			{
 				if (element is Thing) return ((Thing)element).Args[i];
 				else if (element is Linedef) return ((Linedef)element).Args[i];
-				else return 0;
+                else if (element is Sector) return ((Sector)element).Args[i];
+                else return 0;
 			}
 			set
 			{
 				if (element is Thing) ((Thing)element).Args[i] = value;
 				else if (element is Linedef) ((Linedef)element).Args[i] = value;
-			}
+                else if (element is Sector) ((Sector)element).Args[i] = value;
+            }
 		}
 
 		public int length
@@ -62,7 +64,8 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			{
 				if (element is Thing) return ((Thing)element).Args.Length;
 				else if (element is Linedef) return ((Linedef)element).Args.Length;
-				else return 0;
+                else if (element is Sector) return ((Sector)element).Args.Length;
+                else return 0;
 			}
 		}
 
@@ -91,8 +94,13 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 				foreach (int i in ((Linedef)element).Args)
 					yield return ((Linedef)element).Args[i];
 			}
+            else if (element is Sector)
+            {
+                foreach (int i in ((Sector)element).Args)
+                    yield return ((Sector)element).Args[i];
+            }
 
-			yield return 0;
+            yield return 0;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

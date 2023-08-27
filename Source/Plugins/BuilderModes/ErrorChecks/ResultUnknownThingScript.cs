@@ -58,7 +58,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(namedscript)
 				return "Thing references unknown ACS script name \"" + thing.Fields.GetValue("arg0str", string.Empty) + "\".";
 
-			return "Thing references unknown ACS script number \"" + thing.Args[0] + "\".";
+			return "Thing references unknown ACS script number \"" + thing.ThingArgs[0] + "\".";
 		}
 
 		// Rendering

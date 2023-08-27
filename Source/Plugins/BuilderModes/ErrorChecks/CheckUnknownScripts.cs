@@ -75,19 +75,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Go for all things
 			foreach(Thing t in General.Map.Map.Things) 
 			{
-				bool isacsscript = (Array.IndexOf(GZGeneral.ACS_SPECIALS, t.Action) != -1);
-				bool isnamedacsscript = (isacsscript && General.Map.UDMF && t.Fields.ContainsKey("arg0str"));
+				if (!General.Map.FormatInterface.HasThingArgs) // todo: Ring Racers version
+				{
+                    bool isacsscript = (Array.IndexOf(GZGeneral.ACS_SPECIALS, t.Action) != -1);
+                    bool isnamedacsscript = (isacsscript && General.Map.UDMF && t.Fields.ContainsKey("arg0str"));
 
-				if(isnamedacsscript)
-				{
-					string scriptname = t.Fields.GetValue("arg0str", string.Empty);
-					if(!General.Map.ScriptNameExists(scriptname))
-						SubmitResult(new ResultUnknownThingScript(t, true));
-				}
-				else if(isacsscript && !General.Map.ScriptNumberExists(t.Args[0]))
-				{
-					SubmitResult(new ResultUnknownThingScript(t, false));
-				}
+                    if (isnamedacsscript)
+                    {
+                        string scriptname = t.Fields.GetValue("arg0str", string.Empty);
+                        if (!General.Map.ScriptNameExists(scriptname))
+                            SubmitResult(new ResultUnknownThingScript(t, true));
+                    }
+                    else if (isacsscript && !General.Map.ScriptNumberExists(t.ThingArgs[0]))
+                    {
+                        SubmitResult(new ResultUnknownThingScript(t, false));
+                    }
+                }
 
 				// Handle thread interruption
 				try { Thread.Sleep(0); } catch(ThreadInterruptedException) { return; }

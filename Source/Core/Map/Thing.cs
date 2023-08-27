@@ -116,7 +116,10 @@ namespace CodeImp.DoomBuilder.Map
 		internal Dictionary<string, bool> Flags { get { return flags; } }
 		public int Action { get { return action; } set { BeforePropsChange(); action = value; } }
 		public int[] Args { get { return args; } }
-        public int[] ThingArgs { get { return (General.Map.FormatInterface.HasThingArgs ? thingargs : args); } }
+        public int[] ThingArgs { 
+			get { return (General.Map.FormatInterface.HasThingArgs ? thingargs : args); }
+			set { if (General.Map.FormatInterface.HasThingArgs) { thingargs = value; } else { args = value; } }
+		}
         public float Size { get { return size * (float)mobjscale / (float)(1 << General.Settings.ThingScale); } }
 		public float RenderSize { get { return rendersize; } }
 		public float Height { get { return height * (float)mobjscale / (float)(1 << General.Settings.ThingScale); } } //mxd

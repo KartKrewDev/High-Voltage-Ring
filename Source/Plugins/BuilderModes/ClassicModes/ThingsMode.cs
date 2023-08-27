@@ -794,7 +794,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 									if(nextpointtagargnum != -1)
 									{
 										if(t.Tag == 0) t.Tag = General.Map.Map.GetNewTag();
-										t.Args[nextpointtagargnum] = clone.Tag = General.Map.Map.GetNewTag();
+										t.ThingArgs[nextpointtagargnum] = clone.Tag = General.Map.Map.GetNewTag();
 									}
 
 									t.Selected = false;
