@@ -221,7 +221,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				switch(info.ClassName.ToLowerInvariant())
 				{
 					case "interpolationpoint":
-						if(t.Tag != 0 && t.Args[3] != 0)
+						if(t.Tag != 0 && t.ThingArgs[3] != 0)
 						{
 							targetclass = "interpolationpoint";
 							targetarg = 3;
@@ -229,7 +229,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						break;
 
 					case "patrolpoint":
-						if(t.Tag != 0 && t.Args[0] != 0)
+						if(t.Tag != 0 && t.ThingArgs[0] != 0)
 						{
 							targetclass = "patrolpoint";
 							targetarg = 0;
@@ -247,10 +247,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if(other.Index == t.Index)
 							continue;
 						info = General.Map.Data.GetThingInfo(other.Type);
-						if(info.ClassName.ToLowerInvariant() == targetclass && other.Args[targetarg] == t.Tag)
+						if(info.ClassName.ToLowerInvariant() == targetclass && other.ThingArgs[targetarg] == t.Tag)
 						{
 							other.Move(other.Position); //hacky way to call BeforePropsChange()...
-							other.Args[targetarg] = t.Args[targetarg];
+							other.ThingArgs[targetarg] = t.ThingArgs[targetarg];
 							break;
 						}
 					}

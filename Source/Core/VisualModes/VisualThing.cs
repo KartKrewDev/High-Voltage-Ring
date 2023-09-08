@@ -684,17 +684,17 @@ namespace CodeImp.DoomBuilder.VisualModes
                     {
                         //lightColor.Alpha used in shader to perform some calculations based on light type
                         lightColor = new Color4(
-                            thing.Args[0] / DYNLIGHT_INTENSITY_SCALER,
-                            thing.Args[1] / DYNLIGHT_INTENSITY_SCALER,
-                            thing.Args[2] / DYNLIGHT_INTENSITY_SCALER,
+                            thing.ThingArgs[0] / DYNLIGHT_INTENSITY_SCALER,
+                            thing.ThingArgs[1] / DYNLIGHT_INTENSITY_SCALER,
+                            thing.ThingArgs[2] / DYNLIGHT_INTENSITY_SCALER,
                             (float)ld.LightRenderStyle / 100.0f);
                     }
                     else // negative
                     {
                         lightColor = new Color4(
-                            thing.Args[0] / SUBLIGHT_INTENSITY_SCALER,
-                            thing.Args[1] / SUBLIGHT_INTENSITY_SCALER,
-                            thing.Args[2] / SUBLIGHT_INTENSITY_SCALER,
+                            thing.ThingArgs[0] / SUBLIGHT_INTENSITY_SCALER,
+                            thing.ThingArgs[1] / SUBLIGHT_INTENSITY_SCALER,
+                            thing.ThingArgs[2] / SUBLIGHT_INTENSITY_SCALER,
                             (float)ld.LightRenderStyle / 100.0f);
                     }
                 }
@@ -711,9 +711,9 @@ namespace CodeImp.DoomBuilder.VisualModes
                     }
                     else
                     {
-                        c1 = (thing.Args[0] & 0xFF0000) >> 16;
-                        c2 = (thing.Args[0] & 0x00FF00) >> 8;
-                        c3 = (thing.Args[0] & 0x0000FF);
+                        c1 = (thing.ThingArgs[0] & 0xFF0000) >> 16;
+                        c2 = (thing.ThingArgs[0] & 0x00FF00) >> 8;
+                        c3 = (thing.ThingArgs[0] & 0x0000FF);
                     }
 
                     if (ld.LightDef != GZGeneral.LightDef.SPOT_SUBTRACTIVE)
@@ -738,19 +738,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 				{
 					int scaler = 1;
 					if(thing.Sector != null) scaler = thing.Sector.Brightness / 4;
-					lightPrimaryRadius = (thing.Args[3] * scaler);
+					lightPrimaryRadius = (thing.ThingArgs[3] * scaler);
 				} 
 				else 
 				{
 					lightPrimaryRadius = (thing.Args[3] * 2); //works... that.. way in GZDoom
                     if (lightType.LightAnimated)
-					    lightSecondaryRadius = (thing.Args[4] * 2);
+					    lightSecondaryRadius = (thing.ThingArgs[4] * 2);
 				}
 
                 if (lightType.LightType == GZGeneral.LightType.SPOT)
                 {
-                    lightSpotRadius1 = (thing.Args[1]);
-                    lightSpotRadius2 = (thing.Args[2]);
+                    lightSpotRadius1 = (thing.ThingArgs[1]);
+                    lightSpotRadius2 = (thing.ThingArgs[2]);
                 }
 			}
 			else //it's one of vavoom lights
@@ -758,9 +758,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 				if(lightType.LightDef == GZGeneral.LightDef.VAVOOM_COLORED)
 				{
 					lightColor = new Color4(
-						thing.Args[1] / DYNLIGHT_INTENSITY_SCALER,
-						thing.Args[2] / DYNLIGHT_INTENSITY_SCALER,
-						thing.Args[3] / DYNLIGHT_INTENSITY_SCALER,
+						thing.ThingArgs[1] / DYNLIGHT_INTENSITY_SCALER,
+						thing.ThingArgs[2] / DYNLIGHT_INTENSITY_SCALER,
+						thing.ThingArgs[3] / DYNLIGHT_INTENSITY_SCALER,
                         (float)ld.LightRenderStyle / 100.0f);
 				}
 				else
@@ -768,7 +768,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					lightColor = new Color4(0.5f, 0.5f, 0.5f, (float)ld.LightRenderStyle / 100.0f);
 				}
 					
-				lightPrimaryRadius = (thing.Args[0] * 8);
+				lightPrimaryRadius = (thing.ThingArgs[0] * 8);
 			}
 
 			UpdateLightRadius();

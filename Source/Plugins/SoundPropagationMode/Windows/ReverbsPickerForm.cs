@@ -43,7 +43,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			foreach(var item in list.Items) 
 			{
 				ReverbListItem rli = (ReverbListItem)item;
-				if(rli.Arg0 == t.Args[0] && rli.Arg1 == t.Args[1]) 
+				if(rli.Arg0 == t.ThingArgs[0] && rli.Arg1 == t.ThingArgs[1]) 
 				{
 					list.SelectedItem = item;
 					break;
@@ -72,8 +72,8 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		{
 			if(list.SelectedItem == null) return;
 			ReverbListItem rli = (ReverbListItem)list.SelectedItem;
-			t.Args[0] = rli.Arg0;
-			t.Args[1] = rli.Arg1;
+			t.ThingArgs[0] = rli.Arg0;
+			t.ThingArgs[1] = rli.Arg1;
 			BuilderPlug.SetThingDormant(t, !cbactiveenv.Checked);
 		}
 

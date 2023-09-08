@@ -33,7 +33,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public override void Update()
 		{
 			//mxd. Skip if arg0 is 0.
-			if(thing.Args[0] == 0) return;
+			if(thing.ThingArgs[0] == 0) return;
 			
 			ThingData td = data.Mode.GetThingData(thing);
 			Thing t = thing;
