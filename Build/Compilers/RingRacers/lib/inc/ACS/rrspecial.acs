@@ -257,9 +257,11 @@ special
 	int		 -307:PlayerLap(0),
 	int		 -308:LowestLap(0),
 	bool	 -309:EncoreMode(0),
-	bool	 -310:BreakTheCapsules(0),
+	bool	 -310:PrisonBreak(0),
 	bool	 -311:TimeAttack(0),
 	int		 -312:ThingCount(0, str, int, int),
+	bool	 -313:GrandPrix(0),
+	str		 -314:GetGrabbedSprayCan(0),
 
 	void	 -500:CameraWait(1, int),
 	int		 -501:PodiumPosition(0),
