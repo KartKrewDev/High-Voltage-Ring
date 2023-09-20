@@ -177,6 +177,12 @@
     <Compile Include="Controls\ArgumentBox.Designer.cs">
       <DependentUpon>ArgumentBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ArgumentsControlSRB2Thing.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ArgumentsControlSRB2Thing.Designer.cs">
+      <DependentUpon>ArgumentsControlSRB2Thing.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ArgumentsControlSRB2.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -194,6 +200,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\Scripting\TextEditorControl.cs" />
+    <Compile Include="Controls\ThingInfoPanelRR.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ThingInfoPanelRR.Designer.cs">
+      <DependentUpon>ThingInfoPanelRR.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TransparentTrackBar.cs">
       <SubType>Component</SubType>
     </Compile>
