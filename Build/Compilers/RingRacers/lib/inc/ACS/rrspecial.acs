@@ -86,7 +86,6 @@ special
 
 	int		  411:Sector_StopMovement(1),
 	int		  412:Thing_Teleport(1, 5),
-	int		  413:Level_SetMusic(1, 8),
 	int		  414:PlaySFX(1, 4),
 	int		  415:Console_Execute(1),
 	int		  416:Light_Flicker(5),
