@@ -271,9 +271,9 @@ special
 	int		 -505:AddBot(0, str, int, int),
 	void	 -506:StopLevelExit(0),
 	void	 -507:ExitLevel(0, bool),
-	void	 -508:Music_Play(1, str),
-	void	 -509:Music_StopAll(0),
-	void	 -510:Music_Remap(2, str, str),
+	void	 -508:Music_Play(1, str, bool),
+	void	 -509:Music_StopAll(0, bool),
+	void	 -510:Music_Remap(2, str, str, bool),
 
 	void	 -600:Dialogue_SetSpeaker(2, str, int),
 	void	 -601:Dialogue_SetCustomSpeaker(2, str, str, str, str),
