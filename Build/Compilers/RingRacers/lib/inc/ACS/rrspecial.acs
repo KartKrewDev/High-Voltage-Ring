@@ -274,6 +274,7 @@ special
 	void	 -508:Music_Play(1, str, bool),
 	void	 -509:Music_StopAll(0, bool),
 	void	 -510:Music_Remap(2, str, str, bool),
+	void	 -511:Freeze(1, bool),
 
 	void	 -600:Dialogue_SetSpeaker(2, str, int),
 	void	 -601:Dialogue_SetCustomSpeaker(2, str, str, str, str),
