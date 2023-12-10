@@ -268,6 +268,9 @@ special
 	bool	 -313:GrandPrix(0),
 	str		 -314:GetGrabbedSprayCan(0),
 	bool	 -315:PlayerBot(0),
+	bool	 -316:PositionStart(0),
+	bool	 -317:FreePlay(0),
+	str		 -318:CheckTutorialChallenge(0),
 
 	void	 -500:CameraWait(1, int),
 	int		 -501:PodiumPosition(0),
@@ -287,6 +290,7 @@ special
 	void	 -602:Dialogue_NewText(1, str),
 	void	 -603:Dialogue_WaitForDismiss(0),
 	void	 -604:Dialogue_WaitForText(0),
+	void	 -605:Dialogue_AutoDismiss(0),
 
 	//  0 to 56: Implemented by ACSVM
 	void  {  2     }:__suspend(void),
