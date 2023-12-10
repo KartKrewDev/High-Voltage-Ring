@@ -159,6 +159,12 @@ special
 
 	int		  499:Sector_ToggleWaypoints(2),
 
+	int		 2001:FinishLine(0, 1),
+
+	int		 2003:RespawnLine(0, 1),
+	int		 2004:UpdateBotController(3, 4),
+	int		 2005:DismountFlyingObject(0),
+
 	// Internal functions have negative values
 	// [type] [ID]:[function name]([required args], [type of each arg, including optional ones])
 	int		   -1:GetLineProperty(2, int, int),
