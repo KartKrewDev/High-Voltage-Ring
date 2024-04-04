@@ -271,6 +271,8 @@ special
 	bool	 -316:PositionStart(0),
 	bool	 -317:FreePlay(0),
 	str		 -318:CheckTutorialChallenge(0),
+	bool	 -319:PlayerLosing(0),
+	bool	 -320:PlayerExiting(0),
 
 	void	 -500:CameraWait(1, int),
 	int		 -501:PodiumPosition(0),
