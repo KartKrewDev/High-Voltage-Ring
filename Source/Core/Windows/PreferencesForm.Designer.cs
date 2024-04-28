@@ -319,6 +319,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// checkforupdates
 			// 
+			this.checkforupdates.Enabled = false;
 			this.checkforupdates.AutoSize = true;
 			this.checkforupdates.Location = new System.Drawing.Point(16, 369);
 			this.checkforupdates.Name = "checkforupdates";

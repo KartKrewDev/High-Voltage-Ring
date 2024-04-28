@@ -110,7 +110,7 @@
             this.newissue.Size = new System.Drawing.Size(359, 17);
             this.newissue.TabIndex = 8;
             this.newissue.TabStop = true;
-            this.newissue.Text = "Help fixing this error by creating an Issue at the GitHub Issues Tracker.";
+            this.newissue.Text = "Help fixing this error by creating an Issue at the GitLab Issues Tracker.";
             this.newissue.UseCompatibleTextRendering = true;
             this.newissue.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.newissue_LinkClicked);
             // 

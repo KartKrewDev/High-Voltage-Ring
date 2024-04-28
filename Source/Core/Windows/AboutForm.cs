@@ -37,7 +37,7 @@ namespace CodeImp.DoomBuilder.Windows
 #if DEBUG
 			version.Text = Application.ProductName + " [DEVBUILD]";
 #else
-			version.Text = Application.ProductName + " v" + Application.ProductVersion + " (" + General.CommitHash + ")";
+			version.Text = Application.ProductName + " v" + Application.ProductVersion;
 #endif
 		}
 
@@ -89,5 +89,10 @@ namespace CodeImp.DoomBuilder.Windows
         {
             General.OpenWebsite("https://github.com/m-x-d/GZDoom-Builder");
         }
+
+		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			General.OpenWebsite("https://kartkrew.org");
+		}
     }
 }

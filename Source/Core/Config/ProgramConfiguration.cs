@@ -406,7 +406,8 @@ namespace CodeImp.DoomBuilder.Config
 				maxRecentFiles = cfg.ReadSetting("maxrecentfiles", 8);
 				autoClearSideTextures = cfg.ReadSetting("autoclearsidetextures", true);
 				storeSelectedEditTab = cfg.ReadSetting("storeselectededittab", true);
-				checkforupdates = cfg.ReadSetting("checkforupdates", true); //mxd
+				//checkforupdates = cfg.ReadSetting("checkforupdates", true); //mxd
+				checkforupdates = false;
 				rendercomments = cfg.ReadSetting("rendercomments", true); //mxd
 				fixedthingsscale = cfg.ReadSetting("fixedthingsscale", false); //mxd
 				rendergrid = cfg.ReadSetting("rendergrid", true); //mxd

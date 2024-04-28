@@ -1318,6 +1318,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// itemhelpcheckupdates
 			// 
+			this.itemhelpcheckupdates.Enabled = false;
+			this.itemhelpcheckupdates.Visible = false;
 			this.itemhelpcheckupdates.Image = global::CodeImp.DoomBuilder.Properties.Resources.Update;
 			this.itemhelpcheckupdates.Name = "itemhelpcheckupdates";
 			this.itemhelpcheckupdates.Size = new System.Drawing.Size(232, 22);
@@ -1332,18 +1334,18 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// itemhelpissues
 			// 
-			this.itemhelpissues.Image = global::CodeImp.DoomBuilder.Properties.Resources.Github;
+			this.itemhelpissues.Image = global::CodeImp.DoomBuilder.Properties.Resources.GitLab;
 			this.itemhelpissues.Name = "itemhelpissues";
 			this.itemhelpissues.Size = new System.Drawing.Size(232, 22);
-			this.itemhelpissues.Text = "&GitHub issues tracker";
+			this.itemhelpissues.Text = "&GitLab issues tracker";
 			this.itemhelpissues.Click += new System.EventHandler(this.itemhelpissues_Click);
 			// 
 			// itemhelpabout
 			// 
-			this.itemhelpabout.Image = global::CodeImp.DoomBuilder.Properties.Resources.About;
+			this.itemhelpabout.Image = global::CodeImp.DoomBuilder.Properties.Resources.HVR16;
 			this.itemhelpabout.Name = "itemhelpabout";
 			this.itemhelpabout.Size = new System.Drawing.Size(232, 22);
-			this.itemhelpabout.Text = "&About Ultimate Doom Builder...";
+			this.itemhelpabout.Text = "&About High Voltage Ring...";
 			this.itemhelpabout.Click += new System.EventHandler(this.itemhelpabout_Click);
 			// 
 			// toolbar
