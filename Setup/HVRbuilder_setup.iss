@@ -58,59 +58,42 @@ Name: english; MessagesFile: compiler:Default.isl
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
 
 [Files]
+Source: Setup\dotnetfx35setup.exe; DestDir: {tmp}; Flags: dontcopy
+Source: Setup\vcredist_x86.exe; DestDir: {tmp}; Flags: dontcopy
 Source: Builder.exe; DestDir: {app}; Flags: ignoreversion
-Source: Builder.pdb; DestDir: {app}; Flags: ignoreversion
 Source: Builder.exe.config; DestDir: {app}; Flags: ignoreversion
 Source: HVRBuilder.default.cfg; DestDir: {app}; Flags: ignoreversion
 //Source: Updater.exe; DestDir: {app}; Flags: ignoreversion
 Source: Updater.ini; DestDir: {app}; Flags: ignoreversion
-Source: Refmanual.chm; DestDir: {app}; Flags: ignoreversion
+//Source: Refmanual.chm; DestDir: {app}; Flags: ignoreversion
+//Source: DevIL.dll; DestDir: {app}; Flags: ignoreversion
 Source: BuilderNative.dll; DestDir: {app}; Flags: ignoreversion
-Source: BuilderNative.pdb; DestDir: {app}; Flags: ignoreversion
 Source: SharpCompress.dll; DestDir: {app}; Flags: ignoreversion
 Source: ScintillaNET.dll; DestDir: {app}; Flags: ignoreversion
 Source: TabControlEX.dll; DestDir: {app}; Flags: ignoreversion
-Source: System.Buffers.dll; DestDir: {app}; Flags: ignoreversion
-Source: System.Memory.dll; DestDir: {app}; Flags: ignoreversion
-Source: System.Numerics.Vectors.dll; DestDir: {app}; Flags: ignoreversion
-Source: System.Runtime.CompilerServices.Unsafe.dll; DestDir: {app}; Flags: ignoreversion
 Source: LICENSE.txt; DestDir: {app}; Flags: ignoreversion
 Source: Compilers\*; DestDir: {app}\Compilers; Flags: ignoreversion recursesubdirs
 Source: Configurations\*; DestDir: {app}\Configurations; Flags: ignoreversion recursesubdirs
 Source: Scripting\*; DestDir: {app}\Scripting; Flags: ignoreversion recursesubdirs
 Source: Snippets\*; DestDir: {app}\Snippets; Flags: ignoreversion recursesubdirs
-Source: UDBScript\udbscript.d.ts; DestDir: {app}\UDBScript; Flags: ignoreversion
-Source: UDBScript\Libraries\*; DestDir: {app}\UDBScript\Libraries; Flags: ignoreversion recursesubdirs
-Source: UDBScript\Scripts\Examples\*; DestDir: {app}\UDBScript\Scripts\Examples; Flags: ignoreversion recursesubdirs
+Source: UDBScript\*; DestDir: {app}\UDBScript; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: Plugins\Dependencies\Esprima.dll; DestDir: {app}\Plugins\Dependencies; Flags: ignoreversion
+Source: Plugins\Dependencies\Jint.dll; DestDir: {app}\Plugins\Dependencies; Flags: ignoreversion
 Source: Plugins\AutomapMode.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\AutomapMode.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\BuilderModes.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\BuilderModes.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\BuilderEffects.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\BuilderEffects.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\ColorPicker.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\ColorPicker.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\CommentsPanel.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\CommentsPanel.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\NodesViewer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\NodesViewer.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\SoundPropagationMode.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\SoundPropagationMode.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\StairSectorBuilder.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\StairSectorBuilder.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\TagExplorer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\TagExplorer.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\TagRange.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\TagRange.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\ThreeDFloorMode.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\ThreeDFloorMode.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\UDBScript.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\UDBScript.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\VisplaneExplorer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
-Source: Plugins\VisplaneExplorer.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\Loadorder.cfg; DestDir: {app}\Plugins; Flags: ignoreversion onlyifdoesntexist
-Source: Plugins\Dependencies\*; DestDir: {app}\Plugins\Dependencies; Flags: ignoreversion
 Source: Sprites\*; DestDir: {app}\Sprites; Flags: ignoreversion recursesubdirs
 Source: Textures\*; DestDir: {app}\Textures; Flags: ignoreversion
 

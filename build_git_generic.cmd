@@ -130,18 +130,18 @@ ECHO.
 
 IF NOT DEFINED BUILD_RELEASE GOTO PACKGIT
 
-set DEL_PATHSPEC="%DB_OUTDIR%\UltimateDoomBuilder-Setup*-%PLATFORM%.exe"
+set DEL_PATHSPEC="%DB_OUTDIR%\HVRBuilder-Setup*-%PLATFORM%.exe"
 IF EXIST %DEL_PATHSPEC% DEL /F /Q %DEL_PATHSPEC% > NUL
-"%ISSDIR%\iscc.exe" "Setup\gzbuilder_setup.iss"
+"%ISSDIR%\iscc.exe" "Setup\HVRbuilder_setup.iss"
 IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "%DB_OUTDIR%\Setup.exe" GOTO FILEFAIL
 
-REN "%DB_OUTDIR%\Setup.exe" "UltimateDoomBuilder-Setup-R%REVISIONNUMBER%-%PLATFORM%.exe"
+REN "%DB_OUTDIR%\Setup.exe" "HVRBuilder-Setup-R%REVISIONNUMBER%-%PLATFORM%.exe"
 
 GOTO BUILDDONE
 
 :PACKGIT
-SET DEL_PATHSPEC="%DB_OUTDIR%\UltimateDoomBuilder*-%PLATFORM%.7z"
+SET DEL_PATHSPEC="%DB_OUTDIR%\HVRBuilder*-%PLATFORM%.7z"
 IF EXIST %DEL_PATHSPEC% DEL /F /Q %DEL_PATHSPEC% > NUL
 IF EXIST "%DB_OUTDIR%\UDB_Updater-%PLATFORM%.7z" DEL /F /Q "%DB_OUTDIR%\UDB_Updater-%PLATFORM%.7z" > NUL
 "%SEVENZIPDIR%\7z" a %DB_OUTDIR%\udb.7z .\Build\* -xr!*.xml -xr!JetBrains.Profiler.Core.Api.dll -xr!ScintillaNET.3.5.pdb -x!Setup
@@ -150,7 +150,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO PACKFAIL
 IF NOT EXIST %DB_OUTDIR%\udb.7z GOTO FILEFAIL
 IF NOT EXIST %DB_OUTDIR%\UDB_Updater-%PLATFORM%.7z GOTO FILEFAIL
 
-REN "%DB_OUTDIR%\udb.7z" UltimateDoomBuilder-r%REVISIONNUMBER%-%PLATFORM%.7z
+REN "%DB_OUTDIR%\udb.7z" HVRBuilder-r%REVISIONNUMBER%-%PLATFORM%.7z
 
 IF EXIST "Build\Changelog.txt" DEL /F /Q "Build\Changelog.txt" > NUL
 
