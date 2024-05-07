@@ -19,8 +19,8 @@ __Note:__ this is experimental. You're pretty much on your own if you encounter 
 - Run HVR: `cd Build && ./builder`
 
 **Links:**
-- [HVR repository](https://git.do.srb2.org/KartKrew/high-voltage-ring)
-- [HVR issues](https://git.do.srb2.org/KartKrew/high-voltage-ring/-/issues)
+- [HVR repository](https://git.do.srb2.org/KartKrew/high-voltage-ring-public)
+- [HVR issues](https://git.do.srb2.org/KartKrew/high-voltage-ring-public/-/issues)
 
 Ultimate Zone Builder:
 - [SRB2MB thread](https://mb.srb2.org/addons/ultimate-zone-builder.6126/)
